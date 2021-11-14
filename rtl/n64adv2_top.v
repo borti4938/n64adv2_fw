@@ -163,7 +163,7 @@ wire Si_cfg_done_w;
 wire [6:0] APUConfigSet;
 
 wire [`PPU_State_Width-1:0] PPUState_w;
-wire [66:0] PPUConfigSet_w;
+wire [`PPUConfig_WordWidth-1:0] PPUConfigSet_w;
 wire OSD_VSync_w;
 wire [24:0] OSDWrVector_w;
 wire [ 1:0] OSDInfo_w;

@@ -66,6 +66,7 @@
 #define VICFG_VALS_H_OFFSET       (31 + VICFG_OVERLAY_H_OFFSET)
 #define VICFG_VALS_V_OFFSET       VICFG_OVERLAY_V_OFFSET
 #define VICFG1_RESOLUTION_V_OFFSET          ( 0 + VICFG_VALS_V_OFFSET)
+#define VICFG1_DEINTERLACING_V_OFFSET       ( 2 + VICFG_VALS_V_OFFSET)
 #define VICFG1_SCANLINES_V_OFFSET           ( 3 + VICFG_VALS_V_OFFSET)
 #define VICFG1_SCALER_OPT_V_OFFSET          ( 4 + VICFG_VALS_V_OFFSET)
 #define VICFG1_TIMING_V_OFFSET              ( 5 + VICFG_VALS_V_OFFSET)
@@ -192,8 +193,9 @@ static const char *vinfo_overlay __attribute__((section(".ufm_data_rom"))) =
 static const char *vicfg1_header __attribute__((section(".ufm_data_rom"))) =
     "VI config. 1";
 static const char *vicfg1_overlay __attribute__((section(".ufm_data_rom"))) =
-    "* Output resolution:\n\n"
+    "* Output resolution:\n"
     "* Advanced picture settings\n"
+    "  - De-Interlacing mode:\n"
     "  - Scanline emulation:\n"
     "  - Scaler options:\n"
     "  - V/H position/timing:\n\n"
@@ -337,7 +339,8 @@ const char *OffOn[]         = {"Off","On"};
 const char *NTSCPAL_SEL[]   = {"NTSC  ","PAL   ", "Current"};
 const char *Force5060[]     = {"Off (N64 Auto)","60Hz","50Hz"};
 const char *Resolutions[]   = {"480p/576p","720p","960p","1080p","1200p"};
-const char *InterpModes[]   = {"Integer","Bilinear"};
+const char *DeInterModes[]  = {"Bob","Weave","Fully Buffered"};
+const char *InterpModes[]   = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
 const char *VTimingSel[]    = {"Current","NTSC Progressive","NTSC Interlaced","PAL Progressive","PAL Interlaced"};
 const char *EvenOdd[]       = {"Even","Odd "};
 const char *AdvSL[]         = {"Simple","Mean"};

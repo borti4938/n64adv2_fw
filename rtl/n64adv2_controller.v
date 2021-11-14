@@ -87,7 +87,7 @@ output      Si_cfg_done_o;
 
 output reg [6:0] APUConfigSet;
 input      [`PPU_State_Width-1:0] PPUState;
-output reg [66:0] PPUConfigSet;
+output reg [`PPUConfig_WordWidth-1:0] PPUConfigSet;
 
 input             OSD_VSync;
 output reg [24:0] OSDWrVector;
@@ -279,7 +279,7 @@ always @(posedge SYS_CLK) begin
   if (nVSYNC_resynced_L[1] & !nVSYNC_resynced_L[0]) begin
     OSDInfo[1]   <= &{SysConfigSet2[`show_osd_logo_bit],SysConfigSet2[`show_osd_bit],!SysConfigSet2[`mute_osd_bit]};  // show logo only in OSD
     OSDInfo[0]   <= SysConfigSet2[`show_osd_bit] & !SysConfigSet2[`mute_osd_bit];
-    PPUConfigSet <= {SysConfigSet2[`limitedRGB_sysbit],SysConfigSet2[`videblur_sysbit],SysConfigSet2[`n16bit_mode_sysbit],SysConfigSet1,SysConfigSet0};
+    PPUConfigSet <= {SysConfigSet2[`SysConfigSet2_PPUConfig_slice],SysConfigSet1,SysConfigSet0};
   end
   nVSYNC_resynced_L <= {nVSYNC_resynced_L[0],nVSYNC_buf_resynced};
 end

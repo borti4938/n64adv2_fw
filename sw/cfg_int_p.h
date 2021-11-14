@@ -40,48 +40,58 @@
 
 extern const char  *OffOn[], *NTSCPAL_SEL[], *VTimingSel[];
 
+cfg_b32word_t cfg_data_internal =
+  { .cfg_word_mask    = 0x0000000F,
+    .cfg_word_val     = 0x00000000,
+    .cfg_ref_word_val = 0x00000000
+  };
+
 config_t deblur_mode_powercycle = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value
+    .cfg_word        = &cfg_data_internal,
+    .cfg_word_offset = 3,
     .cfg_type     = FLAG,
-    .cfg_value    = OFF,
-    .value_details = {
-      .max_value = ON,
+    .flag_masks      = {
+        .setflag_mask = (1<<3),
+        .clrflag_mask = (0x0000000F & ~(1<<3))
     },
     .value_string = &OffOn
 };
 
 config_t mode16bit_powercycle = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value
+    .cfg_word        = &cfg_data_internal,
+    .cfg_word_offset = 2,
     .cfg_type     = FLAG,
-    .cfg_value    = OFF,
-    .value_details = {
-      .max_value = ON,
+    .flag_masks      = {
+        .setflag_mask = (1<<2),
+        .clrflag_mask = (0x0000000F & ~(1<<2))
     },
     .value_string = &OffOn
 };
 
 config_t igr_deblur = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value
+    .cfg_word        = &cfg_data_internal,
+    .cfg_word_offset = 1,
     .cfg_type     = FLAGTXT,
-    .cfg_value    = OFF,
-    .value_details = {
-      .max_value = ON,
+    .flag_masks      = {
+        .setflag_mask = (1<<1),
+        .clrflag_mask = (0x0000000F & ~(1<<1))
     },
     .val2char_func = &flag2set_func
 };
 
 config_t igr_16bitmode = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value
+    .cfg_word        = &cfg_data_internal,
+    .cfg_word_offset = 0,
     .cfg_type     = FLAGTXT,
-    .cfg_value    = OFF,
-    .value_details = {
-      .max_value = ON,
+    .flag_masks      = {
+        .setflag_mask = (1<<0),
+        .clrflag_mask = (0x0000000F & ~(1<<0))
     },
     .val2char_func = &flag2set_func
 };
 
 config_t res_selection = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value
+    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
     .cfg_value    = PPU_RES_CURRENT,
     .value_details = {
@@ -91,7 +101,7 @@ config_t res_selection = {
 };
 
 config_t scanline_selection = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value
+    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
     .cfg_value    = 0,
     .value_details = {
@@ -101,7 +111,7 @@ config_t scanline_selection = {
 };
 
 config_t timing_selection = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value
+    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
     .cfg_value    = 0,
     .value_details = {
@@ -111,7 +121,7 @@ config_t timing_selection = {
 };
 
 config_t scaling_selection = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value
+    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = NUMVALUE, // treat as numvalue for modifying function
     .cfg_value    = 0,
     .value_details = {

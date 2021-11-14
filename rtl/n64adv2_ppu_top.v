@@ -95,7 +95,7 @@ input nVDSYNC_i;
 input [color_width_i-1:0] VD_i;
 
 output [`PPU_State_Width-1:0] PPUState;
-input  [66:0] ConfigSet;
+input  [`PPUConfig_WordWidth-1:0] ConfigSet;
 
 input        SYSCLK;
 
@@ -148,7 +148,7 @@ wire [11:0] cfg_hvshift;
 
 wire palmode_resynced, n64_480i_resynced;
 
-wire [66:0] ConfigSet_resynced;
+wire [`PPUConfig_WordWidth-1:0] ConfigSet_resynced;
 
 wire vdata_valid_bwd_w, vdata_valid_fwd_w;
 wire [`VDATA_I_SY_SLICE] vdata_bwd_sy_w;
@@ -252,8 +252,8 @@ register_sync_2 #(
 );
 
 register_sync #(
-  .reg_width(67),
-  .reg_preset(67'd0)
+  .reg_width(`PPUConfig_WordWidth),
+  .reg_preset({`PPUConfig_WordWidth{1'b0}})
 ) sync4txlogic_u1 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),

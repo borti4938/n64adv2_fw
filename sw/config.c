@@ -218,10 +218,7 @@ int cfg_save_to_flash(alt_u8 need_confirm)
   ((cfg4flash_t*) databuf)->vers_cfg_main = CFG_FW_MAIN;
   ((cfg4flash_t*) databuf)->vers_cfg_sub = CFG_FW_SUB;
 
-  ((cfg4flash_t*) databuf)->cfg_internals = cfg_get_value(&deblur_mode_powercycle,0) << 3 | \
-                                            cfg_get_value(&mode16bit_powercycle,0)   << 2 | \
-                                            cfg_get_value(&igr_deblur,0)             << 1 | \
-                                            cfg_get_value(&igr_16bitmode,0)          << 0;
+  ((cfg4flash_t*) databuf)->cfg_internals = (alt_u8) (cfg_data_internal.cfg_word_val & 0x0F);
 
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
@@ -272,10 +269,8 @@ int cfg_load_from_flash(alt_u8 need_confirm)
   if ((((cfg4flash_t*) databuf)->vers_cfg_main != CFG_FW_MAIN) ||
       (((cfg4flash_t*) databuf)->vers_cfg_sub  != CFG_FW_SUB)   ) return -CFG_VERSION_INVALID;
 
-  cfg_set_value(&deblur_mode_powercycle,(((cfg4flash_t*) databuf)->cfg_internals >> 3) & 0x1);
-  cfg_set_value(&mode16bit_powercycle,  (((cfg4flash_t*) databuf)->cfg_internals >> 2) & 0x1);
-  cfg_set_value(&igr_deblur,            (((cfg4flash_t*) databuf)->cfg_internals >> 1) & 0x1);
-  cfg_set_value(&igr_16bitmode,         (((cfg4flash_t*) databuf)->cfg_internals >> 0) & 0x1);
+  cfg_data_internal.cfg_word_val = 0;
+  cfg_data_internal.cfg_word_val |= ((cfg4flash_t*) databuf)->cfg_internals;
 
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++) {
     sysconfig.cfg_word_def[idx]->cfg_word_val = 0;
@@ -422,6 +417,8 @@ void cfg_clear_words()
 
 void cfg_update_reference()
 {
+  cfg_data_internal.cfg_ref_word_val = cfg_data_internal.cfg_word_val;
+
   int idx;
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++)
     sysconfig.cfg_word_def[idx]->cfg_ref_word_val = sysconfig.cfg_word_def[idx]->cfg_word_val;

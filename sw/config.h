@@ -162,9 +162,9 @@ typedef struct {
 #define CFG_DEF_LOAD_ABORT    CFG_FLASH_SAVE_ABORT
 
 // the overall masks
-#define CFG_MISC_GETALL_MASK      0x007F070F
-#define CFG_VIDEO_GETALL_MASK     0xFFFFFFE7
-#define CFG_LINEX_GETALL_MASK     0x0FFFFFFF
+#define CFG_MISC_GETALL_MASK      0x007F0F7F
+#define CFG_VIDEO_GETALL_MASK     0xFFFFFE1F
+#define CFG_LINEX_GETALL_MASK     0xFFFFFE07
 
 // misc (set 2)
 #define CFG_MISC_OUT_BASE   CFG_SET2_OUT_BASE
@@ -172,13 +172,14 @@ typedef struct {
 #define CFG_AUDIO_AMP_OFFSET      18
 #define CFG_AUDIO_SWAP_LR_OFFSET  17
 #define CFG_AUDIO_SPDIF_EN_OFFSET 16
-#define CFG_SHOWLOGO_OFFSET       10
-#define CFG_SHOWOSD_OFFSET         9
-#define CFG_MUTEOSDTMP_OFFSET      8
-#define CFG_LIMITED_RGB_OFFSET     3
-#define CFG_DEBLUR_MODE_OFFSET     2
-#define CFG_16BITMODE_OFFSET       1
-#define CFG_IGRRST_OFFSET          0
+#define CFG_SHOWLOGO_OFFSET       11
+#define CFG_SHOWOSD_OFFSET        10
+#define CFG_MUTEOSDTMP_OFFSET      9
+#define CFG_IGRRST_OFFSET          8
+#define CFG_GAMMA_OFFSET           3
+#define CFG_LIMITED_RGB_OFFSET     2
+#define CFG_DEBLUR_MODE_OFFSET     1
+#define CFG_16BITMODE_OFFSET       0
 
 #define CFG_AUDIO_AMP_GETMASK         (0x1F<<CFG_AUDIO_AMP_OFFSET)
   #define CFG_AUDIO_AMP_RSTMASK         (CFG_MISC_GETALL_MASK & ~CFG_AUDIO_AMP_GETMASK)
@@ -198,6 +199,12 @@ typedef struct {
 #define CFG_MUTEOSDTMP_GETMASK      (1<<CFG_MUTEOSDTMP_OFFSET)
   #define CFG_MUTEOSDTMP_SETMASK      (1<<CFG_MUTEOSDTMP_OFFSET)
   #define CFG_MUTEOSDTMP_CLRMASK      (CFG_MISC_GETALL_MASK & ~CFG_MUTEOSDTMP_SETMASK)
+#define CFG_IGRRST_GETMASK          (1<<CFG_IGRRST_OFFSET)
+  #define CFG_IGRRST_SETMASK          (1<<CFG_IGRRST_OFFSET)
+  #define CFG_IGRRST_CLRMASK          (CFG_MISC_GETALL_MASK & ~CFG_IGRRST_SETMASK)
+#define CFG_GAMMA_GETMASK             (0xF<<CFG_GAMMA_OFFSET)
+  #define CFG_GAMMASEL_RSTMASK          (CFG_MISC_GETALL_MASK & ~CFG_GAMMA_GETMASK)
+  #define CFG_GAMMA_CLRMASK             (CFG_MISC_GETALL_MASK & ~CFG_GAMMA_GETMASK)
 #define CFG_LIMITED_RGB_GETMASK     (1<<CFG_LIMITED_RGB_OFFSET)
   #define CFG_LIMITED_RGB_SETMASK     (1<<CFG_LIMITED_RGB_OFFSET)
   #define CFG_LIMITED_RGB_CLRMASK     (CFG_MISC_GETALL_MASK & ~CFG_LIMITED_RGB_SETMASK)
@@ -207,27 +214,21 @@ typedef struct {
 #define CFG_16BITMODE_GETMASK         (1<<CFG_16BITMODE_OFFSET)
   #define CFG_16BITMODE_SETMASK         (1<<CFG_16BITMODE_OFFSET)
   #define CFG_16BITMODE_CLRMASK         (CFG_MISC_GETALL_MASK & ~CFG_16BITMODE_SETMASK)
-#define CFG_IGRRST_GETMASK          (1<<CFG_IGRRST_OFFSET)
-  #define CFG_IGRRST_SETMASK          (1<<CFG_IGRRST_OFFSET)
-  #define CFG_IGRRST_CLRMASK          (CFG_MISC_GETALL_MASK & ~CFG_IGRRST_SETMASK)
 
 
 // video (set 1)
 #define CFG_VIDEO_OUT_BASE  CFG_SET1_OUT_BASE
 
-#define CFG_GAMMA_OFFSET          28
-#define CFG_HORSHIFT_OFFSET       22
-#define CFG_VERTSHIFT_OFFSET      16
-#define CFG_LINK_HVSCALE_OFFSET   15
-#define CFG_HORSCALE_OFFSET       10
-#define CFG_VERTSCALE_OFFSET       5
+#define CFG_HORSHIFT_OFFSET       26
+#define CFG_VERTSHIFT_OFFSET      20
+#define CFG_LINK_HVSCALE_OFFSET   19
+#define CFG_HORSCALE_OFFSET       14
+#define CFG_VERTSCALE_OFFSET       9
+#define CFG_DEINTER_MODE_OFFSET    3
 #define CFG_INTERP_MODE_OFFSET     1
 #define CFG_PAL_BOXED_MODE_OFFSET  0
 
 
-#define CFG_GAMMA_GETMASK             (0xF<<CFG_GAMMA_OFFSET)
-  #define CFG_GAMMASEL_RSTMASK          (CFG_VIDEO_GETALL_MASK & ~CFG_GAMMA_GETMASK)
-  #define CFG_GAMMA_CLRMASK             (CFG_VIDEO_GETALL_MASK & ~CFG_GAMMA_GETMASK)
 #define CFG_HORSHIFT_GETMASK          (0x3F<<CFG_HORSHIFT_OFFSET)
   #define CFG_HORSHIFT_RSTMASK          (CFG_VIDEO_GETALL_MASK & ~CFG_HORSHIFT_GETMASK)
   #define CFG_HORSHIFT_CLRMASK          (CFG_VIDEO_GETALL_MASK & ~CFG_HORSHIFT_GETMASK)
@@ -243,6 +244,9 @@ typedef struct {
 #define CFG_VERTSCALE_GETMASK         (0x1F<<CFG_VERTSCALE_OFFSET)
   #define CFG_VERTSCALE_RSTMASK         (CFG_VIDEO_GETALL_MASK & ~CFG_VERTSCALE_GETMASK)
   #define CFG_VERTSCALE_CLRMASK         (CFG_VIDEO_GETALL_MASK & ~CFG_VERTSCALE_GETMASK)
+#define CFG_DEINTER_MODE_GETMASK      (0x3<<CFG_DEINTER_MODE_OFFSET)
+  #define CFG_DEINTER_MODE_RSTMASK      (CFG_VIDEO_GETALL_MASK & ~CFG_DEINTER_MODE_GETMASK)
+  #define CFG_DEINTER_MODE_CLRMASK      (CFG_VIDEO_GETALL_MASK & ~CFG_DEINTER_MODE_GETMASK)
 #define CFG_INTERP_MODE_GETMASK       (0x3<<CFG_INTERP_MODE_OFFSET)
   #define CFG_INTERP_MODE_RSTMASK       (CFG_VIDEO_GETALL_MASK & ~CFG_INTERP_MODE_GETMASK)
   #define CFG_INTERP_MODE_CLRMASK       (CFG_VIDEO_GETALL_MASK & ~CFG_INTERP_MODE_GETMASK)
@@ -342,6 +346,8 @@ typedef struct {
 #define CFG_VERTSHIFT_MAX_VALUE    63
 #define CFG_HORSCALE_MAX_VALUE     20
 #define CFG_VERTSCALE_MAX_VALUE    16
+#define CFG_DEINTER_MODE_MAX_VALUE  2
+#define CFG_INTERP_MODE_MAX_VALUE   2
 #define CFG_FORCE5060_MAX_VALUE     2
 #define CFG_RESOLUTION_MAX_VALUE    4
 #define CFG_SLSTR_MAX_VALUE        15
@@ -356,9 +362,9 @@ typedef struct {
 #define CFG_GAMMA_DEFAULTVAL                   5
   #define CFG_GAMMA_DEFAULT_SETMASK             (CFG_GAMMA_DEFAULTVAL << CFG_GAMMA_OFFSET)
 
-#define CFG_MISC_DEFAULT          (CFG_AUDIO_AMP_DEFAULT_SETMASK)
+#define CFG_MISC_DEFAULT          (CFG_AUDIO_AMP_DEFAULT_SETMASK | CFG_GAMMA_DEFAULT_SETMASK)
   #define CFG_MISC_GET_NODEFAULTS   (CFG_SHOWLOGO_GETMASK | CFG_SHOWOSD_GETMASK)
-#define CFG_VIDEO_DEFAULT         (CFG_GAMMA_DEFAULT_SETMASK)
+#define CFG_VIDEO_DEFAULT         0x00000000
   #define CFG_VIDEO_GET_NODEFAULTS  (CFG_VIDEO_GETTIMINGS_MASK)
 #define CFG_LINEX_DEFAULT         0x00000000
   #define CFG_LINEX_GET_NODEFAULTS  0x00000000
@@ -391,7 +397,7 @@ extern config_t show_logo, show_osd, mute_osd_tmp,
                 igr_reset, igr_deblur, igr_16bitmode, pal_awareness;
 extern config_t gamma_lut, limited_rgb, deblur_mode, mode16bit,
                 hor_shift, vert_shift, link_hv_scale, hor_scale, vert_scale,
-                pal_boxed_mode, interpolation_mode;
+                deinterlace_mode, pal_boxed_mode, interpolation_mode;
 extern config_t linex_force_5060, vga_for_480p, low_latency_mode, linex_resolution;
 extern config_t slhyb_str, sl_str, sl_method, sl_id, sl_en;
 extern config_t slhyb_str_480i, sl_str_480i, sl_method_480i, sl_id_480i, sl_en_480i;

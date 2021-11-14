@@ -40,8 +40,8 @@
 
 extern char szText[VD_WIDTH];
 
-extern const char *OffOn[], *Force5060[], *Resolutions[], *InterpModes[], *AdvSL[],
-                  *LinkSL[], *EvenOdd[], *QuickChange[];
+extern const char *OffOn[], *Force5060[], *Resolutions[], *DeInterModes[], *InterpModes[],
+                  *AdvSL[], *LinkSL[], *EvenOdd[], *QuickChange[];
 
 
 // misc
@@ -114,6 +114,28 @@ config_t mute_osd_tmp = {
     }
 };
 
+config_t igr_reset = {
+    .cfg_word = &cfg_data_misc,
+    .cfg_word_offset = CFG_IGRRST_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_IGRRST_SETMASK,
+        .clrflag_mask = CFG_IGRRST_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
+
+config_t gamma_lut = {
+    .cfg_word        = &cfg_data_misc,
+    .cfg_word_offset = CFG_GAMMA_OFFSET,
+    .cfg_type        = NUMVALUE,
+    .value_details   = {
+        .max_value     = CFG_GAMMA_MAX_VALUE,
+        .getvalue_mask = CFG_GAMMA_GETMASK
+    },
+    .val2char_func = &gamma2txt_func
+};
+
 config_t limited_rgb = {
     .cfg_word = &cfg_data_misc,
     .cfg_word_offset = CFG_LIMITED_RGB_OFFSET,
@@ -147,17 +169,6 @@ config_t mode16bit = {
     .val2char_func = &flag2set_func
 };
 
-config_t igr_reset = {
-    .cfg_word = &cfg_data_misc,
-    .cfg_word_offset = CFG_IGRRST_OFFSET,
-    .cfg_type        = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_IGRRST_SETMASK,
-        .clrflag_mask = CFG_IGRRST_CLRMASK
-    },
-    .val2char_func = &flag2set_func
-};
-
 
 // video
 cfg_b32word_t cfg_data_video =
@@ -165,17 +176,6 @@ cfg_b32word_t cfg_data_video =
     .cfg_word_val     = 0x00000000,
     .cfg_ref_word_val = 0x00000000
   };
-
-config_t gamma_lut = {
-    .cfg_word        = &cfg_data_video,
-    .cfg_word_offset = CFG_GAMMA_OFFSET,
-    .cfg_type        = NUMVALUE,
-    .value_details   = {
-        .max_value     = CFG_GAMMA_MAX_VALUE,
-        .getvalue_mask = CFG_GAMMA_GETMASK
-    },
-    .val2char_func = &gamma2txt_func
-};
 
 config_t hor_shift = {
     .cfg_word        = &cfg_data_video,
@@ -232,12 +232,23 @@ config_t vert_scale = {
     .val2char_func = &val2txt_vscale_func
 };
 
+config_t deinterlace_mode = {
+    .cfg_word        = &cfg_data_video,
+    .cfg_word_offset = CFG_DEINTER_MODE_OFFSET,
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_DEINTER_MODE_MAX_VALUE,
+        .getvalue_mask = CFG_DEINTER_MODE_GETMASK
+    },
+    .value_string = &DeInterModes
+};
+
 config_t interpolation_mode = {
     .cfg_word        = &cfg_data_video,
     .cfg_word_offset = CFG_INTERP_MODE_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
-        .max_value     = 1,
+        .max_value     = CFG_INTERP_MODE_MAX_VALUE,
         .getvalue_mask = CFG_INTERP_MODE_GETMASK
     },
     .value_string = &InterpModes

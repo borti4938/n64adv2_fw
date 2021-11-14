@@ -164,13 +164,14 @@ menu_t vicfg1_screen = {
     .overlay = &vicfg1_overlay,
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 5,
+    .number_selections = 6,
     .leaves = {
-        {.id = VICFG1_RESOLUTION_V_OFFSET, .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_res_subscreen},
-        {.id = VICFG1_SCANLINES_V_OFFSET , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_scanline_opt_subscreen},
-        {.id = VICFG1_SCALER_OPT_V_OFFSET, .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_scaling_subscreen},
-        {.id = VICFG1_TIMING_V_OFFSET    , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_timing_subscreen},
-        {.id = VICFG1_PAGE2_V_OFFSET     , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg2_screen}
+        {.id = VICFG1_RESOLUTION_V_OFFSET   , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu      = &vicfg_res_subscreen},
+        {.id = VICFG1_DEINTERLACING_V_OFFSET, .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deinterlace_mode},
+        {.id = VICFG1_SCANLINES_V_OFFSET    , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu      = &vicfg_scanline_opt_subscreen},
+        {.id = VICFG1_SCALER_OPT_V_OFFSET   , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu      = &vicfg_scaling_subscreen},
+        {.id = VICFG1_TIMING_V_OFFSET       , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu      = &vicfg_timing_subscreen},
+        {.id = VICFG1_PAGE2_V_OFFSET        , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu      = &vicfg2_screen}
     }
 };
 
