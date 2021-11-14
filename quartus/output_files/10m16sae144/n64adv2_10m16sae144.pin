@@ -1,0 +1,216 @@
+ -- Copyright (C) 2020  Intel Corporation. All rights reserved.
+ -- Your use of Intel Corporation's design tools, logic functions 
+ -- and other software and tools, and any partner logic 
+ -- functions, and any output files from any of the foregoing 
+ -- (including device programming or simulation files), and any 
+ -- associated documentation or information are expressly subject 
+ -- to the terms and conditions of the Intel Program License 
+ -- Subscription Agreement, the Intel Quartus Prime License Agreement,
+ -- the Intel FPGA IP License Agreement, or other applicable license
+ -- agreement, including, without limitation, that your use is for
+ -- the sole purpose of programming logic devices manufactured by
+ -- Intel and sold by Intel or its authorized distributors.  Please
+ -- refer to the applicable agreement for further details, at
+ -- https://fpgasoftware.intel.com/eula.
+ -- 
+ -- This is a Quartus Prime output file. It is for reporting purposes only, and is
+ -- not intended for use as a Quartus Prime input file. This file cannot be used
+ -- to make Quartus Prime pin assignments - for instructions on how to make pin
+ -- assignments, please see Quartus Prime help.
+ ---------------------------------------------------------------------------------
+
+
+
+ ---------------------------------------------------------------------------------
+ -- NC            : No Connect. This pin has no internal connection to the device.
+ -- DNU           : Do Not Use. This pin MUST NOT be connected.
+ -- VCCINT        : Dedicated power pin, which MUST be connected to VCC  (1.2V).
+ -- VCCIO         : Dedicated power pin, which MUST be connected to VCC
+ --                 of its bank.
+ --                  Bank 1A:       3.3V
+ --                  Bank 1B:       3.3V
+ --                  Bank 2:       2.5V
+ --                  Bank 3:       2.5V
+ --                  Bank 4:       2.5V
+ --                  Bank 5:       3.3V
+ --                  Bank 6:       2.5V
+ --                  Bank 7:       2.5V
+ --                  Bank 8:       3.3V
+ -- GND           : Dedicated ground pin. Dedicated GND pins MUST be connected to GND.
+ --                  It can also be used to report unused dedicated pins. The connection
+ --                  on the board for unused dedicated pins depends on whether this will
+ --                  be used in a future design. One example is device migration. When
+ --                  using device migration, refer to the device pin-tables. If it is a
+ --                  GND pin in the pin table or if it will not be used in a future design
+ --                  for another purpose the it MUST be connected to GND. If it is an unused
+ --                  dedicated pin, then it can be connected to a valid signal on the board
+ --                  (low, high, or toggling) if that signal is required for a different
+ --                  revision of the design.
+ -- GND+          : Unused input pin. It can also be used to report unused dual-purpose pins.
+ --                  This pin should be connected to GND. It may also be connected  to a
+ --                  valid signal  on the board  (low, high, or toggling)  if that signal
+ --                  is required for a different revision of the design.
+ -- GND*          : Unused  I/O  pin. Connect each pin marked GND* directly to GND
+ --                  or leave it unconnected.
+ -- RESERVED      : Unused I/O pin, which MUST be left unconnected.
+ -- RESERVED_INPUT    : Pin is tri-stated and should be connected to the board.
+ -- RESERVED_INPUT_WITH_WEAK_PULLUP    : Pin is tri-stated with internal weak pull-up resistor.
+ -- RESERVED_INPUT_WITH_BUS_HOLD       : Pin is tri-stated with bus-hold circuitry.
+ -- RESERVED_OUTPUT_DRIVEN_HIGH        : Pin is output driven high.
+ ---------------------------------------------------------------------------------
+
+
+
+ ---------------------------------------------------------------------------------
+ -- Pin directions (input, output or bidir) are based on device operating in user mode.
+ ---------------------------------------------------------------------------------
+
+Quartus Prime Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
+CHIP  "n64adv2_10m16sae144"  ASSIGNED TO AN: 10M16SAE144C8G
+
+Pin Name/Usage               : Location  : Dir.   : I/O Standard      : Voltage : I/O Bank  : User Assignment
+-------------------------------------------------------------------------------------------------------------
+VCC_ONE                      : 1         : power  :                   : 3.0V/3.3V :           :                
+VCCA6                        : 2         : power  :                   : 3.0V/3.3V :           :                
+ANAIN1                       : 3         :        :                   :         :           :                
+REFGND                       : 4         :        :                   :         :           :                
+ADC_VREF                     : 5         :        :                   :         :           :                
+N64_nRST_io                  : 6         : bidir  : 3.3-V LVTTL       :         : 1A        : Y              
+PCB_ID_i[0]                  : 7         : input  : 3.3-V LVTTL       :         : 1A        : Y              
+PCB_ID_i[1]                  : 8         : input  : 3.3-V LVTTL       :         : 1A        : Y              
+VCCIO1A                      : 9         : power  :                   : 3.3V    : 1A        :                
+LED_o[0]                     : 10        : output : 3.3-V LVTTL       :         : 1A        : Y              
+LED_o[1]                     : 11        : output : 3.3-V LVTTL       :         : 1A        : Y              
+INT_SI5356                   : 12        : input  : 3.3-V LVTTL       :         : 1A        : Y              
+INT_ADV7513                  : 13        : input  : 3.3-V LVTTL       :         : 1A        : Y              
+I2C_SCL                      : 14        : bidir  : 3.3-V LVTTL       :         : 1A        : Y              
+I2C_SDA                      : 15        : bidir  : 3.3-V LVTTL       :         : 1B        : Y              
+altera_reserved_tms          : 16        : input  : 3.3 V Schmitt Trigger :         : 1B        : N              
+N64_CLK_o                    : 17        : output : 3.3-V LVTTL       :         : 1B        : Y              
+altera_reserved_tck          : 18        : input  : 3.3 V Schmitt Trigger :         : 1B        : N              
+altera_reserved_tdi          : 19        : input  : 3.3 V Schmitt Trigger :         : 1B        : N              
+altera_reserved_tdo          : 20        : output : 3.3-V LVTTL       :         : 1B        : N              
+ALRCLK_o                     : 21        : output : 3.3-V LVTTL       :         : 1B        : Y              
+ASCLK_o                      : 22        : output : 3.3-V LVTTL       :         : 1B        : Y              
+VCCIO1B                      : 23        : power  :                   : 3.3V    : 1B        :                
+ASDATA_o                     : 24        : output : 3.3-V LVTTL       :         : 1B        : Y              
+ASPDIF_o                     : 25        : output : 3.3-V LVTTL       :         : 1B        : Y              
+AMCLK_i                      : 26        : input  : 2.5 V             :         : 2         : Y              
+SYS_CLK_i                    : 27        : input  : 2.5 V             :         : 2         : Y              
+HDMI_CLKmain_i               : 28        : input  : 2.5 V             :         : 2         : Y              
+HDMI_CLKsub_i                : 29        : input  : 2.5 V             :         : 2         : Y              
+HSYNC_o                      : 30        : output : 2.5 V             :         : 2         : Y              
+VCCIO2                       : 31        : power  :                   : 2.5V    : 2         :                
+HDMI_CLK_o                   : 32        : output : 2.5 V             :         : 2         : Y              
+VSYNC_o                      : 33        : output : 2.5 V             :         : 2         : Y              
+VCCA2                        : 34        : power  :                   : 3.0V/3.3V :           :                
+VCCA1                        : 35        : power  :                   : 3.0V/3.3V :           :                
+VCC_ONE                      : 36        : power  :                   : 3.0V/3.3V :           :                
+VCC_ONE                      : 37        : power  :                   : 3.0V/3.3V :           :                
+DE_o                         : 38        : output : 2.5 V             :         : 3         : Y              
+VD_o[0]                      : 39        : output : 2.5 V             :         : 3         : Y              
+VCCIO3                       : 40        : power  :                   : 2.5V    : 3         :                
+VD_o[1]                      : 41        : output : 2.5 V             :         : 3         : Y              
+GND                          : 42        : gnd    :                   :         :           :                
+VD_o[2]                      : 43        : output : 2.5 V             :         : 3         : Y              
+VD_o[3]                      : 44        : output : 2.5 V             :         : 3         : Y              
+VD_o[4]                      : 45        : output : 2.5 V             :         : 3         : Y              
+VD_o[5]                      : 46        : output : 2.5 V             :         : 3         : Y              
+VD_o[6]                      : 47        : output : 2.5 V             :         : 3         : Y              
+VD_o[7]                      : 48        : output : 2.5 V             :         : 3         : Y              
+VCCIO3                       : 49        : power  :                   : 2.5V    : 3         :                
+VD_o[8]                      : 50        : output : 2.5 V             :         : 3         : Y              
+VCC_ONE                      : 51        : power  :                   : 3.0V/3.3V :           :                
+VD_o[9]                      : 52        : output : 2.5 V             :         : 3         : Y              
+GND                          : 53        : gnd    :                   :         :           :                
+VD_o[11]                     : 54        : output : 2.5 V             :         : 3         : Y              
+VD_o[10]                     : 55        : output : 2.5 V             :         : 3         : Y              
+VD_o[13]                     : 56        : output : 2.5 V             :         : 3         : Y              
+VD_o[12]                     : 57        : output : 2.5 V             :         : 3         : Y              
+VD_o[14]                     : 58        : output : 2.5 V             :         : 3         : Y              
+VD_o[15]                     : 59        : output : 2.5 V             :         : 3         : Y              
+VD_o[16]                     : 60        : output : 2.5 V             :         : 3         : Y              
+VD_o[17]                     : 61        : output : 2.5 V             :         : 4         : Y              
+VD_o[18]                     : 62        : output : 2.5 V             :         : 4         : Y              
+GND                          : 63        : gnd    :                   :         :           :                
+VD_o[19]                     : 64        : output : 2.5 V             :         : 4         : Y              
+VD_o[20]                     : 65        : output : 2.5 V             :         : 4         : Y              
+VD_o[21]                     : 66        : output : 2.5 V             :         : 4         : Y              
+VCCIO4                       : 67        : power  :                   : 2.5V    : 4         :                
+GND                          : 68        : gnd    :                   :         :           :                
+VD_o[22]                     : 69        : output : 2.5 V             :         : 4         : Y              
+VD_o[23]                     : 70        : output : 2.5 V             :         : 4         : Y              
+VCCA5                        : 71        : power  :                   : 3.0V/3.3V :           :                
+VCC_ONE                      : 72        : power  :                   : 3.0V/3.3V :           :                
+VCC_ONE                      : 73        : power  :                   : 3.0V/3.3V :           :                
+DRAM_DQ[0]                   : 74        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[1]                   : 75        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[2]                   : 76        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[3]                   : 77        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[11]                  : 78        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[10]                  : 79        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[9]                   : 80        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[8]                   : 81        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+VCCIO5                       : 82        : power  :                   : 3.3V    : 5         :                
+GND                          : 83        : gnd    :                   :         :           :                
+DRAM_DQ[4]                   : 84        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[5]                   : 85        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[6]                   : 86        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQ[7]                   : 87        : bidir  : 3.3-V LVTTL       :         : 5         : Y              
+DRAM_DQM[1]                  : 88        : output : 2.5 V             :         : 6         : Y              
+DRAM_DQM[0]                  : 89        : output : 2.5 V             :         : 6         : Y              
+DRAM_nWE                     : 90        : output : 2.5 V             :         : 6         : Y              
+DRAM_nCAS                    : 91        : output : 2.5 V             :         : 6         : Y              
+DRAM_nRAS                    : 92        : output : 2.5 V             :         : 6         : Y              
+DRAM_CKE                     : 93        : output : 2.5 V             :         : 6         : Y              
+VCCIO6                       : 94        : power  :                   : 2.5V    : 6         :                
+GND                          : 95        : gnd    :                   :         :           :                
+DRAM_ADDR[11]                : 96        : output : 2.5 V             :         : 6         : Y              
+DRAM_ADDR[9]                 : 97        : output : 2.5 V             :         : 6         : Y              
+DRAM_CLK                     : 98        : output : 2.5 V             :         : 6         : Y              
+DRAM_ADDR[7]                 : 99        : output : 2.5 V             :         : 6         : Y              
+DRAM_ADDR[8]                 : 100       : output : 2.5 V             :         : 6         : Y              
+DRAM_BA[1]                   : 101       : output : 2.5 V             :         : 6         : Y              
+DRAM_BA[0]                   : 102       : output : 2.5 V             :         : 6         : Y              
+VCCIO6                       : 103       : power  :                   : 2.5V    : 6         :                
+GND                          : 104       : gnd    :                   :         :           :                
+DRAM_ADDR[10]                : 105       : output : 2.5 V             :         : 6         : Y              
+DRAM_ADDR[0]                 : 106       : output : 2.5 V             :         : 6         : Y              
+VCCA3                        : 107       : power  :                   : 3.0V/3.3V :           :                
+VCC_ONE                      : 108       : power  :                   : 3.0V/3.3V :           :                
+VCC_ONE                      : 109       : power  :                   : 3.0V/3.3V :           :                
+DRAM_ADDR[1]                 : 110       : output : 2.5 V             :         : 7         : Y              
+DRAM_ADDR[2]                 : 111       : output : 2.5 V             :         : 7         : Y              
+DRAM_ADDR[3]                 : 112       : output : 2.5 V             :         : 7         : Y              
+DRAM_ADDR[6]                 : 113       : output : 2.5 V             :         : 7         : Y              
+DRAM_ADDR[5]                 : 114       : output : 2.5 V             :         : 7         : Y              
+VCC_ONE                      : 115       : power  :                   : 3.0V/3.3V :           :                
+GND                          : 116       : gnd    :                   :         :           :                
+VCCIO7                       : 117       : power  :                   : 2.5V    : 7         :                
+DRAM_ADDR[4]                 : 118       : output : 2.5 V             :         : 7         : Y              
+RESERVED_INPUT_WITH_WEAK_PULLUP : 119       :        :                   :         : 7         :                
+CTRL_i                       : 120       : input  : 3.3-V LVTTL       :         : 8         : Y              
+ASCLK_i                      : 121       : input  : 3.3-V LVTTL       :         : 8         : Y              
+ASDATA_i                     : 122       : input  : 3.3-V LVTTL       :         : 8         : Y              
+ALRCLK_i                     : 123       : input  : 3.3-V LVTTL       :         : 8         : Y              
+VD_i[0]                      : 124       : input  : 3.3-V LVTTL       :         : 8         : Y              
+GND                          : 125       : gnd    :                   :         :           :                
+~ALTERA_CONFIG_SEL~ / RESERVED_INPUT : 126       : input  : 3.3-V LVTTL       :         : 8         : N              
+VD_i[1]                      : 127       : input  : 3.3-V LVTTL       :         : 8         : Y              
+VCCIO8                       : 128       : power  :                   : 3.3V    : 8         :                
+RESERVED_INPUT_WITH_WEAK_PULLUP : 129       :        :                   :         : 8         :                
+N64_CLK_i                    : 130       : input  : 3.3-V LVTTL       :         : 8         : Y              
+nVDSYNC_i                    : 131       : input  : 3.3-V LVTTL       :         : 8         : Y              
+VD_i[6]                      : 132       : input  : 3.3-V LVTTL       :         : 8         : Y              
+GND                          : 133       : gnd    :                   :         :           :                
+VD_i[5]                      : 134       : input  : 3.3-V LVTTL       :         : 8         : Y              
+VD_i[4]                      : 135       : input  : 3.3-V LVTTL       :         : 8         : Y              
+RESERVED_INPUT_WITH_WEAK_PULLUP : 136       :        :                   :         : 8         :                
+GND                          : 137       : gnd    :                   :         :           :                
+RESERVED_INPUT_WITH_WEAK_PULLUP : 138       :        :                   :         : 8         :                
+VCCIO8                       : 139       : power  :                   : 3.3V    : 8         :                
+VD_i[3]                      : 140       : input  : 3.3-V LVTTL       :         : 8         : Y              
+VD_i[2]                      : 141       : input  : 3.3-V LVTTL       :         : 8         : Y              
+GND                          : 142       : gnd    :                   :         :           :                
+VCCA4                        : 143       : power  :                   : 3.0V/3.3V :           :                
+VCC_ONE                      : 144       : power  :                   : 3.0V/3.3V :           :                

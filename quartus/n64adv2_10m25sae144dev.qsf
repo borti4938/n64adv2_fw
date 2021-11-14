@@ -1,0 +1,346 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2020  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and any partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel FPGA IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Intel and sold by Intel or its authorized distributors.  Please
+# refer to the applicable agreement for further details, at
+# https://fpgasoftware.intel.com/eula.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
+# Date created = 17:39:13  March 01, 2021
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		n64adv2_10m25sae144_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus Prime software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "MAX 10"
+set_global_assignment -name DEVICE 10M25SAE144C8G
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:39:13  MARCH 01, 2021"
+set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ENABLE_OCT_DONE OFF
+set_global_assignment -name EXTERNAL_FLASH_FALLBACK_ADDRESS 00000000
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE IMAGE WITH ERAM"
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN ON
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+
+
+
+## N64 Video Input
+## ===============
+set_location_assignment PIN_130 -to N64_CLK_i
+set_location_assignment PIN_6 -to N64_nRST_io
+set_location_assignment PIN_131 -to nVDSYNC_i
+set_location_assignment PIN_132 -to VD_i[6]
+set_location_assignment PIN_134 -to VD_i[5]
+set_location_assignment PIN_135 -to VD_i[4]
+set_location_assignment PIN_140 -to VD_i[3]
+set_location_assignment PIN_141 -to VD_i[2]
+set_location_assignment PIN_127 -to VD_i[1]
+set_location_assignment PIN_124 -to VD_i[0]
+
+
+
+## N64 Audio Input
+## ===============
+set_location_assignment PIN_26 -to AMCLK_i
+set_location_assignment PIN_121 -to ASCLK_i
+set_location_assignment PIN_122 -to ASDATA_i
+set_location_assignment PIN_123 -to ALRCLK_i
+
+set_instance_assignment -name IO_STANDARD "2.5 V" -to AMCLK_i
+
+
+
+## System, Controller and Reset
+## ============================
+set_location_assignment PIN_27 -to SYS_CLK_i
+set_location_assignment PIN_120 -to CTRL_i
+set_location_assignment PIN_17 -to N64_CLK_o
+set_location_assignment PIN_29 -to HDMI_CLKsub_i
+set_location_assignment PIN_28 -to HDMI_CLKmain_i
+
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SYS_CLK_i
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HDMI_CLKsub_i
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HDMI_CLKmain_i
+
+
+## Video Output to ADV7513
+## =======================
+set_location_assignment PIN_32 -to HDMI_CLK_o
+set_location_assignment PIN_33 -to VSYNC_o
+set_location_assignment PIN_30 -to HSYNC_o
+set_location_assignment PIN_38 -to DE_o
+set_location_assignment PIN_70 -to VD_o[23]
+set_location_assignment PIN_69 -to VD_o[22]
+set_location_assignment PIN_66 -to VD_o[21]
+set_location_assignment PIN_65 -to VD_o[20]
+set_location_assignment PIN_64 -to VD_o[19]
+set_location_assignment PIN_62 -to VD_o[18]
+set_location_assignment PIN_61 -to VD_o[17]
+set_location_assignment PIN_60 -to VD_o[16]
+set_location_assignment PIN_59 -to VD_o[15]
+set_location_assignment PIN_58 -to VD_o[14]
+set_location_assignment PIN_56 -to VD_o[13]
+set_location_assignment PIN_57 -to VD_o[12]
+set_location_assignment PIN_54 -to VD_o[11]
+set_location_assignment PIN_55 -to VD_o[10]
+set_location_assignment PIN_52 -to VD_o[9]
+set_location_assignment PIN_50 -to VD_o[8]
+set_location_assignment PIN_48 -to VD_o[7]
+set_location_assignment PIN_47 -to VD_o[6]
+set_location_assignment PIN_46 -to VD_o[5]
+set_location_assignment PIN_45 -to VD_o[4]
+set_location_assignment PIN_44 -to VD_o[3]
+set_location_assignment PIN_43 -to VD_o[2]
+set_location_assignment PIN_41 -to VD_o[1]
+set_location_assignment PIN_39 -to VD_o[0]
+
+
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HDMI_CLK_o
+set_instance_assignment -name IO_STANDARD "2.5 V" -to VSYNC_o
+set_instance_assignment -name IO_STANDARD "2.5 V" -to HSYNC_o
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DE_o
+set_instance_assignment -name IO_STANDARD "2.5 V" -to VD_o
+
+set_instance_assignment -name SLEW_RATE 2 -to HDMI_CLK_o
+set_instance_assignment -name SLEW_RATE 2 -to VSYNC_o
+set_instance_assignment -name SLEW_RATE 2 -to HSYNC_o
+set_instance_assignment -name SLEW_RATE 2 -to DE_o
+set_instance_assignment -name SLEW_RATE 2 -to VD_o
+
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to HDMI_CLK_o
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to VSYNC_o
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to HSYNC_o
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DE_o
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to VD_o
+
+
+
+## I2S audio output for ADV7513
+## ============================
+set_location_assignment PIN_25 -to ASPDIF_o
+set_location_assignment PIN_22 -to ASCLK_o
+set_location_assignment PIN_21 -to ALRCLK_o
+set_location_assignment PIN_24 -to ASDATA_o
+
+
+## I2C, Int
+## ========
+set_location_assignment PIN_15 -to I2C_SDA
+set_location_assignment PIN_14 -to I2C_SCL
+set_location_assignment PIN_12 -to INT_SI5356
+set_location_assignment PIN_13 -to INT_ADV7513
+
+
+
+## SDRAM
+## =====
+set_location_assignment PIN_98 -to DRAM_CLK
+set_location_assignment PIN_93 -to DRAM_CKE
+set_location_assignment PIN_92 -to DRAM_nRAS
+set_location_assignment PIN_90 -to DRAM_nWE
+set_location_assignment PIN_91 -to DRAM_nCAS
+set_location_assignment PIN_101 -to DRAM_BA[1]
+set_location_assignment PIN_102 -to DRAM_BA[0]
+set_location_assignment PIN_96 -to DRAM_ADDR[11]
+set_location_assignment PIN_105 -to DRAM_ADDR[10]
+set_location_assignment PIN_97 -to DRAM_ADDR[9]
+set_location_assignment PIN_100 -to DRAM_ADDR[8]
+set_location_assignment PIN_99 -to DRAM_ADDR[7]
+set_location_assignment PIN_113 -to DRAM_ADDR[6]
+set_location_assignment PIN_114 -to DRAM_ADDR[5]
+set_location_assignment PIN_118 -to DRAM_ADDR[4]
+set_location_assignment PIN_112 -to DRAM_ADDR[3]
+set_location_assignment PIN_111 -to DRAM_ADDR[2]
+set_location_assignment PIN_110 -to DRAM_ADDR[1]
+set_location_assignment PIN_106 -to DRAM_ADDR[0]
+set_location_assignment PIN_78 -to DRAM_DQ[11]
+set_location_assignment PIN_79 -to DRAM_DQ[10]
+set_location_assignment PIN_80 -to DRAM_DQ[9]
+set_location_assignment PIN_81 -to DRAM_DQ[8]
+set_location_assignment PIN_87 -to DRAM_DQ[7]
+set_location_assignment PIN_86 -to DRAM_DQ[6]
+set_location_assignment PIN_85 -to DRAM_DQ[5]
+set_location_assignment PIN_84 -to DRAM_DQ[4]
+set_location_assignment PIN_77 -to DRAM_DQ[3]
+set_location_assignment PIN_76 -to DRAM_DQ[2]
+set_location_assignment PIN_75 -to DRAM_DQ[1]
+set_location_assignment PIN_74 -to DRAM_DQ[0]
+set_location_assignment PIN_88 -to DRAM_DQM[1]
+set_location_assignment PIN_89 -to DRAM_DQM[0]
+
+
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DRAM_CLK
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DRAM_CKE
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DRAM_nWE
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DRAM_nRAS
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DRAM_nCAS
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DRAM_BA
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DRAM_ADDR
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DRAM_DQM
+
+
+set_instance_assignment -name SLEW_RATE 2 -to DRAM_CLK
+set_instance_assignment -name SLEW_RATE 2 -to DRAM_CKE
+set_instance_assignment -name SLEW_RATE 2 -to DRAM_nWE
+set_instance_assignment -name SLEW_RATE 2 -to DRAM_nRAS
+set_instance_assignment -name SLEW_RATE 2 -to DRAM_nCAS
+set_instance_assignment -name SLEW_RATE 2 -to DRAM_BA
+set_instance_assignment -name SLEW_RATE 2 -to DRAM_ADDR
+set_instance_assignment -name SLEW_RATE 2 -to DRAM_DQM
+
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_CLK
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_CKE
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_nWE
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_nRAS
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_nCAS
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_BA
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_ADDR
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_DQ
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_DQM
+
+#set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to DRAM_DQ
+
+
+## LED outs and extended data for misc purpouses
+## =============================================
+set_location_assignment PIN_10 -to LED_o[0]
+set_location_assignment PIN_11 -to LED_o[1]
+
+set_location_assignment PIN_8 -to PCB_ID_i[1]
+set_location_assignment PIN_7 -to PCB_ID_i[0]
+
+
+## Files
+## =====
+set_global_assignment -name TOP_LEVEL_ENTITY n64adv2_top
+
+#vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../vh/n64adv_vparams.vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../vh/n64adv_cparams.vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../vh/n64adv2_config.vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../vh/videotimings.vh
+
+#ip
+set_global_assignment -name QIP_FILE ../ip/system_pll.qip
+set_global_assignment -name QSYS_FILE ../ip/altclkctrl.qsys
+set_global_assignment -name QIP_FILE ../ip/altclkctrl/synthesis/altclkctrl.qip
+set_global_assignment -name QIP_FILE ../ip/chip_id.qip
+set_global_assignment -name SIP_FILE ../ip/chip_id.sip
+set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
+set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
+set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio.qip
+set_global_assignment -name SIP_FILE ../ip/fir_2ch_audio.sip
+
+#rtl
+set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_top.v
+
+set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_clk_n_rst_hk.v
+set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_controller.v
+set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_ppu_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_apu_top.v
+
+set_global_assignment -name VERILOG_FILE ../rtl/misc/reset_generator.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/register_sync.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/register_sync_2.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/ram2port.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/font_rom.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/gamma_table_v2.v
+
+
+set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64_vinfo_ext.v
+set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64a_vdemux.v
+set_global_assignment -name VERILOG_FILE ../rtl/ppu/gamma_module_v2.v
+set_global_assignment -name VERILOG_FILE ../rtl/ppu/scaler.v
+set_global_assignment -name VERILOG_FILE ../rtl/ppu/sdram_ctrl.v
+set_global_assignment -name VERILOG_FILE ../rtl/ppu/polyphase_2step_fir.v
+set_global_assignment -name VERILOG_FILE ../rtl/ppu/scanline_emu.v
+set_global_assignment -name VERILOG_FILE ../rtl/ppu/osd_injection.v
+
+set_global_assignment -name VERILOG_FILE ../rtl/apu/n64_sample_i2s.v
+set_global_assignment -name VERILOG_FILE ../rtl/apu/i2s_leftjustified_tx.v
+set_global_assignment -name VERILOG_FILE ../rtl/apu/spdif_tx.v
+
+#sdc
+set_global_assignment -name SDC_FILE ../sdc/n64adv2.sdc
+
+#output directory and programming
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files/10m25sae144dev
+
+
+
+## Assignments for Synthesis and Fitter
+## ====================================
+
+set_instance_assignment -name GLOBAL_SIGNAL GLOBAL_CLOCK -to N64_CLK_i
+
+#set_instance_assignment -name FAST_INPUT_REGISTER ON -to nVDSYNC_L
+#set_instance_assignment -name FAST_INPUT_REGISTER ON -to VD_L*
+
+#set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to n64adv2_ppu_u|scaler_u|sdram_ctrl_u|cke_r
+#set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to n64adv2_ppu_u|scaler_u|sdram_ctrl_u|dqm_r
+#set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to n64adv2_ppu_u|scaler_u|sdram_ctrl_u|command_r
+#set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to n64adv2_ppu_u|scaler_u|sdram_ctrl_u|bank_r
+#set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to n64adv2_ppu_u|scaler_u|sdram_ctrl_u|addr_r
+#set_instance_assignment -name FAST_INPUT_REGISTER ON -to n64adv2_ppu_u|scaler_u|sdram_ctrl_u|rd_data_r
+#set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to n64adv2_ppu_u|scaler_u|sdram_ctrl_u|wr_data_r
+#set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to n64adv2_ppu_u|scaler_u|sdram_ctrl_u|oe_data_r
+
+set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
+set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
+set_global_assignment -name ALLOW_REGISTER_RETIMING OFF
+
+set_global_assignment -name SEED 1
+
+#set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+#set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+#set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
+
+#set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+
+
+
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
+set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "50 %"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
+set_global_assignment -name FORCE_CONFIGURATION_VCCIO ON
+set_global_assignment -name VCCA_USER_VOLTAGE 3.3V
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
