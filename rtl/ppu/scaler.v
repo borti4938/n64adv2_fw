@@ -92,6 +92,8 @@ localparam hpos_width = $clog2(`ACTIVE_PIXEL_PER_LINE);
 localparam pre_lines_ntsc = `TOTAL_LINES_NTSC_LX1/4;
 localparam pre_lines_pal  = `TOTAL_LINES_PAL_LX1/4;
 
+localparam FILT_AX_SHARP_TH = 8'hC0;
+
 localparam ST_SDRAM_WAIT      = 3'b000; // wait for new line to begin (FIFO is already flushed)
 localparam ST_SDRAM_FIFO2RAM0 = 3'b010; // prepare first FIFO element into SDRAM
 localparam ST_SDRAM_FIFO2RAM1 = 3'b011; // write frist FIFO element into SDRAM
@@ -166,8 +168,9 @@ wire wren_slbuf_p0, wren_slbuf_p1, wren_slbuf_p2;
 wire rden_slbuf_cmb, rden_slbuf_p0, rden_slbuf_p1, rden_slbuf_p2;
 wire [`VDATA_O_CO_SLICE] rd_vdata_slbuf_p0, rd_vdata_slbuf_p1, rd_vdata_slbuf_p2, rd_vdata_slbuf, rd_vdata_next_slbuf;
 
-wire [7:0] pix_v_a0_current_w, pix_v_a1_current_w;
-wire [1:0] fir_v_calcopcode_w;
+wire [7:0] pix_v_a0_current_w, pix_v_a1_current_w, pix_h_a0_current_w, pix_h_a1_current_w;
+wire pix_v_bypass_z0, pix_v_bypass_z1, pix_h_bypass_z0, pix_h_bypass_z1;
+wire [1:0] fir_v_calcopcode_w, fir_h_calcopcode_w;
 
 wire [color_width_o-1:0] red_v_interp_out, gr_v_interp_out, bl_v_interp_out;
 wire [color_width_o-1:0] red_h_interp_out, gr_h_interp_out, bl_h_interp_out;
@@ -475,26 +478,21 @@ assign rd_vdata_next_slbuf = (rdpage_slbuf_cmb == 2'b00) ? rd_vdata_slbuf_p0 :
 
 assign pix_v_a0_current_w = pix_v_a0_current;
 assign pix_v_a1_current_w = ~pix_v_a0_current + 8'h01;
-//assign fir_v_calcopcode_w[1] = pix_v_bypass_z1_current | pix_v_bypass_z0_current;
-//assign fir_v_calcopcode_w[0] = pix_v_bypass_z1_current;
 
-localparam FILT_AX_TH = 8'hC0;
+assign pix_v_bypass_z1 = (!video_interpolation_mode_i[1] & (pix_v_a1_current_w > FILT_AX_SHARP_TH)) | pix_v_bypass_z1_current;
+assign pix_v_bypass_z0 = (!video_interpolation_mode_i[1] & (pix_v_a0_current_w > FILT_AX_SHARP_TH)) | pix_v_bypass_z0_current;
 
-wire pix_v_bypass_z1_new = pix_v_a1_current_w > FILT_AX_TH | pix_v_bypass_z1_current;
-wire pix_v_bypass_z0_new = pix_v_a0_current_w > FILT_AX_TH | pix_v_bypass_z0_current;
+assign fir_v_calcopcode_w[1] = pix_v_bypass_z1 | pix_v_bypass_z0;
+assign fir_v_calcopcode_w[0] = pix_v_bypass_z1;
 
-assign fir_v_calcopcode_w[1] = pix_v_bypass_z1_new | pix_v_bypass_z0_new;
-assign fir_v_calcopcode_w[0] = pix_v_bypass_z1_new;
+assign pix_h_a0_current_w = pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)*8-1:(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1)*8];
+assign pix_h_a1_current_w = ~pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)*8-1:(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1)*8] + 8'h01;
 
-wire [7:0] pix_h_a0_current_w = pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)*8-1:(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1)*8];
-wire [7:0] pix_h_a1_current_w = ~pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)*8-1:(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1)*8] + 8'h01;
+assign pix_h_bypass_z1 = (!video_interpolation_mode_i[1] & (pix_h_a1_current_w > FILT_AX_SHARP_TH)) & !pix_h_bypass_z0_current[Videogen_Pipeline_Length-5];
+assign pix_h_bypass_z0 = (!video_interpolation_mode_i[1] & (pix_h_a0_current_w > FILT_AX_SHARP_TH)) |  pix_h_bypass_z0_current[Videogen_Pipeline_Length-5];
 
-wire pix_h_bypass_z1_new = pix_h_a1_current_w > FILT_AX_TH & ~pix_h_bypass_z0_current[Videogen_Pipeline_Length-5];
-wire pix_h_bypass_z0_new = pix_h_a0_current_w > FILT_AX_TH | pix_h_bypass_z0_current[Videogen_Pipeline_Length-5];
-
-wire [1:0] fir_h_calcopcode_w;
-assign fir_h_calcopcode_w[1] = pix_h_bypass_z1_new | pix_h_bypass_z0_new;
-assign fir_h_calcopcode_w[0] = pix_h_bypass_z1_new;
+assign fir_h_calcopcode_w[1] = pix_h_bypass_z1 | pix_h_bypass_z0;
+assign fir_h_calcopcode_w[0] = pix_h_bypass_z1;
 
 polyphase_2step_fir v_interpolate_red_u (
   .CLK_i(VCLK_o),
@@ -513,7 +511,6 @@ polyphase_2step_fir h_interpolate_red_u (
   .CLK_i(VCLK_o),
   .nRST_i(nRST_o),
   .fir_inopcode_i(3'b001),
-//  .fir_calcopcode_i({pix_h_bypass_z0_current[Videogen_Pipeline_Length-5],1'b0}),
   .fir_calcopcode_i(fir_h_calcopcode_w),
   .fir_data_i(red_v_interp_out),
   .coeff_a0_i(pix_h_a0_current_w),
@@ -540,7 +537,6 @@ polyphase_2step_fir h_interpolate_gr_u (
   .CLK_i(VCLK_o),
   .nRST_i(nRST_o),
   .fir_inopcode_i(3'b001),
-//  .fir_calcopcode_i({pix_h_bypass_z0_current[Videogen_Pipeline_Length-5],1'b0}),
   .fir_calcopcode_i(fir_h_calcopcode_w),
   .fir_data_i(gr_v_interp_out),
   .coeff_a0_i(pix_h_a0_current_w),
@@ -567,7 +563,6 @@ polyphase_2step_fir h_interpolate_bl_u (
   .CLK_i(VCLK_o),
   .nRST_i(nRST_o),
   .fir_inopcode_i(3'b001),
-//  .fir_calcopcode_i({pix_h_bypass_z0_current[Videogen_Pipeline_Length-5],1'b0}),
   .fir_calcopcode_i(fir_h_calcopcode_w),
   .fir_data_i(bl_v_interp_out),
   .coeff_a0_i(pix_h_a0_current_w),
