@@ -41,9 +41,9 @@
   //    [15: 8] {(4bits reserve),show_osd_logo,show_osd,mute_osd,igr for reset}
   //    [ 7: 0] {(1bit reserve),gamma (4bits),limited RGB,VI-DeBlur,16bit mode}
   //  wire [31:0] SysConfigSet1;
-  //    [31:20] {LineX H-Shift (6bits), LineX V-Shift (6bits)}
-  //    [19: 9] {Link HV scale (1bit), LineX H-Scale (5bits), LineX V-Scale (5bits)}
-  //    [ 8: 0] {(4bits reserve),De-Interlace Mode (2 bits),Interpolation Mode (2 bits), PAL boxed mode (1 bit)}
+  //    [31:22] {LineX H-Shift (5bits), LineX V-Shift (5bits)}
+  //    [21:11] {Link HV scale (1bit), LineX H-Scale (5bits), LineX V-Scale (5bits)}
+  //    [10: 0] {(6bits reserve),De-Interlace Mode (2 bits),Interpolation Mode (2 bits), PAL boxed mode (1 bit)}
   //  wire [31:0] SysConfigSet0;
   //    [31:25] Resolution: {Force 50Hz/60Hz (2bits), UseVGAfor480p (1bit), LowLatencyMode (1bit),TargetResolution (3bits)}
   //    [24:13] SL 240p:    {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_En}
@@ -74,11 +74,11 @@
   `define n16bit_mode_bit                0 + `SysConfigSet2_Offset
 
   `define SysConfigSet1_Offset      32
-  `define hshift_slice              31 + `SysConfigSet1_Offset : 26 + `SysConfigSet1_Offset
-  `define vshift_slice              25 + `SysConfigSet1_Offset : 20 + `SysConfigSet1_Offset
-  `define link_hv_scale_bit         19 + `SysConfigSet1_Offset
-  `define hscale_slice              18 + `SysConfigSet1_Offset : 14 + `SysConfigSet1_Offset
-  `define vscale_slice              13 + `SysConfigSet1_Offset :  9 + `SysConfigSet1_Offset
+  `define hshift_slice              31 + `SysConfigSet1_Offset : 27 + `SysConfigSet1_Offset
+  `define vshift_slice              26 + `SysConfigSet1_Offset : 22 + `SysConfigSet1_Offset
+  `define link_hv_scale_bit         21 + `SysConfigSet1_Offset
+  `define hscale_slice              20 + `SysConfigSet1_Offset : 16 + `SysConfigSet1_Offset
+  `define vscale_slice              15 + `SysConfigSet1_Offset : 11 + `SysConfigSet1_Offset
   `define deinterlacing_mode_slice   4 + `SysConfigSet1_Offset :  3 + `SysConfigSet1_Offset
   `define interpolation_mode_slice   2 + `SysConfigSet1_Offset :  1 + `SysConfigSet1_Offset
   `define pal_boxed_scale_bit        0 + `SysConfigSet1_Offset

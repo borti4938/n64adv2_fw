@@ -144,7 +144,7 @@ wire palmode, n64_480i;
 wire [ 3:0] cfg_gamma;
 wire cfg_nvideblur_pre, cfg_n16bit_mode;
 wire cfg_lowlatencymode;
-wire [11:0] cfg_hvshift;
+wire [9:0] cfg_hvshift;
 
 wire palmode_resynced, n64_480i_resynced;
 
@@ -219,8 +219,8 @@ assign PPUState[`PPU_gamma_table_slice]         = cfg_gamma;
 
 // to N64_CLK_i first
 register_sync #(
-  .reg_width(19), // 4 + 1 + 1 + 12 + 1
-  .reg_preset(19'd0)
+  .reg_width(17), // 4 + 1 + 1 + 10 + 1
+  .reg_preset(17'd0)
 ) cfg_sync4n64clk_u0 (
   .clk(N64_CLK_i),
   .clk_en(1'b1),

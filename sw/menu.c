@@ -370,7 +370,7 @@ static inline alt_u8 is_misc_screen (menu_t *menu)
 
 
 void val2txt_func(alt_u8 v) { sprintf(szText,"%u", v); };
-void val2txt_6b_binaryoffset_func(alt_u8 v) { if (v & 0x20) sprintf(szText," %2u", (v&0x1F)); else sprintf(szText,"-%2u", (v^0x1F)+1); };
+void val2txt_5b_binaryoffset_func(alt_u8 v) { if (v & 0x10) sprintf(szText," %2u", (v&0xF)); else sprintf(szText,"-%2u", (v^0xF)+1); };
 void val2txt_scale_sel_func(alt_u8 v) {
   if (v == 0) {
     sprintf(szText,NTSCPAL_SEL[2]);

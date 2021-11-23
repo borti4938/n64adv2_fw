@@ -185,7 +185,7 @@ config_t hor_shift = {
         .max_value     = CFG_HORSHIFT_MAX_VALUE,
         .getvalue_mask = CFG_HORSHIFT_GETMASK
     },
-    .val2char_func = &val2txt_6b_binaryoffset_func
+    .val2char_func = &val2txt_5b_binaryoffset_func
 };
 
 config_t vert_shift = {
@@ -196,7 +196,7 @@ config_t vert_shift = {
         .max_value     = CFG_VERTSHIFT_MAX_VALUE,
         .getvalue_mask = CFG_VERTSHIFT_GETMASK
     },
-    .val2char_func = &val2txt_6b_binaryoffset_func
+    .val2char_func = &val2txt_5b_binaryoffset_func
 };
 
 config_t link_hv_scale = {

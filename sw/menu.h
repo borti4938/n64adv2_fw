@@ -117,7 +117,7 @@ typedef struct menu {
 extern menu_t home_menu;
 
 void val2txt_func(alt_u8 v);
-void val2txt_6b_binaryoffset_func(alt_u8 v);
+void val2txt_5b_binaryoffset_func(alt_u8 v);
 void val2txt_scale_sel_func(alt_u8 v);
 void val2txt_hscale_func(alt_u8 v);
 void val2txt_vscale_func(alt_u8 v);
