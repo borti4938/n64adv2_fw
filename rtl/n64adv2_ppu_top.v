@@ -147,6 +147,7 @@ wire cfg_lowlatencymode;
 wire [9:0] cfg_hvshift;
 
 wire palmode_resynced, n64_480i_resynced;
+wire [`VID_CFG_W-1:0] videomode_ntsc_w, videomode_pal_w;
 
 wire [`PPUConfig_WordWidth-1:0] ConfigSet_resynced;
 
@@ -231,9 +232,9 @@ register_sync #(
 
 always @(*)
   if (!n64_480i)
-    cfg_nvideblur      <= cfg_nvideblur_pre;
+    cfg_nvideblur <= cfg_nvideblur_pre;
   else
-    cfg_nvideblur        <= 1'b1;
+    cfg_nvideblur <= 1'b1;
 
 
 // to VCLK_Tx clock domain 
@@ -262,18 +263,18 @@ register_sync #(
   .reg_o(ConfigSet_resynced)
 );
 
-wire [`VID_CFG_W-1:0] videomode_ntsc_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p60 :
-                                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p60 :
-                                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p60  :
-                                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p60  :
-                                         ConfigSet_resynced[`use_vga_for_480p_bit]                          ? `USE_VGAp60  :
-                                                                                                              `USE_480p60  ;
+assign videomode_ntsc_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p60 :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p60 :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p60  :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p60  :
+                          ConfigSet_resynced[`use_vga_for_480p_bit]                          ? `USE_VGAp60  :
+                                                                                               `USE_480p60  ;
 
-wire [`VID_CFG_W-1:0] videomode_pal_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p50 :
-                                        ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p50 :
-                                        ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p50  :
-                                        ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p50  :
-                                                                                                             `USE_576p50  ;
+assign videomode_pal_w =  ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p50 :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p50 :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p50  :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p50  :
+                                                                                               `USE_576p50  ;
 
 always @(posedge VCLK_Tx) begin
   if (ConfigSet_resynced[`force60hz_bit] & !ConfigSet_resynced[`lowlatencymode_bit]) // do not allow forcing 60Hz mode in llm
