@@ -14,6 +14,8 @@ module scaler(
   video_interpolation_mode_i,
   video_vscale_factor_i,
   video_hscale_factor_i,
+  video_hpixel_out_i,
+  video_hfactor_lin_i,
   video_pal_boxed_i,
   vinfo_txsynced_i,
   vinfo_llm_slbuf_fb_o,
@@ -57,6 +59,8 @@ input [`VID_CFG_W-1:0] video_config_i;
 input [1:0] video_interpolation_mode_i;
 input [4:0] video_vscale_factor_i;
 input [4:0] video_hscale_factor_i;
+input [11:0] video_hpixel_out_i;
+input [17:0] video_hfactor_lin_i;
 input video_pal_boxed_i;
 input video_llm_i;
 input [1:0] vinfo_txsynced_i;
@@ -120,6 +124,8 @@ localparam Videogen_Pipeline_Length = GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+
 // - three clock cycle horizontal interpolation
 // - final output register
 
+localparam H_A0_CALC_DELAY = 2;
+
 // misc
 integer int_idx;
 
@@ -177,15 +183,11 @@ wire [color_width_o-1:0] red_h_interp_out, gr_h_interp_out, bl_h_interp_out;
 
 
 wire use_pal_lines;
-wire [hpos_width-1:0] X_hpos_1st_rdpixel_w;
 wire [11:0] X_hpos_offset_w;
-wire [vcnt_width-1:0] X_vpos_1st_rdline_ntsc_w, X_vpos_1st_rdline_pal_w, X_vpos_1st_rdline_pal_boxed_w, X_vpos_1st_rdline_w;
+wire [vcnt_width-1:0] X_vpos_1st_rdline_ntsc_w, X_vpos_1st_rdline_pal_w, X_vpos_1st_rdline_pal_boxed_w;
 wire [10:0] X_vpos_offset_w;
-wire [11:0] X_HSTART_px_w, X_HSTOP_px_w;
-wire [10:0] X_VSTART_px_w, X_VSTOP_px_w;
 
 wire [10:0] X_pix_v_phase_length_main_w;
-wire [11:0] X_pix_h_phase_length_main_w;
 
 
 // cmb regs
@@ -194,6 +196,8 @@ reg [1:0] wrpage_slbuf_cmb, rdpage_slbuf_cmb;
 
 reg [5:0] pix_vload_next_idx_cmb;
 
+reg [29:0] a0_h_full_cmb;
+reg [11:0] h_pixel_cnt_cmb;
 
 // regs
 reg nHS_i_L = 1'b0;
@@ -265,6 +269,11 @@ reg [10:0] X_VACTIVE = `VACTIVE_480p60;
 reg [10:0] X_VSTOP = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60;
 reg [10:0] X_VTOTAL = `VTOTAL_480p60;
 
+reg [11:0] X_HSTART_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60;
+reg [11:0] X_HSTOP_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60;
+reg [10:0] X_VSTART_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60;
+reg [10:0] X_VSTOP_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60;
+
 reg [9:0] X_pix_v_target_input_lines = 10'd240; // must not exceed (output active lines)/v_scaling_factor, can be left 240/288 otherwise
 reg [10:0] X_pix_v_active_target_length = 11'd480;
 
@@ -281,22 +290,15 @@ reg [31:0] X_pix_v_bypass_z0_pattern_main = 32'b11;
 reg [9:0] X_pix_h_target_input_pixel = `ACTIVE_PIXEL_PER_LINE; // must not exceed (output active pixels)/h_scaling_factor, can be left at 640 (`ACTIVE_PIXEL_PER_LINE) otherwise
 reg [11:0] X_pix_h_active_target_length = 12'd640;
 
-reg [2:0] X_pix_h_phase_length_init = 3'd1;
-reg [5:0] X_pix_h_pattern_length_main = 6'd0;
-reg [2:0] X_pix_h_phase_length_post = 3'd0;
-reg [7:0] X_pix_h_a0_last_init = 8'h80;
-reg X_pix_h_bypass_z0_last_init = 1'b1;
-reg [31:0] X_pix_h_load_pattern_main = 32'b1;
-reg [7:0] X_pix_h_a0_increment = 8'h00;
-reg [31:0] X_pix_h_a0_round_inc = 32'b0;
-reg [31:0] X_pix_h_bypass_z0_pattern_main = 32'b1;
+reg [11:0] X_pix_h_org_input_pixel = 12'd640;
+reg [11:0] X_pix_h_init_pixel_phase = 12'd0;
+reg [11:0] X_pix_h_target_output_pixel = 12'd640;
+reg [17:0] X_pix_h_lin_pixel_factor = 18'b000011001100110011;
 
 reg [hpos_width-1:0] X_hpos_1st_rdpixel;
-reg [11:0] X_HSTART_px, X_HSTOP_px;
-reg [10:0] X_VSTART_px, X_VSTOP_px;
+reg [vcnt_width-1:0] X_vpos_1st_rdline;
 
 reg [10:0] X_pix_v_phase_length_main;
-reg [11:0] X_pix_h_phase_length_main;
 
 reg output_proc_en = 1'b0;
 
@@ -310,17 +312,18 @@ reg [1:0] vscale_phase = HVSCALE_PHASE_INVALID;
 reg [10:0] vscale_phase_cnt = 11'd0;
 
 reg [1:0] hscale_phase = HVSCALE_PHASE_INVALID;
-reg [11:0] hscale_phase_cnt = 12'd0;
 
 reg [5:0] pix_vload_idx = 6'd0;
 reg pix_v_bypass_z0_current = 1'b0;
 reg pix_v_bypass_z1_current = 1'b0;
 reg [7:0] pix_v_a0_current = 8'h80;
 
-reg [5:0] pix_hload_idx = 6'd0;
-reg pix_active_load_en = 1'b0;
-reg [GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:0] pix_h_bypass_z0_current = {(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY){1'b0}} /* synthesis ramstyle = "logic" */;
-reg [(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)*8-1:0] pix_h_a0_current = {(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY){8'h80}}   /* synthesis ramstyle = "logic" */;
+reg pix_active_load_en;
+reg [11:0] h_pixel_cnt;
+reg [9:0] h_pixel_load_cnt;
+reg [GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:0] pix_h_bypass_z0_current /* synthesis ramstyle = "logic" */;
+reg [8:0] pix_h_a0_pre;
+reg [7:0] pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)-1:H_A0_CALC_DELAY] /* synthesis ramstyle = "logic" */;
 
 reg [Videogen_Pipeline_Length-2:GEN_SIGNALLING_DELAY] DE_virt_vpl_L /* synthesis ramstyle = "logic" */;
 reg [Videogen_Pipeline_Length-2:0] HSYNC_vpl_L                      /* synthesis ramstyle = "logic" */;
@@ -485,8 +488,8 @@ assign pix_v_bypass_z0 = (!video_interpolation_mode_i[1] & (pix_v_a0_current_w >
 assign fir_v_calcopcode_w[1] = pix_v_bypass_z1 | pix_v_bypass_z0;
 assign fir_v_calcopcode_w[0] = pix_v_bypass_z1;
 
-assign pix_h_a0_current_w = pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)*8-1:(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1)*8];
-assign pix_h_a1_current_w = ~pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)*8-1:(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1)*8] + 8'h01;
+assign pix_h_a0_current_w = pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)-1];
+assign pix_h_a1_current_w = ~pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)-1] + 8'h01;
 
 assign pix_h_bypass_z1 = (!video_interpolation_mode_i[1] & (pix_h_a1_current_w > FILT_AX_SHARP_TH)) & !pix_h_bypass_z0_current[Videogen_Pipeline_Length-5];
 assign pix_h_bypass_z0 = (!video_interpolation_mode_i[1] & (pix_h_a0_current_w > FILT_AX_SHARP_TH)) |  pix_h_bypass_z0_current[Videogen_Pipeline_Length-5];
@@ -759,7 +762,7 @@ register_sync #(
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .nrst(nRST_DRAM_proc),
-  .reg_i(X_vpos_1st_rdline_w),
+  .reg_i(X_vpos_1st_rdline),
   .reg_o(vpos_1st_rdline_clk_resynced)
 );
 
@@ -998,53 +1001,49 @@ register_sync_2 #(
 
 
 assign use_pal_lines = palmode_vclk_o_resynced && !video_pal_boxed_i;
-
-always @(posedge VCLK_o)
-  if (vcnt_o_L == 0 && hcnt_o_L == 0) begin
-    
-    setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VTOTAL);
-    setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HTOTAL);
-    
-    setVScaleTargets(video_config_i,video_vscale_factor_i,use_pal_lines,
-                     X_pix_v_target_input_lines,X_pix_v_active_target_length);
-    setHScaleTargets(video_config_i,video_hscale_factor_i,
-                     X_pix_h_target_input_pixel,X_pix_h_active_target_length);
-    
-    setScalerConstants(video_interpolation_mode_i,video_vscale_factor_i,1'b0,
-                       X_pix_v_phase_length_init,X_pix_v_pattern_length_main,X_pix_v_phase_length_post,
-                       X_pix_v_a0_last_init,X_pix_v_bypass_z0_last_init,X_pix_v_load_pattern_main,
-                       X_pix_v_a0_increment,X_pix_v_a0_round_inc,X_pix_v_bypass_z0_pattern_main);
-    setScalerConstants(video_interpolation_mode_i,video_hscale_factor_i,1'b1,
-                       X_pix_h_phase_length_init,X_pix_h_pattern_length_main,X_pix_h_phase_length_post,
-                       X_pix_h_a0_last_init,X_pix_h_bypass_z0_last_init,X_pix_h_load_pattern_main,
-                       X_pix_h_a0_increment,X_pix_h_a0_round_inc,X_pix_h_bypass_z0_pattern_main);
-  end
-
-
-assign X_pix_h_phase_length_main_w = (X_pix_h_active_target_length > X_HACTIVE) ? X_HACTIVE - {9'h00,X_pix_h_phase_length_init} - {9'h00,X_pix_h_phase_length_post} - 12'd3 : X_pix_h_active_target_length - {9'h00,X_pix_h_phase_length_init} - {9'h00,X_pix_h_phase_length_post} - 12'd3;
-assign X_hpos_1st_rdpixel_w = (X_pix_h_target_input_pixel < `ACTIVE_PIXEL_PER_LINE) ? (`ACTIVE_PIXEL_PER_LINE - X_pix_h_target_input_pixel)/2 : {hpos_width{1'b0}};
 assign X_hpos_offset_w = (X_pix_h_active_target_length < X_HACTIVE) ? (X_HACTIVE - X_pix_h_active_target_length)/2 : 12'd0;
+assign X_vpos_offset_w = (X_pix_v_active_target_length < X_VACTIVE) ? (X_VACTIVE - X_pix_v_active_target_length)/2 : 11'd0;
 
-assign X_pix_v_phase_length_main_w = (X_pix_v_active_target_length > X_VACTIVE) ? X_VACTIVE - {8'h00,X_pix_v_phase_length_init} - {8'h00,X_pix_v_phase_length_post} - 11'd3 : X_pix_v_active_target_length - {8'h00,X_pix_v_phase_length_init} - {8'h00,X_pix_v_phase_length_post} - 11'd3;
 assign X_vpos_1st_rdline_ntsc_w = (X_pix_v_target_input_lines < `ACTIVE_LINES_NTSC_LX1) ? (`ACTIVE_LINES_NTSC_LX1 - X_pix_v_target_input_lines)/2 : {vcnt_width{1'b0}};
 assign X_vpos_1st_rdline_pal_w = (X_pix_v_target_input_lines < `ACTIVE_LINES_PAL_LX1) ? (`ACTIVE_LINES_PAL_LX1 - X_pix_v_target_input_lines)/2 : {vcnt_width{1'b0}};
 assign X_vpos_1st_rdline_pal_boxed_w = (X_pix_v_target_input_lines < `ACTIVE_LINES_NTSC_LX1) ? (`ACTIVE_LINES_PAL_LX1 - X_pix_v_target_input_lines)/2 : {{(vcnt_width-5){1'b0}},5'd24};
-assign X_vpos_1st_rdline_w = !palmode_vclk_o_resynced ? X_vpos_1st_rdline_ntsc_w :
-                             video_pal_boxed_i ? X_vpos_1st_rdline_pal_boxed_w : X_vpos_1st_rdline_pal_w;
-assign X_vpos_offset_w = (X_pix_v_active_target_length < X_VACTIVE) ? (X_VACTIVE - X_pix_v_active_target_length)/2 : 11'd0;
 
-assign X_HSTART_px_w = X_HSTART + X_hpos_offset_w;
-assign X_HSTOP_px_w = X_HSTOP - X_hpos_offset_w;
-assign X_VSTART_px_w = X_VSTART + X_vpos_offset_w;
-assign X_VSTOP_px_w = X_VSTOP - X_vpos_offset_w;
+always @(posedge VCLK_o) 
+  if (vcnt_o_L == 0 && hcnt_o_L[11:4] == 0) begin
+    if (hcnt_o_L[3:0] == 0) begin  // setup video timings for this frame
+      setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VTOTAL);
+      setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HTOTAL);
+    end
+    if (hcnt_o_L[3:0] == 2) begin  // setup scaling a bit delayed to have stable video timings
+      setVScaleTargets(video_config_i,video_vscale_factor_i,use_pal_lines,
+                       X_pix_v_target_input_lines,X_pix_v_active_target_length);
+      setHScaleTargets(video_config_i,video_hscale_factor_i,
+                       X_pix_h_target_input_pixel,X_pix_h_active_target_length);
+      
+      setScalerConstants(video_interpolation_mode_i,video_vscale_factor_i,1'b0,
+                         X_pix_v_phase_length_init,X_pix_v_pattern_length_main,X_pix_v_phase_length_post,
+                         X_pix_v_a0_last_init,X_pix_v_bypass_z0_last_init,X_pix_v_load_pattern_main,
+                         X_pix_v_a0_increment,X_pix_v_a0_round_inc,X_pix_v_bypass_z0_pattern_main);
+      
+      X_pix_h_org_input_pixel <= 12'd640;
+      X_pix_h_init_pixel_phase <= |video_interpolation_mode_i ? (12'd320 + (video_hpixel_out_i >> 1)) : 12'd320;
+      X_pix_h_target_output_pixel <= video_hpixel_out_i;
+      X_pix_h_lin_pixel_factor <= video_hfactor_lin_i;
+    end
+    if (hcnt_o_L == 4) begin  // setup some configs even more delayed
+      X_HSTART_px <= X_HSTART + X_hpos_offset_w;
+      X_HSTOP_px <= X_HSTOP - X_hpos_offset_w;
+      X_VSTART_px <= X_VSTART + X_vpos_offset_w;
+      X_VSTOP_px <= X_VSTOP - X_vpos_offset_w;
+      X_pix_h_init_pixel_phase <= |video_interpolation_mode_i ? X_pix_h_org_input_pixel/2 + video_hpixel_out_i/2 : X_pix_h_org_input_pixel/2;
+      X_hpos_1st_rdpixel <= X_pix_h_target_input_pixel < `ACTIVE_PIXEL_PER_LINE ? `ACTIVE_PIXEL_PER_LINE/2 - X_pix_h_target_input_pixel/2 : 0;
+      X_vpos_1st_rdline <= !palmode_vclk_o_resynced ? X_vpos_1st_rdline_ntsc_w :
+                                  video_pal_boxed_i ? X_vpos_1st_rdline_pal_boxed_w : X_vpos_1st_rdline_pal_w;
+    end
+  end
 
-always @(posedge VCLK_o) begin
-  X_hpos_1st_rdpixel <= X_hpos_1st_rdpixel_w;
-  X_HSTART_px <= X_HSTART_px_w;
-  X_HSTOP_px <= X_HSTOP_px_w;
-  X_VSTART_px <= X_VSTART_px_w;
-  X_VSTOP_px <= X_VSTOP_px_w;
-end
+
+assign X_pix_v_phase_length_main_w = (X_pix_v_active_target_length > X_VACTIVE) ? X_VACTIVE - {8'h00,X_pix_v_phase_length_init} - {8'h00,X_pix_v_phase_length_post} - 11'd3 : X_pix_v_active_target_length - {8'h00,X_pix_v_phase_length_init} - {8'h00,X_pix_v_phase_length_post} - 11'd3;
 
 
 always @(*) begin
@@ -1064,6 +1063,11 @@ always @(*) begin
   end
 end
 
+
+always @(*) begin
+  h_pixel_cnt_cmb <= h_pixel_cnt + X_pix_h_org_input_pixel;
+  a0_h_full_cmb <= h_pixel_cnt * (* multstyle = "dsp" *) X_pix_h_lin_pixel_factor;
+end
 
 
 always @(posedge VCLK_o or negedge nRST_o)
@@ -1089,11 +1093,13 @@ always @(posedge VCLK_o or negedge nRST_o)
     pix_v_a0_current <= 8'h80;
     
     hscale_phase <= HVSCALE_PHASE_INVALID;
-    hscale_phase_cnt <= 12'd0;
-    pix_hload_idx <= 6'd0;
     pix_active_load_en <= 1'b0;
+    h_pixel_cnt <= 12'd0;
+    h_pixel_load_cnt <= 10'd0;
+    
     pix_h_bypass_z0_current <= {(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY){1'b0}};
-    pix_h_a0_current <= {(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY){8'h80}};
+    for (int_idx = H_A0_CALC_DELAY; int_idx < (GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY); int_idx = int_idx + 1)
+      pix_h_a0_current[int_idx] <= 8'h80;
     
     DE_virt_vpl_L <= {(Videogen_Pipeline_Length-GEN_SIGNALLING_DELAY-1){1'b0}};
     HSYNC_vpl_L <= {(Videogen_Pipeline_Length-1){1'b0}};
@@ -1196,62 +1202,54 @@ always @(posedge VCLK_o or negedge nRST_o)
       rden_slbuf <= 1'b1;
       case (hscale_phase)
         HVSCALE_PHASE_INIT: begin
-            if (hscale_phase_cnt[2:0] == X_pix_h_phase_length_init) begin
-              hscale_phase <= HVSCALE_PHASE_MAIN;
-              hscale_phase_cnt <= 12'd0;
-              rdaddr_slbuf <= rdaddr_slbuf + 1'b1;
-              pix_active_load_en <= 1'b1;
-              pix_h_a0_current[7:0] <= X_pix_h_a0_last_init;
-              pix_h_bypass_z0_current[0] <= X_pix_h_bypass_z0_last_init;
-            end else begin
-              hscale_phase_cnt <= hscale_phase_cnt + 12'd1;
-              pix_active_load_en <= ~|hscale_phase_cnt[2:0];
-              pix_h_bypass_z0_current[0] <= 1'b1; // always!
-            end
+            hscale_phase <= HVSCALE_PHASE_MAIN;
+            pix_active_load_en <= 1'b1;
+            h_pixel_load_cnt <= 10'd1;
+            pix_h_bypass_z0_current[0] <= 1'b1; // always!
           end
         HVSCALE_PHASE_MAIN: begin
-            if (X_pix_h_load_pattern_main[pix_hload_idx]) begin
+            if (h_pixel_cnt_cmb >= X_pix_h_target_output_pixel) begin
+              if (h_pixel_load_cnt == X_pix_h_target_output_pixel - 1)
+                hscale_phase <= HVSCALE_PHASE_POST;
+              h_pixel_cnt <= h_pixel_cnt_cmb - X_pix_h_target_output_pixel;
               rdaddr_slbuf <= rdaddr_slbuf + 1'b1;
               pix_active_load_en <= 1'b1;
+              h_pixel_load_cnt <= h_pixel_load_cnt + 10'd1;
+              pix_h_bypass_z0_current[0] <= |video_interpolation_mode_i ? h_pixel_cnt_cmb == X_pix_h_target_output_pixel :
+                                                                          h_pixel_cnt_cmb > X_pix_h_target_output_pixel;
             end else begin
+              h_pixel_cnt <= h_pixel_cnt_cmb;
               pix_active_load_en <= 1'b0;
-            end
-            pix_h_bypass_z0_current[0] <= X_pix_h_bypass_z0_pattern_main[pix_hload_idx];
-            if (X_pix_h_a0_round_inc[pix_hload_idx])
-              pix_h_a0_current[7:0] <= pix_h_a0_current[7:0] + X_pix_h_a0_increment + 1'b1;
-            else
-              pix_h_a0_current[7:0] <= pix_h_a0_current[7:0] + X_pix_h_a0_increment;
-            if (hscale_phase_cnt == X_pix_h_phase_length_main_w) begin
-              hscale_phase <= HVSCALE_PHASE_POST;
-              hscale_phase_cnt <= 12'd0;
-            end else begin
-              hscale_phase_cnt <=  hscale_phase_cnt + 12'd1;
-              if (pix_hload_idx == X_pix_h_pattern_length_main)
-                pix_hload_idx <= 6'd0;
-              else
-                pix_hload_idx <= pix_hload_idx + 6'd1;
+              pix_h_bypass_z0_current[0] <= h_pixel_load_cnt == 10'd1 ? 1'b1 : ~|video_interpolation_mode_i;
             end
           end
         HVSCALE_PHASE_POST: begin
             pix_active_load_en <= 1'b0;
-            pix_h_bypass_z0_current[0] <= 1'b1;
-            if (hscale_phase_cnt[2:0] == X_pix_h_phase_length_post) begin
-              hscale_phase <= HVSCALE_PHASE_INVALID;
+            if (h_pixel_cnt_cmb >= X_pix_h_target_input_pixel) begin
+              pix_h_bypass_z0_current[0] <= 1'b1;
             end else begin
-              hscale_phase_cnt <=  hscale_phase_cnt + 12'd1;
+              h_pixel_cnt <= h_pixel_cnt_cmb;
+              pix_h_bypass_z0_current[0] <= ~|video_interpolation_mode_i;
             end
           end
       endcase
+      pix_h_a0_pre <= |video_interpolation_mode_i ? a0_h_full_cmb[22:14] : 9'h1FE;
     end else begin
       rden_slbuf <= 1'b0;
+      pix_active_load_en <= 1'b0;
       rdaddr_slbuf <= X_hpos_1st_rdpixel;
       hscale_phase <= HVSCALE_PHASE_INIT;
-      hscale_phase_cnt <= 12'd0;
-      pix_hload_idx <= 6'd0;
+      
+      h_pixel_cnt <= X_pix_h_init_pixel_phase;
+      h_pixel_load_cnt <= 10'd0;
+      pix_h_a0_pre <= 9'h0FF;
+
     end
     
     pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
-    pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)*8-1:8] <= pix_h_a0_current[(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1)*8-1:0];
+    for (int_idx = (GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY)-1; int_idx > H_A0_CALC_DELAY; int_idx = int_idx - 1)
+      pix_h_a0_current[int_idx] <= pix_h_a0_current[int_idx-1];
+    pix_h_a0_current[H_A0_CALC_DELAY] <= pix_h_a0_pre[8:1] + pix_h_a0_pre[0];
     
     DE_virt_vpl_L <= {DE_virt_vpl_L[Videogen_Pipeline_Length-3:GEN_SIGNALLING_DELAY],rden_slbuf};
     HSYNC_vpl_L <= {HSYNC_vpl_L[Videogen_Pipeline_Length-3:0],(hcnt_o_L < X_HSYNCLEN) ~^ X_HSYNC_active};

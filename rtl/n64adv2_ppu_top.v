@@ -89,6 +89,8 @@ module n64adv2_ppu_top (
 `include "../vh/n64adv2_config.vh"
 `include "../vh/videotimings.vh"
 
+`include "../../tasks/setScalerConfig.tasks.v"
+
 input N64_CLK_i;
 input N64_nVRST_i;
 input nVDSYNC_i;
@@ -136,6 +138,7 @@ output        DRAM_nWE;
 // params
 localparam limitRGB_coeff = 8'd220;
 localparam limitRGB_offset = 8'd16;
+localparam dividend_length = 18;
 
 // wires
 wire [1:0] vinfo_pass;  // [1:0] {vmode,n64_480i}
@@ -146,9 +149,15 @@ wire cfg_nvideblur_pre, cfg_n16bit_mode;
 wire cfg_lowlatencymode;
 wire [9:0] cfg_hvshift;
 
+wire [4:0] cfg_hscale_factor_w;
+wire [11:0] cfg_hpixel_out;
+wire [dividend_length-1:0] appr_mult_factor_w, cfg_appr_mult_factor;
+wire divide_busy_w, divide_done_w;
+
 wire palmode_resynced, n64_480i_resynced;
 wire [`VID_CFG_W-1:0] videomode_ntsc_w, videomode_pal_w;
 
+wire [dividend_length-1:0] appr_mult_factor_resynced;
 wire [`PPUConfig_WordWidth-1:0] ConfigSet_resynced;
 
 wire vdata_valid_bwd_w, vdata_valid_fwd_w;
@@ -168,6 +177,10 @@ wire [15:0] limited_Re_pre, limited_Gr_pre, limited_Bl_pre;
 
 //regs
 reg cfg_nvideblur;
+
+reg [11:0] divisor_L, divisor_LL, hpixel_out_LLL;
+reg divide_cmd_LL;
+reg [dividend_length-1:0] appr_mult_factor_LLL;
 
 reg [`VID_CFG_W-1:0] cfg_videomode;
 reg [1:0] cfg_interpolation_mode;
@@ -218,6 +231,40 @@ assign PPUState[`PPU_gamma_table_slice]         = cfg_gamma;
 // write configuration register
 // ----------------------------
 
+// generate aprroximated multiplication factor for scaler config
+
+assign cfg_hscale_factor_w = ConfigSet[`link_hv_scale_bit] ? ConfigSet[`vscale_slice] : ConfigSet[`hscale_slice];
+
+always @(posedge SYSCLK) begin
+  getHPixels(cfg_hscale_factor_w,divisor_L);
+  if ((divisor_LL != divisor_L) & !divide_busy_w) begin
+    divide_cmd_LL <= 1'b1;
+    divisor_LL <= divisor_L;
+  end else begin
+    divide_cmd_LL <= 1'b0;
+  end
+  if (divide_done_w) begin
+    hpixel_out_LLL <= divisor_LL;
+    appr_mult_factor_LLL <= appr_mult_factor_w;
+  end
+end
+
+serial_divide #(
+  .DIVIDEND_WIDTH(dividend_length),
+  .DIVISOR_WIDTH(12)
+) serial_divide_dut (
+  .clk_i(SYSCLK),
+  .nrst_i(1'b1),
+  .divide_cmd_i(divide_cmd_LL),
+  .dividend_i({1'b1,{(dividend_length-1){1'b0}}}),
+  .divisor_i(divisor_L),
+  .quotient_o(appr_mult_factor_w),
+  .busy_o(divide_busy_w),
+  .done_o(divide_done_w)
+);
+
+
+
 // to N64_CLK_i first
 register_sync #(
   .reg_width(17), // 4 + 1 + 1 + 10 + 1
@@ -228,7 +275,7 @@ register_sync #(
   .nrst(1'b1),
   .reg_i({ConfigSet[`gamma_slice],~ConfigSet[`n16bit_mode_bit],ConfigSet[`lowlatencymode_bit],ConfigSet[`hshift_slice],ConfigSet[`vshift_slice],~ConfigSet[`videblur_bit]}),
   .reg_o({cfg_gamma,cfg_n16bit_mode,cfg_lowlatencymode,cfg_hvshift,cfg_nvideblur_pre})
-);
+); // Note: add output reg as false path in sdc (cfg_sync4n64clk_u0|reg_synced_1[*])
 
 always @(*)
   if (!n64_480i)
@@ -237,12 +284,23 @@ always @(*)
     cfg_nvideblur <= 1'b1;
 
 
-// to VCLK_Tx clock domain 
+// to VCLK_Tx clock domain
+register_sync #(
+  .reg_width(12+dividend_length),
+  .reg_preset({(12+dividend_length){1'b0}})
+) cfg_sync4txlogic_u0 (
+  .clk(VCLK_Tx),
+  .clk_en(1'b1),
+  .nrst(1'b1),
+  .reg_i({hpixel_out_LLL,appr_mult_factor_LLL}),
+  .reg_o({cfg_hpixel_out,cfg_appr_mult_factor})
+); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
+
 register_sync_2 #(
   .reg_width(2),
   .reg_preset(2'd0),
   .resync_stages(3)
-) sync4txlogic_u0 (
+) cfg_sync4txlogic_u1 (
   .nrst(1'b1),
   .clk_i(N64_CLK_i),
   .clk_i_en(1'b1),
@@ -255,7 +313,7 @@ register_sync_2 #(
 register_sync #(
   .reg_width(`PPUConfig_WordWidth),
   .reg_preset({`PPUConfig_WordWidth{1'b0}})
-) sync4txlogic_u1 (
+) cfg_sync4txlogic_u2 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
@@ -520,6 +578,8 @@ scaler scaler_u(
   .video_interpolation_mode_i(cfg_interpolation_mode),
   .video_vscale_factor_i(cfg_vscale_factor),
   .video_hscale_factor_i(cfg_hscale_factor),
+  .video_hpixel_out_i(cfg_hpixel_out),
+  .video_hfactor_lin_i(cfg_appr_mult_factor),
   .video_pal_boxed_i(cfg_pal_boxed),
   .vinfo_txsynced_i({palmode_resynced,n64_480i_resynced}),
   .vinfo_llm_slbuf_fb_o(PPUState[`PPU_output_llm_slbuf_slice]),
