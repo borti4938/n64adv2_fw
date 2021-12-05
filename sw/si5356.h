@@ -41,14 +41,6 @@
 
 
 typedef enum {
-  vVGA = 0,
-  v480p,
-  v576p,
-  v720p,
-  v1080p
-} output_res_t;
-
-typedef enum {
   IN12 = 0, // free running
   IN4       // source synchronous
 } si_clk_src_t;
