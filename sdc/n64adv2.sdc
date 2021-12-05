@@ -304,7 +304,10 @@ set_false_path -from [get_registers {*rst_o}]
 
 # PPU top
 #*************************************
-set_false_path -from [get_registers {n64adv2_ppu_u|cfg_sync4n64clk_u0|reg_synced_1[*] n64adv2_ppu_u|cfg_sync4txlogic_u0|reg_synced_1[*] n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|X_*}]
+set_false_path -from [get_registers {n64adv2_ppu_u|cfg_sync4n64clk_u0|reg_synced_1[*] \
+                                     n64adv2_ppu_u|cfg_sync4txlogic_u0|reg_synced_1[*] \
+                                     n64adv2_ppu_u|cfg_sync4txlogic_u1|reg_synced_1[*] \
+                                     n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|X_*}]
 
 
 # Scaler top

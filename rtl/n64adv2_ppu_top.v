@@ -149,15 +149,16 @@ wire cfg_nvideblur_pre, cfg_n16bit_mode;
 wire cfg_lowlatencymode;
 wire [9:0] cfg_hvshift;
 
-wire [4:0] cfg_hscale_factor_w;
+wire vline_palmode_w;
+wire [4:0] cfg_vscale_factor_w, cfg_hscale_factor_w;
+wire [10:0] cfg_vpixel_out;
 wire [11:0] cfg_hpixel_out;
-wire [dividend_length-1:0] appr_mult_factor_w, cfg_appr_mult_factor;
-wire divide_busy_w, divide_done_w;
+wire [dividend_length-1:0] v_appr_mult_factor_w, cfg_v_appr_mult_factor, h_appr_mult_factor_w, cfg_h_appr_mult_factor;
+wire v_divide_busy_w, v_divide_done_w, h_divide_busy_w, h_divide_done_w;
 
-wire palmode_resynced, n64_480i_resynced;
+wire palmode_sysclk_resynced, palmode_resynced, n64_480i_resynced;
 wire [`VID_CFG_W-1:0] videomode_ntsc_w, videomode_pal_w;
 
-wire [dividend_length-1:0] appr_mult_factor_resynced;
 wire [`PPUConfig_WordWidth-1:0] ConfigSet_resynced;
 
 wire vdata_valid_bwd_w, vdata_valid_fwd_w;
@@ -178,9 +179,10 @@ wire [15:0] limited_Re_pre, limited_Gr_pre, limited_Bl_pre;
 //regs
 reg cfg_nvideblur;
 
-reg [11:0] divisor_L, divisor_LL, hpixel_out_LLL;
-reg divide_cmd_LL;
-reg [dividend_length-1:0] appr_mult_factor_LLL;
+reg [10:0] v_divisor_L, v_divisor_LL, v_pixel_out_LLL;
+reg [11:0] h_divisor_L, h_divisor_LL, h_pixel_out_LLL;
+reg v_divide_cmd_LL, h_divide_cmd_LL;
+reg [dividend_length-1:0] v_appr_mult_factor_LLL, h_appr_mult_factor_LLL;
 
 reg [`VID_CFG_W-1:0] cfg_videomode;
 reg [1:0] cfg_interpolation_mode;
@@ -233,34 +235,73 @@ assign PPUState[`PPU_gamma_table_slice]         = cfg_gamma;
 
 // generate aprroximated multiplication factor for scaler config
 
+register_sync #(
+  .reg_width(1),
+  .reg_preset(1'b0)
+) sync4cpu_u0(
+  .clk(SYS_CLK),
+  .clk_en(1'b1),
+  .nrst(1'b1),
+  .reg_i(palmode),
+  .reg_o(palmode_sysclk_resynced)
+);
+
+assign vline_palmode_w = !ConfigSet[`pal_boxed_scale_bit] & palmode_sysclk_resynced;
+assign cfg_vscale_factor_w = ConfigSet[`vscale_slice];
 assign cfg_hscale_factor_w = ConfigSet[`link_hv_scale_bit] ? ConfigSet[`vscale_slice] : ConfigSet[`hscale_slice];
 
-always @(posedge SYSCLK) begin
-  getHPixels(cfg_hscale_factor_w,divisor_L);
-  if ((divisor_LL != divisor_L) & !divide_busy_w) begin
-    divide_cmd_LL <= 1'b1;
-    divisor_LL <= divisor_L;
+always @(posedge SYS_CLK) begin
+  getVPixels(vline_palmode_w,cfg_vscale_factor_w,v_divisor_L);
+  if ((v_divisor_LL != v_divisor_L) & !v_divide_busy_w) begin
+    v_divide_cmd_LL <= 1'b1;
+    v_divisor_LL <= v_divisor_L;
   end else begin
-    divide_cmd_LL <= 1'b0;
+    v_divide_cmd_LL <= 1'b0;
   end
-  if (divide_done_w) begin
-    hpixel_out_LLL <= divisor_LL;
-    appr_mult_factor_LLL <= appr_mult_factor_w;
+  if (v_divide_done_w) begin
+    v_pixel_out_LLL <= v_divisor_LL;
+    v_appr_mult_factor_LLL <= v_appr_mult_factor_w;
+  end
+  
+  getHPixels(cfg_hscale_factor_w,h_divisor_L);
+  if ((h_divisor_LL != h_divisor_L) & !h_divide_busy_w) begin
+    h_divide_cmd_LL <= 1'b1;
+    h_divisor_LL <= h_divisor_L;
+  end else begin
+    h_divide_cmd_LL <= 1'b0;
+  end
+  if (h_divide_done_w) begin
+    h_pixel_out_LLL <= h_divisor_LL;
+    h_appr_mult_factor_LLL <= h_appr_mult_factor_w;
   end
 end
 
 serial_divide #(
   .DIVIDEND_WIDTH(dividend_length),
-  .DIVISOR_WIDTH(12)
-) serial_divide_dut (
-  .clk_i(SYSCLK),
+  .DIVISOR_WIDTH(11)
+) v_serial_divide_u (
+  .clk_i(SYS_CLK),
   .nrst_i(1'b1),
-  .divide_cmd_i(divide_cmd_LL),
+  .divide_cmd_i(v_divide_cmd_LL),
   .dividend_i({1'b1,{(dividend_length-1){1'b0}}}),
-  .divisor_i(divisor_L),
-  .quotient_o(appr_mult_factor_w),
-  .busy_o(divide_busy_w),
-  .done_o(divide_done_w)
+  .divisor_i(v_divisor_L),
+  .quotient_o(v_appr_mult_factor_w),
+  .busy_o(v_divide_busy_w),
+  .done_o(v_divide_done_w)
+);
+
+serial_divide #(
+  .DIVIDEND_WIDTH(dividend_length),
+  .DIVISOR_WIDTH(12)
+) h_serial_divide_u (
+  .clk_i(SYS_CLK),
+  .nrst_i(1'b1),
+  .divide_cmd_i(h_divide_cmd_LL),
+  .dividend_i({1'b1,{(dividend_length-1){1'b0}}}),
+  .divisor_i(h_divisor_L),
+  .quotient_o(h_appr_mult_factor_w),
+  .busy_o(h_divide_busy_w),
+  .done_o(h_divide_done_w)
 );
 
 
@@ -286,21 +327,32 @@ always @(*)
 
 // to VCLK_Tx clock domain
 register_sync #(
-  .reg_width(12+dividend_length),
-  .reg_preset({(12+dividend_length){1'b0}})
+  .reg_width(11+dividend_length),
+  .reg_preset({(11+dividend_length){1'b0}})
 ) cfg_sync4txlogic_u0 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({hpixel_out_LLL,appr_mult_factor_LLL}),
-  .reg_o({cfg_hpixel_out,cfg_appr_mult_factor})
+  .reg_i({v_pixel_out_LLL,v_appr_mult_factor_LLL}),
+  .reg_o({cfg_vpixel_out,cfg_v_appr_mult_factor})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
+
+register_sync #(
+  .reg_width(12+dividend_length),
+  .reg_preset({(12+dividend_length){1'b0}})
+) cfg_sync4txlogic_u1 (
+  .clk(VCLK_Tx),
+  .clk_en(1'b1),
+  .nrst(1'b1),
+  .reg_i({h_pixel_out_LLL,h_appr_mult_factor_LLL}),
+  .reg_o({cfg_hpixel_out,cfg_h_appr_mult_factor})
+); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u1|reg_synced_1[*])
 
 register_sync_2 #(
   .reg_width(2),
   .reg_preset(2'd0),
   .resync_stages(3)
-) cfg_sync4txlogic_u1 (
+) cfg_sync4txlogic_u2 (
   .nrst(1'b1),
   .clk_i(N64_CLK_i),
   .clk_i_en(1'b1),
@@ -313,7 +365,7 @@ register_sync_2 #(
 register_sync #(
   .reg_width(`PPUConfig_WordWidth),
   .reg_preset({`PPUConfig_WordWidth{1'b0}})
-) cfg_sync4txlogic_u2 (
+) cfg_sync4txlogic_u3 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
@@ -576,11 +628,13 @@ scaler scaler_u(
   .video_config_i(cfg_videomode),
   .video_llm_i(cfg_lowlatencymode),
   .video_interpolation_mode_i(cfg_interpolation_mode),
+  .video_pal_boxed_i(cfg_pal_boxed),
   .video_vscale_factor_i(cfg_vscale_factor),
+  .video_vpixel_out_i(cfg_vpixel_out),
+  .video_vfactor_lin_i(cfg_v_appr_mult_factor),
   .video_hscale_factor_i(cfg_hscale_factor),
   .video_hpixel_out_i(cfg_hpixel_out),
-  .video_hfactor_lin_i(cfg_appr_mult_factor),
-  .video_pal_boxed_i(cfg_pal_boxed),
+  .video_hfactor_lin_i(cfg_h_appr_mult_factor),
   .vinfo_txsynced_i({palmode_resynced,n64_480i_resynced}),
   .vinfo_llm_slbuf_fb_o(PPUState[`PPU_output_llm_slbuf_slice]),
   .DRAM_CLK_i(DRAM_CLK_i),
