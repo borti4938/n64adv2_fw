@@ -258,7 +258,7 @@ n64adv2_ppu_top n64adv2_ppu_u(
   .VD_i(VD_w),
   .PPUState(PPUState_w),
   .ConfigSet(PPUConfigSet_w),
-  .SYSCLK(CLKs_controller_w[0]),
+  .SYS_CLK(CLKs_controller_w[0]),
   .OSD_VSync(OSD_VSync_w),
   .OSDWrVector(OSDWrVector_w),
   .OSDInfo(OSDInfo_w),

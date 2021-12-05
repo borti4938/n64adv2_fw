@@ -47,11 +47,11 @@ module n64adv2_ppu_top (
   VD_i,
 
   // Misc Information Exchange
-  // Note: SYSCLK is System clock (Nios II)
+  // Note: SYS_CLK is System clock (Nios II)
   PPUState,
   ConfigSet,
 
-  SYSCLK,
+  SYS_CLK,
   
   OSD_VSync,
   OSDWrVector,
@@ -99,7 +99,7 @@ input [color_width_i-1:0] VD_i;
 output [`PPU_State_Width-1:0] PPUState;
 input  [`PPUConfig_WordWidth-1:0] ConfigSet;
 
-input        SYSCLK;
+input        SYS_CLK;
 
 output       OSD_VSync;
 input [24:0] OSDWrVector;
@@ -630,7 +630,7 @@ osd_injection #(
   .vcnt_width(11),
   .hcnt_width(12)
 ) osd_injection_u (
-  .OSDCLK(SYSCLK),
+  .OSDCLK(SYS_CLK),
   .OSD_VSync(OSD_VSync),
   .OSDWrVector(OSDWrVector),
   .OSDInfo(OSDInfo_resynced),
