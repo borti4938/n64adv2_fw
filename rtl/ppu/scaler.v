@@ -288,12 +288,10 @@ reg [10:0] X_VSTOP_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60;
 reg [9:0] X_pix_v_input_lines_needed = `ACTIVE_LINES_NTSC_LX1;
 reg [36:0] target_lines_resmax_full;
 reg [9:0] X_pix_v_target_input_lines_resmax = `ACTIVE_LINES_NTSC_LX1;
-reg [10:0] X_pix_v_active_target_length = 11'd480;
 
 reg [9:0] X_pix_h_input_pixel_needed = `ACTIVE_PIXEL_PER_LINE;
 reg [36:0] target_hpixel_resmax_full;
 reg [10:0] X_pix_h_target_input_pixel_resmax = `ACTIVE_PIXEL_PER_LINE;
-reg [11:0] X_pix_h_active_target_length = 12'd640;
 
 reg [10:0] X_pix_v_org_input_pixel = 11'd240;
 reg [10:0] X_pix_v_init_pixel_phase = 11'd120;
@@ -1016,8 +1014,8 @@ assign X_pix_v_input_lines_needed_ntsc_w = (X_pix_v_target_input_lines_resmax < 
 
 assign X_pix_v_org_input_lines_w = use_pal_lines ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
 
-assign X_vpos_offset_w = (X_pix_v_active_target_length < X_VACTIVE) ? (X_VACTIVE - X_pix_v_active_target_length)/2 : 11'd0;
-assign X_hpos_offset_w = (X_pix_h_active_target_length < X_HACTIVE) ? (X_HACTIVE - X_pix_h_active_target_length)/2 : 12'd0;
+assign X_vpos_offset_w = (video_vpixel_out_i < X_VACTIVE) ? (X_VACTIVE - video_vpixel_out_i)/2 : 11'd0;
+assign X_hpos_offset_w = (video_hpixel_out_i < X_HACTIVE) ? (X_HACTIVE - video_hpixel_out_i)/2 : 12'd0;
 
 assign target_lines_resmax_full_w = video_inv_vscale_i * (* multstyle = "dsp" *) X_VACTIVE;
 assign target_hpixel_resmax_full_w = video_inv_hscale_i * (* multstyle = "dsp" *) X_HACTIVE;
@@ -1033,26 +1031,22 @@ always @(posedge VCLK_o)
       setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HTOTAL);
     end
     if (hcnt_o_L[3:0] == 4'd2) begin  // setup scaling a bit delayed to have stable video timings
-      setVScaleTargets(video_vscale_factor_i,use_pal_lines,X_pix_v_active_target_length);
-      target_lines_resmax_full <= target_lines_resmax_full_w;
-      
-      setHScaleTargets(video_hscale_factor_i,X_pix_h_active_target_length);
-      target_hpixel_resmax_full <= target_hpixel_resmax_full_w;
-      
-      X_pix_v_org_input_pixel <= X_pix_v_org_input_lines_w;
-      X_pix_v_target_output_pixel <= video_vpixel_out_i;
-      X_pix_v_lin_pixel_factor <= video_vfactor_lin_i;
-      
-      X_pix_h_org_input_pixel <= `ACTIVE_PIXEL_PER_LINE;
-      X_pix_h_target_output_pixel <= video_hpixel_out_i;
-      X_pix_h_lin_pixel_factor <= video_hfactor_lin_i;
-    end
-    if (hcnt_o_L[3:0] == 4'd4) begin  // setup some configs even more delayed
       X_HSTART_px <= X_HSTART + X_hpos_offset_w;
       X_HSTOP_px <= X_HSTOP - X_hpos_offset_w;
       X_VSTART_px <= X_VSTART + X_vpos_offset_w;
       X_VSTOP_px <= X_VSTOP - X_vpos_offset_w;
       
+      target_lines_resmax_full <= target_lines_resmax_full_w;
+      X_pix_v_org_input_pixel <= X_pix_v_org_input_lines_w;
+      X_pix_v_target_output_pixel <= video_vpixel_out_i;
+      X_pix_v_lin_pixel_factor <= video_vfactor_lin_i;
+      
+      target_hpixel_resmax_full <= target_hpixel_resmax_full_w;
+      X_pix_h_org_input_pixel <= `ACTIVE_PIXEL_PER_LINE;
+      X_pix_h_target_output_pixel <= video_hpixel_out_i;
+      X_pix_h_lin_pixel_factor <= video_hfactor_lin_i;
+    end
+    if (hcnt_o_L[3:0] == 4'd4) begin  // setup some configs even more delayed
       X_pix_v_target_input_lines_resmax <= target_lines_resmax_full[33:24] + target_lines_resmax_full[23];
       X_pix_h_target_input_pixel_resmax <= target_hpixel_resmax_full[33:23] + target_hpixel_resmax_full[22];
       
