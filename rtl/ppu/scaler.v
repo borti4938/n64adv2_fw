@@ -15,9 +15,11 @@ module scaler(
   video_pal_boxed_i,
   video_vscale_factor_i,
   video_vpixel_out_i,
+  video_inv_vscale_i,
   video_vfactor_lin_i,
   video_hscale_factor_i,
   video_hpixel_out_i,
+  video_inv_hscale_i,
   video_hfactor_lin_i,
   vinfo_txsynced_i,
   vinfo_llm_slbuf_fb_o,
@@ -62,9 +64,11 @@ input [1:0] video_interpolation_mode_i;
 input video_pal_boxed_i;
 input [4:0] video_vscale_factor_i;
 input [10:0] video_vpixel_out_i;
+input [26:0] video_inv_vscale_i;
 input [17:0] video_vfactor_lin_i;
 input [4:0] video_hscale_factor_i;
 input [11:0] video_hpixel_out_i;
+input [27:0] video_inv_hscale_i;
 input [17:0] video_hfactor_lin_i;
 input video_llm_i;
 input [1:0] vinfo_txsynced_i;
@@ -144,7 +148,6 @@ wire vshift_direction = vdata_hvshift[4];
 wire [3:0] vshift    = vdata_hvshift[4] ? vdata_hvshift[3:0] : ~vdata_hvshift[3:0] + 1'b1;
 
 
-
 // wires
 wire nRST_i, nRST_DRAM_proc, nRST_o;
 
@@ -187,11 +190,13 @@ wire [color_width_o-1:0] red_h_interp_out, gr_h_interp_out, bl_h_interp_out;
 
 
 wire use_pal_lines;
-wire [9:0] X_pix_v_input_lines_needed_pal_w, X_pix_v_input_lines_needed_ntsc_w;
-wire [10:0] X_pix_v_org_input_pixel_w;
-wire [vcnt_width-1:0] X_vpos_1st_rdline_ntsc_w, X_vpos_1st_rdline_pal_w, X_vpos_1st_rdline_pal_boxed_w;
 wire [11:0] X_hpos_offset_w;
 wire [10:0] X_vpos_offset_w;
+wire [10:0] X_pix_v_org_input_lines_w;
+wire [9:0] X_pix_v_input_lines_needed_pal_w, X_pix_v_input_lines_needed_ntsc_w;
+wire [36:0] target_lines_resmax_full_w;
+wire [39:0] target_hpixel_resmax_full_w;
+wire [vcnt_width-1:0] X_vpos_1st_rdline_ntsc_w, X_vpos_1st_rdline_pal_w, X_vpos_1st_rdline_pal_boxed_w;
 
 
 // cmb regs
@@ -280,11 +285,14 @@ reg [11:0] X_HSTOP_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60;
 reg [10:0] X_VSTART_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60;
 reg [10:0] X_VSTOP_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60;
 
-reg [9:0] X_pix_v_input_lines_needed = 10'd240;
-reg [9:0] X_pix_v_target_input_lines_resmax = 10'd240; // must not exceed (output active lines)/v_scaling_factor, can be left 240/288 otherwise
+reg [9:0] X_pix_v_input_lines_needed = `ACTIVE_LINES_NTSC_LX1;
+reg [36:0] target_lines_resmax_full;
+reg [9:0] X_pix_v_target_input_lines_resmax = `ACTIVE_LINES_NTSC_LX1;
 reg [10:0] X_pix_v_active_target_length = 11'd480;
 
-reg [9:0] X_pix_h_target_input_pixel = `ACTIVE_PIXEL_PER_LINE; // must not exceed (output active pixels)/h_scaling_factor, can be left at 640 (`ACTIVE_PIXEL_PER_LINE) otherwise
+reg [9:0] X_pix_h_input_pixel_needed = `ACTIVE_PIXEL_PER_LINE;
+reg [36:0] target_hpixel_resmax_full;
+reg [10:0] X_pix_h_target_input_pixel_resmax = `ACTIVE_PIXEL_PER_LINE;
 reg [11:0] X_pix_h_active_target_length = 12'd640;
 
 reg [10:0] X_pix_v_org_input_pixel = 11'd240;
@@ -1006,10 +1014,13 @@ assign use_pal_lines = palmode_vclk_o_resynced && !video_pal_boxed_i;
 assign X_pix_v_input_lines_needed_pal_w  = (X_pix_v_target_input_lines_resmax < `ACTIVE_LINES_PAL_LX1)  ? X_pix_v_target_input_lines_resmax : `ACTIVE_LINES_PAL_LX1;
 assign X_pix_v_input_lines_needed_ntsc_w = (X_pix_v_target_input_lines_resmax < `ACTIVE_LINES_NTSC_LX1) ? X_pix_v_target_input_lines_resmax : `ACTIVE_LINES_NTSC_LX1;
 
-assign X_pix_v_org_input_pixel_w = use_pal_lines ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
+assign X_pix_v_org_input_lines_w = use_pal_lines ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
 
 assign X_vpos_offset_w = (X_pix_v_active_target_length < X_VACTIVE) ? (X_VACTIVE - X_pix_v_active_target_length)/2 : 11'd0;
 assign X_hpos_offset_w = (X_pix_h_active_target_length < X_HACTIVE) ? (X_HACTIVE - X_pix_h_active_target_length)/2 : 12'd0;
+
+assign target_lines_resmax_full_w = video_inv_vscale_i * (* multstyle = "dsp" *) X_VACTIVE;
+assign target_hpixel_resmax_full_w = video_inv_hscale_i * (* multstyle = "dsp" *) X_HACTIVE;
 
 assign X_vpos_1st_rdline_ntsc_w = (X_pix_v_target_input_lines_resmax < `ACTIVE_LINES_NTSC_LX1) ? (`ACTIVE_LINES_NTSC_LX1 - X_pix_v_target_input_lines_resmax)/2 : {vcnt_width{1'b0}};
 assign X_vpos_1st_rdline_pal_w = (X_pix_v_target_input_lines_resmax < `ACTIVE_LINES_PAL_LX1) ? (`ACTIVE_LINES_PAL_LX1 - X_pix_v_target_input_lines_resmax)/2 : {vcnt_width{1'b0}};
@@ -1017,17 +1028,18 @@ assign X_vpos_1st_rdline_pal_boxed_w = (X_pix_v_target_input_lines_resmax < `ACT
 
 always @(posedge VCLK_o) 
   if (vcnt_o_L == 0 && hcnt_o_L[11:4] == 0) begin
-    if (hcnt_o_L[3:0] == 0) begin  // setup video timings for this frame
+    if (hcnt_o_L[3:0] == 4'd0) begin  // setup video timings for this frame
       setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VTOTAL);
       setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HTOTAL);
     end
-    if (hcnt_o_L[3:0] == 2) begin  // setup scaling a bit delayed to have stable video timings
-      setVScaleTargets(video_config_i,video_vscale_factor_i,use_pal_lines,
-                       X_pix_v_target_input_lines_resmax,X_pix_v_active_target_length);
-      setHScaleTargets(video_config_i,video_hscale_factor_i,
-                       X_pix_h_target_input_pixel,X_pix_h_active_target_length);
+    if (hcnt_o_L[3:0] == 4'd2) begin  // setup scaling a bit delayed to have stable video timings
+      setVScaleTargets(video_vscale_factor_i,use_pal_lines,X_pix_v_active_target_length);
+      target_lines_resmax_full <= target_lines_resmax_full_w;
       
-      X_pix_v_org_input_pixel <= X_pix_v_org_input_pixel_w;
+      setHScaleTargets(video_hscale_factor_i,X_pix_h_active_target_length);
+      target_hpixel_resmax_full <= target_hpixel_resmax_full_w;
+      
+      X_pix_v_org_input_pixel <= X_pix_v_org_input_lines_w;
       X_pix_v_target_output_pixel <= video_vpixel_out_i;
       X_pix_v_lin_pixel_factor <= video_vfactor_lin_i;
       
@@ -1035,17 +1047,24 @@ always @(posedge VCLK_o)
       X_pix_h_target_output_pixel <= video_hpixel_out_i;
       X_pix_h_lin_pixel_factor <= video_hfactor_lin_i;
     end
-    if (hcnt_o_L[3:0] == 4) begin  // setup some configs even more delayed
+    if (hcnt_o_L[3:0] == 4'd4) begin  // setup some configs even more delayed
       X_HSTART_px <= X_HSTART + X_hpos_offset_w;
       X_HSTOP_px <= X_HSTOP - X_hpos_offset_w;
       X_VSTART_px <= X_VSTART + X_vpos_offset_w;
       X_VSTOP_px <= X_VSTOP - X_vpos_offset_w;
-      X_pix_v_input_lines_needed <= use_pal_lines ? X_pix_v_input_lines_needed_pal_w : X_pix_v_input_lines_needed_ntsc_w;
+      
+      X_pix_v_target_input_lines_resmax <= target_lines_resmax_full[33:24] + target_lines_resmax_full[23];
+      X_pix_h_target_input_pixel_resmax <= target_hpixel_resmax_full[33:23] + target_hpixel_resmax_full[22];
+      
       X_pix_v_init_pixel_phase <= |video_interpolation_mode_i ? X_pix_v_org_input_pixel/2 + X_pix_v_target_output_pixel/2 : X_pix_v_org_input_pixel/2;
       X_pix_h_init_pixel_phase <= |video_interpolation_mode_i ? X_pix_h_org_input_pixel/2 + X_pix_h_target_output_pixel/2 : X_pix_h_org_input_pixel/2;
-      X_hpos_1st_rdpixel <= X_pix_h_target_input_pixel < `ACTIVE_PIXEL_PER_LINE ? `ACTIVE_PIXEL_PER_LINE/2 - X_pix_h_target_input_pixel/2 : 0;
+    end
+    if (hcnt_o_L[3:0] == 4'd6) begin  // setup some configs even much more delayed
+      X_pix_v_input_lines_needed <= use_pal_lines ? X_pix_v_input_lines_needed_pal_w : X_pix_v_input_lines_needed_ntsc_w;
+      X_pix_h_input_pixel_needed <= (X_pix_h_target_input_pixel_resmax < `ACTIVE_PIXEL_PER_LINE) ? X_pix_h_target_input_pixel_resmax : `ACTIVE_PIXEL_PER_LINE;
       X_vpos_1st_rdline <= !palmode_vclk_o_resynced ? X_vpos_1st_rdline_ntsc_w :
                                   video_pal_boxed_i ? X_vpos_1st_rdline_pal_boxed_w : X_vpos_1st_rdline_pal_w;
+      X_hpos_1st_rdpixel <= (X_pix_h_target_input_pixel_resmax < `ACTIVE_PIXEL_PER_LINE) ? `ACTIVE_PIXEL_PER_LINE/2 - X_pix_h_target_input_pixel_resmax/2 : 0;
     end
   end
 
@@ -1233,7 +1252,7 @@ always @(posedge VCLK_o or negedge nRST_o)
           end
         HVSCALE_PHASE_MAIN: begin
             if (h_pixel_cnt_cmb >= X_pix_h_target_output_pixel) begin
-              if (h_pixel_load_cnt == X_pix_h_target_input_pixel - 1)
+              if (h_pixel_load_cnt == X_pix_h_input_pixel_needed - 1)
                 hscale_phase <= HVSCALE_PHASE_POST;
               h_pixel_cnt <= h_pixel_cnt_cmb - X_pix_h_target_output_pixel;
               rdaddr_slbuf <= rdaddr_slbuf + 1'b1;
@@ -1251,7 +1270,7 @@ always @(posedge VCLK_o or negedge nRST_o)
             end
           end
         HVSCALE_PHASE_POST: begin
-            if (h_pixel_cnt_cmb >= X_pix_h_target_input_pixel) begin
+            if (h_pixel_cnt_cmb >= X_pix_h_input_pixel_needed) begin
               hscale_phase <= HVSCALE_PHASE_INVALID;
               pix_h_bypass_z0_current[0] <= 1'b1;
               pix_h_bypass_z1_current[0] <= 1'b0;

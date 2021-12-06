@@ -150,7 +150,13 @@ wire cfg_lowlatencymode;
 wire [9:0] cfg_hvshift;
 
 wire vline_palmode_w;
+wire [8:0] n64_lines;
+wire [9:0] n64_hpixels;
+wire [dividend_length+8:0] inv_vscale_w;
+wire [dividend_length+9:0] inv_hscale_w;
 wire [4:0] cfg_vscale_factor_w, cfg_hscale_factor_w;
+wire [dividend_length+8:0] cfg_inv_vscale;
+wire [dividend_length+9:0] cfg_inv_hscale;
 wire [10:0] cfg_vpixel_out;
 wire [11:0] cfg_hpixel_out;
 wire [dividend_length-1:0] v_appr_mult_factor_w, cfg_v_appr_mult_factor, h_appr_mult_factor_w, cfg_h_appr_mult_factor;
@@ -179,10 +185,17 @@ wire [15:0] limited_Re_pre, limited_Gr_pre, limited_Bl_pre;
 //regs
 reg cfg_nvideblur;
 
-reg [10:0] v_divisor_L, v_divisor_LL, v_pixel_out_LLL;
-reg [11:0] h_divisor_L, h_divisor_LL, h_pixel_out_LLL;
+
+reg v_divide_done_LLL, h_divide_done_LLL;
+
+
+reg [10:0] v_divisor_L, v_divisor_LL, v_pixel_out_LLL, v_pixel_out_LLLL;
+reg [11:0] h_divisor_L, h_divisor_LL, h_pixel_out_LLL, h_pixel_out_LLLL;
 reg v_divide_cmd_LL, h_divide_cmd_LL;
-reg [dividend_length-1:0] v_appr_mult_factor_LLL, h_appr_mult_factor_LLL;
+reg [dividend_length-1:0] v_appr_mult_factor_LLL, v_appr_mult_factor_LLLL,
+                          h_appr_mult_factor_LLL, h_appr_mult_factor_LLLL;
+reg [dividend_length+8:0] inv_vscale_LLLL;
+reg [dividend_length+9:0] inv_hscale_LLLL;
 
 reg [`VID_CFG_W-1:0] cfg_videomode;
 reg [1:0] cfg_interpolation_mode;
@@ -250,6 +263,11 @@ assign vline_palmode_w = !ConfigSet[`pal_boxed_scale_bit] & palmode_sysclk_resyn
 assign cfg_vscale_factor_w = ConfigSet[`vscale_slice];
 assign cfg_hscale_factor_w = ConfigSet[`link_hv_scale_bit] ? ConfigSet[`vscale_slice] : ConfigSet[`hscale_slice];
 
+assign n64_lines = vline_palmode_w ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
+assign n64_hpixels = `ACTIVE_PIXEL_PER_LINE;
+assign inv_vscale_w = v_appr_mult_factor_LLL * (* multstyle = "dsp" *) n64_lines;
+assign inv_hscale_w = h_appr_mult_factor_LLL * (* multstyle = "dsp" *) n64_hpixels;
+
 always @(posedge SYS_CLK) begin
   getVPixels(vline_palmode_w,cfg_vscale_factor_w,v_divisor_L);
   if ((v_divisor_LL != v_divisor_L) & !v_divide_busy_w) begin
@@ -262,6 +280,12 @@ always @(posedge SYS_CLK) begin
     v_pixel_out_LLL <= v_divisor_LL;
     v_appr_mult_factor_LLL <= v_appr_mult_factor_w;
   end
+  v_divide_done_LLL <= v_divide_done_w;
+  if (v_divide_done_LLL) begin
+    inv_vscale_LLLL <= inv_vscale_w;
+    v_pixel_out_LLLL <= v_pixel_out_LLL;
+    v_appr_mult_factor_LLLL <= v_appr_mult_factor_LLL;
+  end
   
   getHPixels(cfg_hscale_factor_w,h_divisor_L);
   if ((h_divisor_LL != h_divisor_L) & !h_divide_busy_w) begin
@@ -273,6 +297,12 @@ always @(posedge SYS_CLK) begin
   if (h_divide_done_w) begin
     h_pixel_out_LLL <= h_divisor_LL;
     h_appr_mult_factor_LLL <= h_appr_mult_factor_w;
+  end
+  h_divide_done_LLL <= h_divide_done_w;
+  if (h_divide_done_LLL) begin
+    inv_hscale_LLLL <= inv_hscale_w;
+    h_pixel_out_LLLL <= h_pixel_out_LLL;
+    h_appr_mult_factor_LLLL <= h_appr_mult_factor_LLL;
   end
 end
 
@@ -327,25 +357,25 @@ always @(*)
 
 // to VCLK_Tx clock domain
 register_sync #(
-  .reg_width(11+dividend_length),
-  .reg_preset({(11+dividend_length){1'b0}})
+  .reg_width(2*dividend_length+20), // dividend_length + 9 + 11 + dividend_length
+  .reg_preset({(2*dividend_length+20){1'b0}})
 ) cfg_sync4txlogic_u0 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({v_pixel_out_LLL,v_appr_mult_factor_LLL}),
-  .reg_o({cfg_vpixel_out,cfg_v_appr_mult_factor})
+  .reg_i({inv_vscale_LLLL,v_pixel_out_LLLL,v_appr_mult_factor_LLLL}),
+  .reg_o({cfg_inv_vscale,cfg_vpixel_out,cfg_v_appr_mult_factor})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
 
 register_sync #(
-  .reg_width(12+dividend_length),
-  .reg_preset({(12+dividend_length){1'b0}})
+  .reg_width(2*dividend_length+22), // dividend_length + 10 + 12 + dividend_length
+  .reg_preset({(2*dividend_length+22){1'b0}})
 ) cfg_sync4txlogic_u1 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({h_pixel_out_LLL,h_appr_mult_factor_LLL}),
-  .reg_o({cfg_hpixel_out,cfg_h_appr_mult_factor})
+  .reg_i({inv_hscale_LLLL,h_pixel_out_LLLL,h_appr_mult_factor_LLLL}),
+  .reg_o({cfg_inv_hscale,cfg_hpixel_out,cfg_h_appr_mult_factor})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u1|reg_synced_1[*])
 
 register_sync_2 #(
@@ -631,9 +661,11 @@ scaler scaler_u(
   .video_pal_boxed_i(cfg_pal_boxed),
   .video_vscale_factor_i(cfg_vscale_factor),
   .video_vpixel_out_i(cfg_vpixel_out),
+  .video_inv_vscale_i(cfg_inv_vscale),
   .video_vfactor_lin_i(cfg_v_appr_mult_factor),
   .video_hscale_factor_i(cfg_hscale_factor),
   .video_hpixel_out_i(cfg_hpixel_out),
+  .video_inv_hscale_i(cfg_inv_hscale),
   .video_hfactor_lin_i(cfg_h_appr_mult_factor),
   .vinfo_txsynced_i({palmode_resynced,n64_480i_resynced}),
   .vinfo_llm_slbuf_fb_o(PPUState[`PPU_output_llm_slbuf_slice]),
