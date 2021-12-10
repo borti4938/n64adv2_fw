@@ -1,13 +1,131 @@
 
+task setVideoSYNCactive;
+
+  input [`VID_CFG_W-1:0] video_config;
+  output VSYNC_active;
+  output HSYNC_active;
+  
+  begin
+    case (video_config)
+      `USE_VGAp60: begin  // VGA (640x480), 4:3
+          VSYNC_active <= `VSYNC_active_VGA;
+          HSYNC_active <= `HSYNC_active_VGA;
+        end
+      `USE_720p60: begin  // 720p-60, 16:9
+          VSYNC_active <= `VSYNC_active_720p60;
+          HSYNC_active <= `HSYNC_active_720p60;
+        end
+      `USE_960p60: begin  // 960p-60, 4:3
+          VSYNC_active <= `VSYNC_active_960p60;
+          HSYNC_active <= `HSYNC_active_960p60;
+        end
+      `USE_1080p60: begin // 1080p-60, 16:9
+          VSYNC_active <= `VSYNC_active_1080p60;
+          HSYNC_active <= `HSYNC_active_1080p60;
+        end
+      `USE_1200p60: begin // 1200p-60, 4:3
+          VSYNC_active <= `VSYNC_active_1200p60;
+          HSYNC_active <= `HSYNC_active_1200p60;
+        end
+      `USE_720p50: begin // 720p-50, 16:9
+          VSYNC_active <= `VSYNC_active_720p50;
+          HSYNC_active <= `HSYNC_active_720p50;
+        end
+      `USE_960p50: begin // 960p-50, 4:3
+          VSYNC_active <= `VSYNC_active_960p50;
+          HSYNC_active <= `HSYNC_active_960p50;
+        end
+      `USE_1080p50: begin // 1080p-50, 16:9
+          VSYNC_active <= `VSYNC_active_1080p50;
+          HSYNC_active <= `HSYNC_active_1080p50;
+        end
+      `USE_1200p50: begin // 1200p-50, 4:3
+          VSYNC_active <= `VSYNC_active_1200p50;
+          HSYNC_active <= `HSYNC_active_1200p50;
+        end
+      default: begin
+          if (video_config[`VID_CFG_50HZ_BIT]) begin // 576p-50, 4:3 / 16:9
+            VSYNC_active <= `VSYNC_active_576p50;
+            HSYNC_active <= `HSYNC_active_576p50;
+          end else begin // 480p-60, 4:3 / 16:9
+            VSYNC_active <= `VSYNC_active_480p60;
+            HSYNC_active <= `HSYNC_active_480p60;
+          end
+        end
+    endcase
+  end
+  
+endtask
+
+
+task setVideoVidACTIVE;
+
+  input [`VID_CFG_W-1:0] video_config;
+  output [10:0] VACTIVE;
+  output [11:0] HACTIVE;
+  
+  begin
+    case (video_config)
+      `USE_VGAp60: begin  // VGA (640x480), 4:3
+          VACTIVE <= `VACTIVE_VGA;
+          HACTIVE <= `HACTIVE_VGA;
+        end
+      `USE_720p60: begin  // 720p-60, 16:9
+          VACTIVE <= `VACTIVE_720p60;
+          HACTIVE <= `HACTIVE_720p60;
+        end
+      `USE_960p60: begin  // 960p-60, 4:3
+          VACTIVE <= `VACTIVE_960p60;
+          HACTIVE <= `HACTIVE_960p60;
+        end
+      `USE_1080p60: begin // 1080p-60, 16:9
+          VACTIVE <= `VACTIVE_1080p60;
+          HACTIVE <= `HACTIVE_1080p60;
+        end
+      `USE_1200p60: begin // 1200p-60, 4:3
+          VACTIVE <= `VACTIVE_1200p60;
+          HACTIVE <= `HACTIVE_1200p60;
+        end
+      `USE_720p50: begin // 720p-50, 16:9;
+          VACTIVE <= `VACTIVE_720p50;
+          HACTIVE <= `HACTIVE_720p50;
+        end
+      `USE_960p50: begin // 960p-50, 4:3
+          VACTIVE <= `VACTIVE_960p50;
+          HACTIVE <= `HACTIVE_960p50;
+        end
+      `USE_1080p50: begin // 1080p-50, 16:9
+          VACTIVE <= `VACTIVE_1080p50;
+          HACTIVE <= `HACTIVE_1080p50;
+        end
+      `USE_1200p50: begin // 1200p-50, 4:3
+          VACTIVE <= `VACTIVE_1200p50;
+          HACTIVE <= `HACTIVE_1200p50;
+        end
+      default: begin
+          if (video_config[`VID_CFG_50HZ_BIT]) begin // 576p-50, 4:3 / 16:9
+            VACTIVE <= `VACTIVE_576p50;
+            HACTIVE <= `HACTIVE_576p50;
+          end else begin // 480p-60, 4:3 / 16:9
+            VACTIVE <= `VACTIVE_480p60;
+            HACTIVE <= `HACTIVE_480p60;
+          end
+        end
+    endcase
+  end
+
+endtask
+
+
 task setVideoVTimings;
 
   input [`VID_CFG_W-1:0] video_config;
   output VSYNC_active;
-  output [11:0] VSYNCLEN;
-  output [11:0] VSTART;
-  output [11:0] VACTIVE;
-  output [11:0] VSTOP;
-  output [11:0] VTOTAL;
+  output [10:0] VSYNCLEN;
+  output [10:0] VSTART;
+  output [10:0] VACTIVE;
+  output [10:0] VSTOP;
+  output [10:0] VTOTAL;
   
   begin
     case (video_config)

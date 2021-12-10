@@ -89,7 +89,7 @@ module n64adv2_ppu_top (
 `include "../vh/n64adv2_config.vh"
 `include "../vh/videotimings.vh"
 
-`include "../../tasks/setScalerConfig.tasks.v"
+`include "../tasks/setVideoTimings.tasks.v"
 
 input N64_CLK_i;
 input N64_nVRST_i;
@@ -138,7 +138,6 @@ output        DRAM_nWE;
 // params
 localparam limitRGB_coeff = 8'd220;
 localparam limitRGB_offset = 8'd16;
-localparam dividend_length = 18;
 
 // wires
 wire [1:0] vinfo_pass;  // [1:0] {vmode,n64_480i}
@@ -149,20 +148,22 @@ wire cfg_nvideblur_pre, cfg_n16bit_mode;
 wire cfg_lowlatencymode;
 wire [9:0] cfg_hvshift;
 
-wire vline_palmode_w;
-wire [8:0] n64_lines;
-wire [9:0] n64_hpixels;
-wire [dividend_length+8:0] inv_vscale_w;
-wire [dividend_length+9:0] inv_hscale_w;
-wire [4:0] cfg_vscale_factor_w, cfg_hscale_factor_w;
-wire [dividend_length+8:0] cfg_inv_vscale;
-wire [dividend_length+9:0] cfg_inv_hscale;
-wire [10:0] cfg_vpixel_out;
-wire [11:0] cfg_hpixel_out;
-wire [dividend_length-1:0] v_appr_mult_factor_w, cfg_v_appr_mult_factor, h_appr_mult_factor_w, cfg_h_appr_mult_factor;
-wire v_divide_busy_w, v_divide_done_w, h_divide_busy_w, h_divide_done_w;
+wire [`VID_CFG_W-1:0] sys_vmode_ntsc_w, sys_vmode_pal_w;
 
-wire palmode_sysclk_resynced, palmode_resynced, n64_480i_resynced;
+wire palmode_sysclk_resynced;
+wire [4:0] cfg_vscale_factor_w, cfg_hscale_factor_w;
+
+wire [8:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_resynced;
+wire [10:0] cfg_vlines_out_w, cfg_vlines_out_resynced;
+wire [17:0] cfg_v_interp_factor_w, cfg_v_interp_factor_resynced;
+wire [8:0] cfg_vlines_in_needed_w, cfg_vlines_in_needed_resynced;
+
+wire [9:0] cfg_hpos_1st_rdpixel_w, cfg_hpos_1st_rdpixel_resynced;
+wire [11:0] cfg_hpixels_out_w, cfg_hpixels_out_resynced;
+wire [17:0] cfg_h_interp_factor_w, cfg_h_interp_factor_resynced;
+wire [9:0] cfg_hlines_in_needed_w, cfg_hlines_in_needed_resynced;
+
+wire palmode_resynced, n64_480i_resynced;
 wire [`VID_CFG_W-1:0] videomode_ntsc_w, videomode_pal_w;
 
 wire [`PPUConfig_WordWidth-1:0] ConfigSet_resynced;
@@ -185,22 +186,10 @@ wire [15:0] limited_Re_pre, limited_Gr_pre, limited_Bl_pre;
 //regs
 reg cfg_nvideblur;
 
-
-reg v_divide_done_LLL, h_divide_done_LLL;
-
-
-reg [10:0] v_divisor_L, v_divisor_LL, v_pixel_out_LLL, v_pixel_out_LLLL;
-reg [11:0] h_divisor_L, h_divisor_LL, h_pixel_out_LLL, h_pixel_out_LLLL;
-reg v_divide_cmd_LL, h_divide_cmd_LL;
-reg [dividend_length-1:0] v_appr_mult_factor_LLL, v_appr_mult_factor_LLLL,
-                          h_appr_mult_factor_LLL, h_appr_mult_factor_LLLL;
-reg [dividend_length+8:0] inv_vscale_LLLL;
-reg [dividend_length+9:0] inv_hscale_LLLL;
+reg [`VID_CFG_W-1:0] sys_videomode;
 
 reg [`VID_CFG_W-1:0] cfg_videomode;
 reg [1:0] cfg_interpolation_mode;
-reg [4:0] cfg_vscale_factor;
-reg [4:0] cfg_hscale_factor;
 reg cfg_pal_boxed;
 reg cfg_SL_method, cfg_SL_id, cfg_SL_en;
 reg [1:0] cfg_SL_thickness;
@@ -259,81 +248,52 @@ register_sync #(
   .reg_o(palmode_sysclk_resynced)
 );
 
-assign vline_palmode_w = !ConfigSet[`pal_boxed_scale_bit] & palmode_sysclk_resynced;
-assign cfg_vscale_factor_w = ConfigSet[`vscale_slice];
-assign cfg_hscale_factor_w = ConfigSet[`link_hv_scale_bit] ? ConfigSet[`vscale_slice] : ConfigSet[`hscale_slice];
 
-assign n64_lines = vline_palmode_w ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
-assign n64_hpixels = `ACTIVE_PIXEL_PER_LINE;
-assign inv_vscale_w = v_appr_mult_factor_LLL * (* multstyle = "dsp" *) n64_lines;
-assign inv_hscale_w = h_appr_mult_factor_LLL * (* multstyle = "dsp" *) n64_hpixels;
+assign sys_vmode_ntsc_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p60 :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p60 :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p60  :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p60  :
+                          ConfigSet[`use_vga_for_480p_bit]                          ? `USE_VGAp60  :
+                                                                                      `USE_480p60  ;
+
+assign sys_vmode_pal_w =  ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p50 :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p50 :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p50  :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p50  :
+                                                                                      `USE_576p50  ;
 
 always @(posedge SYS_CLK) begin
-  getVPixels(vline_palmode_w,cfg_vscale_factor_w,v_divisor_L);
-  if ((v_divisor_LL != v_divisor_L) & !v_divide_busy_w) begin
-    v_divide_cmd_LL <= 1'b1;
-    v_divisor_LL <= v_divisor_L;
-  end else begin
-    v_divide_cmd_LL <= 1'b0;
-  end
-  if (v_divide_done_w) begin
-    v_pixel_out_LLL <= v_divisor_LL;
-    v_appr_mult_factor_LLL <= v_appr_mult_factor_w;
-  end
-  v_divide_done_LLL <= v_divide_done_w;
-  if (v_divide_done_LLL) begin
-    inv_vscale_LLLL <= inv_vscale_w;
-    v_pixel_out_LLLL <= v_pixel_out_LLL;
-    v_appr_mult_factor_LLLL <= v_appr_mult_factor_LLL;
-  end
-  
-  getHPixels(cfg_hscale_factor_w,h_divisor_L);
-  if ((h_divisor_LL != h_divisor_L) & !h_divide_busy_w) begin
-    h_divide_cmd_LL <= 1'b1;
-    h_divisor_LL <= h_divisor_L;
-  end else begin
-    h_divide_cmd_LL <= 1'b0;
-  end
-  if (h_divide_done_w) begin
-    h_pixel_out_LLL <= h_divisor_LL;
-    h_appr_mult_factor_LLL <= h_appr_mult_factor_w;
-  end
-  h_divide_done_LLL <= h_divide_done_w;
-  if (h_divide_done_LLL) begin
-    inv_hscale_LLLL <= inv_hscale_w;
-    h_pixel_out_LLLL <= h_pixel_out_LLL;
-    h_appr_mult_factor_LLLL <= h_appr_mult_factor_LLL;
+  if (ConfigSet[`force60hz_bit] & !ConfigSet[`lowlatencymode_bit]) // do not allow forcing 60Hz mode in llm
+    sys_videomode <= sys_vmode_ntsc_w;
+  else if (ConfigSet[`force50hz_bit] & !ConfigSet[`lowlatencymode_bit]) // do not allow forcing 50Hz mode in llm
+    sys_videomode <= sys_vmode_pal_w;
+  else begin
+    if (palmode)
+      sys_videomode <= sys_vmode_pal_w;
+    else
+      sys_videomode <= sys_vmode_ntsc_w;
   end
 end
 
-serial_divide #(
-  .DIVIDEND_WIDTH(dividend_length),
-  .DIVISOR_WIDTH(11)
-) v_serial_divide_u (
-  .clk_i(SYS_CLK),
-  .nrst_i(1'b1),
-  .divide_cmd_i(v_divide_cmd_LL),
-  .dividend_i({1'b1,{(dividend_length-1){1'b0}}}),
-  .divisor_i(v_divisor_L),
-  .quotient_o(v_appr_mult_factor_w),
-  .busy_o(v_divide_busy_w),
-  .done_o(v_divide_done_w)
-);
+assign cfg_vscale_factor_w = ConfigSet[`vscale_slice];
+assign cfg_hscale_factor_w = ConfigSet[`link_hv_scale_bit] ? ConfigSet[`vscale_slice] : ConfigSet[`hscale_slice];
 
-serial_divide #(
-  .DIVIDEND_WIDTH(dividend_length),
-  .DIVISOR_WIDTH(12)
-) h_serial_divide_u (
-  .clk_i(SYS_CLK),
-  .nrst_i(1'b1),
-  .divide_cmd_i(h_divide_cmd_LL),
-  .dividend_i({1'b1,{(dividend_length-1){1'b0}}}),
-  .divisor_i(h_divisor_L),
-  .quotient_o(h_appr_mult_factor_w),
-  .busy_o(h_divide_busy_w),
-  .done_o(h_divide_done_w)
+scaler_cfggen scaler_cfggen_u(
+  .SYS_CLK(SYS_CLK),
+  .palmode_i(palmode_sysclk_resynced),
+  .palmode_boxed_i(ConfigSet[`pal_boxed_scale_bit]),
+  .video_config_i(sys_videomode),
+  .vscale_factor_i(cfg_vscale_factor_w),
+  .hscale_factor_i(cfg_hscale_factor_w),
+  .vpos_1st_rdline_o(cfg_vpos_1st_rdline_w),
+  .vlines_in_needed_o(cfg_vlines_in_needed_w),
+  .vlines_out_o(cfg_vlines_out_w),
+  .v_interp_factor_o(cfg_v_interp_factor_w),
+  .hpos_1st_rdpixel_o(cfg_hpos_1st_rdpixel_w),
+  .hlines_in_needed_o(cfg_hlines_in_needed_w),
+  .hpixels_out_o(cfg_hpixels_out_w),
+  .h_interp_factor_o(cfg_h_interp_factor_w)
 );
-
 
 
 // to N64_CLK_i first
@@ -355,27 +315,40 @@ always @(*)
     cfg_nvideblur <= 1'b1;
 
 
+// to DRAM clock domain
+register_sync #(
+  .reg_width(9),
+  .reg_preset({(9){1'b0}})
+) cfg_sync4dramlogic_u0 (
+  .clk(DRAM_CLK_i),
+  .clk_en(1'b1),
+  .nrst(1'b1),
+  .reg_i(cfg_vpos_1st_rdline_w),
+  .reg_o(cfg_vpos_1st_rdline_resynced)
+); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
+
+
 // to VCLK_Tx clock domain
 register_sync #(
-  .reg_width(2*dividend_length+20), // dividend_length + 9 + 11 + dividend_length
-  .reg_preset({(2*dividend_length+20){1'b0}})
+  .reg_width(38), // 9 + 11 + 18
+  .reg_preset({(38){1'b0}})
 ) cfg_sync4txlogic_u0 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({inv_vscale_LLLL,v_pixel_out_LLLL,v_appr_mult_factor_LLLL}),
-  .reg_o({cfg_inv_vscale,cfg_vpixel_out,cfg_v_appr_mult_factor})
+  .reg_i({cfg_vlines_in_needed_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
+  .reg_o({cfg_vlines_in_needed_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
 
 register_sync #(
-  .reg_width(2*dividend_length+22), // dividend_length + 10 + 12 + dividend_length
-  .reg_preset({(2*dividend_length+22){1'b0}})
+  .reg_width(50), // 10 + 10 + 12 + 18
+  .reg_preset({(50){1'b0}})
 ) cfg_sync4txlogic_u1 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({inv_hscale_LLLL,h_pixel_out_LLLL,h_appr_mult_factor_LLLL}),
-  .reg_o({cfg_inv_hscale,cfg_hpixel_out,cfg_h_appr_mult_factor})
+  .reg_i({cfg_hpos_1st_rdpixel_w       ,cfg_hlines_in_needed_w       ,cfg_hpixels_out_w       ,cfg_h_interp_factor_w       }),
+  .reg_o({cfg_hpos_1st_rdpixel_resynced,cfg_hlines_in_needed_resynced,cfg_hpixels_out_resynced,cfg_h_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u1|reg_synced_1[*])
 
 register_sync_2 #(
@@ -428,15 +401,10 @@ always @(posedge VCLK_Tx) begin
       cfg_videomode <= videomode_ntsc_w;
   end
   cfg_interpolation_mode <= ConfigSet_resynced[`interpolation_mode_slice];
-  cfg_vscale_factor <= ConfigSet_resynced[`vscale_slice];
-  if (ConfigSet_resynced[`link_hv_scale_bit])
-    cfg_hscale_factor <= ConfigSet_resynced[`vscale_slice];
-  else
-    cfg_hscale_factor <= ConfigSet_resynced[`hscale_slice];
   cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
-  if (cfg_vscale_factor < 5'h06) // less than 3.5x
+  if (ConfigSet_resynced[`vscale_slice] < 5'h06) // less than 3.5x
     cfg_SL_thickness <= 2'b00;
-  else if (cfg_vscale_factor < 5'h0E) // less than 5.5x
+  else if (ConfigSet_resynced[`vscale_slice] < 5'h0E) // less than 5.5x
     cfg_SL_thickness <= 2'b01;
   else
     cfg_SL_thickness <= 2'b10;  
@@ -654,21 +622,6 @@ scaler scaler_u(
   .vdata_i(vdata24_pp_w[1]),
   .vdata_valid_i(vdata_valid_pp_w[1]),
   .vdata_hvshift(cfg_hvshift),
-  .VCLK_o(VCLK_Tx),
-  .video_config_i(cfg_videomode),
-  .video_llm_i(cfg_lowlatencymode),
-  .video_interpolation_mode_i(cfg_interpolation_mode),
-  .video_pal_boxed_i(cfg_pal_boxed),
-  .video_vscale_factor_i(cfg_vscale_factor),
-  .video_vpixel_out_i(cfg_vpixel_out),
-  .video_inv_vscale_i(cfg_inv_vscale),
-  .video_vfactor_lin_i(cfg_v_appr_mult_factor),
-  .video_hscale_factor_i(cfg_hscale_factor),
-  .video_hpixel_out_i(cfg_hpixel_out),
-  .video_inv_hscale_i(cfg_inv_hscale),
-  .video_hfactor_lin_i(cfg_h_appr_mult_factor),
-  .vinfo_txsynced_i({palmode_resynced,n64_480i_resynced}),
-  .vinfo_llm_slbuf_fb_o(PPUState[`PPU_output_llm_slbuf_slice]),
   .DRAM_CLK_i(DRAM_CLK_i),
   .DRAM_nRST_i(DRAM_nRST_i),
   .DRAM_ADDR(DRAM_ADDR),
@@ -680,6 +633,21 @@ scaler scaler_u(
   .DRAM_DQM(DRAM_DQM),
   .DRAM_nRAS(DRAM_nRAS),
   .DRAM_nWE(DRAM_nWE),
+  .video_vpos_1st_rdline_i(cfg_vpos_1st_rdline_resynced),
+  .VCLK_o(VCLK_Tx),
+  .vinfo_txsynced_i({palmode_resynced,n64_480i_resynced}),
+  .video_config_i(cfg_videomode),
+  .video_llm_i(cfg_lowlatencymode),
+  .video_interpolation_mode_i(cfg_interpolation_mode),
+  .video_pal_boxed_i(cfg_pal_boxed),
+  .vinfo_llm_slbuf_fb_o(PPUState[`PPU_output_llm_slbuf_slice]),
+  .video_vlines_in_needed_i(cfg_vlines_in_needed_resynced),
+  .video_vlines_out_i(cfg_vlines_out_resynced),
+  .video_v_interpfactor_i(cfg_v_interp_factor_resynced),
+  .video_hpos_1st_rdpixel_i(cfg_hpos_1st_rdpixel_resynced),
+  .video_hpixel_in_needed_i(cfg_hlines_in_needed_resynced),
+  .video_hpixel_out_i(cfg_hpixels_out_resynced),
+  .video_h_interpfactor_i(cfg_h_interp_factor_resynced),
   .drawSL(drawSL_w),
   .HSYNC_o(vdata24_pp_w[2][3*color_width_o+1]),
   .VSYNC_o(vdata24_pp_w[2][3*color_width_o+3]),
