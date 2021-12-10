@@ -156,12 +156,12 @@ derive_clock_uncertainty
 
 
 #**************************************************************
-# Set Input Delay
+# Set Input Delay for N64 data
 #**************************************************************
 # delays were carried out at the modding board and includes some potential skew (quite large for slow corner)
 set n64_data_delay_min 2.0
 set n64_data_delay_max 8.0
-set n64_margin 1.5
+set n64_margin 0.5
 set n64_in_dly_min [expr $n64_data_delay_min - $n64_margin]
 set n64_in_dly_max [expr $n64_data_delay_max + $n64_margin]
 
@@ -177,7 +177,7 @@ set_input_delay -clock altera_reserved_tck 20 [get_ports altera_reserved_tms]
 
 
 #**************************************************************
-# Set Output Delay
+# Set Output Delay for HDMI output
 #**************************************************************
 
 set adv_vtsu 1.0
@@ -305,14 +305,11 @@ set_false_path -from [get_registers {*rst_o}]
 # PPU top
 #*************************************
 set_false_path -from [get_registers {n64adv2_ppu_u|cfg_sync4n64clk_u0|reg_synced_1[*] \
+                                     n64adv2_ppu_u|cfg_sync4dramlogic_u0|reg_synced_1[*] \
                                      n64adv2_ppu_u|cfg_sync4txlogic_u0|reg_synced_1[*] \
                                      n64adv2_ppu_u|cfg_sync4txlogic_u1|reg_synced_1[*] \
-                                     n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|X_*}]
-
-
-# Scaler top
-#*************************************
-set_false_path -from [get_registers {n64adv2_ppu_u|scaler_u|vcnt_o_L[*] n64adv2_ppu_u|scaler_u|hcnt_o_L[*]}] -to [get_registers {n64adv2_ppu_u|scaler_u|X_*}]
+                                     n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|X_* \
+                                     n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|Y_*}]
 
 
 # Video Info
