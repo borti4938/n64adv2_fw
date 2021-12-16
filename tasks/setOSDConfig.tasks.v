@@ -66,10 +66,10 @@ task setOSDConfig;
                                   // = (32 + 80 + (1280 - 2*431)/2)/2 = 321/2 = 160,5
          end
       `USE_1080p50: begin
-          cfg_osd_vscale <= 3'b011;
+          cfg_osd_vscale <= 3'b100;
           cfg_osd_hscale <= 2'b10;
-          cfg_osd_voffset <= 67;  // (`VSYNCLEN_1080p50 + `VBACKPORCH_1080p50 + (`VACTIVE_1080P50 - 4*`OSD_WINDOW_VACTIVE)/2)/4
-                                  // = (5 + 36 + (1080 - 4*156)/2)/4 = 269/4 = 67,25
+          cfg_osd_voffset <= 38;  // (`VSYNCLEN_1080p50 + `VBACKPORCH_1080p50 + (`VACTIVE_1080P50 - 5*`OSD_WINDOW_VACTIVE)/2)/5
+                                  // = (5 + 36 + (1080 - 5*156)/2)/5 = 269/4 = 38,2
           cfg_osd_hoffset <= 168; // (`HSYNCLEN_1080p50 + `HBACKPORCH_1080p50 + (`HACTIVE_1080P50 - 3*`OSD_WINDOW_HACTIVE)/2)/3
                                   // = (44 + 148 + (1920 - 3*431)/2)/3 = 505,5/3 = 168,5
          end
