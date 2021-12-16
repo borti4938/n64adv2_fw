@@ -12,11 +12,13 @@ module scaler_cfggen(
   
   vpos_1st_rdline_o,
   vlines_in_needed_o,
+  vlines_in_full_o,
   vlines_out_o,
   v_interp_factor_o,
   
   hpos_1st_rdpixel_o,
-  hlines_in_needed_o,
+  hpixels_in_needed_o,
+  hpixels_in_full_o,
   hpixels_out_o,
   h_interp_factor_o
 );
@@ -39,11 +41,13 @@ input [4:0] hscale_factor_i;
 
 output reg [8:0] vpos_1st_rdline_o;
 output reg [8:0] vlines_in_needed_o;
+output reg [8:0] vlines_in_full_o;
 output reg [10:0] vlines_out_o;
 output reg [17:0] v_interp_factor_o;
 
 output reg [9:0] hpos_1st_rdpixel_o;
-output reg [9:0] hlines_in_needed_o;
+output reg [9:0] hpixels_in_needed_o;
+output reg [9:0] hpixels_in_full_o;
 output reg [11:0] hpixels_out_o;
 output reg [17:0] h_interp_factor_o;
 
@@ -77,7 +81,8 @@ wire [39:0] hpixels_in_resmax_full_w;
 
 // regs
 reg palmode_L, palmode_boxed_L;
-reg trigger_v_cfggen_phases, trigger_h_cfggen_phases;
+reg tgl_trigger_v_cfggen_phases_i, tgl_trigger_v_cfggen_phases_o;
+reg tgl_trigger_h_cfggen_phases_i, tgl_trigger_h_cfggen_phases_o;
 
 reg [1:0] v_cfggen_phase = ST_CFGGEN_RDY;
 reg [2:0] v_cfggen_phase_wait_cnt;
@@ -89,6 +94,7 @@ reg [26:0] inv_vscale_L;
 reg [36:0] vlines_in_resmax_full_L;
 reg [9:0] vlines_in_resmax_L;
 reg [8:0] vlines_in_needed_L;
+reg [8:0] vlines_in_full_L;
 reg [8:0] vpos_1st_rdline_L;
 
 reg [1:0] h_cfggen_phase = ST_CFGGEN_RDY;
@@ -100,24 +106,28 @@ reg [11:0] hactive_LL, hactive_L;
 reg [27:0] inv_hscale_L;
 reg [39:0] hpixels_in_resmax_full_L;
 reg [10:0] hpixels_in_resmax_L;
-reg [9:0]  hlines_in_needed_L;
+reg [9:0]  hpixels_in_needed_L;
+reg [9:0] hpixels_in_full_L;
 reg [9:0] hpos_1st_rdpixel_L;
 
 
 
 // rtl
-always @(posedge SYS_CLK) begin
+
+initial begin
+  tgl_trigger_v_cfggen_phases_i = 1'b0;
+  tgl_trigger_v_cfggen_phases_o = 1'b1;
+  tgl_trigger_h_cfggen_phases_i = 1'b0;
+  tgl_trigger_h_cfggen_phases_o = 1'b1;
+end
+
+always @(posedge SYS_CLK)
   if (((palmode_L != palmode_i) | (palmode_boxed_L != palmode_boxed_i)) & !v_divide_busy_w) begin
     palmode_L <= palmode_i;
     palmode_boxed_L <= palmode_boxed_i;
-    trigger_v_cfggen_phases <= 1'b1;
-    trigger_h_cfggen_phases <= 1'b1;
+    tgl_trigger_v_cfggen_phases_i <= ~tgl_trigger_v_cfggen_phases_i;
+    tgl_trigger_h_cfggen_phases_i <= ~tgl_trigger_h_cfggen_phases_i;
   end
-  if (v_cfggen_phase == ST_CFGGEN_DIVWAIT)
-    trigger_v_cfggen_phases <= 1'b0;
-  if (h_cfggen_phase == ST_CFGGEN_DIVWAIT)
-    trigger_h_cfggen_phases <= 1'b0;
-end
 
 
 assign vmode_pal_i_w = !palmode_boxed_i & palmode_i;
@@ -150,6 +160,8 @@ always @(posedge SYS_CLK) begin
   vlines_in_resmax_full_L <= vlines_in_resmax_full_w;
   vlines_in_resmax_L <= vlines_in_resmax_full_L[33:24] + vlines_in_resmax_full_L[23];
   vlines_in_needed_L <= vmode_pal_L_w ? vlines_in_needed_pal_w : vlines_in_needed_ntsc_w;
+  vlines_in_full_L <= !palmode_L ? `ACTIVE_LINES_NTSC_LX1 :
+                 palmode_boxed_L ? `ACTIVE_LINES_NTSC_LX1 : `ACTIVE_LINES_PAL_LX1;
   vpos_1st_rdline_L <= !palmode_L ? vpos_1st_rdline_ntsc_w :
                   palmode_boxed_L ? vpos_1st_rdline_pal_boxed_w : vpos_1st_rdline_pal_w;
   
@@ -171,14 +183,16 @@ always @(posedge SYS_CLK) begin
       v_cfggen_phase <= ST_CFGGEN_RDY;
       vpos_1st_rdline_o <= vpos_1st_rdline_L;
       vlines_in_needed_o <= vlines_in_needed_L;
+      vlines_in_full_o <= vlines_in_full_L;
       vlines_out_o <= v_divisor_LL;
       v_interp_factor_o <= v_appr_mult_factor_w;
     end
     default: begin  // ST_CFGGEN_RDY
-        if ((trigger_v_cfggen_phases |
+        if (((tgl_trigger_v_cfggen_phases_o != tgl_trigger_v_cfggen_phases_i) |
              (vactive_LL != vactive_L) |
              (v_divisor_LL != v_divisor_L)) & !v_divide_busy_w) begin
           v_cfggen_phase <= ST_CFGGEN_DIVWAIT;
+          tgl_trigger_v_cfggen_phases_o <= tgl_trigger_v_cfggen_phases_i;
           v_divide_cmd_LL <= 1'b1;
           vactive_LL <= vactive_L;
           v_divisor_LL <= v_divisor_L;
@@ -190,7 +204,8 @@ always @(posedge SYS_CLK) begin
   inv_hscale_L <= inv_hscale_w;
   hpixels_in_resmax_full_L <= hpixels_in_resmax_full_w;
   hpixels_in_resmax_L <= hpixels_in_resmax_full_L[33:23] + hpixels_in_resmax_full_L[22];
-  hlines_in_needed_L <= (hpixels_in_resmax_L < `ACTIVE_PIXEL_PER_LINE) ? hpixels_in_resmax_L : `ACTIVE_PIXEL_PER_LINE;
+  hpixels_in_needed_L <= (hpixels_in_resmax_L < `ACTIVE_PIXEL_PER_LINE) ? hpixels_in_resmax_L : `ACTIVE_PIXEL_PER_LINE;
+  hpixels_in_full_L <= `ACTIVE_PIXEL_PER_LINE;
   hpos_1st_rdpixel_L <= (hpixels_in_resmax_L < `ACTIVE_PIXEL_PER_LINE) ? `ACTIVE_PIXEL_PER_LINE/2 - hpixels_in_resmax_L/2 : 0;
   
   case(h_cfggen_phase)
@@ -210,15 +225,17 @@ always @(posedge SYS_CLK) begin
     ST_CFGGEN_OUT: begin
       h_cfggen_phase <= ST_CFGGEN_RDY;
       hpos_1st_rdpixel_o <= hpos_1st_rdpixel_L;
-      hlines_in_needed_o <= hlines_in_needed_L;
+      hpixels_in_needed_o <= hpixels_in_needed_L;
+      hpixels_in_full_o <= hpixels_in_full_L;
       hpixels_out_o <= h_divisor_LL;
       h_interp_factor_o <= h_appr_mult_factor_w;
     end
     default: begin  // ST_CFGGEN_RDY
-        if ((trigger_h_cfggen_phases |
+        if (((tgl_trigger_h_cfggen_phases_o != tgl_trigger_h_cfggen_phases_i) |
              (hactive_LL != hactive_L) |
              (h_divisor_LL != h_divisor_L)) & !h_divide_busy_w) begin
           h_cfggen_phase <= ST_CFGGEN_DIVWAIT;
+          tgl_trigger_h_cfggen_phases_o <= tgl_trigger_h_cfggen_phases_i;
           h_divide_cmd_LL <= 1'b1;
           hactive_LL <= hactive_L;
           h_divisor_LL <= h_divisor_L;

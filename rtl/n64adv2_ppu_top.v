@@ -158,11 +158,13 @@ wire [8:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_resynced;
 wire [10:0] cfg_vlines_out_w, cfg_vlines_out_resynced;
 wire [17:0] cfg_v_interp_factor_w, cfg_v_interp_factor_resynced;
 wire [8:0] cfg_vlines_in_needed_w, cfg_vlines_in_needed_resynced;
+wire [8:0] cfg_vlines_in_full_w, cfg_vlines_in_full_resynced;
 
 wire [9:0] cfg_hpos_1st_rdpixel_w, cfg_hpos_1st_rdpixel_resynced;
 wire [11:0] cfg_hpixels_out_w, cfg_hpixels_out_resynced;
 wire [17:0] cfg_h_interp_factor_w, cfg_h_interp_factor_resynced;
-wire [9:0] cfg_hlines_in_needed_w, cfg_hlines_in_needed_resynced;
+wire [9:0] cfg_hpixel_in_needed_w, cfg_hpixel_in_needed_resynced;
+wire [9:0] cfg_hpixel_in_full_w, cfg_hpixel_in_full_resynced;
 
 wire palmode_resynced, n64_480i_resynced;
 wire [`VID_CFG_W-1:0] videomode_ntsc_w, videomode_pal_w;
@@ -288,10 +290,12 @@ scaler_cfggen scaler_cfggen_u(
   .hscale_factor_i(cfg_hscale_factor_w),
   .vpos_1st_rdline_o(cfg_vpos_1st_rdline_w),
   .vlines_in_needed_o(cfg_vlines_in_needed_w),
+  .vlines_in_full_o(cfg_vlines_in_full_w),
   .vlines_out_o(cfg_vlines_out_w),
   .v_interp_factor_o(cfg_v_interp_factor_w),
   .hpos_1st_rdpixel_o(cfg_hpos_1st_rdpixel_w),
-  .hlines_in_needed_o(cfg_hlines_in_needed_w),
+  .hpixels_in_needed_o(cfg_hpixel_in_needed_w),
+  .hpixels_in_full_o(cfg_hpixel_in_full_w),
   .hpixels_out_o(cfg_hpixels_out_w),
   .h_interp_factor_o(cfg_h_interp_factor_w)
 );
@@ -331,25 +335,25 @@ register_sync #(
 
 // to VCLK_Tx clock domain
 register_sync #(
-  .reg_width(38), // 9 + 11 + 18
-  .reg_preset({(38){1'b0}})
+  .reg_width(47), // 9 + 9 + 11 + 18
+  .reg_preset({(47){1'b0}})
 ) cfg_sync4txlogic_u0 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({cfg_vlines_in_needed_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
-  .reg_o({cfg_vlines_in_needed_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
+  .reg_i({cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
+  .reg_o({cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
 
 register_sync #(
-  .reg_width(50), // 10 + 10 + 12 + 18
-  .reg_preset({(50){1'b0}})
+  .reg_width(60), // 10 + 10 + 10 + 12 + 18
+  .reg_preset({(60){1'b0}})
 ) cfg_sync4txlogic_u1 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({cfg_hpos_1st_rdpixel_w       ,cfg_hlines_in_needed_w       ,cfg_hpixels_out_w       ,cfg_h_interp_factor_w       }),
-  .reg_o({cfg_hpos_1st_rdpixel_resynced,cfg_hlines_in_needed_resynced,cfg_hpixels_out_resynced,cfg_h_interp_factor_resynced})
+  .reg_i({cfg_hpos_1st_rdpixel_w       ,cfg_hpixel_in_needed_w       ,cfg_hpixel_in_full_w       ,cfg_hpixels_out_w       ,cfg_h_interp_factor_w       }),
+  .reg_o({cfg_hpos_1st_rdpixel_resynced,cfg_hpixel_in_needed_resynced,cfg_hpixel_in_full_resynced,cfg_hpixels_out_resynced,cfg_h_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u1|reg_synced_1[*])
 
 register_sync_2 #(
@@ -536,10 +540,12 @@ scaler scaler_u(
   .video_pal_boxed_i(cfg_pal_boxed),
   .vinfo_llm_slbuf_fb_o(PPUState[`PPU_output_llm_slbuf_slice]),
   .video_vlines_in_needed_i(cfg_vlines_in_needed_resynced),
+  .video_vlines_in_full_i(cfg_vlines_in_full_resynced),
   .video_vlines_out_i(cfg_vlines_out_resynced),
   .video_v_interpfactor_i(cfg_v_interp_factor_resynced),
   .video_hpos_1st_rdpixel_i(cfg_hpos_1st_rdpixel_resynced),
-  .video_hpixel_in_needed_i(cfg_hlines_in_needed_resynced),
+  .video_hpixel_in_needed_i(cfg_hpixel_in_needed_resynced),
+  .video_hpixel_in_full_i(cfg_hpixel_in_full_resynced),
   .video_hpixel_out_i(cfg_hpixels_out_resynced),
   .video_h_interpfactor_i(cfg_h_interp_factor_resynced),
   .drawSL(drawSL_w),

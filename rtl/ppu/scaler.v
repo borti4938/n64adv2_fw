@@ -33,11 +33,13 @@ module scaler(
   vinfo_llm_slbuf_fb_o,
   
   video_vlines_in_needed_i,
+  video_vlines_in_full_i,
   video_vlines_out_i,
   video_v_interpfactor_i,
   
   video_hpos_1st_rdpixel_i,
   video_hpixel_in_needed_i,
+  video_hpixel_in_full_i,
   video_hpixel_out_i,
   video_h_interpfactor_i,
   
@@ -88,11 +90,13 @@ input video_pal_boxed_i;
 output reg [8:0] vinfo_llm_slbuf_fb_o;
 
 input [8:0] video_vlines_in_needed_i;
+input [8:0] video_vlines_in_full_i;
 input [10:0] video_vlines_out_i;
 input [17:0] video_v_interpfactor_i;
 
 input [9:0] video_hpos_1st_rdpixel_i;
 input [9:0] video_hpixel_in_needed_i;
+input [9:0] video_hpixel_in_full_i;
 input [11:0] video_hpixel_out_i;
 input [17:0] video_h_interpfactor_i;
 
@@ -199,8 +203,6 @@ wire [1:0] fir_v_calcopcode_w, fir_h_calcopcode_w;
 wire [color_width_o-1:0] red_v_interp_out, gr_v_interp_out, bl_v_interp_out;
 wire [color_width_o-1:0] red_h_interp_out, gr_h_interp_out, bl_h_interp_out;
 
-wire use_pal_lines;
-wire [10:0] X_pix_vlines_in_full_w;
 wire [11:0] X_hpos_offset_w;
 wire [10:0] X_vpos_offset_w;
 
@@ -343,21 +345,27 @@ reg [Videogen_Pipeline_Length-2:0] DE_vpl_L       /* synthesis ramstyle = "logic
 
 // generate resets
 
-reset_generator reset_scaler_input_u(
+reset_generator #(
+  .rst_length(8)
+) reset_scaler_input_u(
   .clk(VCLK_i),
   .clk_en(1'b1),
   .async_nrst_i(async_nRST_i),
   .rst_o(nRST_i)
 );
 
-reset_generator reset_DRAM_proc_u(
+reset_generator #(
+  .rst_length(8)
+) reset_DRAM_proc_u(
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .async_nrst_i(async_nRST_i),
   .rst_o(nRST_DRAM_proc)
 );
 
-reset_generator reset_scaler_output_u(
+reset_generator #(
+  .rst_length(8)
+) reset_scaler_output_u(
   .clk(VCLK_o),
   .clk_en(1'b1),
   .async_nrst_i(async_nRST_i),
@@ -1002,12 +1010,8 @@ register_sync_2 #(
 );
 
 
-assign use_pal_lines = palmode_vclk_o_resynced && !video_pal_boxed_i;
-assign X_pix_vlines_in_full_w = use_pal_lines ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
-
 assign X_vpos_offset_w = (video_vlines_out_i < X_VACTIVE) ? (X_VACTIVE - video_vlines_out_i)/2 : 11'd0;
 assign X_hpos_offset_w = (video_hpixel_out_i < X_HACTIVE) ? (X_HACTIVE - video_hpixel_out_i)/2 : 12'd0;
-
 
 always @(posedge VCLK_o) 
   if (vcnt_o_L == 0 && hcnt_o_L[11:4] == 0) begin
@@ -1022,14 +1026,14 @@ always @(posedge VCLK_o)
       X_HSTART_px <= X_HSTART + X_hpos_offset_w;
       X_HSTOP_px <= X_HSTOP - X_hpos_offset_w;
       
-      X_pix_vlines_in_full <= X_pix_vlines_in_full_w;
+      X_pix_vlines_in_full <= video_vlines_in_full_i;
       X_pix_vlines_in_needed <= video_vlines_in_needed_i;
       X_pix_vlines_out_max <= video_vlines_out_i;
-      X_pix_v_init_pixel_phase <= |video_interpolation_mode_i ? X_pix_vlines_in_full_w/2 + video_vlines_out_i/2 : X_pix_vlines_in_full_w/2;
+      X_pix_v_init_pixel_phase <= |video_interpolation_mode_i ? video_vlines_in_full_i/2 + video_vlines_out_i/2 : video_vlines_in_full_i/2;
       X_pix_v_interpfactor <= video_v_interpfactor_i;
       
       X_hpos_1st_rdpixel <= video_hpos_1st_rdpixel_i;
-      X_pix_hpixel_in_full <= `ACTIVE_PIXEL_PER_LINE;
+      X_pix_hpixel_in_full <= video_hpixel_in_full_i;
       X_pix_hpixel_in_needed <= video_hpixel_in_needed_i;
       X_pix_hpixel_out_max <= video_hpixel_out_i;
       X_pix_h_init_pixel_phase <= |video_interpolation_mode_i ? `ACTIVE_PIXEL_PER_LINE/2 + video_hpixel_out_i/2 : `ACTIVE_PIXEL_PER_LINE/2;
