@@ -28,6 +28,7 @@
  *
  ********************************************************************************/
 
+#include "app_cfg.h"
 #include "si5356.h"
 
 
@@ -66,7 +67,7 @@ typedef struct mode_regs_data_t {
 //   unsigned char reg_mask;  // reg_mask is always 0xFF here -> so remove it
 } mode_regs_data_t;
 
-init_regs_data_t const init_regs[NUM_INIT_REGS] __attribute__((section(".ufm_data_rom"))) = {
+init_regs_data_t const init_regs[NUM_INIT_REGS] __ufmdata_section__ = {
   { 27,0x70,0x80},
   { 28,0x37,0xFF},
   { 31,0xC0,0xFF},
@@ -191,7 +192,7 @@ init_regs_data_t const init_regs[NUM_INIT_REGS] __attribute__((section(".ufm_dat
   {255,0x00,0xFF}  // set page bit to 0
 };
 
-inpsw_regs_data_t const inpsw_regs[NUM_INPSW_REGS] __attribute__((section(".ufm_data_rom")))  = {
+inpsw_regs_data_t const inpsw_regs[NUM_INPSW_REGS] __ufmdata_section__  = {
   {  6,{0x08,0x04},0x1D},
   { 29,{0x80,0x60},0xFF},
   { 30,{0xA0,0xA9},0xFF},
@@ -204,7 +205,7 @@ inpsw_regs_data_t const inpsw_regs[NUM_INPSW_REGS] __attribute__((section(".ufm_
   {114,{0xC0,0x40},0xC0}
 };
 
-mode_regs_data_t const si_mode_regs[NUM_CFG_MODE_REGS] __attribute__((section(".ufm_data_rom")))  = {
+mode_regs_data_t const si_mode_regs[NUM_CFG_MODE_REGS] __ufmdata_section__  = {
   { 53,{0x7E        ,0x8D         ,0xC2         ,0xD6         ,0x61          ,0x67          ,0x5A         ,0x09         ,0x14         ,0x84          ,0x8F          ,0x5A         ,0x09         ,0x14         ,0x84          ,0x8F          ,0xB3         ,0xBD     ,0xD0          ,0x68            }}, // 53
   { 54,{0x29        ,0x26         ,0x0C         ,0x0A         ,0x05          ,0x06          ,0x27         ,0x0D         ,0x0B         ,0x05          ,0x06          ,0x27         ,0x0D         ,0x0B         ,0x05          ,0x06          ,0x26         ,0x26     ,0x0C          ,0x05            }}, // 54
   { 55,{0xB0        ,0x6C         ,0xE8         ,0x40         ,0x74          ,0xE8          ,0x78         ,0x0C         ,0xC0         ,0xB0          ,0x84          ,0xA0         ,0x24         ,0x00         ,0x20          ,0xA0          ,0x14         ,0x44     ,0x40          ,0x20            }}, // 55

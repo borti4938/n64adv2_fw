@@ -19,15 +19,15 @@
  *
  *********************************************************************************
  *
- * config.h
+ * app_cfg.h
  *
- *  Created on: 09.04.2018
+ *  Created on: 19.12.2021
  *      Author: Peter Bartmann
  *
  ********************************************************************************/
 
-#ifndef FW_H_
-#define FW_H_
+#ifndef APP_CFG_H_
+#define APP_CFG_H_
 
 #define SW_FW_MAIN  2
 #define SW_FW_SUB   05
@@ -35,4 +35,13 @@
 #define CFG_FW_MAIN SW_FW_MAIN
 #define CFG_FW_SUB  05
 
-#endif /* FW_H_ */
+#ifndef DEBUG
+  #define db_printf(...)
+  #define __ufmdata_section__ __attribute__((section(".ufm_data_rom")))
+#else
+  #define db_printf(...) printf(__VA_ARGS__)
+  #define __ufmdata_section__
+#endif
+
+
+#endif /* APP_CFG_H_ */

@@ -29,7 +29,7 @@
 #include "alt_types.h"
 #include "altera_avalon_pio_regs.h"
 #include "system.h"
-
+#include "app_cfg.h"
 #include "cfg_io_p.h"
 #include "cfg_int_p.h"
 #include "n64.h"
@@ -38,7 +38,6 @@
 #include "flash.h"
 #include "vd_driver.h"
 #include "adv7513.h"
-#include "fw.h"
 
 
 #define CFG2FLASH_WORD_FACTOR_U32   4

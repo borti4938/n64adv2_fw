@@ -33,13 +33,12 @@
 #include "alt_types.h"
 #include "altera_avalon_pio_regs.h"
 #include "system.h"
+#include "app_cfg.h"
 #include "n64.h"
 #include "config.h"
 #include "menu.h"
-
 #include "textdefs_p.h"
 #include "vd_driver.h"
-#include "fw.h"
 
 char szText[VD_WIDTH];
 extern alt_u8 use_flash;

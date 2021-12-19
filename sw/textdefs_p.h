@@ -28,6 +28,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include "app_cfg.h"
 
 
 #ifndef MENU_TEXT_TEXTDEFS_P_H_
@@ -163,7 +164,7 @@
 #define MAIN2LICENSE_V_OFFSET (7 + MAIN_OVERLAY_V_OFFSET)
 
 
-static const char *copyright_note __attribute__((section(".ufm_data_rom"))) =
+static const char *copyright_note __ufmdata_section__ =
     "2021 borti4938"; /* 14 chars */
 
 const char *btn_overlay_0 =
@@ -178,9 +179,9 @@ const char *btn_overlay_2 =
     "A ... Confirm\n"
     "B ... Cancel";
 
-static const char *vinfo_header __attribute__((section(".ufm_data_rom"))) =
+static const char *vinfo_header __ufmdata_section__ =
     "Video-Info";
-static const char *vinfo_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *vinfo_overlay __ufmdata_section__ =
     "* PPU state value:\n"
     "* Video mode\n"
     "  - Input resolution:\n"
@@ -190,9 +191,9 @@ static const char *vinfo_overlay __attribute__((section(".ufm_data_rom"))) =
     "  - LowRes. VI-DeBlur:\n"
     "  - Gamma boost exponent:";
 
-static const char *vicfg1_header __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg1_header __ufmdata_section__ =
     "VI config. 1";
-static const char *vicfg1_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg1_overlay __ufmdata_section__ =
     "* Output resolution:\n"
     "* Advanced picture settings\n"
     "  - De-Interlacing mode:\n"
@@ -201,9 +202,9 @@ static const char *vicfg1_overlay __attribute__((section(".ufm_data_rom"))) =
     "  - V/H position/timing:\n\n"
     "* VI config page 2:";
 
-static const char *vicfg2_header __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg2_header __ufmdata_section__ =
     "VI config. 2";
-static const char *vicfg2_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg2_overlay __ufmdata_section__ =
     "* Gamma Value:\n"
     "* Limited RGB:\n"
     "* LowRes.-DeBlur:\n"
@@ -212,9 +213,9 @@ static const char *vicfg2_overlay __attribute__((section(".ufm_data_rom"))) =
     "  - power-cycle default:\n\n"
     "* VI config page 1:";
 
-static const char *rescfg_opt_header __attribute__((section(".ufm_data_rom"))) =
+static const char *rescfg_opt_header __ufmdata_section__ =
     "Cfg. (Resolution)";
-static const char *rescfg_opt_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *rescfg_opt_overlay __ufmdata_section__ =
     "* Input mode:\n"
     "* Output resolution:\n"
     "  - Use VGA instead of 480p:\n"
@@ -222,9 +223,9 @@ static const char *rescfg_opt_overlay __attribute__((section(".ufm_data_rom"))) 
     "  - Force 50Hz/60Hz:\n\n"
     "* Scaler options:";
 
-static const char *slcfg_opt_header __attribute__((section(".ufm_data_rom"))) =
+static const char *slcfg_opt_header __ufmdata_section__ =
     "Config. (Scanlines)";
-static const char *slcfg_opt_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *slcfg_opt_overlay __ufmdata_section__ =
     "* Input mode:\n\n"
     "* Use Scanlines:\n"
     "  - Method:\n"
@@ -233,32 +234,32 @@ static const char *slcfg_opt_overlay __attribute__((section(".ufm_data_rom"))) =
     "  - Hybrid Depth:";
 
 
-static const char *vicfg_timing_opt_header __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg_timing_opt_header __ufmdata_section__ =
     "Config. (Position)";
-static const char *vicfg_timing_opt_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg_timing_opt_overlay __ufmdata_section__ =
     "* Settings for:\n\n"
     "* Vertical shift:\n"
     "* Horizontal shift:";
-static const char *vicfg_timing_opt_overlay1 __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg_timing_opt_overlay1 __ufmdata_section__ =
     "* Reset values:";
 
 
-static const char *vicfg_scaler_opt_header __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg_scaler_opt_header __ufmdata_section__ =
     "Config. (Scaler)";
-static const char *vicfg_scaler_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg_scaler_overlay __ufmdata_section__ =
     "* Settings for:\n"
     "* Scaler Mode:\n"
     "  - Interpolation type:\n"
     "  - Link h/v factors:\n"
     "  - Vertical scaling:\n"
     "  - Horizontal scaling:";
-static const char *vicfg_scaler_overlay1 __attribute__((section(".ufm_data_rom"))) =
+static const char *vicfg_scaler_overlay1 __ufmdata_section__ =
     "  - Use PAL in 240p box:";
 
 
-static const char *misc_header __attribute__((section(".ufm_data_rom"))) =
+static const char *misc_header __ufmdata_section__ =
     "Miscellaneous";
-static const char *misc_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *misc_overlay __ufmdata_section__ =
     "* Audio Settings:\n"
     "  - Swap L/R:\n"
     "  - Post filter gain:\n"
@@ -268,9 +269,9 @@ static const char *misc_overlay __attribute__((section(".ufm_data_rom"))) =
     "  - VI-DeBlur:\n"
     "  - 16bit Mode:";
 
-static const char *rwdata_header __attribute__((section(".ufm_data_rom"))) =
+static const char *rwdata_header __ufmdata_section__ =
     "Load/Save";
-static const char *rwdata_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *rwdata_overlay __ufmdata_section__ =
     "Save:\n"
     " - Configuration\n"
     "Load:\n"
@@ -278,7 +279,7 @@ static const char *rwdata_overlay __attribute__((section(".ufm_data_rom"))) =
     " - Defaults for 480p\n"
     " - N64 Standard";
 
-static const char *thanks_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *thanks_overlay __ufmdata_section__ =
     "The N64 RGB project would not be what it is without\n"
     "the contributions of many other people. Here, I want\n"
     "to point out especially:\n"
@@ -293,7 +294,7 @@ static const char *thanks_overlay __attribute__((section(".ufm_data_rom"))) =
     "Any contribution in any kind is highly welcomed!";
   /* 1234567890123456789012345678901234567890123456789012 */
 
-static const char *about_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *about_overlay __ufmdata_section__ =
     "The N64 RGB project is open source, i.e. PCB files,\n"
     "HDL and SW sources are provided to you FOR FREE!\n\n"
     "Your version\n"
@@ -306,7 +307,7 @@ static const char *about_overlay __attribute__((section(".ufm_data_rom"))) =
     " - Email:  <borti4938@gmail.com>";
   /* 1234567890123456789012345678901234567890123456789012 */
 
-static const char *license_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *license_overlay __ufmdata_section__ =
     " The N64Advanced2 is part of the\n"
     " N64 RGB/YPbPr Digital2Digital and DAC project\n"
     "        Copyright   2015 - 2021 Peter Bartmann\n"
@@ -319,9 +320,9 @@ static const char *license_overlay __attribute__((section(".ufm_data_rom"))) =
     " party vendors providing the design tools...";
   /* 1234567890123456789012345678901234567890123456789012 */
 
-static const char *home_header __attribute__((section(".ufm_data_rom"))) =
+static const char *home_header __ufmdata_section__ =
     "Main Menu";
-static const char *home_overlay __attribute__((section(".ufm_data_rom"))) =
+static const char *home_overlay __ufmdata_section__ =
     "[Video-Info]\n"
     "[Configuration]\n"
     "[Miscellaneous]\n"
@@ -354,6 +355,6 @@ const char *Resolution480p    = "480p";
 const char *Resolution576p    = "576p";
 const char *text_480i_576i_br = "(480i/576i)";
 
-const char *pcb_rev[] __attribute__((section(".ufm_data_rom"))) = {"N64Adv2_20210521"};
+const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521"};
 
 #endif /* MENU_TEXT_TEXTDEFS_P_H_ */
