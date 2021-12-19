@@ -331,18 +331,21 @@ menu_t rwdata_screen = {
 
 menu_t about_screen = {
    .type = TEXT,
+   .header = &about_header,
    .overlay = &about_overlay,
    .parent = &home_menu
 };
 
 menu_t thanks_screen = {
    .type = TEXT,
+   .header = &thanks_header,
    .overlay = &thanks_overlay,
    .parent = &home_menu
 };
 
 menu_t license_screen = {
    .type = TEXT,
+   .header = &license_header,
    .overlay = &license_overlay,
    .parent = &home_menu
 };
@@ -394,37 +397,39 @@ void gamma2txt_func(alt_u8 v) { sprintf(szText,"%u.%02u", v > 4, 5* v + 75 - (10
 
 void print_palbox_overlay(vmode_t vmode) {
   alt_u8 font_color = vmode ? FONTCOLOR_WHITE : FONTCOLOR_GREY;
-  vd_print_string(VICFG_SCALESUB_OVERLAY_H_OFFSET+3,VICFG_SCALESUB_PALBOX_V_OFFSET,BACKGROUNDCOLOR_STANDARD,font_color,vicfg_scaler_overlay1);
+  vd_print_string(VD_TEXT,VICFG_SCALESUB_OVERLAY_H_OFFSET+3,VICFG_SCALESUB_PALBOX_V_OFFSET,BACKGROUNDCOLOR_STANDARD,font_color,vicfg_scaler_overlay1);
 }
 
 void print_current_timing_mode()
 {
+  vd_clear_info_area(0,VD_WIDTH/2,0,0);
   sprintf(szText,"Current:");
-  vd_print_string(0, VD_HEIGHT-1, BACKGROUNDCOLOR_STANDARD, FONTCOLOR_NAVAJOWHITE, &szText[0]);
+  vd_print_string(VD_INFO,0, 0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,&szText[0]);
   val2txt_scale_sel_func(scaling_n64adv);
-  vd_print_string(9, VD_HEIGHT-1, BACKGROUNDCOLOR_STANDARD, FONTCOLOR_NAVAJOWHITE, &szText[0]);
+  vd_print_string(VD_INFO,9,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }
 
 void print_ctrl_data() {
   sprintf(szText,"Ctrl.Data: 0x%08x",(uint) ctrl_data);
-  vd_print_string(0, VD_HEIGHT-1, BACKGROUNDCOLOR_STANDARD, FONTCOLOR_NAVAJOWHITE, &szText[0]);
+  vd_clear_info_area(0,VD_WIDTH/2,0,0);
+  vd_print_string(VD_INFO,0,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }
 
 void print_fw_version()
 {
   alt_u16 ext_fw = (alt_u16) get_pcb_version();
-  vd_print_string(VERSION_H_OFFSET,VERSION_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,pcb_rev[ext_fw]);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,pcb_rev[ext_fw]);
 
   sprintf(szText,"0x%08x%08x",(uint) get_chip_id(1),(uint) get_chip_id(0));
-  vd_print_string(VERSION_H_OFFSET,VERSION_V_OFFSET+1,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 
   ext_fw = get_hdl_version();
   sprintf(szText,"%1d.%02d",((ext_fw & HDL_FW_GETMAIN_MASK) >> HDL_FW_MAIN_OFFSET),
                             ((ext_fw & HDL_FW_GETSUB_MASK) >> HDL_FW_SUB_OFFSET));
-  vd_print_string(VERSION_H_OFFSET,VERSION_V_OFFSET+2,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+2,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 
   sprintf(szText,"%1d.%02d",SW_FW_MAIN,SW_FW_SUB);
-  vd_print_string(VERSION_H_OFFSET,VERSION_V_OFFSET+3,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+3,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 }
 
 void update_vmode_menu(menu_t *menu)
@@ -727,39 +732,30 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
 
 void print_overlay(menu_t* current_menu)
 {
-  alt_u8 h_run;
   alt_u8 overlay_h_offset = (current_menu->type == TEXT) ? TEXTOVERLAY_H_OFFSET : HOMEOVERLAY_H_OFFSET;
-  alt_u8 overlay_v_offset = 0;
 
-  VD_CLEAR_SCREEN;
+  vd_clear_hdr();
+  vd_clear_txt();
 
-  if (current_menu->header) {
-    overlay_v_offset = OVERLAY_V_OFFSET_WH;
-    vd_print_string(VD_WIDTH-strlen(*current_menu->header),HEADER_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,*current_menu->header);
+  if (current_menu->header) vd_wr_hdr(BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,*current_menu->header);
+  vd_print_string(VD_TEXT,overlay_h_offset,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,*current_menu->overlay);
 
-    for (h_run = 0; h_run < VD_WIDTH; h_run++)
-      vd_print_char(h_run,1,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,(char) HEADER_UNDERLINE);
-  }
-  vd_print_string(overlay_h_offset,overlay_v_offset,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,*current_menu->overlay);
-
-  if (current_menu->type == HOME) vd_print_string(BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_0);
-  if (current_menu->type == RWDATA) vd_print_string(BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_1);
+  if (current_menu->type == HOME) vd_print_string(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_0);
+  if (current_menu->type == RWDATA) vd_print_string(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_1);
 
   switch (current_menu->type) {
     case HOME:
     case CONFIG:
     case VINFO:
     case RWDATA:
-      vd_print_string(COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,copyright_note);
-      vd_print_char(COPYRIGHT_SIGN_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,(char) COPYRIGHT_SIGN);
-      for (h_run = 0; h_run < VD_WIDTH; h_run++)
-        vd_print_char(h_run,VD_HEIGHT-2,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,(char) HOME_LOWSEC_UNDERLINE);
+      vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,copyright_note);
+      vd_print_char(VD_INFO,COPYRIGHT_SIGN_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,(char) COPYRIGHT_SIGN);
       break;
     case TEXT:
       if (&(*current_menu->overlay) == &about_overlay)
         print_fw_version();
       if (&(*current_menu->overlay) == &license_overlay)
-        vd_print_char(CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
+        vd_print_char(VD_TEXT,CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
       break;
     default:
       break;
@@ -777,11 +773,11 @@ void print_selection_arrow(menu_t* current_menu)
       h_r_offset = current_menu->leaves[v_run].arrow_desc->hpos + (current_menu->leaves[v_run].arrow_desc->shape->right != EMPTY);
       v_offset   = current_menu->leaves[v_run].id;
       if (v_run == current_menu->current_selection) {
-        vd_print_char(h_r_offset,v_offset,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->right);
-        vd_print_char(h_l_offset,v_offset,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->left);
+        vd_print_char(VD_TEXT,h_r_offset,v_offset,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->right);
+        vd_print_char(VD_TEXT,h_l_offset,v_offset,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->left);
       } else {
-        vd_clear_char(h_l_offset,v_offset);
-        vd_clear_char(h_r_offset,v_offset);
+        vd_clear_txt_area(h_l_offset,h_l_offset,v_offset,v_offset);
+        vd_clear_txt_area(h_r_offset,h_r_offset,v_offset,v_offset);
       }
     }
 }
@@ -793,134 +789,134 @@ int update_vinfo_screen(menu_t* current_menu)
   alt_u8 str_select;
 
   // PPU state
-  vd_clear_lineend(INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET);
+  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET);
   sprintf(szText,"0x%08x",(uint) ppu_state);
-  vd_print_string(INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 
   // Video Input
   str_select = (palmode << 1) | scanmode;
-  vd_clear_lineend(INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET);
-  vd_print_string(INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VideoMode[str_select]);
-  vd_print_string(INFO_VALS_H_OFFSET + 5,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VideoMode[str_select]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
 
   // Video Output
   alt_u8 ppu_output_res_val = ((ppu_state & (PPU_FORCE5060_GETMASK | PPU_USE_VGA_FOR_480P_GETMASK | PPU_RESOLUTION_GETMASK)) >> PPU_RESOLUTION_OFFSET);
-  vd_clear_lineend(INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET);
+  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET);
   switch (ppu_output_res_val) { // 2bit 50/60, 1 bit VGA, 3 bit resolution
     case 0b000000:
-      if (palmode) vd_print_string(INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
-      else vd_print_string(INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution480p);
-      vd_print_string(INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+      if (palmode) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
+      else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution480p);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
       break;
     case 0b001000:
       if (palmode) {
-        vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
-        vd_print_string(INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
+        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
+        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
       }
       else {
-        vd_print_string(INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,ResolutionVGA);
-        vd_print_string(INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
+        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,ResolutionVGA);
+        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
       }
       break;
     case 0b010000:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution480p);
-      vd_print_string(INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution480p);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
       break;
     case 0b011000:
-      vd_print_string(INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,ResolutionVGA);
-      vd_print_string(INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,ResolutionVGA);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
       break;
     case 0b100000:
     case 0b101000:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
-      vd_print_string(INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
       break;
     case 0b000001:
     case 0b001001:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
-      vd_print_string(INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
       break;
     case 0b010001:
     case 0b011001:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
-      vd_print_string(INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
       break;
     case 0b100001:
     case 0b101001:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
-      vd_print_string(INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
       break;
     case 0b000010:
     case 0b001010:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
       break;
     case 0b010010:
     case 0b011010:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
       break;
     case 0b100010:
     case 0b101010:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
       break;
     case 0b000011:
     case 0b001011:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
       break;
     case 0b010011:
     case 0b011011:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
       break;
     case 0b100011:
     case 0b101011:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
       break;
     case 0b000100:
     case 0b001100:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
       break;
     case 0b010100:
     case 0b011100:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
       break;
     case 0b100100:
     case 0b101100:
-      vd_print_string(INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
-      vd_print_string(INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
       break;
     default:
-      vd_print_string(INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,not_available);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,not_available);
   }
 
   // Source-Sync. Mode
   str_select = ((ppu_state & PPU_LOWLATENCYMODE_GETMASK) >> PPU_LOWLATENCYMODE_OFFSET);
-  vd_clear_lineend(INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET);
-  vd_print_string(INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[str_select]);
+  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[str_select]);
   if (str_select) {
     sprintf(szText,"(%d sl. buffered)",(uint) ((ppu_state & PPU_LLM_SLBUF_FB_GETMASK) >> PPU_LLM_SLBUF_FB_OFFSET));
-    vd_print_string(INFO_VALS_H_OFFSET+3,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+    vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET+3,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
   }
 
   // 240p DeBlur
-  vd_clear_lineend(INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET);
+  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET);
   if (scanmode == INTERLACED) {
-    vd_print_string(INFO_VALS_H_OFFSET,INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,text_480i_576i_br);
+    vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,text_480i_576i_br);
   } else {
     str_select = ((ppu_state & PPU_240P_DEBLUR_GETMASK) >> PPU_240P_DEBLUR_OFFSET);
-    vd_print_string(INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[str_select]);
+    vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[str_select]);
   }
 
   // Gamma Table
   gamma2txt_func((ppu_state & PPU_GAMMA_TABLE_GETMASK) >> PPU_GAMMA_TABLE_OFFSET);
-  vd_clear_lineend(INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET);
-  vd_print_string(INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 
   return 0;
 }
@@ -960,13 +956,13 @@ int update_cfg_screen(menu_t* current_menu)
     switch (current_menu->leaves[v_run].leavetype) {
       case ISUBMENU:
         font_color = FONTCOLOR_WHITE;
-        vd_print_string(h_l_offset,v_offset,background_color,font_color,EnterSubMenu);
+        vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,EnterSubMenu);
         break;
       case IFUNC:
         if (is_vicfg_timing_screen(current_menu)) {
           font_color = cfg_get_value(&timing_selection,0) > PPU_TIMING_CURRENT ? FONTCOLOR_WHITE : FONTCOLOR_GREY;
-          vd_print_string(VICFG_VTIMSUB_OVERLAY_H_OFFSET+3,v_offset,background_color,font_color,vicfg_timing_opt_overlay1);
-          vd_print_string(h_l_offset,v_offset,background_color,font_color,LoadTimingDefaults);
+          vd_print_string(VD_TEXT,VICFG_VTIMSUB_OVERLAY_H_OFFSET+3,v_offset,background_color,font_color,vicfg_timing_opt_overlay1);
+          vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,LoadTimingDefaults);
         }
         break;
       case ICONFIG:
@@ -1034,14 +1030,14 @@ int update_cfg_screen(menu_t* current_menu)
         }
 
 //        if (v_run == current_menu->current_selection)
-        vd_clear_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
+        vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
 
         if (current_menu->leaves[v_run].config_value->cfg_type == FLAGTXT ||
           current_menu->leaves[v_run].config_value->cfg_type == NUMVALUE ) {
           if (!(is_vicfg_scaling_screen(current_menu) && v_run == PAL_BOX_SELECTION)) current_menu->leaves[v_run].config_value->val2char_func(val_select); // val2char_func already executed in scaling screen for palbox
-          vd_print_string(h_l_offset,v_offset,background_color,font_color,&szText[0]);
+          vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
         } else {
-          vd_print_string(h_l_offset,v_offset,background_color,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
+          vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
         }
         break;
       default:

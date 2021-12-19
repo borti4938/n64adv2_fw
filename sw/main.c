@@ -134,7 +134,6 @@ int main()
     open_osd_main(&menu);
   } else {
     cfg_clear_flag(&show_osd);
-    cfg_clear_flag(&show_logo);
     cfg_set_value(&deblur_mode,cfg_get_value(&deblur_mode_powercycle,0));
     cfg_set_value(&mode16bit,cfg_get_value(&mode16bit_powercycle,0));
   }
@@ -218,7 +217,7 @@ int main()
           command = CMD_NON;
           message_cnt = 1;
         }
-        if (message_cnt == 1) vd_clear_area(RWM_H_OFFSET,RWM_H_OFFSET+RWM_LENGTH,RWM_V_OFFSET,RWM_V_OFFSET);
+        if (message_cnt == 1) vd_clear_txt_area(RWM_H_OFFSET,RWM_H_OFFSET+RWM_LENGTH,RWM_V_OFFSET,RWM_V_OFFSET);
         message_cnt--;
       }
 
@@ -236,8 +235,6 @@ int main()
           break;
         case NEW_OVERLAY:
           print_overlay(menu);
-          if (menu->header) cfg_set_flag(&show_logo);
-          else              cfg_clear_flag(&show_logo);
           print_selection_arrow(menu);
           message_cnt = 0;
           /* no break */
@@ -247,24 +244,22 @@ int main()
         case RW_DONE:
         case RW_FAILED:
         case RW_ABORT:
-          vd_print_string(RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[todo-RW_DONE],RW_Message[todo-RW_DONE]);
+          vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[todo-RW_DONE],RW_Message[todo-RW_DONE]);
           message_cnt = RWM_SHOW_CNT;
           break;
         default:
           break;
       }
 
-      if (menu->type != TEXT) {
-        vd_clear_area(0,VD_WIDTH/2,VD_HEIGHT-1,VD_HEIGHT-1);
-        if (menu == &home_menu || menu == home_menu.leaves[0].submenu) print_ctrl_data();
-        else print_current_timing_mode();
-      }
       if (menu->type == VINFO) update_vinfo_screen(menu);
       if (menu->type == CONFIG) {
         update_cfg_screen(menu);
         cfg_store_linex_word(vmode_menu);
         cfg_store_timing_word(timing_menu);
         cfg_store_scaling_word(scaling_menu);
+        print_current_timing_mode();
+      } else {
+        print_ctrl_data();
       }
       
     } else { /* END OF if(cfg_get_value(&show_osd)) */

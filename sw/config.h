@@ -383,7 +383,7 @@ typedef struct {
 
 
 #define RWM_H_OFFSET 5
-#define RWM_V_OFFSET (VD_HEIGHT - 3)
+#define RWM_V_OFFSET (VD_TXT_HEIGHT - 3)
 #define RWM_LENGTH   10
 #define RWM_SHOW_CNT 256
 

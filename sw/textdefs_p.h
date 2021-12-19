@@ -38,9 +38,9 @@
 #define HOME_LOWSEC_UNDERLINE 0x01
 #define HEADER_H_OFFSET       24
 #define HEADER_V_OFFSET        0
-#define OVERLAY_H_OFFSET       2
+#define OVERLAY_H_OFFSET       0
 #define OVERLAY_V_OFFSET       0
-#define OVERLAY_V_OFFSET_WH    2
+#define OVERLAY_V_OFFSET_WH    0
 #define TEXTOVERLAY_H_OFFSET   0
 #define HOMEOVERLAY_H_OFFSET   3
 
@@ -51,10 +51,10 @@
 
 #define COPYRIGHT_SIGN          0x0A
 #define COPYRIGHT_H_OFFSET      (VD_WIDTH - 14)
-#define COPYRIGHT_V_OFFSET      (VD_HEIGHT - 1)
+#define COPYRIGHT_V_OFFSET      0
 #define COPYRIGHT_SIGN_H_OFFSET (COPYRIGHT_H_OFFSET - 2)
 
-#define CR_SIGN_LICENSE_H_OFFSET  18
+#define CR_SIGN_LICENSE_H_OFFSET  17
 #define CR_SIGN_LICENSE_V_OFFSET   2
 
 #define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 17)
@@ -122,7 +122,7 @@
 
 #define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET_WH
-#define MISC_VALS_H_OFFSET            (25 + MISC_OVERLAY_H_OFFSET)
+#define MISC_VALS_H_OFFSET            (27 + MISC_OVERLAY_H_OFFSET)
 #define MISC_VALS_V_OFFSET            VICFG_OVERLAY_V_OFFSET
 #define MISC_AUDIO_SWAP_LR_V_OFFSET   ( 1 + MISC_VALS_V_OFFSET)
 #define MISC_AUDIO_AMP_V_OFFSET       ( 2 + MISC_VALS_V_OFFSET)
@@ -279,6 +279,8 @@ static const char *rwdata_overlay __ufmdata_section__ =
     " - Defaults for 480p\n"
     " - N64 Standard";
 
+static const char *thanks_header __ufmdata_section__ =
+    "Acknowledgment";
 static const char *thanks_overlay __ufmdata_section__ =
     "The N64 RGB project would not be what it is without\n"
     "the contributions of many other people. Here, I want\n"
@@ -294,6 +296,8 @@ static const char *thanks_overlay __ufmdata_section__ =
     "Any contribution in any kind is highly welcomed!";
   /* 1234567890123456789012345678901234567890123456789012 */
 
+static const char *about_header __ufmdata_section__ =
+    "About";
 static const char *about_overlay __ufmdata_section__ =
     "The N64 RGB project is open source, i.e. PCB files,\n"
     "HDL and SW sources are provided to you FOR FREE!\n\n"
@@ -307,17 +311,19 @@ static const char *about_overlay __ufmdata_section__ =
     " - Email:  <borti4938@gmail.com>";
   /* 1234567890123456789012345678901234567890123456789012 */
 
+static const char *license_header __ufmdata_section__ =
+    "License";
 static const char *license_overlay __ufmdata_section__ =
-    " The N64Advanced2 is part of the\n"
-    " N64 RGB/YPbPr Digital2Digital and DAC project\n"
-    "        Copyright   2015 - 2021 Peter Bartmann\n"
-    " This project is published under GNU GPL v3.0 or\n"
-    " later. You should have received a copy of the GNU\n"
-    " General Public License along with this project.\n"
-    " If not, see\n"
-    "         <http://www.gnu.org/licenses/>.\n\n"
-    " What ever you do, also respect licenses of third\n"
-    " party vendors providing the design tools...";
+    "The N64Advanced v2 is part of the\n"
+    "N64 RGB/YPbPr Digital2Digital and DAC project\n"
+    "       Copyright   2015 - 2021 Peter Bartmann\n"
+    "This project is published under GNU GPL v3.0 or\n"
+    "later. You should have received a copy of the GNU\n"
+    "General Public License along with this project.\n"
+    "If not, see\n"
+    "        <http://www.gnu.org/licenses/>.\n\n"
+    "What ever you do, also respect licenses of third\n"
+    "party vendors providing the design tools...";
   /* 1234567890123456789012345678901234567890123456789012 */
 
 static const char *home_header __ufmdata_section__ =

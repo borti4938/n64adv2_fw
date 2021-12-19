@@ -153,7 +153,7 @@ integer int_idx;
 localparam logo_vcnt_width = 4;
 localparam logo_hcnt_width = 8;
 
-localparam osd_letter_vcnt_width = $clog2(`MAX_TEXT_ROWS+1);
+localparam osd_letter_vcnt_width = $clog2(`MAX_HDR_TEXT_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_TEXT_ROWS + 3);
 localparam font_vcnt_width = $clog2(`OSD_FONT_HEIGHT+1);
 localparam txt_vcnt_width = osd_letter_vcnt_width + font_vcnt_width;
 
@@ -208,41 +208,41 @@ reg [        txt_mem_width-1:0] vd_wrtxt_data;
 reg HSYNC_pre = 1'b0;
 reg VSYNC_pre = 1'b0;
 
-reg [2:0] vcnt_delay = 3'b000;
+reg [2:0] Y_vcnt_delay = 3'b000;
 reg [1:0] hcnt_delay = 2'b00;
-reg [vcnt_width-1:0] vcnt = {vcnt_width{1'b0}};
+reg [vcnt_width-1:0] Y_vcnt = {vcnt_width{1'b0}};
 reg [hcnt_width-1:0] hcnt = {hcnt_width{1'b0}};
 
-reg [vcnt_width-1:0] X_osd_window_vstart = `OSD_WINDOW_VSTART;
-reg [vcnt_width-1:0] X_osd_window_vstop = `OSD_WINDOW_VSTOP;
-reg [hcnt_width-1:0] X_osd_window_hstart = `OSD_WINDOW_HSTART;
-reg [hcnt_width-1:0] X_osd_window_hstop = `OSD_WINDOW_HSTOP;
+reg [vcnt_width-1:0] X_osd_window_vstart;
+reg [vcnt_width-1:0] X_osd_window_vstop;
+reg [hcnt_width-1:0] X_osd_window_hstart;
+reg [hcnt_width-1:0] X_osd_window_hstop;
 
-reg [vcnt_width-1:0] X_osd_logo_vstart = `OSD_LOGO_VSTART;
-reg [vcnt_width-1:0] X_osd_logo_vstop = `OSD_LOGO_VSTOP;
-reg [hcnt_width-1:0] X_osd_logo_hstart = `OSD_LOGO_HSTART;
-reg [hcnt_width-1:0] X_osd_logo_hstop = `OSD_LOGO_HSTOP;
+reg [vcnt_width-1:0] X_osd_logo_vstart;
+reg [vcnt_width-1:0] X_osd_logo_vstop;
+reg [hcnt_width-1:0] X_osd_logo_hstart;
+reg [hcnt_width-1:0] X_osd_logo_hstop;
 
-reg [vcnt_width-1:0] X_osd_txt_vstart = `OSD_TXT_VSTART;
-reg [vcnt_width-1:0] X_osd_txt_vstop = `OSD_TXT_VSTOP;
-reg [hcnt_width-1:0] X_osd_txt_hstart = `OSD_TXT_HSTART;
-reg [hcnt_width-1:0] X_osd_txt_hstop = `OSD_TXT_HSTOP;
+reg [vcnt_width-1:0] X_osd_hdr_txt_vstart;
+reg [vcnt_width-1:0] X_osd_hdr_txt_vstop;
+reg [vcnt_width-1:0] X_osd_txt_vstart;
+reg [vcnt_width-1:0] X_osd_txt_vstop;
+reg [vcnt_width-1:0] X_osd_info_txt_vstart;
+reg [vcnt_width-1:0] X_osd_info_txt_vstop;
+reg [hcnt_width-1:0] X_osd_txt_hstart;
+reg [hcnt_width-1:0] X_osd_txt_hstop;
 
-reg [2:0] logo_vcnt_delay = 3'b000;
+reg [2:0] Y_logo_vcnt_delay = 3'b000;
 reg [1:0] logo_hcnt_delay = 2'b00;
-reg [logo_vcnt_width-1:0] logo_vcnt = {logo_vcnt_width{1'b0}};
+reg [logo_vcnt_width-1:0] Y_logo_vcnt = {logo_vcnt_width{1'b0}};
 reg [logo_hcnt_width-1:0] logo_hcnt = {logo_hcnt_width{1'b1}};
 
-reg [2:0] txt_vcnt_delay = 3'b000;
+reg [2:0] Y_txt_vcnt_delay = 3'b000;
 reg [1:0] txt_hcnt_delay = 2'b00;
-reg [txt_vcnt_width-1:0] txt_vcnt = {txt_vcnt_width{1'b0}}; // MSB indexing actual letter (vertical count)
-                                                            // LSB indexing actual (vertical) position in letter
-reg [txt_hcnt_width-1:0] txt_hcnt; // MSB indexing actual letter (horizontal count)
-                                   // LSB indexing actual (horizontal) position in letter
-initial begin
-  txt_hcnt[txt_hcnt_width-1:font_hcnt_width] = {osd_letter_hcnt_width{1'b1}};
-  txt_hcnt[font_hcnt_width-1:0] = `OSD_FONT_WIDTH;
-end
+reg [osd_letter_vcnt_width-1:0] Y_txt_vcnt_msb = {osd_letter_vcnt_width{1'b0}}; // MSB indexing actual letter (vertical count)
+reg [font_vcnt_width-1:0] Y_txt_vcnt_lsb = {font_vcnt_width{1'b0}};             // LSB indexing actual (vertical) position in letter
+reg [osd_letter_hcnt_width-1:0] Y_txt_hcnt_msb = {osd_letter_hcnt_width{1'b0}};   // MSB indexing actual letter (horizontal count)
+reg [font_hcnt_width-1:0] txt_hcnt_lsb = `OSD_FONT_WIDTH;                       // LSB indexing actual (horizontal) position in letter
 
 reg [7:0] vdata_valid_L = {8{vdata_valid_init}};
 reg [3*bits_per_color+3:0] vdata_L [0:7] /* synthesis ramstyle = "logic" */;
@@ -312,6 +312,14 @@ assign osd_hoffset_w = osd_hoffset;
 
 // start of rtl
 
+wire is_hdr_txt_v_area = (Y_vcnt >= X_osd_hdr_txt_vstart) && (Y_vcnt < X_osd_hdr_txt_vstop);
+wire is_txt_v_area = (Y_vcnt >= X_osd_txt_vstart) && (Y_vcnt < X_osd_txt_vstop);
+wire is_info_txt_v_area = (Y_vcnt >= X_osd_info_txt_vstart) && (Y_vcnt < X_osd_info_txt_vstop);
+
+wire [txt_vcnt_width-font_vcnt_width-1:0] txt_area_offset_w = (Y_vcnt > X_osd_txt_vstart)     ? (`MAX_HDR_ROWS + `MAX_TEXT_ROWS + 2) :
+                                                              (Y_vcnt > X_osd_hdr_txt_vstart) ? (`MAX_HDR_ROWS + 1) :
+                                                                                                0;
+
 always @(posedge VCLK or negedge nVRST)
   if (!nVRST) begin
     OSD_VSync <= 1'b0;
@@ -319,36 +327,22 @@ always @(posedge VCLK or negedge nVRST)
     HSYNC_pre <= 1'b0;
     VSYNC_pre <= 1'b0;
     
-    vcnt_delay <= 3'b000;
+    Y_vcnt_delay <= 3'b000;
     hcnt_delay <= 2'b00;
-    vcnt <= {vcnt_width{1'b0}};
+    Y_vcnt <= {vcnt_width{1'b0}};
     hcnt <= {hcnt_width{1'b0}};
     
-    X_osd_window_vstart <= `OSD_WINDOW_VSTART;
-    X_osd_window_vstop <= `OSD_WINDOW_VSTOP;
-    X_osd_window_hstart <= `OSD_WINDOW_HSTART;
-    X_osd_window_hstop <= `OSD_WINDOW_HSTOP;
-
-    X_osd_logo_vstart <= `OSD_LOGO_VSTART;
-    X_osd_logo_vstop <= `OSD_LOGO_VSTOP;
-    X_osd_logo_hstart <= `OSD_LOGO_HSTART;
-    X_osd_logo_hstop <= `OSD_LOGO_HSTOP;
-
-    X_osd_txt_vstart <= `OSD_TXT_VSTART;
-    X_osd_txt_vstop <= `OSD_TXT_VSTOP;
-    X_osd_txt_hstart <= `OSD_TXT_HSTART;
-    X_osd_txt_hstop <= `OSD_TXT_HSTOP;
-    
-    logo_vcnt_delay <= 3'b000;
+    Y_logo_vcnt_delay <= 3'b000;
     logo_hcnt_delay <= 2'b00;
-    logo_vcnt <= {logo_vcnt_width{1'b0}};
+    Y_logo_vcnt <= {logo_vcnt_width{1'b0}};
     logo_hcnt <= {logo_hcnt_width{1'b1}};
     
-    txt_vcnt_delay <= 3'b000;
+    Y_txt_vcnt_delay <= 3'b000;
     txt_hcnt_delay <= 2'b00;
-    txt_vcnt  <= {txt_vcnt_width{1'b0}};
-    txt_hcnt[txt_hcnt_width-1:font_hcnt_width] <= {osd_letter_hcnt_width{1'b1}};
-    txt_hcnt[font_hcnt_width-1:0] <= `OSD_FONT_WIDTH;
+    Y_txt_vcnt_msb <= {osd_letter_vcnt_width{1'b0}};
+    Y_txt_vcnt_lsb <= {font_vcnt_width{1'b0}};
+    Y_txt_hcnt_msb <= {osd_letter_hcnt_width{1'b0}};
+    txt_hcnt_lsb <= `OSD_FONT_WIDTH;
 
     vdata_valid_L <= {8{vdata_valid_init}};
     for (int_idx = 0; int_idx < 8; int_idx = int_idx+1)
@@ -360,7 +354,7 @@ always @(posedge VCLK or negedge nVRST)
     en_txtrd        <= 7'h0;
     en_fontrd       <= 6'h0;
   end else begin
-    if (vdata_valid_i_w) begin      
+    if (vdata_valid_i_w) begin
       if (VSYNC_reset) begin
         X_osd_window_vstart <= osd_voffset_w;
         X_osd_window_vstop <= osd_voffset_w + `OSD_WINDOW_VACTIVE;
@@ -370,19 +364,23 @@ always @(posedge VCLK or negedge nVRST)
         X_osd_logo_vstop <= osd_voffset_w + `OSD_LOGO_VOFFSET + `OSD_LOGO_VACTIVE;
         X_osd_logo_hstart <= osd_hoffset_w + `OSD_LOGO_HOFFSET;
         X_osd_logo_hstop <= osd_hoffset_w + `OSD_LOGO_HOFFSET + `OSD_LOGO_HACTIVE;
+        X_osd_hdr_txt_vstart <= osd_voffset_w + `OSD_HDR_VOFFSET;
+        X_osd_hdr_txt_vstop <= osd_voffset_w + `OSD_HDR_VOFFSET + `OSD_HDR_VACTIVE;
         X_osd_txt_vstart <= osd_voffset_w + `OSD_TXT_VOFFSET;
         X_osd_txt_vstop <= osd_voffset_w + `OSD_TXT_VOFFSET + `OSD_TXT_VACTIVE;
+        X_osd_info_txt_vstart <= osd_voffset_w + `OSD_INFO_VOFFSET;
+        X_osd_info_txt_vstop <= osd_voffset_w + `OSD_INFO_VOFFSET + `OSD_INFO_VACTIVE;
         X_osd_txt_hstart <= osd_hoffset_w + `OSD_TXT_HOFFSET;
         X_osd_txt_hstop <= osd_hoffset_w + `OSD_TXT_HOFFSET + `OSD_TXT_HACTIVE;
         
-        vcnt_delay <= 3'b000;
-        vcnt <= {vcnt_width{1'b0}};
+        Y_vcnt_delay <= 3'b000;
+        Y_vcnt <= {vcnt_width{1'b0}};
       end else if (HSYNC_reset) begin
-        if (vcnt_delay == osd_vscale_w) begin
-            vcnt_delay <= 3'b000;
-            vcnt <= vcnt + 1'b1;
+        if (Y_vcnt_delay == osd_vscale_w) begin
+            Y_vcnt_delay <= 3'b000;
+            Y_vcnt <= Y_vcnt + 1'b1;
           end else begin
-            vcnt_delay <= vcnt_delay + 3'b001;
+            Y_vcnt_delay <= Y_vcnt_delay + 3'b001;
           end
       end
       
@@ -390,31 +388,32 @@ always @(posedge VCLK or negedge nVRST)
         hcnt_delay <= 2'b00;
         hcnt <= {hcnt_width{1'b0}};
         
-        if (vcnt < X_osd_logo_vstart | vcnt >= X_osd_logo_vstop) begin
-          logo_vcnt_delay <= 3'b000;
-          logo_vcnt <= {logo_vcnt_width{1'b0}};
+        if (Y_vcnt < X_osd_logo_vstart | Y_vcnt >= X_osd_logo_vstop) begin
+          Y_logo_vcnt_delay <= 3'b000;
+          Y_logo_vcnt <= {logo_vcnt_width{1'b0}};
         end else begin
-          if (logo_vcnt_delay == osd_vscale_w) begin
-            logo_vcnt_delay <= 3'b000;
-            logo_vcnt <= logo_vcnt + 1'b1;
+          if (Y_logo_vcnt_delay == osd_vscale_w) begin
+            Y_logo_vcnt_delay <= 3'b000;
+            Y_logo_vcnt <= Y_logo_vcnt + 1'b1;
           end else begin
-            logo_vcnt_delay <= logo_vcnt_delay + 3'b001;
+            Y_logo_vcnt_delay <= Y_logo_vcnt_delay + 3'b001;
           end
         end
 
-        if (vcnt < X_osd_txt_vstart | vcnt >= X_osd_txt_vstop) begin
-          txt_vcnt <= {txt_vcnt_width{1'b0}};
+        if (~|{is_hdr_txt_v_area,is_txt_v_area,is_info_txt_v_area}) begin
+          Y_txt_vcnt_msb <= txt_area_offset_w;
+          Y_txt_vcnt_lsb <= {font_vcnt_width{1'b0}};
         end else begin
-          if (txt_vcnt_delay == osd_vscale_w) begin
-            txt_vcnt_delay <= 3'b000;
-            if (txt_vcnt[font_vcnt_width-1:0] < `OSD_FONT_HEIGHT) begin
-              txt_vcnt <= txt_vcnt + 1'b1;
+          if (Y_txt_vcnt_delay == osd_vscale_w) begin
+            Y_txt_vcnt_delay <= 3'b000;
+            if (Y_txt_vcnt_lsb < `OSD_FONT_HEIGHT) begin
+              Y_txt_vcnt_lsb <= Y_txt_vcnt_lsb + 1'b1;
             end else begin
-              txt_vcnt[txt_vcnt_width-1:font_vcnt_width] <= txt_vcnt[txt_vcnt_width-1:font_vcnt_width] + 1'b1;
-              txt_vcnt[font_vcnt_width-1:0] <= 4'h0;
+              Y_txt_vcnt_msb <= Y_txt_vcnt_msb + 1'b1;
+              Y_txt_vcnt_lsb <= {font_vcnt_width{1'b0}};
             end
           end else begin
-            txt_vcnt_delay <= txt_vcnt_delay + 3'b001;
+            Y_txt_vcnt_delay <= Y_txt_vcnt_delay + 3'b001;
           end
         end
       end else begin
@@ -446,19 +445,21 @@ always @(posedge VCLK or negedge nVRST)
       if (en_txtrd[1]) begin
         if (txt_hcnt_delay == osd_hscale_w) begin
           txt_hcnt_delay <= 2'b00;
-          if (txt_hcnt[font_hcnt_width-1:0] < `OSD_FONT_WIDTH) begin
-            txt_hcnt <= txt_hcnt + 1'b1;
+          if (txt_hcnt_lsb < `OSD_FONT_WIDTH) begin
+            txt_hcnt_lsb <= txt_hcnt_lsb + 1'b1;
           end else begin
-            txt_hcnt[txt_hcnt_width-1:font_hcnt_width] <= txt_hcnt[txt_hcnt_width-1:font_hcnt_width] + 1'b1;
-            txt_hcnt[font_hcnt_width-1:0] <= {font_hcnt_width{1'b0}};
+            txt_hcnt_lsb <= {font_hcnt_width{1'b0}};
+          end
+          if (txt_hcnt_lsb == {font_hcnt_width{1'b0}}) begin
+            Y_txt_hcnt_msb <= Y_txt_hcnt_msb + 1'b1;
           end
         end else begin
           txt_hcnt_delay <= txt_hcnt_delay + 2'b01;
         end
       end else begin
         txt_hcnt_delay <= osd_hscale_w;
-        txt_hcnt[txt_hcnt_width-1:font_hcnt_width] <= {osd_letter_hcnt_width{1'b1}};
-        txt_hcnt[font_hcnt_width-1:0] <= `OSD_FONT_WIDTH;
+        Y_txt_hcnt_msb <= {osd_letter_hcnt_width{1'b0}};
+        txt_hcnt_lsb <= `OSD_FONT_WIDTH;
       end
     end
 
@@ -468,32 +469,32 @@ always @(posedge VCLK or negedge nVRST)
       vdata_L[int_idx] <= vdata_L[int_idx-1];
     vdata_L[0] <= vdata_i;
 
-    OSD_VSync <= (vcnt >= X_osd_window_vstart) && (vcnt < X_osd_window_vstop);
+    OSD_VSync <= (Y_vcnt >= X_osd_window_vstart) && (Y_vcnt < X_osd_window_vstop);
     
     draw_osd_window[7:2] <= draw_osd_window[6:1];
-    draw_osd_window[1] <= (vcnt >= X_osd_window_vstart) && (vcnt < X_osd_window_vstop) &&
+    draw_osd_window[1] <= (Y_vcnt >= X_osd_window_vstart) && (Y_vcnt < X_osd_window_vstop) &&
                           (hcnt >= X_osd_window_hstart) && (hcnt < X_osd_window_hstop);
                           
     draw_logo[7:2] <= draw_logo[6:1];
     draw_logo[1] <= show_osd_logo &&
-                    (vcnt >= X_osd_logo_vstart) && (vcnt < X_osd_logo_vstop) &&
+                    (Y_vcnt >= X_osd_logo_vstart) && (Y_vcnt < X_osd_logo_vstop) &&
                     (hcnt >= X_osd_logo_hstart) && (hcnt < X_osd_logo_hstop);
 
     act_logo_px[7:2] <= act_logo_px[6:1];
-    act_logo_px[  1] <= n64adv_logo[{logo_vcnt[logo_vcnt_width-1:1],logo_hcnt[logo_hcnt_width-1:1]}];
+    act_logo_px[  1] <= n64adv_logo[{Y_logo_vcnt[logo_vcnt_width-1:1],logo_hcnt[logo_hcnt_width-1:1]}];
 
     en_txtrd[7:2] <= en_txtrd[6:1];
-    en_txtrd[1]  <= (vcnt >= X_osd_txt_vstart) && (vcnt < X_osd_txt_vstop) &&
+    en_txtrd[1]  <= |{is_hdr_txt_v_area,is_txt_v_area,is_info_txt_v_area} &&
                     (hcnt >= X_osd_txt_hstart) && (hcnt < X_osd_txt_hstop);
                     
     en_fontrd[7:3] <= en_fontrd[6:2];
-    en_fontrd[2] <= en_txtrd[1] && (txt_hcnt[font_hcnt_width-1:0] == `OSD_FONT_WIDTH) && (txt_hcnt_delay == osd_hscale_w) && vdata_valid_L[1];
+    en_fontrd[2] <= en_txtrd[1] && (txt_hcnt_lsb == `OSD_FONT_WIDTH) && (txt_hcnt_delay == osd_hscale_w) && vdata_valid_L[1];
   end
 
 
 
-assign txt_xrdaddr = txt_hcnt[txt_hcnt_width-1:font_hcnt_width];
-assign txt_yrdaddr = txt_vcnt[txt_vcnt_width-1:font_vcnt_width];
+assign txt_xrdaddr = Y_txt_hcnt_msb;
+assign txt_yrdaddr = Y_txt_vcnt_msb;
 
 
 always @(posedge OSDCLK) begin
@@ -519,7 +520,7 @@ end
 
 ram2port #(
   .num_of_pages(`MAX_CHARS_PER_ROW+1),
-  .pagesize(`MAX_TEXT_ROWS+1),
+  .pagesize(`MAX_HDR_TEXT_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_TEXT_ROWS + 3),
   .data_width(color_mem_width)
 ) vd_color_u (
   .wrCLK(OSDCLK),
@@ -536,7 +537,7 @@ ram2port #(
 
 ram2port #(
   .num_of_pages(`MAX_CHARS_PER_ROW+1),
-  .pagesize(`MAX_TEXT_ROWS+1),
+  .pagesize(`MAX_HDR_TEXT_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_TEXT_ROWS + 3),
   .data_width(txt_mem_width)
 ) vd_text_u (
   .wrCLK(OSDCLK),
@@ -566,7 +567,7 @@ font_rom font_rom_u(
   .CLK(VCLK),
   .nRST(nVRST),
   .char_addr(font_char_select),
-  .char_line(txt_vcnt[font_vcnt_width-1:0]),
+  .char_line(Y_txt_vcnt_lsb),
   .rden(en_fontrd[4]),
   .rddata(font_lineword_tmp)
 );

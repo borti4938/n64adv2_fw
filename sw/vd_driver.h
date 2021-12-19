@@ -32,9 +32,24 @@
 #ifndef VD_DRIVER_H_
 #define VD_DRIVER_H_
 
+
+typedef enum {
+  VD_HEADER = 0,
+  VD_TEXT,
+  VD_INFO
+} vd_area_t;
+
+
 // define virtual display (memory mapped)
 #define VD_WIDTH  52
-#define VD_HEIGHT 12
+#define VD_HDR_HEIGHT   1
+#define VD_TXT_HEIGHT   13
+#define VD_INFO_HEIGHT  1
+
+#define VD_HDR_AREA_VOFFSET   0
+#define VD_TXT_AREA_VOFFSET   VD_HDR_HEIGHT
+#define VD_INFO_AREA_VOFFSET  (VD_HDR_HEIGHT + VD_TXT_HEIGHT)
+
 
 // define some masks and shifts
 #define VD_WRDATA_ADDR_OFFSET   13
@@ -111,39 +126,27 @@
                                                                          ((b<<VD_WRDATA_BACKGR_OFFSET) & VD_WRDATA_BG_ANDMASK)    | \
                                                                          ((c<<VD_WRDATA_COLOR_OFFSET)  & VD_WRDATA_COLOR_ANDMASK) | \
                                                                           (f & VD_WRDATA_FONT_ANDMASK)                            )
-#define VD_CLEAR_SCREEN  vd_clear_area(0,VD_WIDTH,0,VD_HEIGHT)
 
 // prototypes
-int vd_clear_area(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop);
-static int inline vd_clear_lineend (alt_u8 horiz_offset_start, alt_u8 vert_offset)
-  { return vd_clear_area(horiz_offset_start, VD_WIDTH-1, vert_offset, vert_offset); }
-static int inline vd_clear_fullline (alt_u8 vert_offset)
-  { return vd_clear_area(0, VD_WIDTH-1, vert_offset, vert_offset); }
-static int inline vd_clear_columnend (alt_u8 horiz_offset, alt_u8 vert_offset_start)
-  { return vd_clear_area(horiz_offset, horiz_offset, vert_offset_start, VD_HEIGHT-1); }
-static int inline vd_clear_fullcolumn (alt_u8 horiz_offset)
-  { return vd_clear_area(horiz_offset, horiz_offset, 0, VD_HEIGHT-1); }
-static int inline vd_clear_char (alt_u8 horiz_offset, alt_u8 vert_offset)
-  { return vd_clear_area(horiz_offset, horiz_offset, vert_offset, vert_offset); }
+int vd_clear_lineend(vd_area_t vd_area,alt_u8 horiz_offset_start, alt_u8 vert_offset);
+int vd_print_char(vd_area_t vd_area,alt_u8 horiz_offset,alt_u8 vert_offset,alt_u8 background,alt_u8 color,const char character);
+int vd_print_string(vd_area_t vd_area,alt_u8 horiz_offset,alt_u8 vert_offset,alt_u8 background,alt_u8 color,const char *string);
+void vd_clear_hdr(void);
+void vd_wr_hdr(alt_u8 background,alt_u8 color,const char *string);
+void vd_clear_txt(void);
+void vd_clear_txt_area(alt_u8 horiz_offset_start,alt_u8 horiz_offset_stop,alt_u8 vert_offset_start,alt_u8 vert_offset_stop);
+void vd_clear_info(void);
+void vd_clear_info_area(alt_u8 horiz_offset_start,alt_u8 horiz_offset_stop,alt_u8 vert_offset_start,alt_u8 vert_offset_stop);
 
-int vd_print_string(alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char *string);
-int vd_print_char(alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char character);
-
-/* ToDo: still a bug somewhere here; NIOS II stops working if functions used */
-//int vd_change_color_area(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop, alt_u8 background, alt_u8 fontcolor);
-//static int inline vd_change_color_lineend (alt_u8 horiz_offset_start, alt_u8 vert_offset, alt_u8 background, alt_u8 fontcolor)
-//  { return vd_change_color_area(horiz_offset_start, VD_WIDTH-1, vert_offset, vert_offset, background, fontcolor); }
-//static int inline vd_change_color_fullline (alt_u8 vert_offset, alt_u8 background, alt_u8 fontcolor)
-//  { return vd_change_color_area(0, VD_WIDTH-1, vert_offset, vert_offset, background, fontcolor); }
-//static int inline vd_change_color_columnend (alt_u8 horiz_offset, alt_u8 vert_offset_start, alt_u8 background, alt_u8 fontcolor)
-//  { return vd_change_color_area(horiz_offset, horiz_offset, vert_offset_start, VD_HEIGHT-1, background, fontcolor); }
-//static int inline vd_change_color_fullcolumn (alt_u8 horiz_offset, alt_u8 background, alt_u8 fontcolor)
-//  { return vd_change_color_area(horiz_offset, horiz_offset, 0, VD_HEIGHT-1, background, fontcolor); }
-//static int inline vd_change_color (alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 fontcolor)
-//  { return vd_change_color_area(horiz_offset, horiz_offset, vert_offset, vert_offset, background, fontcolor); }
-//
-//int vd_change_color_px (alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color);
-
-void vd_write_data(alt_u8 wr_color, alt_u8 wr_font);
+//static int inline vd_clear_lineend (alt_u8 horiz_offset_start, alt_u8 vert_offset)
+//  { return vd_clear_area(horiz_offset_start, VD_WIDTH-1, vert_offset, vert_offset); }
+//static int inline vd_clear_fullline (alt_u8 vert_offset)
+//  { return vd_clear_area(0, VD_WIDTH-1, vert_offset, vert_offset); }
+//static int inline vd_clear_columnend (alt_u8 horiz_offset, alt_u8 vert_offset_start)
+//  { return vd_clear_area(horiz_offset, horiz_offset, vert_offset_start, VD_HEIGHT-1); }
+//static int inline vd_clear_fullcolumn (alt_u8 horiz_offset)
+//  { return vd_clear_area(horiz_offset, horiz_offset, 0, VD_HEIGHT-1); }
+//static int inline vd_clear_char (alt_u8 horiz_offset, alt_u8 vert_offset)
+//  { return vd_clear_area(horiz_offset, horiz_offset, vert_offset, vert_offset); }
 
 #endif /* VD_DRIVER_H_ */

@@ -181,8 +181,8 @@ alt_u8 confirmation_routine(alt_u8 with_btn_overlay)
   cmd_t command;
   alt_u8 abort = 0;
 
-  vd_print_string(RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,confirm_message);
-  if (with_btn_overlay > 0) vd_print_string(BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_2);
+  vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,confirm_message);
+  if (with_btn_overlay > 0) vd_print_string(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_2);
 
   while(1) {
     while(!get_osdvsync()){};                         // wait for OSD_VSYNC goes high
@@ -195,9 +195,9 @@ alt_u8 confirmation_routine(alt_u8 with_btn_overlay)
     if ((command == CMD_MENU_BACK)  || (command == CMD_MENU_LEFT))  {abort = 1; break;};
   }
   if (with_btn_overlay > 0) {
-    vd_clear_lineend (BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET);
-    vd_clear_lineend (BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET+1);
-    vd_print_string(BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_1);
+    vd_clear_lineend(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET);
+    vd_clear_lineend(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET+1);
+    vd_print_string(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_1);
   }
   return abort;
 }

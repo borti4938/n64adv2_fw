@@ -79,36 +79,49 @@
   `define OSD_FONT_HEIGHT 11
 
   // define text window size (every value - 1)
-  `define MAX_TEXT_ROWS     11
+  `define MAX_HDR_ROWS       0
+  `define MAX_TEXT_ROWS     12
+  `define MAX_INFO_ROWS      0
   `define MAX_CHARS_PER_ROW 51
+  
+  `define VAREA_HDR2TXT  8
+  `define VAREA_TXT2INFO 6
 
   // positioning of OSD window (not linedoubled)
-  `define OSD_WINDOW_VSTART  51
-  `define OSD_WINDOW_VACTIVE (12 + (`MAX_TEXT_ROWS + 1)*(`OSD_FONT_HEIGHT + 1))
-  `define OSD_WINDOW_VSTOP   (`OSD_WINDOW_VSTART + `OSD_WINDOW_VACTIVE)
-  `define OSD_WINDOW_HSTART  191
+  `define OSD_WINDOW_VACTIVE (8 + (`MAX_HDR_ROWS + 1)*(`OSD_FONT_HEIGHT + 1) + `VAREA_HDR2TXT + (`MAX_TEXT_ROWS + 1)*(`OSD_FONT_HEIGHT + 1) + `VAREA_TXT2INFO + (`MAX_INFO_ROWS + 1)*(`OSD_FONT_HEIGHT + 1) + 3)
+                                  // 8 + 12 + 8 + 156 + 6 + 12 + 3 = 205
   `define OSD_WINDOW_HACTIVE (15 + (`MAX_CHARS_PER_ROW + 1)*(`OSD_FONT_WIDTH + 1))
-  `define OSD_WINDOW_HSTOP   (`OSD_WINDOW_HSTART + `OSD_WINDOW_HACTIVE)
 
 
   // define some areas in the OSD windows
-  `define OSD_TXT_VOFFSET 8
-  `define OSD_TXT_VSTART  (`OSD_WINDOW_VSTART + `OSD_TXT_VOFFSET)
-  `define OSD_TXT_VACTIVE ((`MAX_TEXT_ROWS + 1)*(`OSD_FONT_HEIGHT + 1))
-  `define OSD_TXT_VSTOP   (`OSD_TXT_VSTART + `OSD_TXT_VACTIVE)
-  `define OSD_TXT_HOFFSET 7
-  `define OSD_TXT_HSTART  (`OSD_WINDOW_HSTART + `OSD_TXT_HOFFSET)
-  `define OSD_TXT_HACTIVE ((`MAX_CHARS_PER_ROW + 1)*(`OSD_FONT_WIDTH + 1))
-  `define OSD_TXT_HSTOP   (`OSD_TXT_HSTART + `OSD_TXT_HACTIVE)
-
   `define OSD_LOGO_VOFFSET  4
-  `define OSD_LOGO_VSTART   (`OSD_WINDOW_VSTART + `OSD_LOGO_VOFFSET)
   `define OSD_LOGO_VACTIVE  (2*8)
-  `define OSD_LOGO_VSTOP    (`OSD_LOGO_VSTART + `OSD_LOGO_VACTIVE)
   `define OSD_LOGO_HOFFSET  7
-  `define OSD_LOGO_HSTART   (`OSD_WINDOW_HSTART + `OSD_LOGO_HOFFSET)
   `define OSD_LOGO_HACTIVE  (2*128)
-  `define OSD_LOGO_HSTOP    (`OSD_LOGO_HSTART + `OSD_LOGO_HACTIVE)
+  
+  `define OSD_HDR_TXT_VOFFSET   8
+  `define OSD_HDR_TXT_VACTIVE   ((`MAX_HDR_ROWS + 1)*(`OSD_FONT_HEIGHT + 1))
+  `define OSD_TXT_VOFFSET       (`OSD_HDR_TXT_VOFFSET + `OSD_HDR_TXT_VACTIVE + VAREA_HDR2TXT)
+  `define OSD_TXT_VACTIVE       ((`MAX_TEXT_ROWS + 1)*(`OSD_FONT_HEIGHT + 1))
+  `define OSD_INFO_TXT_VOFFSET  (`OSD_TXT_VOFFSET + `OSD_TXT_VACTIVE)
+  `define OSD_INFO_TXT_VACTIVE  ((`MAX_INFO_ROWS + 1)*(`OSD_FONT_HEIGHT + 1) + `VAREA_TXT2INFO)
+  `define OSD_TXT_HOFFSET       7
+  `define OSD_TXT_HACTIVE       ((`MAX_CHARS_PER_ROW + 1)*(`OSD_FONT_WIDTH + 1))
+
+  // define some areas in the OSD windows
+  `define OSD_LOGO_VOFFSET  4
+  `define OSD_LOGO_VACTIVE  (2*8)
+  `define OSD_LOGO_HOFFSET  7
+  `define OSD_LOGO_HACTIVE  (2*128)
+  
+  `define OSD_HDR_VOFFSET   8
+  `define OSD_HDR_VACTIVE   ((`MAX_HDR_ROWS + 1)*(`OSD_FONT_HEIGHT + 1))
+  `define OSD_TXT_VOFFSET   (`OSD_HDR_VOFFSET + `OSD_HDR_TXT_VACTIVE + `VAREA_HDR2TXT)
+  `define OSD_TXT_VACTIVE   ((`MAX_TEXT_ROWS + 1)*(`OSD_FONT_HEIGHT + 1))
+  `define OSD_INFO_VOFFSET  (`OSD_TXT_VOFFSET + `OSD_TXT_VACTIVE + `VAREA_TXT2INFO)
+  `define OSD_INFO_VACTIVE  ((`MAX_INFO_ROWS + 1)*(`OSD_FONT_HEIGHT + 1))
+  `define OSD_TXT_HOFFSET   7
+  `define OSD_TXT_HACTIVE   ((`MAX_CHARS_PER_ROW + 1)*(`OSD_FONT_WIDTH + 1))
 
   // define OSD background window color (three bits each color)
   `define OSD_BACKGROUND_WHITE    3

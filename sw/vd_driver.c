@@ -33,22 +33,42 @@
 #include "alt_types.h"
 #include "altera_avalon_pio_regs.h"
 #include "system.h"
+#include "config.h"
 
-alt_u8 _width = VD_WIDTH;
-alt_u8 _height = VD_HEIGHT;
+const alt_u8 vd_overall_width = VD_WIDTH;
+const alt_u8 vd_overall_height = (VD_HDR_HEIGHT + VD_TXT_HEIGHT + VD_INFO_HEIGHT);
 
-int vd_clear_area(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop)
+
+void vd_write_data_local(alt_u8 wr_color, alt_u8 wr_font)
+{
+  alt_u8 wrctrl = ((wr_color != 0) << 1) | (wr_font != 0);
+
+  wrctrl = IORD_ALTERA_AVALON_PIO_DATA(VD_WRCTRL_BASE) | (wrctrl & VD_WRCTRL_WREN_GETMASK);
+  IOWR_ALTERA_AVALON_PIO_DATA(VD_WRCTRL_BASE,wrctrl);
+  wrctrl = wrctrl & VD_WRCTRL_WREN_CLRMASK;
+  IOWR_ALTERA_AVALON_PIO_DATA(VD_WRCTRL_BASE,wrctrl);
+};
+
+void vd_print_char_local (alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char character)
+{
+  if((horiz_offset >= 0) && (horiz_offset < vd_overall_width) && (vert_offset >= 0) && (vert_offset < vd_overall_height)){
+    VD_SET_DATA(VD_SET_ADDR(horiz_offset,vert_offset),background,color,character);
+    vd_write_data_local(1,1);
+  }
+};
+
+void vd_clear_area_local(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop)
 {
   alt_u8 horiz_offset, vert_offset;
   for (horiz_offset = horiz_offset_start; horiz_offset<=horiz_offset_stop; horiz_offset++)
     for (vert_offset = vert_offset_start; vert_offset<=vert_offset_stop; vert_offset++)
-      vd_print_char(horiz_offset,vert_offset, BACKGROUNDCOLOR_STANDARD, FONTCOLOR_NON, 0x00);
-  return(0);
+      vd_print_char_local(horiz_offset,vert_offset, BACKGROUNDCOLOR_STANDARD, FONTCOLOR_NON, 0x00);
 };
 
-int vd_print_string(alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char *string)
+int vd_print_string_local(alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char *string, alt_u8 max_linebreaks)
 {
-  int i = 0;
+  alt_u16 i = 0;
+  alt_u8 linebreak_cnt = 0;
   alt_u8 original_horiz_offset;
 
   original_horiz_offset = horiz_offset;
@@ -57,26 +77,19 @@ int vd_print_string(alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, 
   while (string[i]) {
     //Handle newline char here.
     if (string[i] == '\n') {
+      if (linebreak_cnt == max_linebreaks) return -11;
+      else                                 linebreak_cnt++;
       horiz_offset = original_horiz_offset;
       vert_offset++;
       i++;
       continue;
     }
     // Lay down that character and increment our offsets.
-    vd_print_char(horiz_offset, vert_offset, background, color, string[i]);
+    vd_print_char_local(horiz_offset, vert_offset, background, color, string[i]);
     i++;
     horiz_offset++;
   }
-  return (0);
-}
-
-int vd_print_char (alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char character)
-{
-  if((horiz_offset >= 0) && (horiz_offset < _width) && (vert_offset >= 0) && (vert_offset < _height)){
-    VD_SET_DATA(VD_SET_ADDR(horiz_offset,vert_offset),background,color,character);
-    vd_write_data(1,1);
-  }
-  return(0);
+  return 0;
 }
 
 //int vd_change_color_area(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop, alt_u8 background, alt_u8 fontcolor)
@@ -90,23 +103,13 @@ int vd_print_char (alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, a
 //
 //int vd_change_color_px (alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color)
 //{
-//  if((horiz_offset >= 0) && (horiz_offset < _width) && (vert_offset >= 0) && (vert_offset < _height)){
+//  if((horiz_offset >= 0) && (horiz_offset < vd_overall_width) && (vert_offset >= 0) && (vert_offset < vd_overall_height)){
 //    VD_SET_ADDR(horiz_offset,vert_offset);
 //    VD_SET_DATA(background,color,EMPTY);
 //    vd_write_data(1,0);
 //  }
 //  return(0);
 //}
-
-void vd_write_data(alt_u8 wr_color, alt_u8 wr_font)
-{
-  alt_u8 wrctrl = ((wr_color != 0) << 1) | (wr_font != 0);
-
-  wrctrl = IORD_ALTERA_AVALON_PIO_DATA(VD_WRCTRL_BASE) | (wrctrl & VD_WRCTRL_WREN_GETMASK);
-  IOWR_ALTERA_AVALON_PIO_DATA(VD_WRCTRL_BASE,wrctrl);
-  wrctrl = wrctrl & VD_WRCTRL_WREN_CLRMASK;
-  IOWR_ALTERA_AVALON_PIO_DATA(VD_WRCTRL_BASE,wrctrl);
-}
 
 //void vd_mute()
 //{
@@ -117,3 +120,118 @@ void vd_write_data(alt_u8 wr_color, alt_u8 wr_font)
 //{
 //  // ToDo
 //}
+
+int vd_clear_lineend(vd_area_t vd_area,alt_u8 horiz_offset_start, alt_u8 vert_offset)
+{
+  alt_u8 tmp_vert_offset = vert_offset;
+  switch (vd_area) {
+    case VD_HEADER:
+      vd_clear_hdr();
+      return 0;
+    case VD_TEXT:
+      if (tmp_vert_offset > VD_TXT_HEIGHT-1) return -1;
+      tmp_vert_offset = tmp_vert_offset + VD_TXT_AREA_VOFFSET;
+      break;
+    case VD_INFO:
+      if (tmp_vert_offset > VD_INFO_HEIGHT-1) return -2;
+      tmp_vert_offset = tmp_vert_offset + VD_INFO_AREA_VOFFSET;
+      break;
+    default: break;
+  }
+  vd_clear_area_local(horiz_offset_start, VD_WIDTH-1, tmp_vert_offset, tmp_vert_offset);
+  return 0;
+};
+
+int vd_print_char(vd_area_t vd_area, alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char character)
+{
+  alt_u8 tmp_vert_offset = vert_offset;
+//  if ((vd_area == VD_HEADER) && (tmp_vert_offset > VD_HDR_HEIGHT-1)) return -1;
+//
+//  if ((vd_area == VD_TEXT) && (tmp_vert_offset > VD_TXT_HEIGHT-1)) return -2;
+//  else tmp_vert_offset = tmp_vert_offset + VD_TXT_AREA_VOFFSET;
+//
+//  if ((vd_area == VD_INFO) && (tmp_vert_offset > VD_INFO_HEIGHT-1)) return -3;
+//  else tmp_vert_offset = tmp_vert_offset + VD_INFO_AREA_VOFFSET;
+  switch (vd_area) {
+    case VD_HEADER:
+      if (tmp_vert_offset > VD_HDR_HEIGHT-1) return -1;
+      break;
+    case VD_TEXT:
+      if (tmp_vert_offset > VD_TXT_HEIGHT-1) return -2;
+      tmp_vert_offset = tmp_vert_offset + VD_TXT_AREA_VOFFSET;
+      break;
+    case VD_INFO:
+      if (tmp_vert_offset > VD_INFO_HEIGHT-1) return -3;
+      tmp_vert_offset = tmp_vert_offset + VD_INFO_AREA_VOFFSET;
+      break;
+    default: return -4;
+  }
+
+  vd_print_char_local(horiz_offset,tmp_vert_offset,background,color,character);
+  return 0;
+};
+
+int vd_print_string(vd_area_t vd_area, alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char *string)
+{
+  alt_u8 max_linebreaks = 0;
+  alt_u8 tmp_vert_offset = vert_offset;
+  switch (vd_area) {
+    case VD_HEADER:
+      if (tmp_vert_offset > VD_HDR_HEIGHT-1) return -1;
+      max_linebreaks = VD_HDR_HEIGHT - 1 - tmp_vert_offset;
+      break;
+    case VD_TEXT:
+      if (tmp_vert_offset > VD_TXT_HEIGHT-1) return -2;
+      max_linebreaks = VD_TXT_HEIGHT - 1 - tmp_vert_offset;
+      tmp_vert_offset = tmp_vert_offset + VD_TXT_AREA_VOFFSET;
+      break;
+    case VD_INFO:
+      if (tmp_vert_offset > VD_INFO_HEIGHT-1) return -3;
+      max_linebreaks = VD_INFO_HEIGHT - 1 - tmp_vert_offset;
+      tmp_vert_offset = tmp_vert_offset + VD_INFO_AREA_VOFFSET;
+      break;
+    default: return -4;
+  }
+
+  return vd_print_string_local(horiz_offset,tmp_vert_offset,background,color,string,max_linebreaks);
+};
+
+void vd_clear_hdr()
+{
+  vd_clear_area_local(0,vd_overall_width-1,VD_HDR_AREA_VOFFSET,VD_HDR_AREA_VOFFSET+VD_HDR_HEIGHT-1);
+  cfg_set_flag(&show_logo);
+};
+
+void vd_wr_hdr(alt_u8 background, alt_u8 color, const char *string)
+{
+  vd_clear_hdr();
+  alt_u8 h_offset = VD_WIDTH - strlen(string);
+  if (h_offset < 32) cfg_clear_flag(&show_logo);
+  vd_print_string_local(h_offset,VD_HDR_AREA_VOFFSET,background,color,string,VD_HDR_HEIGHT-1);
+};
+
+void vd_clear_txt()
+{
+  vd_clear_area_local(0,vd_overall_width-1,VD_TXT_AREA_VOFFSET,VD_TXT_AREA_VOFFSET+VD_TXT_HEIGHT-1);
+};
+
+void vd_clear_txt_area(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop)
+{
+  // make sure that area to be cleaned is not part of the info area
+  if (vert_offset_start > VD_TXT_HEIGHT-1) return;
+  alt_u8 tmp_vert_offset_stop = vert_offset_stop;
+  if (vert_offset_stop > VD_TXT_HEIGHT-1) tmp_vert_offset_stop = VD_TXT_HEIGHT-1;
+  // now - go on
+  vd_clear_area_local(horiz_offset_start,horiz_offset_stop,vert_offset_start+VD_TXT_AREA_VOFFSET,tmp_vert_offset_stop+VD_TXT_AREA_VOFFSET);
+};
+
+void vd_clear_info()
+{
+  vd_clear_area_local(0,vd_overall_width-1,VD_INFO_AREA_VOFFSET,VD_INFO_AREA_VOFFSET+VD_INFO_HEIGHT-1);
+};
+
+void vd_clear_info_area(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop)
+{
+  vd_clear_area_local(horiz_offset_start,horiz_offset_stop,vert_offset_start+VD_INFO_AREA_VOFFSET,vert_offset_stop+VD_INFO_AREA_VOFFSET);
+};
+
