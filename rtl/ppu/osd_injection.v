@@ -153,7 +153,7 @@ integer int_idx;
 localparam logo_vcnt_width = 4;
 localparam logo_hcnt_width = 8;
 
-localparam osd_letter_vcnt_width = $clog2(`MAX_HDR_TEXT_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_TEXT_ROWS + 3);
+localparam osd_letter_vcnt_width = $clog2(`MAX_HDR_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_ROWS + 3);
 localparam font_vcnt_width = $clog2(`OSD_FONT_HEIGHT+1);
 localparam txt_vcnt_width = osd_letter_vcnt_width + font_vcnt_width;
 
