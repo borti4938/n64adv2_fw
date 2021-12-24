@@ -105,7 +105,8 @@ generate
     
     localparam vdata_valid_init = 1'b0;
     
-    localparam [`VDATA_I_CO_SLICE] osd_logo_color = `OSD_LOGO_COLOR;
+    localparam [`VDATA_I_CO_SLICE] osd_logo_color            = `OSD_LOGO_COLOR;
+    localparam [`VDATA_O_CO_SLICE] separation_line_color     = `SEPARATION_LINE_COLOR;
     localparam [`VDATA_I_CO_SLICE] font_color_default        = `OSD_TXT_COLOR_WHITE;
     localparam [`VDATA_I_CO_SLICE] osd_txt_color_black       = `OSD_TXT_COLOR_BLACK;
     localparam [`VDATA_I_CO_SLICE] osd_txt_color_grey        = `OSD_TXT_COLOR_GREY;
@@ -127,7 +128,8 @@ generate
     
     localparam vdata_valid_init = 1'b1;
     
-    localparam [`VDATA_O_CO_SLICE] osd_logo_color = `OSD_LOGO_COLOR_24;
+    localparam [`VDATA_O_CO_SLICE] osd_logo_color            = `OSD_LOGO_COLOR_24;
+    localparam [`VDATA_O_CO_SLICE] separation_line_color     = `SEPARATION_LINE_COLOR_24;
     localparam [`VDATA_O_CO_SLICE] font_color_default        = `OSD_TXT_COLOR_WHITE_24;
     localparam [`VDATA_O_CO_SLICE] osd_txt_color_black       = `OSD_TXT_COLOR_BLACK_24;
     localparam [`VDATA_O_CO_SLICE] osd_txt_color_grey        = `OSD_TXT_COLOR_GREY_24;
@@ -231,6 +233,7 @@ reg [vcnt_width-1:0] X_osd_info_txt_vstart;
 reg [vcnt_width-1:0] X_osd_info_txt_vstop;
 reg [hcnt_width-1:0] X_osd_txt_hstart;
 reg [hcnt_width-1:0] X_osd_txt_hstop;
+reg [vcnt_width-1:0] X_osd_txt_vline0, X_osd_txt_vline1, X_osd_txt_vline2;
 
 reg [2:0] Y_logo_vcnt_delay = 3'b000;
 reg [1:0] logo_hcnt_delay = 2'b00;
@@ -252,6 +255,7 @@ initial
 
 reg [7:1] draw_osd_window = 7'h0  /* synthesis ramstyle = "logic" */; // draw window
 reg [7:1]       draw_logo = 7'h0  /* synthesis ramstyle = "logic" */; // show logo
+reg [7:1] draw_separ_line = 7'h0  /* synthesis ramstyle = "logic" */; // show separation line between sections
 reg [7:1]     act_logo_px = 7'h0  /* synthesis ramstyle = "logic" */; // indicates an active pixel in logo
 reg [7:1]        en_txtrd = 7'h0  /* synthesis ramstyle = "logic" */; // introduce six delay taps
 reg [7:2]       en_fontrd = 6'h0  /* synthesis ramstyle = "logic" */; // read font
@@ -350,6 +354,7 @@ always @(posedge VCLK or negedge nVRST)
     
     draw_osd_window <= 7'h0;
     draw_logo       <= 7'h0;
+    draw_separ_line <= 7'h0;
     act_logo_px     <= 7'h0;
     en_txtrd        <= 7'h0;
     en_fontrd       <= 6'h0;
@@ -372,6 +377,9 @@ always @(posedge VCLK or negedge nVRST)
         X_osd_info_txt_vstop <= osd_voffset_w + `OSD_INFO_VOFFSET + `OSD_INFO_VACTIVE;
         X_osd_txt_hstart <= osd_hoffset_w + `OSD_TXT_HOFFSET;
         X_osd_txt_hstop <= osd_hoffset_w + `OSD_TXT_HOFFSET + `OSD_TXT_HACTIVE;
+        X_osd_txt_vline0 <= osd_voffset_w + `OSD_SEPARATION_LINE0_VOFFSET;
+        X_osd_txt_vline1 <= osd_voffset_w + `OSD_SEPARATION_LINE1_VOFFSET;
+        X_osd_txt_vline2 <= osd_voffset_w + `OSD_SEPARATION_LINE2_VOFFSET;
         
         Y_vcnt_delay <= 3'b000;
         Y_vcnt <= {vcnt_width{1'b0}};
@@ -479,6 +487,12 @@ always @(posedge VCLK or negedge nVRST)
     draw_logo[1] <= show_osd_logo &&
                     (Y_vcnt >= X_osd_logo_vstart) && (Y_vcnt < X_osd_logo_vstop) &&
                     (hcnt >= X_osd_logo_hstart) && (hcnt < X_osd_logo_hstop);
+                          
+    draw_separ_line[7:2] <= draw_separ_line[6:1];
+    draw_separ_line[1] <= ((Y_vcnt == X_osd_txt_vline0) ||
+                           (Y_vcnt == X_osd_txt_vline1) ||
+                           (Y_vcnt == X_osd_txt_vline2)  ) &&
+                          (hcnt >= X_osd_txt_hstart) && (hcnt < X_osd_txt_hstop);
 
     act_logo_px[7:2] <= act_logo_px[6:1];
     act_logo_px[  1] <= n64adv_logo[{Y_logo_vcnt[logo_vcnt_width-1:1],logo_hcnt[logo_hcnt_width-1:1]}];
@@ -520,7 +534,7 @@ end
 
 ram2port #(
   .num_of_pages(`MAX_CHARS_PER_ROW+1),
-  .pagesize(`MAX_HDR_TEXT_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_TEXT_ROWS + 3),
+  .pagesize(`MAX_HDR_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_ROWS + 3),
   .data_width(color_mem_width)
 ) vd_color_u (
   .wrCLK(OSDCLK),
@@ -537,7 +551,7 @@ ram2port #(
 
 ram2port #(
   .num_of_pages(`MAX_CHARS_PER_ROW+1),
-  .pagesize(`MAX_HDR_TEXT_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_TEXT_ROWS + 3),
+  .pagesize(`MAX_HDR_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_ROWS + 3),
   .data_width(txt_mem_width)
 ) vd_text_u (
   .wrCLK(OSDCLK),
@@ -638,8 +652,10 @@ always @(posedge VCLK or negedge nVRST)
     if (show_osd & draw_osd_window[7]) begin
       if (draw_logo[7] & act_logo_px[7])
         vdata_o[3*bits_per_color-1:0] <= osd_logo_color;
-      else if (&{en_txtrd[7],!draw_logo[7],act_char_px})
-          vdata_o[3*bits_per_color-1:0] <= txt_color;
+      else if (draw_separ_line[7])
+        vdata_o[3*bits_per_color-1:0] <= separation_line_color;
+      else if (&{en_txtrd[7],act_char_px})
+        vdata_o[3*bits_per_color-1:0] <= txt_color;
       else begin
       // modify red
         vdata_o[3*bits_per_color-1:3*bits_per_color-3] <= window_bg_color[bg_color_width-1:bg_color_width-3];
