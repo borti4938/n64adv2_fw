@@ -37,7 +37,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-
+//`define VIDEO_USE_FAST_OUTPUT_REGs
 
 module n64adv2_ppu_top (
   // N64 Video Input
@@ -111,15 +111,17 @@ input scaler_nresync_i;
 input VCLK_Tx;
 input nVRST_Tx;
 
-//output reg VSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-//output reg HSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-//output reg DE_o = 1'b0                                          /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-//output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}} /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-
-output reg VSYNC_o = 1'b0;
-output reg HSYNC_o = 1'b0;
-output reg DE_o = 1'b0;
-output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}};
+`ifdef VIDEO_USE_FAST_OUTPUT_REGs
+  output reg VSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
+  output reg HSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
+  output reg DE_o = 1'b0                                          /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
+  output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}} /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
+`else
+  output reg VSYNC_o = 1'b0;
+  output reg HSYNC_o = 1'b0;
+  output reg DE_o = 1'b0;
+  output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}};
+`endif
 
 input         DRAM_CLK_i;
 input         DRAM_nRST_i;
