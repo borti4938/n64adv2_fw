@@ -154,23 +154,23 @@ menu_t vires_screen = {
     .parent = &home_menu,
     .current_selection = 0,
 //    .number_selections = 11,
-    .number_selections = 5,
+    .number_selections = 9,
     .leaves = {
         {.id = RESCFG_INPUT_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG, .config_value = &res_selection},
-//        {.id = RESCFG_240P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG, .config_value = &linex_resolution},
-//        {.id = RESCFG_480P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG, .config_value = &linex_resolution},
-//        {.id = RESCFG_720P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG, .config_value = &linex_resolution},
-//        {.id = RESCFG_960P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG, .config_value = &linex_resolution},
-        {.id = RESCFG_1080P_V_OFFSET      , .arrow_desc = &vires_opt_arrow,.leavetype = ICONFIG, .config_value = &linex_resolution},
-//        {.id = RESCFG_1200P_V_OFFSET      , .arrow_desc = &vires_opt_arrow,.leavetype = ICONFIG, .config_value = &linex_resolution},
-//        {.id = RESCFG_1440P_V_OFFSET      , .arrow_desc = &vires_opt_arrow,.leavetype = ICONFIG, .config_value = &linex_resolution},
-        {.id = RESCFG_USE_VGA_RES_V_OFFSET, .arrow_desc = &vires_opt_arrow,.leavetype = ICONFIG, .config_value = &vga_for_480p},
-        {.id = RESCFG_USE_SRCSYNC_V_OFFSET, .arrow_desc = &vires_opt_arrow,.leavetype = ICONFIG, .config_value = &low_latency_mode},
-        {.id = RESCFG_FORCE_5060_V_OFFSET , .arrow_desc = &vires_opt_arrow,.leavetype = ICONFIG, .config_value = &linex_force_5060}
+//        {.id = RESCFG_240P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGFUNC, .cfgfct_call = &cfgfct_linex},
+        {.id = RESCFG_480P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGFUNC, .cfgfct_call = &cfgfct_linex},
+        {.id = RESCFG_720P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGFUNC, .cfgfct_call = &cfgfct_linex},
+        {.id = RESCFG_960P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGFUNC, .cfgfct_call = &cfgfct_linex},
+        {.id = RESCFG_1080P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGFUNC, .cfgfct_call = &cfgfct_linex},
+        {.id = RESCFG_1200P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGFUNC, .cfgfct_call = &cfgfct_linex},
+//        {.id = RESCFG_1440P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGFUNC, .cfgfct_call = &cfgfct_linex},
+        {.id = RESCFG_USE_VGA_RES_V_OFFSET, .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG, .config_value = &vga_for_480p},
+        {.id = RESCFG_USE_SRCSYNC_V_OFFSET, .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG, .config_value = &low_latency_mode},
+        {.id = RESCFG_FORCE_5060_V_OFFSET , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG, .config_value = &linex_force_5060}
     }
 };
 
-#define FORCE5060_SELECTION 4
+#define FORCE5060_SELECTION 8
 
 menu_t viscaling_screen = {
     .type = CONFIG,
@@ -622,16 +622,37 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   if ((*current_menu)->leaves[current_sel].leavetype == ICONFIG) {
     switch (command) {
       case CMD_MENU_RIGHT:
-          cfg_inc_value((*current_menu)->leaves[current_sel].config_value);
+        cfg_inc_value((*current_menu)->leaves[current_sel].config_value);
         todo = NEW_CONF_VALUE;
         break;
       case CMD_MENU_LEFT:
-          cfg_dec_value((*current_menu)->leaves[current_sel].config_value);
+        cfg_dec_value((*current_menu)->leaves[current_sel].config_value);
         todo = NEW_CONF_VALUE;
         break;
       default:
         break;
     }
+    if (todo == NEW_CONF_VALUE) {
+      if (is_viscaling_screen((*current_menu)) &&
+          ((current_sel == VERTSHIFT_SELECTION) || (current_sel == HORSHIFT_SELECTION)) &&
+          (cfg_get_value((*current_menu)->leaves[current_sel].config_value,0) == 0)) { // all-zero not allowed for vert./hor. shift
+        if (command == CMD_MENU_RIGHT) cfg_inc_value((*current_menu)->leaves[current_sel].config_value);
+        else                           cfg_dec_value((*current_menu)->leaves[current_sel].config_value);
+      }
+    }
+    return todo;
+  }
+
+  if ((*current_menu)->leaves[current_sel].leavetype == ICFGFUNC) { // at the moment only used in resolution menu
+    switch (command) {
+      case CMD_MENU_RIGHT:
+        (*current_menu)->leaves[current_sel].cfgfct_call(current_sel-1,1,0);
+        todo = NEW_CONF_VALUE;
+        break;
+      default:
+        break;
+    }
+
     if (todo == NEW_CONF_VALUE) {
       if (is_viscaling_screen((*current_menu)) &&
           ((current_sel == VERTSHIFT_SELECTION) || (current_sel == HORSHIFT_SELECTION)) &&
@@ -947,6 +968,14 @@ int update_cfg_screen(menu_t* current_menu)
         } else {
           vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
         }
+        break;
+      case ICFGFUNC:
+        val_select = current_menu->leaves[v_run].cfgfct_call(v_run-1,0,0) + 1;
+        ref_val_select = current_menu->leaves[v_run].cfgfct_call(v_run-1,0,1) + 1;
+        val_is_ref = ((val_select != v_run && ref_val_select != v_run) || val_select == ref_val_select);
+        font_color = val_is_ref ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
+        flag2set_func(val_select == v_run);
+        vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
         break;
       case ISUBMENU:
         font_color = FONTCOLOR_WHITE;

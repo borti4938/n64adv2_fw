@@ -70,6 +70,7 @@ typedef enum {
 
 typedef enum {
   ICONFIG = 0,
+  ICFGFUNC,
   ISUBMENU,
   IFUNC0,
   IFUNC1,
@@ -90,13 +91,16 @@ typedef int (*sys_call_0)(void);
 typedef int (*sys_call_1)(alt_u8);
 typedef int (*sys_call_2)(alt_u8,alt_u8);
 
+typedef alt_u8 (*cfgfct_call)(alt_u8,alt_u8,alt_u8);
+
 typedef struct {
   alt_u8        id;
   const arrow_t *arrow_desc;
   leavetype_t   leavetype;
   union {
     struct menu *submenu;
-    config_t      *config_value;
+    config_t    *config_value;
+    cfgfct_call cfgfct_call;
     union {
       sys_call_0 sys_fun_0;
       sys_call_1 sys_fun_1;

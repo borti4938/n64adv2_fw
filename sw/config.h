@@ -413,6 +413,7 @@ void cfg_inc_value(config_t* cfg_data);
 void cfg_dec_value(config_t* cfg_data);
 alt_u8 cfg_get_value(config_t* cfg_data,alt_u8 get_reference);
 void cfg_set_value(config_t* cfg_data, alt_u8 value);
+alt_u8 cfgfct_linex(alt_u8 value, alt_u8 set_value, alt_u8 ret_reference);
 int cfg_save_to_flash(alt_u8 need_confirm);
 int cfg_load_from_flash(alt_u8 need_confirm);
 int cfg_load_defaults(alt_u8 video480p,alt_u8 need_confirm);

@@ -179,6 +179,12 @@ void cfg_set_value(config_t* cfg_data, alt_u8 value)
   *cfg_word = (*cfg_word & ~cfg_data->value_details.getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
 }
 
+alt_u8 cfgfct_linex(alt_u8 value, alt_u8 set_value, alt_u8 ret_reference)
+{
+  if (set_value == 1) cfg_set_value(&linex_resolution,value);
+  return cfg_get_value(&linex_resolution,ret_reference);
+}
+
 alt_u8 confirmation_routine()
 {
   cmd_t command;
