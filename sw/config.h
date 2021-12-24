@@ -266,8 +266,8 @@ typedef struct {
 #define CFG_FORCE_5060_OFFSET       30
   #define CFG_FORCE_5060MSB_OFFSET    31
   #define CFG_FORCE_5060LSB_OFFSET    30
-#define CFG_VGAFOR480P_OFFSET       29
-#define CFG_LOWLATENCYMODE_OFFSET   28
+#define CFG_LOWLATENCYMODE_OFFSET   29
+#define CFG_VGAFOR480P_OFFSET       28
 #define CFG_RESOLUTION_OFFSET       25
   #define CFG_RESOLUTIONMSB_OFFSET    27
   #define CFG_RESOLUTIONLSB_OFFSET    25
@@ -296,12 +296,12 @@ typedef struct {
   #define CFG_FORCE_60_SETMASK          (1<<CFG_FORCE_5060_OFFSET)
   #define CFG_FORCE_AUTO_SETMASK        (0<<CFG_FORCE_5060_OFFSET)
   #define CFG_FORCE_5060_RSTMASK        (CFG_LINEX_GETALL_MASK & ~CFG_FORCE_5060_GETMASK)
-#define CFG_VGAFOR480P_GETMASK        (3<<CFG_VGAFOR480P_OFFSET)
-  #define CFG_VGAFOR480P_SETMASK        (1<<CFG_VGAFOR480P_OFFSET)
-  #define CFG_VGAFOR480P_CLRMASK        (CFG_LINEX_GETALL_MASK & ~CFG_VGAFOR480P_GETMASK)
 #define CFG_LOWLATENCYMODE_GETMASK    (1<<CFG_LOWLATENCYMODE_OFFSET)
   #define CFG_LOWLATENCYMODE_SETMASK    (1<<CFG_LOWLATENCYMODE_OFFSET)
   #define CFG_LOWLATENCYMODE_CLRMASK    (CFG_LINEX_GETALL_MASK & ~CFG_LOWLATENCYMODE_GETMASK)
+#define CFG_VGAFOR480P_GETMASK        (3<<CFG_VGAFOR480P_OFFSET)
+  #define CFG_VGAFOR480P_SETMASK        (1<<CFG_VGAFOR480P_OFFSET)
+  #define CFG_VGAFOR480P_CLRMASK        (CFG_LINEX_GETALL_MASK & ~CFG_VGAFOR480P_GETMASK)
 #define CFG_RESOLUTION_GETMASK        (0x7<<CFG_RESOLUTION_OFFSET)
   #define CFG_RESOLUTION_FHD_SETMASK    (2<<CFG_RESOLUTION_OFFSET)
   #define CFG_RESOLUTION_HDR_SETMASK    (1<<CFG_RESOLUTION_OFFSET)
@@ -382,8 +382,8 @@ typedef struct {
 #define CFG_SCALING_PAL_1200_DEFAULT  0x0189
 
 
-#define RWM_H_OFFSET 5
-#define RWM_V_OFFSET (VD_TXT_HEIGHT - 3)
+#define RWM_H_OFFSET 27
+#define RWM_V_OFFSET (VD_TXT_HEIGHT - 2)
 #define RWM_LENGTH   10
 #define RWM_SHOW_CNT 256
 
@@ -415,7 +415,6 @@ alt_u8 cfg_get_value(config_t* cfg_data,alt_u8 get_reference);
 void cfg_set_value(config_t* cfg_data, alt_u8 value);
 int cfg_save_to_flash(alt_u8 need_confirm);
 int cfg_load_from_flash(alt_u8 need_confirm);
-int cfg_reset_timing(void);
 int cfg_load_defaults(alt_u8 video480p,alt_u8 need_confirm);
 void cfg_store_linex_word(vmode_t palmode_select);
 void cfg_load_linex_word(vmode_t palmode_select);

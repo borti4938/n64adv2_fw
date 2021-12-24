@@ -45,7 +45,7 @@
   //    [21:11] {Link HV scale (1bit), LineX H-Scale (5bits), LineX V-Scale (5bits)}
   //    [10: 0] {(6bits reserve),De-Interlace Mode (2 bits),Interpolation Mode (2 bits), PAL boxed mode (1 bit)}
   //  wire [31:0] SysConfigSet0;
-  //    [31:25] Resolution: {Force 50Hz/60Hz (2bits), UseVGAfor480p (1bit), LowLatencyMode (1bit),TargetResolution (3bits)}
+  //    [31:25] Resolution: {Force 50Hz/60Hz (2bits),LowLatencyMode (1bit),UseVGAfor480p (1bit),TargetResolution (3bits)}
   //    [24:13] SL 240p:    {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_En}
   //    [12: 0] SL 480i:    {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_link,Sl_En}
 
@@ -86,8 +86,8 @@
   `define force_5060_slice        31:30
   `define force50hz_bit           31
   `define force60hz_bit           30
-  `define use_vga_for_480p_bit    29
-  `define lowlatencymode_bit      28
+  `define lowlatencymode_bit      29
+  `define use_vga_for_480p_bit    28
   `define target_resolution_slice 27:25
 
   `define v240p_SL_hybrid_slice   24:20

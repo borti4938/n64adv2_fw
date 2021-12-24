@@ -42,7 +42,7 @@
 #define OPT_WINDOWCOLOR_FONT  FONTCOLOR_BLACK
 
 #define BTN_OVERLAY_H_OFFSET  (VD_WIDTH - 13)
-#define BTN_OVERLAY_V_OFFSET  (VD_TXT_HEIGHT - 2)
+#define BTN_OVERLAY_V_OFFSET  (VD_TXT_HEIGHT - 1)
 
 extern char szText[];
 
@@ -69,9 +69,11 @@ typedef enum {
 } screentype_t;
 
 typedef enum {
-  ICONFIG,
+  ICONFIG = 0,
   ISUBMENU,
-  IFUNC
+  IFUNC0,
+  IFUNC1,
+  IFUNC2
 } leavetype_t;
 
 typedef struct {
@@ -94,7 +96,7 @@ typedef struct {
   leavetype_t   leavetype;
   union {
     struct menu *submenu;
-    config_t    *config_value;
+    config_t      *config_value;
     union {
       sys_call_0 sys_fun_0;
       sys_call_1 sys_fun_1;
@@ -103,11 +105,17 @@ typedef struct {
   };
 } leaves_t;
 
+typedef struct {
+  const alt_u8  hoffset;
+  const char*   *text;
+} overlay_t;
+
+
 typedef struct menu {
   const screentype_t  type;
   const char*         *header;
-  const char*         *overlay;
-  struct menu         *parent;
+  overlay_t    body;
+  struct menu       *parent;
   alt_u8              current_selection;
   const alt_u8        number_selections;
   leaves_t            leaves[];

@@ -36,11 +36,8 @@
 
 #define HEADER_UNDERLINE      0x08
 #define HOME_LOWSEC_UNDERLINE 0x01
-#define HEADER_H_OFFSET       24
-#define HEADER_V_OFFSET        0
 #define OVERLAY_H_OFFSET       0
 #define OVERLAY_V_OFFSET       0
-#define OVERLAY_V_OFFSET_WH    0
 #define TEXTOVERLAY_H_OFFSET   0
 #define HOMEOVERLAY_H_OFFSET   3
 
@@ -54,130 +51,127 @@
 #define COPYRIGHT_V_OFFSET      0
 #define COPYRIGHT_SIGN_H_OFFSET (COPYRIGHT_H_OFFSET - 2)
 
-#define CR_SIGN_LICENSE_H_OFFSET  17
+#define CR_SIGN_LICENSE_H_OFFSET  14
 #define CR_SIGN_LICENSE_V_OFFSET   2
 
-#define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 17)
+#define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 19)
 #define VERSION_V_OFFSET (OVERLAY_V_OFFSET +  4)
 
 #define CHECKBOX_TICK 0x0D
 
-#define VICFG_OVERLAY_H_OFFSET    OVERLAY_H_OFFSET
-#define VICFG_OVERLAY_V_OFFSET    OVERLAY_V_OFFSET_WH
-#define VICFG_VALS_H_OFFSET       (31 + VICFG_OVERLAY_H_OFFSET)
-#define VICFG_VALS_V_OFFSET       VICFG_OVERLAY_V_OFFSET
-#define VICFG1_RESOLUTION_V_OFFSET          ( 0 + VICFG_VALS_V_OFFSET)
-#define VICFG1_DEINTERLACING_V_OFFSET       ( 2 + VICFG_VALS_V_OFFSET)
-#define VICFG1_SCANLINES_V_OFFSET           ( 3 + VICFG_VALS_V_OFFSET)
-#define VICFG1_SCALER_OPT_V_OFFSET          ( 4 + VICFG_VALS_V_OFFSET)
-#define VICFG1_TIMING_V_OFFSET              ( 5 + VICFG_VALS_V_OFFSET)
-#define VICFG1_PAGE2_V_OFFSET               ( 7 + VICFG_VALS_V_OFFSET)
-#define VICFG2_GAMMA_V_OFFSET               ( 0 + VICFG_VALS_V_OFFSET)
-#define VICFG2_LIMRGB_V_OFFSET              ( 1 + VICFG_VALS_V_OFFSET)
-#define VICFG2_DEBLURMODE_V_OFFSET          ( 2 + VICFG_VALS_V_OFFSET)
-#define VICFG2_DEBLURMODE_DEF_V_OFFSET      ( 3 + VICFG_VALS_V_OFFSET)
-#define VICFG2_16BIT_V_OFFSET               ( 4 + VICFG_VALS_V_OFFSET)
-#define VICFG2_16BIT_DEF_V_OFFSET           ( 5 + VICFG_VALS_V_OFFSET)
-#define VICFG2_PAGE1_V_OFFSET               ( 7 + VICFG_VALS_V_OFFSET)
+#define  BNT_FCT_H_OFFSET 27
+#define  BNT_FCT_V_OFFSET (VD_TXT_WIDTH - 1)
 
-#define VICFG_RES_OVERLAY_H_OFFSET  OVERLAY_H_OFFSET
-#define VICFG_RES_OVERLAY_V_OFFSET  OVERLAY_V_OFFSET_WH
-#define VICFG_RES_VALS_H_OFFSET     (32 + VICFG_SL_OVERLAY_H_OFFSET)
-#define VICFG_RES_VALS_V_OFFSET     VICFG_SL_OVERLAY_V_OFFSET
-#define VICFG_RES_INPUT_V_OFFSET    ( 0 + VICFG_RES_VALS_V_OFFSET)
-#define VICFG_RES_OUTPUT_V_OFFSET   ( 1 + VICFG_RES_VALS_V_OFFSET)
-#define VICFG_USE_VGA_RES_V_OFFSET  ( 2 + VICFG_RES_VALS_V_OFFSET)
-#define VICFG_USE_SRCSYNC_V_OFFSET  ( 3 + VICFG_RES_VALS_V_OFFSET)
-#define VICFG_FORCE_5060_V_OFFSET   ( 4 + VICFG_RES_VALS_V_OFFSET)
-#define VICFG_RES_SCALER_V_OFFSET   ( 6 + VICFG_RES_VALS_V_OFFSET)
+#define INFO_OVERLAY_H_OFFSET   OVERLAY_H_OFFSET
+#define INFO_OVERLAY_V_OFFSET   OVERLAY_V_OFFSET
+#define INFO_VALS_H_OFFSET      (27 + INFO_OVERLAY_H_OFFSET)
+#define INFO_VALS_V_OFFSET      INFO_OVERLAY_V_OFFSET
+#define INFO_PPU_STATE_V_OFFSET ( 0 + INFO_VALS_V_OFFSET)
+#define INFO_VIN_V_OFFSET       ( 2 + INFO_VALS_V_OFFSET)
+#define INFO_VOUT_V_OFFSET      ( 3 + INFO_VALS_V_OFFSET)
+#define INFO_VRES_V_OFFSET      ( 4 + INFO_VALS_V_OFFSET)
+#define INFO_LLM_V_OFFSET       ( 5 + INFO_VALS_V_OFFSET)
+#define INFO_DEBLUR_V_OFFSET    ( 7 + INFO_VALS_V_OFFSET)
+#define INFO_GAMMA_V_OFFSET     ( 8 + INFO_VALS_V_OFFSET)
 
-#define VICFG_SL_OVERLAY_H_OFFSET	OVERLAY_H_OFFSET
-#define VICFG_SL_OVERLAY_V_OFFSET OVERLAY_V_OFFSET_WH
-#define VICFG_SL_VALS_H_OFFSET    (26 + VICFG_SL_OVERLAY_H_OFFSET)
-#define VICFG_SL_VALS_V_OFFSET    VICFG_SL_OVERLAY_V_OFFSET
-#define VICFG_SL_INPUT_OFFSET     ( 0 + VICFG_SL_VALS_V_OFFSET)
-#define VICFG_SL_EN_V_OFFSET      ( 2 + VICFG_SL_VALS_V_OFFSET)
-#define VICFG_SL_METHOD_V_OFFSET  ( 3 + VICFG_SL_VALS_V_OFFSET)
-#define VICFG_SL_ID_V_OFFSET      ( 4 + VICFG_SL_VALS_V_OFFSET)
-#define VICFG_SL_STR_V_OFFSET     ( 5 + VICFG_SL_VALS_V_OFFSET)
-#define VICFG_SL_HYB_STR_V_OFFSET ( 6 + VICFG_SL_VALS_V_OFFSET)
+#define RESCFG_OVERLAY_H_OFFSET     OVERLAY_H_OFFSET
+#define RESCFG_OVERLAY_V_OFFSET     OVERLAY_V_OFFSET
+#define RESCFG_VALS_H_OFFSET        (29 + OVERLAY_H_OFFSET)
+#define RESCFG_VALS_V_OFFSET        OVERLAY_V_OFFSET
+#define RESCFG_INPUT_V_OFFSET       ( 0 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_240P_V_OFFSET        ( 2 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_480P_V_OFFSET        ( 3 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_720P_V_OFFSET        ( 4 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_960P_V_OFFSET        ( 5 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_1080P_V_OFFSET       ( 6 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_1200P_V_OFFSET       ( 7 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_1440P_V_OFFSET       ( 8 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_USE_VGA_RES_V_OFFSET ( 9 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_USE_SRCSYNC_V_OFFSET (10 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_FORCE_5060_V_OFFSET  (11 + RESCFG_VALS_V_OFFSET)
 
-#define VICFG_VTIMSUB_OVERLAY_H_OFFSET  TEXTOVERLAY_H_OFFSET
-#define VICFG_VTIMSUB_OVERLAY_V_OFFSET  OVERLAY_V_OFFSET_WH
-#define VICFG_VTIMSUB_VALS_H_OFFSET     (26 + VICFG_VTIMSUB_OVERLAY_H_OFFSET)
-#define VICFG_VTIMSUB_MODE_V_OFFSET     ( 0 + VICFG_VTIMSUB_OVERLAY_V_OFFSET)
-#define VICFG_VTIMSUB_VSHIFT_V_OFFSET   ( 2 + VICFG_VTIMSUB_OVERLAY_V_OFFSET)
-#define VICFG_VTIMSUB_HSHIFT_V_OFFSET   ( 3 + VICFG_VTIMSUB_OVERLAY_V_OFFSET)
-#define VICFG_VTIMSUB_RESET_V_OFFSET    ( 5 + VICFG_VTIMSUB_OVERLAY_V_OFFSET)
+#define SCALERCFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
+#define SCALERCFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
+#define SCALERCFG_VALS_H_OFFSET         (30 + OVERLAY_H_OFFSET)
+#define SCALERCFG_VALS_V_OFFSET         OVERLAY_V_OFFSET
+#define SCALERCFG_IN2OUT_V_OFFSET       ( 0 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_INTERP_V_OFFSET       ( 1 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_LINKVH_V_OFFSET       ( 3 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_VHSTEPS_V_OFFSET      ( 4 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_VERTSCALE_V_OFFSET    ( 5 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_HORISCALE_V_OFFSET    ( 6 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_PALBOXED_V_OFFSET     ( 7 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_INSHIFTMODE_V_OFFSET  ( 9 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_VERTSHIFT_V_OFFSET    (10 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_HORISHIFT_V_OFFSET    (11 + SCALERCFG_VALS_V_OFFSET)
 
-#define VICFG_SCALESUB_OVERLAY_H_OFFSET   TEXTOVERLAY_H_OFFSET
-#define VICFG_SCALESUB_OVERLAY_V_OFFSET   OVERLAY_V_OFFSET_WH
-#define VICFG_SCALESUB_VALS_H_OFFSET      (30 + VICFG_SCALESUB_OVERLAY_H_OFFSET)
-#define VICFG_SCALESUB_MODE_V_OFFSET      ( 0 + VICFG_SCALESUB_OVERLAY_V_OFFSET)
-#define VICFG_SCALESUB_INTERPM_V_OFFSET   ( 2 + VICFG_SCALESUB_OVERLAY_V_OFFSET)
-#define VICFG_SCALESUB_HVLINK_V_OFFSET    ( 3 + VICFG_SCALESUB_OVERLAY_V_OFFSET)
-#define VICFG_SCALESUB_VSCALE_V_OFFSET    ( 4 + VICFG_SCALESUB_OVERLAY_V_OFFSET)
-#define VICFG_SCALESUB_HSCALE_V_OFFSET    ( 5 + VICFG_SCALESUB_OVERLAY_V_OFFSET)
-#define VICFG_SCALESUB_PALBOX_V_OFFSET    ( 6 + VICFG_SCALESUB_OVERLAY_V_OFFSET)
+#define VICFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
+#define VICFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
+#define VICFG_VALS_H_OFFSET         (28 + OVERLAY_H_OFFSET)
+#define VICFG_VALS_V_OFFSET         OVERLAY_V_OFFSET
+#define VICFG_DEINTERL_V_OFFSET     ( 0 + VICFG_VALS_V_OFFSET)
+#define VICFG_SCANLINE_V_OFFSET     ( 1 + VICFG_VALS_V_OFFSET)
+#define VICFG_GAMMA_V_OFFSET        ( 2 + VICFG_VALS_V_OFFSET)
+#define VICFG_LIMITEDRGB_V_OFFSET   ( 3 + VICFG_VALS_V_OFFSET)
+#define VICFG_DEBLUR_V_OFFSET       ( 4 + VICFG_VALS_V_OFFSET)
+#define VICFG_PCDEBLUR_V_OFFSET     ( 5 + VICFG_VALS_V_OFFSET)
+#define VICFG_16BITMODE_V_OFFSET    ( 6 + VICFG_VALS_V_OFFSET)
+#define VICFG_PC16BITMODE_V_OFFSET  ( 7 + VICFG_VALS_V_OFFSET)
+
+#define SLCFG_OVERLAY_H_OFFSET  OVERLAY_H_OFFSET
+#define SLCFG_OVERLAY_V_OFFSET  OVERLAY_V_OFFSET
+#define SLCFG_VALS_H_OFFSET     (26 + SLCFG_OVERLAY_H_OFFSET)
+#define SLCFG_VALS_V_OFFSET     SLCFG_OVERLAY_V_OFFSET
+#define SLCFG_INPUT_OFFSET      ( 0 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_EN_V_OFFSET       ( 2 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_METHOD_V_OFFSET   ( 3 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_ID_V_OFFSET       ( 4 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_STR_V_OFFSET      ( 5 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HYB_STR_V_OFFSET  ( 6 + SLCFG_VALS_V_OFFSET)
 
 #define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
-#define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET_WH
+#define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET
 #define MISC_VALS_H_OFFSET            (27 + MISC_OVERLAY_H_OFFSET)
 #define MISC_VALS_V_OFFSET            VICFG_OVERLAY_V_OFFSET
 #define MISC_AUDIO_SWAP_LR_V_OFFSET   ( 1 + MISC_VALS_V_OFFSET)
-#define MISC_AUDIO_AMP_V_OFFSET       ( 2 + MISC_VALS_V_OFFSET)
-#define MISC_AUDIO_SPDIF_EN_V_OFFSET  ( 3 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_RESET_V_OFFSET       ( 5 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_DEBLUR_V_OFFSET      ( 6 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_16BITMODE_V_OFFSET   ( 7 + MISC_VALS_V_OFFSET)
+#define MISC_AUDIO_FILTER_V_OFFSET    ( 2 + MISC_VALS_V_OFFSET)
+#define MISC_AUDIO_AMP_V_OFFSET       ( 3 + MISC_VALS_V_OFFSET)
+#define MISC_AUDIO_SPDIF_EN_V_OFFSET  ( 4 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_RESET_V_OFFSET       ( 6 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_DEBLUR_V_OFFSET      ( 7 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_16BITMODE_V_OFFSET   ( 8 + MISC_VALS_V_OFFSET)
 
-#define RWDATA_OVERLAY_H_OFFSET       OVERLAY_H_OFFSET
-#define RWDATA_OVERLAY_V_OFFSET       OVERLAY_V_OFFSET_WH
-#define RWDATA_SAVE_FL_V_OFFSET       (1 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_FL_V_OFFSET       (3 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_N64_480P_V_OFFSET (4 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_N64_V_OFFSET      (5 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
+#define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
+#define RWDATA_VALS_H_OFFSET              (27 + MISC_OVERLAY_H_OFFSET)
+#define RWDATA_VALS_V_OFFSET              VICFG_OVERLAY_V_OFFSET
+#define RWDATA_SAVE_FL_V_OFFSET           ( 1 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_FL_V_OFFSET           ( 3 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_DEFAULT480P_V_OFFSET  ( 4 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_DEFAULT1080P_V_OFFSET ( 5 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FALLBACK_V_OFFSET          ( 6 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FWCURRENT_V_OFFSET         ( 7 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FWROM_V_OFFSET             ( 8 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_UPDATE_V_OFFSET            ( 9 + RWDATA_OVERLAY_V_OFFSET)
 
-
-#define INFO_OVERLAY_H_OFFSET OVERLAY_H_OFFSET
-#define INFO_OVERLAY_V_OFFSET OVERLAY_V_OFFSET_WH
-#define INFO_VALS_H_OFFSET    (27 + INFO_OVERLAY_H_OFFSET)
-#define INFO_VALS_V_OFFSET    INFO_OVERLAY_V_OFFSET
-
-#define INFO_PPU_STATE_V_OFFSET (0 + INFO_VALS_V_OFFSET)
-#define INFO_VIN_V_OFFSET       (2 + INFO_VALS_V_OFFSET)
-#define INFO_VOUT_V_OFFSET      (3 + INFO_VALS_V_OFFSET)
-#define INFO_LLM_V_OFFSET       (4 + INFO_VALS_V_OFFSET)
-#define INFO_DEBLUR_V_OFFSET    (6 + INFO_VALS_V_OFFSET)
-#define INFO_GAMMA_V_OFFSET     (7 + INFO_VALS_V_OFFSET)
-
-
-#define MAIN_OVERLAY_H_OFFSET 2
-#define MAIN_OVERLAY_V_OFFSET OVERLAY_V_OFFSET_WH
-
-#define MAIN2VINFO_V_OFFSET   (0 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2CFG_V_OFFSET     (1 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2MISC_V_OFFSET    (2 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2SAVE_V_OFFSET    (3 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2ABOUT_V_OFFSET   (5 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2THANKS_V_OFFSET  (6 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2LICENSE_V_OFFSET (7 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN_OVERLAY_H_OFFSET ( 3 + OVERLAY_H_OFFSET)
+#define MAIN_OVERLAY_V_OFFSET OVERLAY_V_OFFSET
+#define MAIN2VINFO_V_OFFSET   ( 0 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2RES_V_OFFSET     ( 1 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SCALER_V_OFFSET  ( 2 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2VIPROC_V_OFFSET  ( 3 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2MISC_V_OFFSET    ( 4 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SAVE_V_OFFSET    ( 5 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2ABOUT_V_OFFSET   ( 7 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2THANKS_V_OFFSET  ( 8 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2LICENSE_V_OFFSET ( 9 + MAIN_OVERLAY_V_OFFSET)
 
 
 static const char *copyright_note __ufmdata_section__ =
     "2021 borti4938"; /* 14 chars */
 
-const char *btn_overlay_0 =
-    "A ... Enter\n"
-    "B ... Close";
-
-const char *btn_overlay_1 =
-    "A ... Enter\n"
-    "B ... Back";
-
-const char *btn_overlay_2 =
-    "A ... Confirm\n"
-    "B ... Cancel";
+const char *btn_fct_confirm_overlay =
+    "(A..Confirm, B..Cancel)";
 
 static const char *vinfo_header __ufmdata_section__ =
     "Video-Info";
@@ -186,45 +180,59 @@ static const char *vinfo_overlay __ufmdata_section__ =
     "* Video mode\n"
     "  - Input resolution:\n"
     "  - Output resolution:\n"
+    "  - Scaled image size:\n"
     "  - Low latency mode:\n"
     "* Filter Options\n"
     "  - LowRes. VI-DeBlur:\n"
     "  - Gamma boost exponent:";
 
-static const char *vicfg1_header __ufmdata_section__ =
-    "VI config. 1";
-static const char *vicfg1_overlay __ufmdata_section__ =
+static const char *resolution_header __ufmdata_section__ =
+    "Resolution";
+static const char *resolution_overlay __ufmdata_section__ =
+    "* Input mode:\n"
     "* Output resolution:\n"
-    "* Advanced picture settings\n"
-    "  - De-Interlacing mode:\n"
-    "  - Scanline emulation:\n"
-    "  - Scaler options:\n"
-    "  - V/H position/timing:\n\n"
-    "* VI config page 2:";
+    "  - 240p/288p:\n"
+    "  - 480p/576p:\n"
+    "  -      720p:\n"
+    "  -      960p:\n"
+    "  -     1080p:\n"
+    "  -     1200p:\n"
+    "  -     1440p:\n"
+    "* Use VGA instead of 480p:\n"
+    "* Frame-Locked:\n"
+    "* Force 50/60:";
 
-static const char *vicfg2_header __ufmdata_section__ =
-    "VI config. 2";
-static const char *vicfg2_overlay __ufmdata_section__ =
+static const char *scaler_header __ufmdata_section__ =
+    "Resolution";
+static const char *scaler_overlay __ufmdata_section__ =
+    "* Settings for:\n"
+    "* Interpolation type:\n"
+    "* Scaler:\n"
+    "  - Link v/h factors:\n"
+    "  - V/h scaling steps:\n"
+    "  - Vertical scale value:\n"
+    "  - Horizontal scale value:\n\n"
+    "* Shift N64 input image:\n"
+    "  - Input Mode:\n"
+    "  - Vertical shift:\n"
+    "  - Horizontal shift:";
+static const char *scaler_overlay_paladd __ufmdata_section__ =
+    "* Use PAL in 240p box:";
+
+static const char *vicfg_header __ufmdata_section__ =
+    "VI-Processing";
+static const char *vicfg_overlay __ufmdata_section__ =
+    "* De-Interlacing mode:\n"
+    "* Scanline emulation:\n"
     "* Gamma Value:\n"
     "* Limited RGB:\n"
     "* LowRes.-DeBlur:\n"
     "  - power-cycle default:\n"
     "* 16bit mode:\n"
-    "  - power-cycle default:\n\n"
-    "* VI config page 1:";
-
-static const char *rescfg_opt_header __ufmdata_section__ =
-    "Cfg. (Resolution)";
-static const char *rescfg_opt_overlay __ufmdata_section__ =
-    "* Input mode:\n"
-    "* Output resolution:\n"
-    "  - Use VGA instead of 480p:\n"
-    "  - Low latency mode:\n"
-    "  - Force 50Hz/60Hz:\n\n"
-    "* Scaler options:";
+    "  - power-cycle default:";
 
 static const char *slcfg_opt_header __ufmdata_section__ =
-    "Config. (Scanlines)";
+    "Scanlines Config";
 static const char *slcfg_opt_overlay __ufmdata_section__ =
     "* Input mode:\n\n"
     "* Use Scanlines:\n"
@@ -233,114 +241,104 @@ static const char *slcfg_opt_overlay __ufmdata_section__ =
     "  - Scanline Strength:\n"
     "  - Hybrid Depth:";
 
-
-static const char *vicfg_timing_opt_header __ufmdata_section__ =
-    "Config. (Position)";
-static const char *vicfg_timing_opt_overlay __ufmdata_section__ =
-    "* Settings for:\n\n"
-    "* Vertical shift:\n"
-    "* Horizontal shift:";
-static const char *vicfg_timing_opt_overlay1 __ufmdata_section__ =
-    "* Reset values:";
-
-
-static const char *vicfg_scaler_opt_header __ufmdata_section__ =
-    "Config. (Scaler)";
-static const char *vicfg_scaler_overlay __ufmdata_section__ =
-    "* Settings for:\n"
-    "* Scaler Mode:\n"
-    "  - Interpolation type:\n"
-    "  - Link h/v factors:\n"
-    "  - Vertical scaling:\n"
-    "  - Horizontal scaling:";
-static const char *vicfg_scaler_overlay1 __ufmdata_section__ =
-    "  - Use PAL in 240p box:";
-
-
 static const char *misc_header __ufmdata_section__ =
     "Miscellaneous";
 static const char *misc_overlay __ufmdata_section__ =
     "* Audio Settings:\n"
     "  - Swap L/R:\n"
+    "  - Filter function:\n"
     "  - Post filter gain:\n"
     "  - S/PDIF enabled:\n"
-    "* In-Game Routines:\n"
+    "* Controller Routines:\n"
     "  - Reset:\n"
     "  - VI-DeBlur:\n"
     "  - 16bit Mode:";
 
 static const char *rwdata_header __ufmdata_section__ =
-    "Load/Save";
+    "Save/Load/Fw";
 static const char *rwdata_overlay __ufmdata_section__ =
-    "Save:\n"
-    " - Configuration\n"
-    "Load:\n"
-    " - Last Configuration\n"
-    " - Defaults for 480p\n"
-    " - N64 Standard";
+    "* Save\n"
+    "  - Configuration:\n"
+    "* Load\n"
+    "  - Last Configuration:\n"
+    "  - 480p Defaults:\n"
+    "  - 1080p Defaults:\n"
+    "* Fallback Config:\n"
+    "* Firmware Update\n"
+    "  - Current:\n"
+    "  - Found:\n"
+    "  - Run Update:";
 
 static const char *thanks_header __ufmdata_section__ =
     "Acknowledgment";
 static const char *thanks_overlay __ufmdata_section__ =
-    "The N64 RGB project would not be what it is without\n"
-    "the contributions of many other people. Here, I want\n"
-    "to point out especially:\n"
-    " - viletim  : First public DIY N64 RGB DAC project\n"
+    "The N64 RGB project would not be what it is\n"
+    "without the contributions of many other people.\n"
+    "Here, I want to point out especially:\n"
+    " - viletim  : First public DIY N64RGB project\n"
     " - Ikari_01 : Initial implementation of PAL/NTSC\n"
     "              as well as 480i/576i detection\n"
     " - marqs85:   Feedback and final concept for low\n"
     "              latency mode PLL configuration\n"
     " - ArcadeTV:  Logo design\n"
     "Visit the GitHub project:\n"
-    "      <https://github.com/borti4938/n64rgb>\n"
+    "   <https://github.com/borti4938/\n"
+    "                      n64rgb_project_overview>\n"
     "Any contribution in any kind is highly welcomed!";
-  /* 1234567890123456789012345678901234567890123456789012 */
+  /* 123456789012345678901234567890123456789012345678 */
 
 static const char *about_header __ufmdata_section__ =
     "About";
 static const char *about_overlay __ufmdata_section__ =
-    "The N64 RGB project is open source, i.e. PCB files,\n"
-    "HDL and SW sources are provided to you FOR FREE!\n\n"
+    "The N64 RGB project is open source, i.e. PCB\n"
+    "files, HDL and SW sources are provided to you\n"
+    "FOR FREE!\n"
     "Your version\n"
     " - PCB version:\n"
     " - FPGA Chip ID:\n"
     " - firmware (HDL):\n"
-    " - firmware (SW) :\n\n"
+    " - firmware (SW) :\n"
     "Questions / (limited) Support:\n"
-    " - GitHub: <https://github.com/borti4938/n64rgb>\n"
+    " - GitHub:\n"
+    "      <https://github.com/borti4938/n64adv2_pcb>\n"
+    "      <https://github.com/borti4938/n64adv2_fw>\n"
     " - Email:  <borti4938@gmail.com>";
-  /* 1234567890123456789012345678901234567890123456789012 */
+  /* 123456789012345678901234567890123456789012345678 */
 
 static const char *license_header __ufmdata_section__ =
     "License";
 static const char *license_overlay __ufmdata_section__ =
+    "\n"
     "The N64Advanced v2 is part of the\n"
     "N64 RGB/YPbPr Digital2Digital and DAC project\n"
-    "       Copyright   2015 - 2021 Peter Bartmann\n"
+    "    Copyright   2015 - 2021 Peter Bartmann\n"
     "This project is published under GNU GPL v3.0 or\n"
-    "later. You should have received a copy of the GNU\n"
-    "General Public License along with this project.\n"
-    "If not, see\n"
+    "later. You should have received a copy of the\n"
+    "GNU General Public License along with this\n"
+    "project. If not, see\n"
     "        <http://www.gnu.org/licenses/>.\n\n"
     "What ever you do, also respect licenses of third\n"
     "party vendors providing the design tools...";
-  /* 1234567890123456789012345678901234567890123456789012 */
+  /* 123456789012345678901234567890123456789012345678 */
 
 static const char *home_header __ufmdata_section__ =
     "Main Menu";
 static const char *home_overlay __ufmdata_section__ =
     "[Video-Info]\n"
-    "[Configuration]\n"
+    "[Resolution]\n"
+    "[Scaler]\n"
+    "[VI-Processing]\n"
     "[Miscellaneous]\n"
-    "[Load/Save]\n\n"
+    "[Save/Load/Fw.Update]\n\n"
     "About...\n"
     "Acknowledgment...\n"
     "License...";
+  /* 1234567890123456789012345678901234567890123456789012 */
 
-const char *EnterSubMenu       = "[Enter submenu]";
-const char *LoadTimingDefaults = "[Load defaults]";
-const char *Global             = "Global";
-const char *not_available      = "-----";
+const char *EnterSubMenu __ufmdata_section__  = "[Enter ...]";
+const char *RunFunction __ufmdata_section__   = "[Run ...]";
+const char *not_available __ufmdata_section__ = "-----";
+const char *Global                            = "Global";
 
 const char *OffOn[]         = {"Off","On"};
 const char *NTSCPAL_SEL[]   = {"NTSC  ","PAL   ", "Current"};
@@ -348,7 +346,7 @@ const char *Force5060[]     = {"Off (N64 Auto)","60Hz","50Hz"};
 const char *Resolutions[]   = {"480p/576p","720p","960p","1080p","1200p"};
 const char *DeInterModes[]  = {"Bob","Weave","Fully Buffered"};
 const char *InterpModes[]   = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
-const char *VTimingSel[]    = {"Current","NTSC Progressive","NTSC Interlaced","PAL Progressive","PAL Interlaced"};
+const char *VTimingSel[]    = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
 const char *EvenOdd[]       = {"Even","Odd "};
 const char *AdvSL[]         = {"Simple","Mean"};
 const char *LinkSL[]        = {"Off","Individual","Linked to progressive"};

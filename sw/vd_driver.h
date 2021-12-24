@@ -41,10 +41,10 @@ typedef enum {
 
 
 // define virtual display (memory mapped)
-#define VD_WIDTH  52
-#define VD_HDR_HEIGHT   1
+#define VD_WIDTH        48
+#define VD_HDR_HEIGHT    1
 #define VD_TXT_HEIGHT   13
-#define VD_INFO_HEIGHT  1
+#define VD_INFO_HEIGHT   1
 
 #define VD_HDR_AREA_VOFFSET   0
 #define VD_TXT_AREA_VOFFSET   VD_HDR_HEIGHT

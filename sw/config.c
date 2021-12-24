@@ -43,6 +43,9 @@
 #define CFG2FLASH_WORD_FACTOR_U32   4
 #define CFG2FLASH_WORD_FACTOR_U16   2
 
+#define CONFIRM_BNT_FCT_H_OFFSET  27
+#define CONFIRM_BNT_FCT_V_OFFSET  (VD_TXT_HEIGHT - 1)
+
 typedef struct {
   alt_u8  vers_cfg_main;
   alt_u8  vers_cfg_sub;
@@ -85,7 +88,7 @@ config_tray_u16_t scaling_words[NUM_SCALING_MODES] = {
 };
 
 static const char *confirm_message = "< Really? >";
-extern const char *btn_overlay_1, *btn_overlay_2;
+extern const char *btn_fct_confirm_overlay;
 
 
 void cfg_toggle_flag(config_t* cfg_data) {
@@ -176,13 +179,13 @@ void cfg_set_value(config_t* cfg_data, alt_u8 value)
   *cfg_word = (*cfg_word & ~cfg_data->value_details.getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
 }
 
-alt_u8 confirmation_routine(alt_u8 with_btn_overlay)
+alt_u8 confirmation_routine()
 {
   cmd_t command;
   alt_u8 abort = 0;
 
   vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,confirm_message);
-  if (with_btn_overlay > 0) vd_print_string(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_2);
+  vd_print_string(VD_TEXT,CONFIRM_BNT_FCT_H_OFFSET,CONFIRM_BNT_FCT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_fct_confirm_overlay);
 
   while(1) {
     while(!get_osdvsync()){};                         // wait for OSD_VSYNC goes high
@@ -194,11 +197,8 @@ alt_u8 confirmation_routine(alt_u8 with_btn_overlay)
     if ((command == CMD_MENU_ENTER) || (command == CMD_MENU_RIGHT)) break;
     if ((command == CMD_MENU_BACK)  || (command == CMD_MENU_LEFT))  {abort = 1; break;};
   }
-  if (with_btn_overlay > 0) {
-    vd_clear_lineend(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET);
-    vd_clear_lineend(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET+1);
-    vd_print_string(VD_TEXT,BTN_OVERLAY_H_OFFSET,BTN_OVERLAY_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_overlay_1);
-  }
+  vd_clear_lineend(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET);
+  vd_clear_lineend(VD_TEXT,CONFIRM_BNT_FCT_H_OFFSET,CONFIRM_BNT_FCT_V_OFFSET);
   return abort;
 }
 
@@ -207,7 +207,7 @@ int cfg_save_to_flash(alt_u8 need_confirm)
   if (!use_flash) return -CFG_FLASH_NOT_USED;
 
   if (need_confirm) {
-    alt_u8 abort = confirmation_routine(1);
+    alt_u8 abort = confirmation_routine();
     if (abort) return -CFG_FLASH_SAVE_ABORT;
   }
 
@@ -249,7 +249,7 @@ int cfg_load_from_flash(alt_u8 need_confirm)
   if (!use_flash) return -CFG_FLASH_NOT_USED;
 
   if (need_confirm) {
-    alt_u8 abort = confirmation_routine(1);
+    alt_u8 abort = confirmation_routine();
     if (abort) return -CFG_FLASH_LOAD_ABORT;
   }
 
@@ -308,22 +308,10 @@ int cfg_load_from_flash(alt_u8 need_confirm)
   return retval;
 }
 
-int cfg_reset_timing()
-{
-  alt_u8 abort = confirmation_routine(0);
-  if (abort) return -CFG_DEF_LOAD_ABORT;
-
-  alt_u8 timing_word_select = timing_selection.cfg_value;
-  if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return -1;
-  timing_words[timing_word_select-1].config_val = CFG_TIMING_DEFAULTS;
-  cfg_load_timing_word(timing_word_select);
-  return 0;
-}
-
 int cfg_load_defaults(alt_u8 video480p, alt_u8 need_confirm)
 {
   if (need_confirm) {
-    alt_u8 abort = confirmation_routine(1);
+    alt_u8 abort = confirmation_routine();
     if (abort) return -CFG_DEF_LOAD_ABORT;
   }
 

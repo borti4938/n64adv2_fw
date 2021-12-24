@@ -82,7 +82,7 @@
   `define MAX_HDR_ROWS       0
   `define MAX_TEXT_ROWS     12
   `define MAX_INFO_ROWS      0
-  `define MAX_CHARS_PER_ROW 51
+  `define MAX_CHARS_PER_ROW 47
   
   `define VAREA_HDR2TXT  8
   `define VAREA_TXT2INFO 6

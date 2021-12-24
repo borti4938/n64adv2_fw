@@ -47,7 +47,7 @@
 
 
 const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
-const char   *RW_Message[] = {"< Success >","< Failed > ","< Aborted >"};
+const char   *RW_Message[] = {"< Success >","< Failed >","< Aborted >"};
 
 vmode_t vmode_menu, vmode_n64adv;
 cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
@@ -259,6 +259,7 @@ int main()
         cfg_store_scaling_word(scaling_menu);
         print_current_timing_mode();
       } else {
+        if (menu->type == RWDATA) update_cfg_screen(menu);
         print_ctrl_data();
       }
       
