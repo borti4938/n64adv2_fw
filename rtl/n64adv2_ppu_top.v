@@ -154,7 +154,6 @@ wire [9:0] cfg_hvshift;
 wire [`VID_CFG_W-1:0] sys_vmode_ntsc_w, sys_vmode_pal_w;
 
 wire palmode_sysclk_resynced;
-wire [4:0] cfg_vscale_factor_w, cfg_hscale_factor_w;
 
 wire [8:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_resynced;
 wire [10:0] cfg_vlines_out_w, cfg_vlines_out_resynced;
@@ -280,16 +279,14 @@ always @(posedge SYS_CLK) begin
   end
 end
 
-assign cfg_vscale_factor_w = ConfigSet[`vscale_slice];
-assign cfg_hscale_factor_w = ConfigSet[`link_hv_scale_bit] ? ConfigSet[`vscale_slice] : ConfigSet[`hscale_slice];
 
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
   .palmode_i(palmode_sysclk_resynced),
   .palmode_boxed_i(ConfigSet[`pal_boxed_scale_bit]),
   .video_config_i(sys_videomode),
-  .vscale_factor_i(cfg_vscale_factor_w),
-  .hscale_factor_i(cfg_hscale_factor_w),
+  .vlines_out_i(ConfigSet[`target_vlines_slice]),
+  .hpixels_out_i(ConfigSet[`target_hpixels_slice]),
   .vpos_1st_rdline_o(cfg_vpos_1st_rdline_w),
   .vlines_in_needed_o(cfg_vlines_in_needed_w),
   .vlines_in_full_o(cfg_vlines_in_full_w),
@@ -409,9 +406,9 @@ always @(posedge VCLK_Tx) begin
   end
   cfg_interpolation_mode <= ConfigSet_resynced[`interpolation_mode_slice];
   cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
-  if (ConfigSet_resynced[`vscale_slice] < 5'h06) // less than 3.5x
+  if (ConfigSet_resynced[`target_vlines_slice] < 11'd924) // just a coarse estimate
     cfg_SL_thickness <= 2'b00;
-  else if (ConfigSet_resynced[`vscale_slice] < 5'h0E) // less than 5.5x
+  else if (ConfigSet_resynced[`target_vlines_slice] < 11'd1452) // just a coarse estimate
     cfg_SL_thickness <= 2'b01;
   else
     cfg_SL_thickness <= 2'b10;  

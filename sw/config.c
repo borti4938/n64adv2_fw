@@ -49,17 +49,17 @@
 typedef struct {
   alt_u8  vers_cfg_main;
   alt_u8  vers_cfg_sub;
-  alt_u8  cfg_internals;
   alt_u8  cfg_words[CFG2FLASH_WORD_FACTOR_U32*NUM_CFG_B32WORDS];
   alt_u8  cfg_linex_trays[CFG2FLASH_WORD_FACTOR_U32*LINEX_TYPES];
   alt_u8  cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*NUM_TIMING_MODES];
-  alt_u8  cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U16*NUM_SCALING_MODES];
+  alt_u8  cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*NUM_SCALING_MODES];
 } cfg4flash_t;
 
 configuration_t sysconfig = {
-  .cfg_word_def[MISC]  = &cfg_data_misc,
-  .cfg_word_def[VIDEO] = &cfg_data_video,
-  .cfg_word_def[LINEX] = &cfg_data_linex
+  .cfg_word_def[INTCFG0] = &intcfg0_word,
+  .cfg_word_def[EXTCFG0] = &extcfg0_word,
+  .cfg_word_def[EXTCFG1] = &extcfg1_word,
+  .cfg_word_def[EXTCFG2] = &extcfg2_word
 };
 
 config_tray_t linex_words[2] = {
@@ -68,23 +68,37 @@ config_tray_t linex_words[2] = {
 };
 
 config_tray_u16_t timing_words[NUM_TIMING_MODES] = {
-  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS}
+//    { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
+//    { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
+//    { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
+//    { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS}
+  { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
+  { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
+  { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
+  { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED}
 };
 
-config_tray_u16_t scaling_words[NUM_SCALING_MODES] = {
-  { .config_val = CFG_SCALING_NTSC_480_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_480_DEFAULT},
-  { .config_val = CFG_SCALING_NTSC_720_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_720_DEFAULT},
-  { .config_val = CFG_SCALING_NTSC_960_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_960_DEFAULT},
-  { .config_val = CFG_SCALING_NTSC_1080_DEFAULT,  .config_ref_val = CFG_SCALING_NTSC_1080_DEFAULT},
-  { .config_val = CFG_SCALING_NTSC_1200_DEFAULT,  .config_ref_val = CFG_SCALING_NTSC_1200_DEFAULT},
-  { .config_val = CFG_SCALING_PAL_576_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_576_DEFAULT},
-  { .config_val = CFG_SCALING_PAL_720_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_720_DEFAULT},
-  { .config_val = CFG_SCALING_PAL_960_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_960_DEFAULT},
-  { .config_val = CFG_SCALING_PAL_1080_DEFAULT ,  .config_ref_val = CFG_SCALING_PAL_1080_DEFAULT},
-  { .config_val = CFG_SCALING_PAL_1200_DEFAULT ,  .config_ref_val = CFG_SCALING_PAL_1200_DEFAULT}
+config_tray_t scaling_words[NUM_SCALING_MODES] = {
+//    { .config_val = CFG_SCALING_NTSC_480_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_480_DEFAULT},
+//    { .config_val = CFG_SCALING_NTSC_720_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_720_DEFAULT},
+//    { .config_val = CFG_SCALING_NTSC_960_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_960_DEFAULT},
+//    { .config_val = CFG_SCALING_NTSC_1080_DEFAULT,  .config_ref_val = CFG_SCALING_NTSC_1080_DEFAULT},
+//    { .config_val = CFG_SCALING_NTSC_1200_DEFAULT,  .config_ref_val = CFG_SCALING_NTSC_1200_DEFAULT},
+//    { .config_val = CFG_SCALING_PAL_576_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_576_DEFAULT},
+//    { .config_val = CFG_SCALING_PAL_720_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_720_DEFAULT},
+//    { .config_val = CFG_SCALING_PAL_960_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_960_DEFAULT},
+//    { .config_val = CFG_SCALING_PAL_1080_DEFAULT ,  .config_ref_val = CFG_SCALING_PAL_1080_DEFAULT},
+//    { .config_val = CFG_SCALING_PAL_1200_DEFAULT ,  .config_ref_val = CFG_SCALING_PAL_1200_DEFAULT}
+    { .config_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED}
 };
 
 static const char *confirm_message = "< Really? >";
@@ -124,7 +138,7 @@ void cfg_inc_value(config_t* cfg_data)
   }
 
   alt_u32 *cfg_word = &(cfg_data->cfg_word->cfg_word_val);
-  alt_u8 cur_val = (*cfg_word & cfg_data->value_details.getvalue_mask) >> cfg_data->cfg_word_offset;
+  alt_u16 cur_val = (*cfg_word & cfg_data->value_details.getvalue_mask) >> cfg_data->cfg_word_offset;
 
   cur_val = cur_val == cfg_data->value_details.max_value ? 0 : cur_val + 1;
   *cfg_word = (*cfg_word & ~cfg_data->value_details.getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
@@ -142,15 +156,15 @@ void cfg_dec_value(config_t* cfg_data)
   }
 
   alt_u32 *cfg_word = &(cfg_data->cfg_word->cfg_word_val);
-  alt_u8 cur_val = (*cfg_word & cfg_data->value_details.getvalue_mask) >> cfg_data->cfg_word_offset;
+  alt_u16 cur_val = (*cfg_word & cfg_data->value_details.getvalue_mask) >> cfg_data->cfg_word_offset;
 
   cur_val = cur_val == 0 ? cfg_data->value_details.max_value : cur_val - 1;
   *cfg_word = (*cfg_word & ~cfg_data->value_details.getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
 }
 
-alt_u8 cfg_get_value(config_t* cfg_data, alt_u8 get_reference)
+alt_u16 cfg_get_value(config_t* cfg_data, cfg_offon_t get_reference)
 {
-  if (is_local_cfg(cfg_data)) return cfg_data->cfg_value;
+  if (is_local_cfg(cfg_data)) return (alt_u16) cfg_data->cfg_value;
 
   alt_u32 *cfg_word;
   if (!get_reference) cfg_word = &(cfg_data->cfg_word->cfg_word_val);
@@ -161,7 +175,7 @@ alt_u8 cfg_get_value(config_t* cfg_data, alt_u8 get_reference)
   else                               return ((*cfg_word & cfg_data->value_details.getvalue_mask) >> cfg_data->cfg_word_offset);
 }
 
-void cfg_set_value(config_t* cfg_data, alt_u8 value)
+void cfg_set_value(config_t* cfg_data, alt_u16 value)
 {
   if (cfg_data->cfg_type == FLAG || cfg_data->cfg_type == FLAGTXT) {
     if (value) cfg_set_flag(cfg_data);
@@ -169,7 +183,7 @@ void cfg_set_value(config_t* cfg_data, alt_u8 value)
     return;
   }
   if (is_local_cfg(cfg_data)) {
-    cfg_data->cfg_value = value;
+    cfg_data->cfg_value = (alt_u8) (value & 0x00FF);
     return;
   }
 
@@ -179,10 +193,10 @@ void cfg_set_value(config_t* cfg_data, alt_u8 value)
   *cfg_word = (*cfg_word & ~cfg_data->value_details.getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
 }
 
-alt_u8 cfgfct_linex(alt_u8 value, alt_u8 set_value, alt_u8 ret_reference)
+alt_u8 cfgfct_linex(alt_u8 value, cfg_offon_t set_value, cfg_offon_t ret_reference)
 {
-  if (set_value == 1) cfg_set_value(&linex_resolution,value);
-  return cfg_get_value(&linex_resolution,ret_reference);
+  if (set_value) cfg_set_value(&linex_resolution,value);
+  return (alt_u8) cfg_get_value(&linex_resolution,ret_reference);
 }
 
 alt_u8 confirmation_routine()
@@ -222,8 +236,6 @@ int cfg_save_to_flash(alt_u8 need_confirm)
 
   ((cfg4flash_t*) databuf)->vers_cfg_main = CFG_FW_MAIN;
   ((cfg4flash_t*) databuf)->vers_cfg_sub = CFG_FW_SUB;
-
-  ((cfg4flash_t*) databuf)->cfg_internals = (alt_u8) (cfg_data_internal.cfg_word_val & 0x0F);
 
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
@@ -274,9 +286,6 @@ int cfg_load_from_flash(alt_u8 need_confirm)
   if ((((cfg4flash_t*) databuf)->vers_cfg_main != CFG_FW_MAIN) ||
       (((cfg4flash_t*) databuf)->vers_cfg_sub  != CFG_FW_SUB)   ) return -CFG_VERSION_INVALID;
 
-  cfg_data_internal.cfg_word_val = 0;
-  cfg_data_internal.cfg_word_val |= ((cfg4flash_t*) databuf)->cfg_internals;
-
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++) {
     sysconfig.cfg_word_def[idx]->cfg_word_val = 0;
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
@@ -314,91 +323,121 @@ int cfg_load_from_flash(alt_u8 need_confirm)
   return retval;
 }
 
-int cfg_load_defaults(alt_u8 video480p, alt_u8 need_confirm)
+int cfg_load_defaults(alt_u8 video1080p, alt_u8 need_confirm)
 {
   if (need_confirm) {
     alt_u8 abort = confirmation_routine();
     if (abort) return -CFG_DEF_LOAD_ABORT;
   }
 
-  sysconfig.cfg_word_def[MISC]->cfg_word_val &= CFG_MISC_GET_NODEFAULTS;
-  sysconfig.cfg_word_def[VIDEO]->cfg_word_val &= CFG_VIDEO_GET_NODEFAULTS;
-  sysconfig.cfg_word_def[LINEX]->cfg_word_val &= CFG_LINEX_GET_NODEFAULTS;
+  sysconfig.cfg_word_def[INTCFG0]->cfg_word_val &= INTCFG0_NODEFAULTS_GETMASK;
+  sysconfig.cfg_word_def[INTCFG0]->cfg_word_val |= INTCFG0_DEFAULTS;
 
-  sysconfig.cfg_word_def[MISC]->cfg_word_val |= CFG_MISC_DEFAULT;
-  sysconfig.cfg_word_def[VIDEO]->cfg_word_val |= CFG_VIDEO_DEFAULT;
-  sysconfig.cfg_word_def[LINEX]->cfg_word_val |= CFG_LINEX_DEFAULT;
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val &= EXTCFG1_NODEFAULTS_GETMASK;
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= EXTCFG1_DEFAULTS;
 
-  cfg_store_linex_word(NTSC);
-  cfg_store_linex_word(PAL);
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val &= EXTCFG2_NODEFAULTS_GETMASK;
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val |= EXTCFG2_DEFAULTS;
+
+  if (video1080p) {
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL1080P;
+    cfg_store_linex_word(PAL);
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC1080P;
+    cfg_store_linex_word(NTSC);
+  } else {
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL576P;
+    cfg_store_linex_word(PAL);
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC480P;
+    cfg_store_linex_word(NTSC);
+  }
+
+  int idx;
+  for (idx = 0; idx < NUM_TIMING_MODES; idx++) cfg_store_timing_word(idx+1);
+  for (idx = 0; idx < NUM_SCALING_MODES; idx++) cfg_store_scaling_word(idx+1);
+
+  cfg_load_linex_word(palmode);
 
   return 0;
 }
 
 void cfg_store_linex_word(vmode_t palmode_select) {
-  linex_words[palmode_select].config_val = sysconfig.cfg_word_def[LINEX]->cfg_word_val;
-  linex_words[palmode_select].config_ref_val = sysconfig.cfg_word_def[LINEX]->cfg_ref_word_val;
+  linex_words[palmode_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
+                                            (sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+  linex_words[palmode_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
+                                                (sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);
 }
 
 void cfg_load_linex_word(vmode_t palmode_select) {
-  sysconfig.cfg_word_def[LINEX]->cfg_word_val = linex_words[palmode_select].config_val;
-  sysconfig.cfg_word_def[LINEX]->cfg_ref_word_val = linex_words[palmode_select].config_ref_val;
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= ((linex_words[palmode_select].config_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val &= CFG_EXTCFG2_GETNOSCANLINES_MASK;
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val |= (linex_words[palmode_select].config_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= ((linex_words[palmode_select].config_ref_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val &= CFG_EXTCFG2_GETNOSCANLINES_MASK;
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val |= (linex_words[palmode_select].config_ref_val & CFG_EXTCFG2_GETSCANLINES_MASK);
 }
 
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
   timing_word_select--;
-  timing_words[timing_word_select].config_val = ((sysconfig.cfg_word_def[VIDEO]->cfg_word_val & CFG_VIDEO_GETTIMINGS_MASK) >> CFG_VERTSHIFT_OFFSET);
-  timing_words[timing_word_select].config_ref_val = ((sysconfig.cfg_word_def[VIDEO]->cfg_ref_word_val & CFG_VIDEO_GETTIMINGS_MASK) >> CFG_VERTSHIFT_OFFSET);
+//  timing_words[timing_word_select].config_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
+//  timing_words[timing_word_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
+  timing_words[timing_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK);
+  timing_words[timing_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK);
 }
 
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
   timing_word_select--;
 
-  alt_u32 loading_tray;
-  loading_tray = timing_words[timing_word_select].config_val;
-  sysconfig.cfg_word_def[VIDEO]->cfg_word_val &= CFG_VIDEO_GETNONTIMINGS_MASK;
-  sysconfig.cfg_word_def[VIDEO]->cfg_word_val |= ((loading_tray << CFG_VERTSHIFT_OFFSET) & CFG_VIDEO_GETTIMINGS_MASK);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
+//  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= ((timing_words[timing_word_select].config_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= (timing_words[timing_word_select].config_val & CFG_EXTCFG1_GETTIMINGS_MASK);
 
-  loading_tray = timing_words[timing_word_select].config_ref_val;
-  sysconfig.cfg_word_def[VIDEO]->cfg_ref_word_val &= CFG_VIDEO_GETNONTIMINGS_MASK;
-  sysconfig.cfg_word_def[VIDEO]->cfg_ref_word_val |= ((loading_tray << CFG_VERTSHIFT_OFFSET) & CFG_VIDEO_GETTIMINGS_MASK);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
+//  sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val |= ((timing_words[timing_word_select].config_ref_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val |= (timing_words[timing_word_select].config_ref_val & CFG_EXTCFG1_GETTIMINGS_MASK);
 }
 
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   if (scaling_word_select == PPU_SCALING_CURRENT || scaling_word_select > NUM_SCALING_MODES) return;
   scaling_word_select--;
-  scaling_words[scaling_word_select].config_val = ((sysconfig.cfg_word_def[VIDEO]->cfg_word_val & CFG_VIDEO_GETSCALING_MASK) >> CFG_VERTSCALE_OFFSET);
-  scaling_words[scaling_word_select].config_ref_val = ((sysconfig.cfg_word_def[VIDEO]->cfg_ref_word_val & CFG_VIDEO_GETSCALING_MASK) >> CFG_VERTSCALE_OFFSET);
+//  scaling_words[scaling_word_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETSCALING_MASK) >> CFG_HORSCALE_OFFSET);
+//  scaling_words[scaling_word_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETSCALING_MASK) >> CFG_HORSCALE_OFFSET);
+  scaling_words[scaling_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETSCALING_MASK);
+  scaling_words[scaling_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETSCALING_MASK);
 }
 
 void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   if (scaling_word_select == PPU_SCALING_CURRENT || scaling_word_select > NUM_SCALING_MODES) return;
   scaling_word_select--;
 
-  alt_u32 loading_tray;
-  loading_tray = scaling_words[scaling_word_select].config_val;
-  sysconfig.cfg_word_def[VIDEO]->cfg_word_val &= CFG_VIDEO_GETNONSCALING_MASK;
-  sysconfig.cfg_word_def[VIDEO]->cfg_word_val |= ((loading_tray << CFG_VERTSCALE_OFFSET) & CFG_VIDEO_GETSCALING_MASK);
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
+//  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= ((scaling_words[scaling_word_select].config_val << CFG_HORSCALE_OFFSET) & CFG_EXTCFG0_GETSCALING_MASK);
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= (scaling_words[scaling_word_select].config_val & CFG_EXTCFG0_GETSCALING_MASK);
 
-  loading_tray = scaling_words[scaling_word_select].config_ref_val;
-  sysconfig.cfg_word_def[VIDEO]->cfg_ref_word_val &= CFG_VIDEO_GETNONSCALING_MASK;
-  sysconfig.cfg_word_def[VIDEO]->cfg_ref_word_val |= ((loading_tray << CFG_VERTSCALE_OFFSET) & CFG_VIDEO_GETSCALING_MASK);
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
+//  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= ((scaling_words[scaling_word_select].config_ref_val << CFG_HORSCALE_OFFSET) & CFG_EXTCFG0_GETSCALING_MASK);
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= (scaling_words[scaling_word_select].config_ref_val & CFG_EXTCFG0_GETSCALING_MASK);
 }
 
 void cfg_apply_to_logic()
 {
-  IOWR_ALTERA_AVALON_PIO_DATA(CFG_MISC_OUT_BASE,sysconfig.cfg_word_def[MISC]->cfg_word_val);
-  IOWR_ALTERA_AVALON_PIO_DATA(CFG_VIDEO_OUT_BASE,sysconfig.cfg_word_def[VIDEO]->cfg_word_val);
-  IOWR_ALTERA_AVALON_PIO_DATA(CFG_LINEX_OUT_BASE,sysconfig.cfg_word_def[LINEX]->cfg_word_val);
+  IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE,sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val);
+  IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG1_OUT_BASE,sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val);
+  IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG2_OUT_BASE,sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val);
 }
 
 void cfg_read_from_logic()
 {
-  sysconfig.cfg_word_def[MISC]->cfg_word_val  = (IORD_ALTERA_AVALON_PIO_DATA(CFG_MISC_OUT_BASE)  & sysconfig.cfg_word_def[MISC]->cfg_word_mask);
-  sysconfig.cfg_word_def[VIDEO]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(CFG_VIDEO_OUT_BASE) & sysconfig.cfg_word_def[VIDEO]->cfg_word_mask);
-  sysconfig.cfg_word_def[LINEX]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(CFG_LINEX_OUT_BASE) & sysconfig.cfg_word_def[LINEX]->cfg_word_mask);
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG0]->cfg_word_mask);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG1_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG1]->cfg_word_mask);
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG2_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG2]->cfg_word_mask);
 }
 
 void cfg_clear_words()
@@ -410,8 +449,6 @@ void cfg_clear_words()
 
 void cfg_update_reference()
 {
-  cfg_data_internal.cfg_ref_word_val = cfg_data_internal.cfg_word_val;
-
   int idx;
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++)
     sysconfig.cfg_word_def[idx]->cfg_ref_word_val = sysconfig.cfg_word_def[idx]->cfg_word_val;

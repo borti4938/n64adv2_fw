@@ -61,7 +61,7 @@ module n64adv2_apu_top (
 input MCLK_i;
 input nRST_i;
 
-input [6:0] APUConfigSet;
+input [`APUConfig_WordWidth-1:0] APUConfigSet;
 
 input SCLK_i;
 input SDATA_i;
@@ -106,8 +106,8 @@ reg signed [23:0] PDATA_MULT[0:1];
 
 // pass config to MCLK domain
 register_sync #(
-  .reg_width(7), // 5 + 1 + 1
-  .reg_preset(7'd0)
+  .reg_width(`APUConfig_WordWidth),
+  .reg_preset({`APUConfig_WordWidth{1'b0}})
 ) cfg_sync4mclk_u (
   .clk(MCLK_i),
   .clk_en(1'b1),

@@ -71,8 +71,8 @@ void open_osd_main(menu_t **menu)
 
 clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t palmode_tmp)
 {
-  alt_u8 linex_setting = cfg_get_value(&linex_resolution,0);
-  if (cfg_get_value(&low_latency_mode,0) == ON) {
+  alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
+  if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
     alt_u8 case_val = (pal_pattern_tmp << 1 | palmode_tmp);
     switch (case_val) {
       case 3:
@@ -80,17 +80,17 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
       case 1:
         return PAL0_N64_576p + linex_setting;
       default:
-        if (cfg_get_value(&vga_for_480p,0) && linex_setting == 0)  return NTSC_N64_VGA;
+        if ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == 0)  return NTSC_N64_VGA;
         else return NTSC_N64_480p + linex_setting;
     }
   } else {
     if (linex_setting > 2) return FREE_1080p_1200p;
     if (linex_setting > 0) return FREE_720p_960p;
-    if (cfg_get_value(&linex_force_5060,0) == 0) {
+    if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
       if (palmode_tmp == NTSC) return FREE_480p_VGA;
       else                     return FREE_576p;
     } else {
-      if (cfg_get_value(&linex_force_5060,0) == 1) return FREE_480p_VGA;
+      if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) return FREE_480p_VGA;
       else return FREE_576p;
     }
   }
@@ -98,7 +98,7 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
 
 cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 {
-  alt_u8 linex_setting = cfg_get_value(&linex_resolution,0);
+  alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
 
   if (palmode_tmp) return (PAL_TO_576 + linex_setting);
   else return (NTSC_TO_480 + linex_setting);
@@ -192,10 +192,10 @@ int main()
       timing_n64adv = scanmode ? PAL_INTERLACED : PAL_PROGRESSIVE;
     else
       timing_n64adv = scanmode ? NTSC_INTERLACED : NTSC_PROGRESSIVE;
-    timing_menu = cfg_get_value(&timing_selection,0);
+    timing_menu = (cfg_timing_model_sel_type_t) cfg_get_value(&timing_selection,0);
     if (timing_menu == PPU_TIMING_CURRENT) timing_menu = timing_n64adv;
     scaling_n64adv = get_target_scaler(palmode);
-    scaling_menu = cfg_get_value(&scaling_selection,0);
+    scaling_menu = (cfg_scaler_in2out_sel_type_t) cfg_get_value(&scaling_selection,0);
     if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
 
 

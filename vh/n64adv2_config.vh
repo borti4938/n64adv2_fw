@@ -35,73 +35,88 @@
 `define _n64adv2_config_vh_
 
   // configuration as defined in n64adv_controller.v (must match software)
-  //  wire [31:0] SysConfigSet2;
-  //    [31:24] {(8bits reserve)}
-  //    [23:16] {(1bit reserve),audio_amp (5bits),audio_swap_lr,audio_spdif_en}
-  //    [15: 8] {(4bits reserve),show_osd_logo,show_osd,mute_osd,igr for reset}
-  //    [ 7: 0] {(1bit reserve),gamma (4bits),limited RGB,VI-DeBlur,16bit mode}
-  //  wire [31:0] SysConfigSet1;
-  //    [31:22] {LineX H-Shift (5bits), LineX V-Shift (5bits)}
-  //    [21:11] {Link HV scale (1bit), LineX H-Scale (5bits), LineX V-Scale (5bits)}
-  //    [10: 0] {(6bits reserve),De-Interlace Mode (2 bits),Interpolation Mode (2 bits), PAL boxed mode (1 bit)}
-  //  wire [31:0] SysConfigSet0;
-  //    [31:25] Resolution: {Force 50Hz/60Hz (2bits),LowLatencyMode (1bit),UseVGAfor480p (1bit),TargetResolution (3bits)}
-  //    [24:13] SL 240p:    {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_En}
-  //    [12: 0] SL 480i:    {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_link,Sl_En}
+  //  wire [31:0] SysConfigSet2; (Audio, Scanlines)
+  //    [31:25] {audio_amp (5bits),audio_swap_lr,audio_spdif_en}
+  //    [24:13] SL 240p: {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_En}
+  //    [12: 0] SL 480i: {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_link,Sl_En}
+  //  wire [31:0] SysConfigSet1; (OSD, IGR, VI-Processing)
+  //    [31:29] {show_osd_logo,show_osd,mute_osd}
+  //    [28   ] {igr for reset}
+  //    [27:22] {(6bits reserve)}
+  //    [21:15] {limited RGB,gamma (4bits),VI-DeBlur,16bit mode}
+  //    [14: 5] {LineX V-Shift (5bits),LineX H-Shift (5bits)}
+  //    [ 4: 0] {De-Interlace Mode (2 bits),Interpolation Mode (2 bits), PAL boxed mode (1 bit)}
+  //  wire [31:0] SysConfigSet0; (Scaler)
+  //    [31:21] {LineX V-Scale Target (11bits)}
+  //    [20: 9] {LineX H-Scale Target (12bits)}
+  //    [ 8: 0] {(2bits reserve),Force 50Hz/60Hz (2bits),LowLatencyMode (1bit),UseVGAfor480p (1bit),TargetResolution (3bits)}
 
-  // Audio, OSD and IGR stuff handelded differently compared to ppu config
-  `define audio_amp_slice         6:2
-  `define audio_swap_lr_bit       1
-  `define audio_spdif_en_bit      0
+  
+  
+  // OSD
+  `define show_osd_logo_bit     31
+  `define show_osd_bit          30
+  `define mute_osd_bit          29
+  
+  
+  // IGR
+  `define igr_reset_enable_bit  28
+  
+  // Separation slices
+  `define cfg2_audio_config_slice   31:25
+  `define cfg2_scanline_slice       24: 0
+  `define cfg1_ppu_config_slice     21: 0
+  
+  // Audio config
+  `define APUConfig_WordWidth        7
+  `define audio_amp_slice            6: 2
+  `define audio_swap_lr_bit          1
+  `define audio_spdif_en_bit         0
+  
+  
+  // PPU config
+  `define PPUConfig_WordWidth       79
+  
+  `define SysCfg2_PPUCfg_Offset     54
+  `define SysCfg1_PPUCfg_Offset     32
+  `define SysCfg0_PPUCfg_Offset      0
+  
+  `define SysConfigSet2_PPUConfig_slice 24: 0
+  `define SysConfigSet1_PPUConfig_slice 21: 0
+  
+  `define v240p_SL_hybrid_slice     24 + `SysCfg2_PPUCfg_Offset : 20 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_str_slice        19 + `SysCfg2_PPUCfg_Offset : 16 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_method_bit       15 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_ID_bit           14 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_En_bit           13 + `SysCfg2_PPUCfg_Offset
 
-  `define audio_config_slice      22:16
-  `define show_osd_logo_bit       11
-  `define show_osd_bit            10
-  `define mute_osd_bit             9
-  `define igr_reset_enable_bit     8
-  `define gamma_sysslice           6 : 3
-  `define limitedRGB_sysbit        2
-  `define videblur_sysbit          1
-  `define n16bit_mode_sysbit       0
-
-  `define PPUConfig_WordWidth 71
-
-  `define SysConfigSet2_PPUConfig_slice  6 : 0
-  `define SysConfigSet2_Offset          64
-  `define gamma_slice                    6 + `SysConfigSet2_Offset : 3 + `SysConfigSet2_Offset
-  `define limitedRGB_bit                 2 + `SysConfigSet2_Offset
-  `define videblur_bit                   1 + `SysConfigSet2_Offset
-  `define n16bit_mode_bit                0 + `SysConfigSet2_Offset
-
-  `define SysConfigSet1_Offset      32
-  `define hshift_slice              31 + `SysConfigSet1_Offset : 27 + `SysConfigSet1_Offset
-  `define vshift_slice              26 + `SysConfigSet1_Offset : 22 + `SysConfigSet1_Offset
-  `define link_hv_scale_bit         21 + `SysConfigSet1_Offset
-  `define hscale_slice              20 + `SysConfigSet1_Offset : 16 + `SysConfigSet1_Offset
-  `define vscale_slice              15 + `SysConfigSet1_Offset : 11 + `SysConfigSet1_Offset
-  `define deinterlacing_mode_slice   4 + `SysConfigSet1_Offset :  3 + `SysConfigSet1_Offset
-  `define interpolation_mode_slice   2 + `SysConfigSet1_Offset :  1 + `SysConfigSet1_Offset
-  `define pal_boxed_scale_bit        0 + `SysConfigSet1_Offset
-
-  `define force_5060_slice        31:30
-  `define force50hz_bit           31
-  `define force60hz_bit           30
-  `define lowlatencymode_bit      29
-  `define use_vga_for_480p_bit    28
-  `define target_resolution_slice 27:25
-
-  `define v240p_SL_hybrid_slice   24:20
-  `define v240p_SL_str_slice      19:16
-  `define v240p_SL_method_bit     15
-  `define v240p_SL_ID_bit         14
-  `define v240p_SL_En_bit         13
-
-  `define v480i_SL_hybrid_slice   12: 8
-  `define v480i_SL_str_slice       7: 4
-  `define v480i_SL_method_bit      3
-  `define v480i_SL_ID_bit          2
-  `define v480i_SL_linked_bit      1
-  `define v480i_SL_En_bit          0
+  `define v480i_SL_hybrid_slice     12 + `SysCfg2_PPUCfg_Offset : 8 + `SysCfg2_PPUCfg_Offset
+  `define v480i_SL_str_slice         7 + `SysCfg2_PPUCfg_Offset : 4 + `SysCfg2_PPUCfg_Offset
+  `define v480i_SL_method_bit        3 + `SysCfg2_PPUCfg_Offset
+  `define v480i_SL_ID_bit            2 + `SysCfg2_PPUCfg_Offset
+  `define v480i_SL_linked_bit        1 + `SysCfg2_PPUCfg_Offset
+  `define v480i_SL_En_bit            0 + `SysCfg2_PPUCfg_Offset
+  
+  `define limitedRGB_bit            21 + `SysCfg1_PPUCfg_Offset
+  `define gamma_slice               20 + `SysCfg1_PPUCfg_Offset : 17 + `SysCfg1_PPUCfg_Offset
+  `define videblur_bit              16 + `SysCfg1_PPUCfg_Offset
+  `define n16bit_mode_bit           15 + `SysCfg1_PPUCfg_Offset
+  `define vshift_slice              14 + `SysCfg1_PPUCfg_Offset : 10 + `SysCfg1_PPUCfg_Offset
+  `define hshift_slice               9 + `SysCfg1_PPUCfg_Offset :  5 + `SysCfg1_PPUCfg_Offset
+  `define deinterlacing_mode_slice   4 + `SysCfg1_PPUCfg_Offset :  3 + `SysCfg1_PPUCfg_Offset
+  `define interpolation_mode_slice   2 + `SysCfg1_PPUCfg_Offset :  1 + `SysCfg1_PPUCfg_Offset
+  `define pal_boxed_scale_bit        0 + `SysCfg1_PPUCfg_Offset
+  
+  `define target_vlines_slice       31 + `SysCfg0_PPUCfg_Offset : 21 + `SysCfg0_PPUCfg_Offset
+  `define target_hpixels_slice      20 + `SysCfg0_PPUCfg_Offset :  9 + `SysCfg0_PPUCfg_Offset
+  `define force_5060_slice           6 + `SysCfg0_PPUCfg_Offset :  5 + `SysCfg0_PPUCfg_Offset
+  `define force50hz_bit              6 + `SysCfg0_PPUCfg_Offset
+  `define force60hz_bit              5 + `SysCfg0_PPUCfg_Offset
+  `define lowlatencymode_bit         4 + `SysCfg0_PPUCfg_Offset
+  `define use_vga_for_480p_bit       3 + `SysCfg0_PPUCfg_Offset
+  `define target_resolution_slice    2 + `SysCfg0_PPUCfg_Offset :  0 + `SysCfg0_PPUCfg_Offset
+  
+  // Tables
   
   `define GAMMA_TABLE_OFF   4'b0101
   `define HDMI_TARGET_480P  3'b000

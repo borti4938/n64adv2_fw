@@ -91,7 +91,7 @@ typedef int (*sys_call_0)(void);
 typedef int (*sys_call_1)(alt_u8);
 typedef int (*sys_call_2)(alt_u8,alt_u8);
 
-typedef alt_u8 (*cfgfct_call)(alt_u8,alt_u8,alt_u8);
+typedef alt_u8 (*cfgfct_call)(alt_u8,cfg_offon_t,cfg_offon_t);
 
 typedef struct {
   alt_u8        id;
@@ -128,16 +128,16 @@ typedef struct menu {
 
 extern menu_t home_menu;
 
-void val2txt_func(alt_u8 v);
-void val2txt_5b_binaryoffset_func(alt_u8 v);
-void val2txt_scale_sel_func(alt_u8 v);
-void val2txt_hscale_func(alt_u8 v);
-void val2txt_vscale_func(alt_u8 v);
-void audioamp2txt_func(alt_u8 v);
-void flag2set_func(alt_u8 v);
-void scanline_str2txt_func(alt_u8 v);
-void scanline_hybrstr2txt_func(alt_u8 v);
-void gamma2txt_func(alt_u8 v);
+void val2txt_func(alt_u16 v);
+void val2txt_5b_binaryoffset_func(alt_u16 v);
+void val2txt_scale_sel_func(alt_u16 v);
+void val2txt_hscale_func(alt_u16 v);
+void val2txt_vscale_func(alt_u16 v);
+void audioamp2txt_func(alt_u16 v);
+void flag2set_func(alt_u16 v);
+void scanline_str2txt_func(alt_u16 v);
+void scanline_hybrstr2txt_func(alt_u16 v);
+void gamma2txt_func(alt_u16 v);
 
 void print_current_timing_mode(void);
 void print_ctrl_data(void);

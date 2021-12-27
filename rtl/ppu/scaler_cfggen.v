@@ -7,8 +7,8 @@ module scaler_cfggen(
   
   video_config_i,
   
-  vscale_factor_i,
-  hscale_factor_i,
+  vlines_out_i,
+  hpixels_out_i,
   
   vpos_1st_rdline_o,
   vlines_in_needed_o,
@@ -27,7 +27,6 @@ module scaler_cfggen(
 `include "../../vh/videotimings.vh"
 
 `include "../../tasks/setVideoTimings.tasks.v"
-`include "../../tasks/setScalerConfig.tasks.v"
 
 input SYS_CLK;
 
@@ -36,8 +35,8 @@ input palmode_boxed_i;
 
 input [`VID_CFG_W-1:0] video_config_i;
 
-input [4:0] vscale_factor_i;
-input [4:0] hscale_factor_i;
+input [10:0] vlines_out_i;
+input [11:0] hpixels_out_i;
 
 output reg [8:0] vpos_1st_rdline_o;
 output reg [8:0] vlines_in_needed_o;
@@ -64,7 +63,7 @@ localparam ST_CFGGEN_OUT = 2'b11;
 
 
 // wires
-wire vmode_pal_i_w, vmode_pal_L_w;
+wire vmode_pal_L_w;
 wire [8:0] n64_vlines_w;
 wire [9:0] n64_hpixels_w;
 
@@ -130,7 +129,6 @@ always @(posedge SYS_CLK)
   end
 
 
-assign vmode_pal_i_w = !palmode_boxed_i & palmode_i;
 assign vmode_pal_L_w = !palmode_boxed_L & palmode_L;
 
 assign n64_vlines_w = vmode_pal_L_w ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
@@ -154,8 +152,7 @@ assign hpixels_in_resmax_full_w = inv_hscale_L * (* multstyle = "dsp" *) hactive
 
 always @(posedge SYS_CLK) begin
   setVideoVidACTIVE(video_config_i,vactive_L,hactive_L);
-  
-  getVPixels(vmode_pal_i_w,vscale_factor_i,v_divisor_L);  
+  v_divisor_L <= vlines_out_i;
   inv_vscale_L <= inv_vscale_w;
   vlines_in_resmax_full_L <= vlines_in_resmax_full_w;
   vlines_in_resmax_L <= vlines_in_resmax_full_L[33:24] + vlines_in_resmax_full_L[23];
@@ -200,7 +197,7 @@ always @(posedge SYS_CLK) begin
       end
   endcase
   
-  getHPixels(hscale_factor_i,h_divisor_L);
+  h_divisor_L <= hpixels_out_i;
   inv_hscale_L <= inv_hscale_w;
   hpixels_in_resmax_full_L <= hpixels_in_resmax_full_w;
   hpixels_in_resmax_L <= hpixels_in_resmax_full_L[33:23] + hpixels_in_resmax_full_L[22];

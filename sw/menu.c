@@ -295,12 +295,12 @@ menu_t rwdata_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 3,
+    .number_selections = 4,
     .leaves = {
         {.id = RWDATA_SAVE_FL_V_OFFSET          , .arrow_desc = &rwdata_sel_arrow    , .leavetype = IFUNC1, .sys_fun_1 = &cfg_save_to_flash},
         {.id = RWDATA_LOAD_FL_V_OFFSET          , .arrow_desc = &rwdata_sel_arrow    , .leavetype = IFUNC1, .sys_fun_1 = &cfg_load_from_flash},
         {.id = RWDATA_LOAD_DEFAULT480P_V_OFFSET , .arrow_desc = &rwdata_sel_arrow    , .leavetype = IFUNC2, .sys_fun_2 = &cfg_load_defaults},
-//        {.id = RWDATA_LOAD_DEFAULT1080P_V_OFFSET, .arrow_desc = &rwdata_sel_arrow    , .leavetype = IFUNC2, .sys_fun_2 = &cfg_load_defaults},
+        {.id = RWDATA_LOAD_DEFAULT1080P_V_OFFSET, .arrow_desc = &rwdata_sel_arrow    , .leavetype = IFUNC2, .sys_fun_2 = &cfg_load_defaults},
 //        {.id = RWDATA_FALLBACK_V_OFFSET         , .arrow_desc = &rwdata_optval_arrow, .leavetype = ICONFIG,.config_value = &fallback_mode},
 //        {.id = RWDATA_UPDATE_V_OFFSET           , .arrow_desc = &rwdata_optsel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &fw_update}
     }
@@ -355,9 +355,9 @@ static inline alt_u8 is_license_screen (menu_t *menu)
   {  return (menu == &license_screen); }
 
 
-void val2txt_func(alt_u8 v) { sprintf(szText,"%u", v); };
-void val2txt_5b_binaryoffset_func(alt_u8 v) { if (v & 0x10) sprintf(szText," %2u", (v&0xF)); else sprintf(szText,"-%2u", (v^0xF)+1); };
-void val2txt_scale_sel_func(alt_u8 v) {
+void val2txt_func(alt_u16 v) { sprintf(szText,"%u", v); };
+void val2txt_5b_binaryoffset_func(alt_u16 v) { if (v & 0x10) sprintf(szText," %2u", (v&0xF)); else sprintf(szText,"-%2u", (v^0xF)+1); };
+void val2txt_scale_sel_func(alt_u16 v) {
   if (v == 0) {
     sprintf(szText,NTSCPAL_SEL[2]);
   } else {
@@ -370,13 +370,14 @@ void val2txt_scale_sel_func(alt_u8 v) {
     }
   }
 };
-void val2txt_hscale_func(alt_u8 v) { sprintf(szText,"%1u.%03ux", v/8+1, 125*(v&7)); };
-void val2txt_vscale_func(alt_u8 v) { sprintf(szText,"%1u.%02ux", v/4+2, 25*(v&3)); };
-void audioamp2txt_func(alt_u8 v) { if (v < 19) sprintf(szText,"-%02udB",19-v); else sprintf(szText," %02udB",v-19); };
-void flag2set_func(alt_u8 v) { sprintf(szText,"[ ]"); if (v) szText[1] = (char) CHECKBOX_TICK; };
-void scanline_str2txt_func(alt_u8 v) { v++; sprintf(szText,"%3u.%02u%%", (v*625)/100, 25*(v&3)); };
-void scanline_hybrstr2txt_func(alt_u8 v) { sprintf(szText,"%3u.%02u%%", (v*625)/100, 25*(v&3)); };
-void gamma2txt_func(alt_u8 v) { sprintf(szText,"%u.%02u", v > 4, 5* v + 75 - (100 * (v > 4))); };
+
+void val2txt_hscale_func(alt_u16 v) { sprintf(szText,"%1u.%03ux", v/8+1, 125*(v&7)); };
+void val2txt_vscale_func(alt_u16 v) { sprintf(szText,"%1u.%02ux", v/4+2, 25*(v&3)); };
+void audioamp2txt_func(alt_u16 v) { if (v < 19) sprintf(szText,"-%02udB",19-v); else sprintf(szText," %02udB",v-19); };
+void flag2set_func(alt_u16 v) { sprintf(szText,"[ ]"); if (v) szText[1] = (char) CHECKBOX_TICK; };
+void scanline_str2txt_func(alt_u16 v) { v++; sprintf(szText,"%3u.%02u%%", (v*625)/100, 25*(v&3)); };
+void scanline_hybrstr2txt_func(alt_u16 v) { sprintf(szText,"%3u.%02u%%", (v*625)/100, 25*(v&3)); };
+void gamma2txt_func(alt_u16 v) { sprintf(szText,"%u.%02u", v > 4, 5* v + 75 - (100 * (v > 4))); };
 
 
 void print_palbox_overlay(vmode_t vmode) {
@@ -869,7 +870,8 @@ int update_cfg_screen(menu_t* current_menu)
   alt_u8 h_l_offset;
   alt_u8 v_run, v_offset;
   alt_u8 background_color, font_color;
-  alt_u8 val_select, ref_val_select, val_is_ref;
+  alt_u16 val_select, ref_val_select;
+  cfg_offon_t val_is_ref;
 
   cfg_offon_t use_sl_linked_vals = OFF;
   alt_u8 v_run_offset = 0;

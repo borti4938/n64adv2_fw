@@ -85,7 +85,7 @@ inout       I2C_SDA;
 input [1:0] Interrupt_i;
 output      Si_cfg_done_o;
 
-output reg [6:0] APUConfigSet;
+output reg [`APUConfig_WordWidth-1:0] APUConfigSet;
 input      [`PPU_State_Width-1:0] PPUState;
 output reg [`PPUConfig_WordWidth-1:0] PPUConfigSet;
 
@@ -277,17 +277,17 @@ register_sync #(
 
 always @(posedge SYS_CLK) begin
   if (nVSYNC_resynced_L[1] & !nVSYNC_resynced_L[0]) begin
-    OSDInfo[1]   <= &{SysConfigSet2[`show_osd_logo_bit],SysConfigSet2[`show_osd_bit],!SysConfigSet2[`mute_osd_bit]};  // show logo only in OSD
-    OSDInfo[0]   <= SysConfigSet2[`show_osd_bit] & !SysConfigSet2[`mute_osd_bit];
-    PPUConfigSet <= {SysConfigSet2[`SysConfigSet2_PPUConfig_slice],SysConfigSet1,SysConfigSet0};
+    OSDInfo[1]   <= &{SysConfigSet1[`show_osd_logo_bit],SysConfigSet1[`show_osd_bit],!SysConfigSet1[`mute_osd_bit]};  // show logo only in OSD
+    OSDInfo[0]   <= SysConfigSet1[`show_osd_bit] & !SysConfigSet1[`mute_osd_bit];
+    PPUConfigSet <= {SysConfigSet2[`cfg2_scanline_slice],SysConfigSet1[`cfg1_ppu_config_slice],SysConfigSet0};
   end
   nVSYNC_resynced_L <= {nVSYNC_resynced_L[0],nVSYNC_buf_resynced};
 end
 
 always @(*) begin
   OSDWrVector    <= {vd_wrctrl_w,vd_wrdata_w};
-  use_igr        <= SysConfigSet2[`igr_reset_enable_bit];
-  APUConfigSet   <= SysConfigSet2[`audio_config_slice];
+  APUConfigSet   <= SysConfigSet2[`cfg2_audio_config_slice];
+  use_igr        <= SysConfigSet1[`igr_reset_enable_bit];
 end
 
 

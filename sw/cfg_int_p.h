@@ -40,52 +40,63 @@
 
 extern const char  *OffOn[], *NTSCPAL_SEL[], *VTimingSel[];
 
-cfg_b32word_t cfg_data_internal =
-  { .cfg_word_mask    = 0x0000000F,
+cfg_b32word_t intcfg0_word =
+  { .cfg_word_mask    = INTCFG0_GETALL_MASK,
     .cfg_word_val     = 0x00000000,
     .cfg_ref_word_val = 0x00000000
   };
 
+config_t link_hv_scale = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_LINK_HV_SCALE_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_LINK_HV_SCALE_SETMASK,
+        .clrflag_mask = CFG_LINK_HV_SCALE_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
+
 config_t deblur_mode_powercycle = {
-    .cfg_word        = &cfg_data_internal,
-    .cfg_word_offset = 3,
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_MODE16BIT_PC_DEFAULT_OFFSET,
     .cfg_type     = FLAG,
     .flag_masks      = {
-        .setflag_mask = (1<<3),
-        .clrflag_mask = (0x0000000F & ~(1<<3))
+        .setflag_mask = CFG_MODE16BIT_PC_DEFAULT_SETMASK,
+        .clrflag_mask = CFG_MODE16BIT_PC_DEFAULT_CLRMASK
     },
     .value_string = &OffOn
 };
 
 config_t mode16bit_powercycle = {
-    .cfg_word        = &cfg_data_internal,
-    .cfg_word_offset = 2,
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_DEBLUR_IGR_OFFSET,
     .cfg_type     = FLAG,
     .flag_masks      = {
-        .setflag_mask = (1<<2),
-        .clrflag_mask = (0x0000000F & ~(1<<2))
+        .setflag_mask = CFG_DEBLUR_IGR_SETMASK,
+        .clrflag_mask = CFG_DEBLUR_IGR_CLRMASK
     },
     .value_string = &OffOn
 };
 
 config_t igr_deblur = {
-    .cfg_word        = &cfg_data_internal,
-    .cfg_word_offset = 1,
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_DEBLUR_IGR_OFFSET,
     .cfg_type     = FLAGTXT,
     .flag_masks      = {
-        .setflag_mask = (1<<1),
-        .clrflag_mask = (0x0000000F & ~(1<<1))
+        .setflag_mask = CFG_DEBLUR_IGR_SETMASK,
+        .clrflag_mask = CFG_DEBLUR_IGR_CLRMASK
     },
     .val2char_func = &flag2set_func
 };
 
 config_t igr_16bitmode = {
-    .cfg_word        = &cfg_data_internal,
-    .cfg_word_offset = 0,
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_MODE16BIT_IGR_OFFSET,
     .cfg_type     = FLAGTXT,
     .flag_masks      = {
-        .setflag_mask = (1<<0),
-        .clrflag_mask = (0x0000000F & ~(1<<0))
+        .setflag_mask = CFG_MODE16BIT_IGR_SETMASK,
+        .clrflag_mask = CFG_MODE16BIT_IGR_CLRMASK
     },
     .val2char_func = &flag2set_func
 };

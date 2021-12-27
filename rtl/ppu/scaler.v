@@ -55,7 +55,6 @@ module scaler(
 `include "../../vh/videotimings.vh"
 
 `include "../../tasks/setVideoTimings.tasks.v"
-`include "../../tasks/setScalerConfig.tasks.v"
 
 input async_nRST_i;
 
