@@ -82,14 +82,14 @@ void update_ppu_state()
 
 void update_ctrl_data()
 {
-  static cfg_offon_t tack = 0;
+  static bool_t tack = 0;
   ctrl_data = IORD_ALTERA_AVALON_PIO_DATA(CTRL_DATA_IN_BASE);
   tack = !tack;
   info_sync_val = (info_sync_val & CTRL_TACK_BIT_CLR_MASK) | tack;
   IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
 }
 
-cmd_t ctrl_data_to_cmd(cfg_offon_t no_fast_skip)
+cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
 {
   cmd_t cmd_new = CMD_NON;
   static cmd_t cmd_pre_int = CMD_NON, cmd_pre = CMD_NON;
@@ -187,22 +187,22 @@ cmd_t ctrl_data_to_cmd(cfg_offon_t no_fast_skip)
   return CMD_NON;
 }
 
-cfg_offon_t get_osdvsync()
+bool_t get_osdvsync()
 {
   return (IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NVSYNC_IN_MASK);
 };
 
-cfg_offon_t new_ctrl_available()
+bool_t new_ctrl_available()
 {
   return (IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NEW_CTRL_DATA_IN_MASK);
 };
 
-cfg_offon_t get_fallback_mode()
+bool_t get_fallback_mode()
 {
   return ((IORD_ALTERA_AVALON_PIO_DATA(FALLBACK_IN_BASE) & FALLBACK_GETALL_MASK) >> FALLBACKMODE_OFFSET);
 };
 
-cfg_offon_t is_fallback_mode_valid()
+bool_t is_fallback_mode_valid()
 {
   return (IORD_ALTERA_AVALON_PIO_DATA(FALLBACK_IN_BASE) & FALLBACKMODE_VALID_GETMASK);
 };

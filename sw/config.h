@@ -98,6 +98,12 @@ typedef enum {
   ON
 } cfg_offon_t;
 
+typedef enum {
+  FALSE = 0,
+  TRUE
+} bool_t;
+typedef bool_t boolean_t;
+
 typedef struct {
   const alt_u32 cfg_word_mask;
   alt_u32       cfg_word_val;
@@ -486,16 +492,16 @@ void cfg_inc_value(config_t* cfg_data);
 void cfg_dec_value(config_t* cfg_data);
 alt_u16 cfg_get_value(config_t* cfg_data,cfg_offon_t get_reference);
 void cfg_set_value(config_t* cfg_data, alt_u16 value);
-alt_u8 cfgfct_linex(alt_u8 value, cfg_offon_t set_value, cfg_offon_t ret_reference);
-int cfg_save_to_flash(alt_u8 need_confirm);
-int cfg_load_from_flash(alt_u8 need_confirm);
-int cfg_load_defaults(alt_u8 video480p,alt_u8 need_confirm);
+alt_u8 cfgfct_linex(alt_u8 value, bool_t set_value, bool_t ret_reference);
+int cfg_save_to_flash(bool_t need_confirm);
+int cfg_load_from_flash(bool_t need_confirm);
 void cfg_store_linex_word(vmode_t palmode_select);
 void cfg_load_linex_word(vmode_t palmode_select);
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
 void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
+int cfg_load_defaults(bool_t video1080p,bool_t need_confirm);
 void cfg_apply_to_logic(void);
 void cfg_read_from_logic(void);
 void cfg_clear_words(void);

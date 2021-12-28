@@ -110,8 +110,8 @@ int main()
   updateaction_t todo;
   menu_t *menu = &home_menu;
 
-  alt_u8 ctrl_update = 1;
-  alt_u8 ctrl_ignore = 0;
+  bool_t ctrl_update = 1;
+  bool_t ctrl_ignore = 0;
 
   int message_cnt = 0;
 
@@ -122,12 +122,13 @@ int main()
     load_n64_defaults = cfg_load_from_flash(0);
   }
 
-  alt_u8 use_fallback = get_fallback_mode();
-  while (is_fallback_mode_valid() == 0) use_fallback = get_fallback_mode();
+  bool_t use_fallback = get_fallback_mode();
+  while (is_fallback_mode_valid() == FALSE) use_fallback = get_fallback_mode();
 
   if (use_fallback || (load_n64_defaults != 0)) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
     cfg_load_defaults(1,0);
+    cfg_update_reference();
     open_osd_main(&menu);
   } else {
     cfg_clear_flag(&show_osd);

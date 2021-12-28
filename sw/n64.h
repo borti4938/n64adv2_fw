@@ -182,11 +182,11 @@ extern scanmode_t scanmode;
 
 void update_ppu_state(void);
 void update_ctrl_data(void);
-cmd_t ctrl_data_to_cmd(cfg_offon_t no_fast_skip);
-cfg_offon_t get_osdvsync(void);
-cfg_offon_t new_ctrl_available(void);
-cfg_offon_t get_fallback_mode(void);
-cfg_offon_t is_fallback_mode_valid(void);
+cmd_t ctrl_data_to_cmd(bool_t no_fast_skip);
+bool_t get_osdvsync(void);
+bool_t new_ctrl_available(void);
+bool_t get_fallback_mode(void);
+bool_t is_fallback_mode_valid(void);
 alt_u8 get_pcb_version(void);
 alt_u32 get_chip_id(cfg_offon_t msb_select);
 alt_u16 get_hdl_version(void);
