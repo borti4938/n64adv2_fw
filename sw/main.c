@@ -311,7 +311,8 @@ int main()
         (palmode_pre != palmode)                               ||
         (target_resolution_pre != target_resolution)            )
       configure_clk_si5356(target_resolution);
-//      init_si5356(target_resolution);
+    if (!SI5356_PLL_LOCKSTATUS())
+      init_si5356(target_resolution);
 
     hpd_state = ADV_HPD_STATE();
     monitor_sense_state = ADV_MONITOR_SENSE_STATE();

@@ -40,6 +40,17 @@
 #define SI5356_INIT_FAILED_1 141
 
 
+#define PLL_LOSSLOCK_REG    218
+  #define PLL_LOSSLOCK_BIT    4
+#define OEB_REG             230
+  #define OEB_REG_VAL_OFF     0x1F
+  #define OEB_REG_VAL_ON      0x0C // OEB register; just use CLK0/1 and CLK2/3
+#define DIS_LOL_REG         241
+  #define DIS_LOL_REG_VAL     0x65
+#define SOFT_RST_REG        246
+  #define SOFT_RST_BIT        1
+
+
 typedef enum {
   IN12 = 0, // free running
   IN4       // source synchronous
@@ -69,6 +80,8 @@ typedef enum {
   FREE_1080p_1200p
 } clk_config_t;
 #define NUM_SUPPORTED_CONFIGS 20
+
+#define SI5356_PLL_LOCKSTATUS() ((si5356_readreg(PLL_LOSSLOCK_REG) & (1<<PLL_LOSSLOCK_BIT)) == 0x00)
 
 int check_si5356(void);
 void init_si5356(clk_config_t target_cfg);

@@ -40,6 +40,9 @@
 #include "n64.h"
 #include "led.h"
 
+#define PLL_LOCK_2_FPGA_TIMEOUT_US  150
+
+
 void si5356_clr_ready_bit() {
   info_sync_val = info_sync_val & SI_CFG_RDY_CLR_MASK;
   IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
@@ -71,8 +74,8 @@ int check_si5356()
 
 void init_si5356(clk_config_t target_cfg) {
 
-//  led_drive(LED_1, LED_ON);
-//  si5351a_clr_ready_bit();
+  led_drive(LED_1, LED_ON);
+  si5356_clr_ready_bit();
   int i;
   
   si5356_writereg(OEB_REG,OEB_REG_VAL_OFF,0xFF);      // disable outputs
@@ -102,14 +105,8 @@ void configure_clk_si5356(clk_config_t target_cfg) {
   si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT),0xFF); // soft reset
   si5356_writereg(OEB_REG,OEB_REG_VAL_ON,0xFF);         // enable outputs
   
-  while ((si5356_readreg(PLL_LOSSLOCK_REG) & (1<<PLL_LOSSLOCK_BIT)) != 0x00) ;  // wait for PLL lock
-//  volatile alt_u8 pll_lockreg_value;
-//  while(1) {
-//    pll_lockreg_value = si5356_readreg(PLL_LOSSLOCK_REG);
-//    if ((pll_lockreg_value & (1<<PLL_LOSSLOCK_BIT)) == 0x00) break;
-//  }
-
-  usleep(50);
+  while (!SI5356_PLL_LOCKSTATUS()) {};  // wait for PLL lock
+  usleep(PLL_LOCK_2_FPGA_TIMEOUT_US);
   si5356_set_ready_bit();
   led_drive(LED_1, LED_OFF);
 }

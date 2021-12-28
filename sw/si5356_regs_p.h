@@ -35,16 +35,6 @@
 #ifndef SI5356_REGS_P_
 #define SI5356_REGS_P_
 
-#define PLL_LOSSLOCK_REG    218
-  #define PLL_LOSSLOCK_BIT    4
-#define OEB_REG             230
-  #define OEB_REG_VAL_OFF     0x1F
-  #define OEB_REG_VAL_ON      0x0C // OEB register; just use CLK0/1 and CLK2/3
-#define DIS_LOL_REG         241
-  #define DIS_LOL_REG_VAL     0x65
-#define SOFT_RST_REG        246
-  #define SOFT_RST_BIT        1
-
 #define NUM_INIT_REGS     122
 #define NUM_INPSW_REGS     10
 #define NUM_CFG_MODE_REGS  16
