@@ -113,9 +113,6 @@ int main()
   alt_u8 ctrl_update = 1;
   alt_u8 ctrl_ignore = 0;
 
-  alt_u8 hpd_state_pre, hpd_state;
-  alt_u8 monitor_sense_state_pre, monitor_sense_state;
-
   int message_cnt = 0;
 
   int load_n64_defaults = check_flash();
@@ -152,10 +149,8 @@ int main()
   while (check_si5356() != 0) {};
   init_si5356(target_resolution);
   while (check_adv7513() != 0) {};
+  while (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {};
   init_adv7513(); // assume that hpd and monitor sense are up
-
-  hpd_state = ADV_HPD_STATE();
-  monitor_sense_state = ADV_MONITOR_SENSE_STATE();
 
   update_ppu_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
 
@@ -172,9 +167,6 @@ int main()
 
   /* Event loop never exits. */
   while (1) {
-    hpd_state_pre = hpd_state;
-    monitor_sense_state_pre = monitor_sense_state;
-
     ctrl_update = new_ctrl_available();
     update_ppu_state();
 
@@ -314,10 +306,7 @@ int main()
     if (!SI5356_PLL_LOCKSTATUS())
       init_si5356(target_resolution);
 
-    hpd_state = ADV_HPD_STATE();
-    monitor_sense_state = ADV_MONITOR_SENSE_STATE();
-    if ((hpd_state && !hpd_state_pre) ||
-        (monitor_sense_state && !monitor_sense_state_pre)){
+    if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
       init_adv7513();
 //      adv7513_vic_manual_setup();
     }
