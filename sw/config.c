@@ -101,6 +101,18 @@ config_tray_t scaling_words[NUM_SCALING_MODES] = {
     { .config_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED}
 };
 
+const alt_u16 predef_scaling_vals[LINEX_TYPES+1][PREDEFINED_SCALE_STEPS] __ufmdata_section__ = {
+  { 480, 540, 600, 660, 720, 780, 840, 900, 960,1020,1080,1140,1200,1260,1320,1380,1440,1500,1560}, // vertical NTSC
+  { 576, 648, 720, 792, 864, 936,1008,1080,1152,1224,1296,1368,1440,1512,1584,1656,1728,1800,1872}, // vertical PAL
+  { 640, 720, 800, 880, 960,1040,1120,1200,1280,1360,1440,1520,1600,1680,1760,1840,1920,2000,2080}  // horizontal
+};
+const alt_u16 predef_hscaling_vals[PREDEFINED_SCALE_STEPS] __ufmdata_section__ = {
+
+};
+
+//extern bool_t use_flash;
+extern vmode_t vmode_scaling_menu;
+
 static const char *confirm_message = "< Really? >";
 extern const char *btn_fct_confirm_overlay;
 
@@ -193,10 +205,60 @@ void cfg_set_value(config_t* cfg_data, alt_u16 value)
   *cfg_word = (*cfg_word & ~cfg_data->value_details.getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
 }
 
-alt_u8 cfgfct_linex(alt_u8 value, bool_t set_value, bool_t ret_reference)
+alt_u16 cfgfct_linex(alt_u16 value, bool_t set_value, bool_t ret_reference)
 {
   if (set_value) cfg_set_value(&linex_resolution,value);
-  return (alt_u8) cfg_get_value(&linex_resolution,ret_reference);
+  return cfg_get_value(&linex_resolution,ret_reference);
+}
+
+alt_u8 cfg_scale_is_predefined(alt_u16 value, bool_t use_vertical) {
+  alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
+  alt_u8 idx;
+  for (idx = 0; idx < PREDEFINED_SCALE_STEPS; idx++) {
+    if (predef_scaling_vals[jdx][idx] == value) return idx;
+  }
+  return PREDEFINED_SCALE_STEPS;
+}
+
+void cfg_scale_v2h_update() {
+  if (cfg_get_value(&link_hv_scale,0) != 0) return;
+  alt_u16 hscale = cfg_get_value(&vert_scale,0);
+  hscale = (4*hscale)/3;
+  cfg_set_value(&hor_scale,hscale);
+}
+
+alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, bool_t ret_reference)
+{
+  alt_u16 current_scale = use_vertical ? cfg_get_value(&vert_scale,0) :  cfg_get_value(&hor_scale,0);
+  if (set_value) {  // ensure from outside that command is valid (left or right)
+    alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
+    alt_u8 idx;
+    for (idx = 0; idx < PREDEFINED_SCALE_STEPS; idx++) {
+      if (predef_scaling_vals[jdx][idx] >= current_scale) break;
+    }
+    if (((cmd_t) command) == CMD_MENU_RIGHT) {  // increment
+      if (cfg_get_value(&scaling_steps,0)) {  // pixelwise
+        if (use_vertical) current_scale = current_scale < CFG_VERTSCALE_MAX_VALUE ? current_scale + 1 : predef_scaling_vals[jdx][0];
+        else current_scale = current_scale < CFG_HORSCALE_MAX_VALUE ? current_scale + 1 : predef_scaling_vals[jdx][0];
+      } else {  // by 0.25x steps
+        if (predef_scaling_vals[jdx][idx] > current_scale) idx--;
+        if (idx >= PREDEFINED_SCALE_STEPS-1) current_scale = predef_scaling_vals[jdx][0];
+        else current_scale = predef_scaling_vals[jdx][idx+1];
+      }
+    } else {  // decrement
+      if (cfg_get_value(&scaling_steps,0)) {  // pixelwise
+        current_scale = current_scale > predef_scaling_vals[jdx][0] ? current_scale-1 :
+                                                       use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;
+      } else {  // by 0.25x steps
+        if (idx == 0) current_scale = predef_scaling_vals[jdx][PREDEFINED_SCALE_STEPS-1];
+        else current_scale = predef_scaling_vals[jdx][idx-1];
+      }
+    }
+    if (use_vertical) cfg_set_value(&vert_scale,current_scale);
+    else cfg_set_value(&hor_scale,current_scale);
+  }
+  current_scale = use_vertical ? cfg_get_value(&vert_scale,ret_reference) :  cfg_get_value(&hor_scale,ret_reference);
+  return current_scale;
 }
 
 bool_t confirmation_routine()
@@ -482,6 +544,7 @@ int cfg_load_defaults(bool_t video1080p, bool_t need_confirm)
 
 void cfg_apply_to_logic()
 {
+  cfg_scale_v2h_update();
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE,sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val);
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG1_OUT_BASE,sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val);
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG2_OUT_BASE,sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val);

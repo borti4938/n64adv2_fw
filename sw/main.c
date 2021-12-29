@@ -49,7 +49,7 @@
 const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
 const char   *RW_Message[] = {"< Success >","< Failed >","< Aborted >"};
 
-vmode_t vmode_menu, vmode_n64adv;
+vmode_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
 cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 
@@ -192,7 +192,8 @@ int main()
     scaling_n64adv = get_target_scaler(palmode);
     scaling_menu = (cfg_scaler_in2out_sel_type_t) cfg_get_value(&scaling_selection,0);
     if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
-
+    if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
+    else vmode_scaling_menu = scaling_menu > NUM_SCALING_MODES/2; // NUM_SCALING_MODES/2 should be exactly the border between NTSC and PAL
 
 //    if ((palmode != palmode_pre) ||
 //        (scanmode != scanmode_pre) ||

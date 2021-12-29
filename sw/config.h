@@ -168,6 +168,8 @@ typedef struct {
 #define CFG_N64DEF_LOAD_ABORT CFG_FLASH_SAVE_ABORT
 #define CFG_DEF_LOAD_ABORT    CFG_FLASH_SAVE_ABORT
 
+#define PREDEFINED_SCALE_STEPS  19
+
 // the overall masks
 #define INTCFG0_GETALL_MASK   0x0000003F
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
@@ -383,8 +385,8 @@ typedef struct {
 
 
 // some max values
-#define CFG_VERTSCALE_MAX_VALUE    2047
-#define CFG_HORSCALE_MAX_VALUE     2560
+#define CFG_VERTSCALE_MAX_VALUE    1872 // equals 6.50x @ PAL
+#define CFG_HORSCALE_MAX_VALUE     2240 // equals 7.00x
 #define CFG_FORCE5060_MAX_VALUE       2
 #define CFG_RESOLUTION_MAX_VALUE      4
 
@@ -487,8 +489,7 @@ extern config_t audio_amp, audio_swap_lr, audio_spdif_en,
                 slhyb_str, sl_str, sl_method, sl_id, sl_en,
                 slhyb_str_480i, sl_str_480i, sl_method_480i, sl_id_480i, sl_en_480i;
 
-
-static inline alt_u8 is_local_cfg(config_t* cfg_data)
+static inline bool_t is_local_cfg(config_t* cfg_data)
   { return cfg_data->cfg_word == NULL;  }
 
 void cfg_toggle_flag(config_t* cfg_data);
@@ -498,7 +499,10 @@ void cfg_inc_value(config_t* cfg_data);
 void cfg_dec_value(config_t* cfg_data);
 alt_u16 cfg_get_value(config_t* cfg_data,cfg_offon_t get_reference);
 void cfg_set_value(config_t* cfg_data, alt_u16 value);
-alt_u8 cfgfct_linex(alt_u8 value, bool_t set_value, bool_t ret_reference);
+alt_u16 cfgfct_linex(alt_u16 value, bool_t set_value, bool_t ret_reference);
+alt_u8 cfg_scale_is_predefined(alt_u16 value,bool_t use_vertical);
+void cfg_scale_v2h_update(void);
+alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t ret_reference);
 int cfg_save_to_flash(bool_t need_confirm);
 int cfg_load_from_flash(bool_t need_confirm);
 void cfg_store_linex_word(vmode_t palmode_select);

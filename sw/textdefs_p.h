@@ -94,8 +94,8 @@
 #define SCALERCFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
 #define SCALERCFG_VALS_H_OFFSET         (30 + OVERLAY_H_OFFSET)
 #define SCALERCFG_VALS_V_OFFSET         OVERLAY_V_OFFSET
-#define SCALERCFG_IN2OUT_V_OFFSET       ( 0 + SCALERCFG_VALS_V_OFFSET)
-#define SCALERCFG_INTERP_V_OFFSET       ( 1 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_INTERP_V_OFFSET       ( 0 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_IN2OUT_V_OFFSET       ( 2 + SCALERCFG_VALS_V_OFFSET)
 #define SCALERCFG_LINKVH_V_OFFSET       ( 3 + SCALERCFG_VALS_V_OFFSET)
 #define SCALERCFG_VHSTEPS_V_OFFSET      ( 4 + SCALERCFG_VALS_V_OFFSET)
 #define SCALERCFG_VERTSCALE_V_OFFSET    ( 5 + SCALERCFG_VALS_V_OFFSET)
@@ -205,9 +205,9 @@ static const char *resolution_overlay __ufmdata_section__ =
 static const char *scaler_header __ufmdata_section__ =
     "Resolution";
 static const char *scaler_overlay __ufmdata_section__ =
-    "* Settings for:\n"
     "* Interpolation type:\n"
-    "* Scaler:\n"
+    "* Scaling:\n"
+    "  - Settings for:\n"
     "  - Link v/h factors:\n"
     "  - V/h scaling steps:\n"
     "  - Vertical scale value:\n"
@@ -337,7 +337,7 @@ static const char *home_overlay __ufmdata_section__ =
 const char *EnterSubMenu __ufmdata_section__  = "[Enter ...]";
 const char *RunFunction __ufmdata_section__   = "[Run ...]";
 const char *not_available __ufmdata_section__ = "-----";
-const char *Global                            = "Global";
+const char *Global __ufmdata_section__        = "Global";
 
 const char *OffOn[]         = {"Off","On"};
 const char *NTSCPAL_SEL[]   = {"NTSC  ","PAL   ", "Current"};
@@ -358,6 +358,17 @@ const char *ResolutionVGA     = "VGA (640x480)";
 const char *Resolution480p    = "480p";
 const char *Resolution576p    = "576p";
 const char *text_480i_576i_br = "(480i/576i)";
+
+const char *ScaleSteps[] = {"0.25x","Pixelwise"};
+const char *PredefScaleSteps[] __ufmdata_section__ = {"(2.00x)","(2.25x)","(2.50x)","(2.75x)",
+                                                      "(3.00x)","(3.25x)","(3.50x)","(3.75x)",
+                                                      "(4.00x)","(4.25x)","(4.50x)","(4.75x)",
+                                                      "(5.00x)","(5.25x)","(5.50x)","(5.75x)",
+                                                      "(6.00x)","(6.25x)","(6.50x)"};
+const char *PredefScaleStepsHalf[] __ufmdata_section__ = {"(1.00x)","(1.25x)","(1.50x)","(1.75x)",
+                                                          "(2.00x)","(2.25x)","(2.50x)","(2.75x)",
+                                                          "(3.00x)","(3.25x)"};
+const char *ScaleVHLink[] = {"4:3","Open"};
 
 const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521"};
 

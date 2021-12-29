@@ -38,7 +38,7 @@
 #ifndef CFG_INT_P_H_
 #define CFG_INT_P_H_
 
-extern const char  *OffOn[], *NTSCPAL_SEL[], *VTimingSel[];
+extern const char  *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[];
 
 cfg_b32word_t intcfg0_word =
   { .cfg_word_mask    = INTCFG0_GETALL_MASK,
@@ -49,12 +49,12 @@ cfg_b32word_t intcfg0_word =
 config_t link_hv_scale = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_LINK_HV_SCALE_OFFSET,
-    .cfg_type        = FLAGTXT,
+    .cfg_type        = FLAG,
     .flag_masks      = {
         .setflag_mask = CFG_LINK_HV_SCALE_SETMASK,
         .clrflag_mask = CFG_LINK_HV_SCALE_CLRMASK
     },
-    .val2char_func = &flag2set_func
+    .value_string = &ScaleVHLink
 };
 
 config_t deblur_mode_powercycle = {
@@ -110,6 +110,16 @@ config_t fallbackmode = {
         .clrflag_mask = CFG_FALLBACK_CLRMASK
     },
     .value_string = &FallbackRes
+};
+
+config_t scaling_steps = {
+    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
+    .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
+    .cfg_value    = 0,
+    .value_details = {
+      .max_value = 1,
+    },
+    .value_string = &ScaleSteps
 };
 
 config_t res_selection = {
