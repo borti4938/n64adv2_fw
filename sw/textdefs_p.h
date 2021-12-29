@@ -211,13 +211,12 @@ static const char *scaler_overlay __ufmdata_section__ =
     "  - Link v/h factors:\n"
     "  - V/h scaling steps:\n"
     "  - Vertical scale value:\n"
-    "  - Horizontal scale value:\n\n"
+    "  - Horizontal scale value:\n"
+    "* Use PAL in 240p box:\n"
     "* Shift N64 input image:\n"
     "  - Input Mode:\n"
     "  - Vertical shift:\n"
     "  - Horizontal shift:";
-static const char *scaler_overlay_paladd __ufmdata_section__ =
-    "* Use PAL in 240p box:";
 
 static const char *vicfg_header __ufmdata_section__ =
     "VI-Processing";

@@ -381,11 +381,6 @@ void scanline_hybrstr2txt_func(alt_u16 v) { sprintf(szText,"%3u.%02u%%", (v*625)
 void gamma2txt_func(alt_u16 v) { sprintf(szText,"%u.%02u", v > 4, 5* v + 75 - (100 * (v > 4))); };
 
 
-void print_palbox_overlay(vmode_t vmode) {
-  alt_u8 font_color = vmode ? FONTCOLOR_WHITE : FONTCOLOR_GREY;
-  vd_print_string(VD_TEXT,SCALERCFG_OVERLAY_H_OFFSET,SCALERCFG_PALBOXED_V_OFFSET,BACKGROUNDCOLOR_STANDARD,font_color,scaler_overlay_paladd);
-}
-
 void print_current_timing_mode()
 {
   vd_clear_info_area(0,COPYRIGHT_SIGN_H_OFFSET-1,0,0);
@@ -587,22 +582,6 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     }
   }
 
-  if (is_viscaling_screen(*current_menu)) {
-    if (cfg_get_value(&link_hv_scale,0) && current_sel == HORISCALE_SELECTION)
-      current_sel = (command == CMD_MENU_DOWN) ? PAL_BOX_SELECTION : VERTSCALE_SELECTION;
-    if (current_sel == PAL_BOX_SELECTION) {
-      if (cfg_get_value(&scaling_selection,0) == PPU_SCALING_CURRENT) {
-        if (palmode == NTSC) // palbox not available in NTSC
-          current_sel = (command == CMD_MENU_DOWN) ? TIMING_PAGE_SELECTION :
-                   cfg_get_value(&link_hv_scale,0) ? VERTSCALE_SELECTION : HORISCALE_SELECTION;
-      } else {
-        if (cfg_get_value(&scaling_selection,0) < PAL_TO_576) // palbox not available in NTSC
-          current_sel = (command == CMD_MENU_DOWN) ? TIMING_PAGE_SELECTION :
-                   cfg_get_value(&link_hv_scale,0) ? VERTSCALE_SELECTION : HORISCALE_SELECTION;
-      }
-    }
-    (*current_menu)->current_selection = current_sel;
-  }
 
 
   if (todo == NEW_OVERLAY || todo == NEW_SELECTION) return todo;
@@ -939,34 +918,14 @@ int update_cfg_screen(menu_t* current_menu)
             ref_val_select = cfg_get_value(current_menu->leaves[v_run-1].config_value,use_flash);
             font_color = (val_select == ref_val_select) ? FONTCOLOR_GREY : FONTCOLOR_DARKGOLD;
           }
-          if (v_run == PAL_BOX_SELECTION) {
-            if (cfg_get_value(&scaling_selection,0) == PPU_SCALING_CURRENT) {
-              print_palbox_overlay(palmode);
-              if (!palmode) {
-                font_color = FONTCOLOR_GREY;
-                sprintf(szText,not_available);
-              } else {
-                flag2set_func(val_select);
-              }
-            } else {
-              if (cfg_get_value(&scaling_selection,0) < PAL_TO_576) {
-                print_palbox_overlay(NTSC);
-                font_color = FONTCOLOR_GREY;
-                sprintf(szText,not_available);
-              } else {
-                print_palbox_overlay(PAL);
-                flag2set_func(val_select);
-              }
-            }
-          }
         }
 
 //        if (v_run == current_menu->current_selection)
         vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
 
         if (current_menu->leaves[v_run].config_value->cfg_type == FLAGTXT ||
-          current_menu->leaves[v_run].config_value->cfg_type == NUMVALUE ) {
-          if (!(is_viscaling_screen(current_menu) && v_run == PAL_BOX_SELECTION)) current_menu->leaves[v_run].config_value->val2char_func(val_select); // val2char_func already executed in scaling screen for palbox
+            current_menu->leaves[v_run].config_value->cfg_type == NUMVALUE ) {
+          current_menu->leaves[v_run].config_value->val2char_func(val_select);
           vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
         } else {
           vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
