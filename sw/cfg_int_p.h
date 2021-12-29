@@ -59,22 +59,22 @@ config_t link_hv_scale = {
 
 config_t deblur_mode_powercycle = {
     .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_MODE16BIT_PC_DEFAULT_OFFSET,
+    .cfg_word_offset = CFG_DEBLUR_PC_DEFAULT_OFFSET,
     .cfg_type     = FLAG,
     .flag_masks      = {
-        .setflag_mask = CFG_MODE16BIT_PC_DEFAULT_SETMASK,
-        .clrflag_mask = CFG_MODE16BIT_PC_DEFAULT_CLRMASK
+        .setflag_mask = CFG_DEBLUR_PC_DEFAULT_SETMASK,
+        .clrflag_mask = CFG_DEBLUR_PC_DEFAULT_CLRMASK
     },
     .value_string = &OffOn
 };
 
 config_t mode16bit_powercycle = {
     .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_DEBLUR_IGR_OFFSET,
+    .cfg_word_offset = CFG_MODE16BIT_PC_DEFAULT_OFFSET,
     .cfg_type     = FLAG,
     .flag_masks      = {
-        .setflag_mask = CFG_DEBLUR_IGR_SETMASK,
-        .clrflag_mask = CFG_DEBLUR_IGR_CLRMASK
+        .setflag_mask = CFG_MODE16BIT_PC_DEFAULT_SETMASK,
+        .clrflag_mask = CFG_MODE16BIT_PC_DEFAULT_CLRMASK
     },
     .value_string = &OffOn
 };
