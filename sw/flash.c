@@ -46,16 +46,12 @@
 ALTERA_ONCHIP_FLASH_DATA_CSR_INSTANCE ( ONCHIP_FLASH_0, ONCHIP_FLASH_0_DATA, ONCHIP_FLASH_0_CSR, onchip_flash_0);
 alt_onchip_flash_dev* ufm_dev = &onchip_flash_0;
 
-alt_u8 use_flash = 0;
-
-int check_flash()
+int init_flash()
 {
   altera_onchip_flash_init(ufm_dev);
 
   if ((ufm_dev == NULL) || !(!ufm_dev->is_read_only && (ufm_dev->page_size == PAGESIZE)))
     return -FLASH_DETECT_ERROR;
-
-  use_flash = 1;
 
   return 0;
 }

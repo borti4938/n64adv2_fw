@@ -63,9 +63,7 @@
 #define FLASH_WRITE_PAGE_ERROR  204
 
 
-extern alt_u8 use_flash;
-
-int check_flash(void);
+int init_flash(void);
 int read_flash(alt_u32 offset, alt_u32 length, alt_u8 *dstbuf);
 int write_flash(alt_u32 offset, alt_u32 length, alt_u8 *pagedata);
 int write_flash_page(alt_u8 *pagedata, alt_u32 length, alt_u32 pagenum);

@@ -224,7 +224,6 @@ bool_t confirmation_routine()
 
 int cfg_save_to_flash(bool_t need_confirm)
 {
-  if (!use_flash) return -CFG_FLASH_NOT_USED;
 
   if (need_confirm) {
     bool_t abort = confirmation_routine();
@@ -251,8 +250,8 @@ int cfg_save_to_flash(bool_t need_confirm)
       ((cfg4flash_t*) databuf)->cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx] = (alt_u8) ((timing_words[idx].config_val >> (8*jdx)) & 0xFF);
 
   for (idx = 0; idx < NUM_SCALING_MODES; idx++)
-    for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U16; jdx++)
-      ((cfg4flash_t*) databuf)->cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx] = (alt_u8) ((scaling_words[idx].config_val >> (8*jdx)) & 0xFF);
+    for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
+      ((cfg4flash_t*) databuf)->cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*idx+jdx] = (alt_u8) ((scaling_words[idx].config_val >> (8*jdx)) & 0xFF);
 
   int retval = write_flash_page((alt_u8*) databuf, sizeof(cfg4flash_t), USERDATA_OFFSET/PAGESIZE);
 
@@ -264,7 +263,6 @@ int cfg_save_to_flash(bool_t need_confirm)
 
 int cfg_load_from_flash(bool_t need_confirm)
 {
-  if (!use_flash) return -CFG_FLASH_NOT_USED;
 
   if (need_confirm) {
     bool_t abort = confirmation_routine();
@@ -307,8 +305,8 @@ int cfg_load_from_flash(bool_t need_confirm)
 
   for (idx = 0; idx < NUM_SCALING_MODES; idx++) {
       scaling_words[idx].config_val = 0;
-    for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U16; jdx++)
-      scaling_words[idx].config_val |= (((cfg4flash_t*) databuf)->cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx]  << (8*jdx));
+    for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
+      scaling_words[idx].config_val |= (((cfg4flash_t*) databuf)->cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*idx+jdx]  << (8*jdx));
   }
 
   cfg_update_reference(); // leave power cycle values for deblur and 16bit mode in reference

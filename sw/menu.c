@@ -41,7 +41,6 @@
 #include "vd_driver.h"
 
 char szText[VD_WIDTH];
-extern alt_u8 use_flash;
 extern vmode_t vmode_menu, vmode_n64adv;
 extern cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
@@ -878,10 +877,10 @@ int update_cfg_screen(menu_t* current_menu)
     switch (current_menu->leaves[v_run].leavetype) {
       case ICONFIG:
         val_select = cfg_get_value(current_menu->leaves[v_run].config_value,0);
-        ref_val_select = cfg_get_value(current_menu->leaves[v_run].config_value,use_flash);
+        ref_val_select = cfg_get_value(current_menu->leaves[v_run].config_value,1);
         if (is_vicfg_screen(current_menu)){
           if (v_run == DEBLUR_CURRENT_SELECTION    || v_run == M16BIT_CURRENT_SELECTION   ) ref_val_select = val_select;
-          if (v_run == DEBLUR_POWERCYCLE_SELECTION || v_run == M16BIT_POWERCYCLE_SELECTION) ref_val_select = cfg_get_value(current_menu->leaves[v_run-1].config_value,use_flash);
+          if (v_run == DEBLUR_POWERCYCLE_SELECTION || v_run == M16BIT_POWERCYCLE_SELECTION) ref_val_select = cfg_get_value(current_menu->leaves[v_run-1].config_value,1);
         }
 //        if (current_menu->current_selection == v_run) {
 //          background_color = OPT_WINDOWCOLOR_BG;

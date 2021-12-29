@@ -115,27 +115,29 @@ int main()
 
   int message_cnt = 0;
 
-  int load_n64_defaults = check_flash();
 
   cfg_clear_words();
-  if (use_flash) {
-    load_n64_defaults = cfg_load_from_flash(0);
-  }
+  init_flash();
+  bool_t load_n64_defaults = (cfg_load_from_flash(0) != 0);
 
   bool_t use_fallback = get_fallback_mode();
   while (is_fallback_mode_valid() == FALSE) use_fallback = get_fallback_mode();
 
-  if (use_fallback || (load_n64_defaults != 0)) {
+  if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
     cfg_load_defaults(1,0);
     cfg_update_reference();
     open_osd_main(&menu);
   } else {
-    cfg_clear_flag(&show_osd);
+    if (use_fallback) {
+      cfg_load_defaults(cfg_get_value(&fallbackmode,0),0);
+      open_osd_main(&menu);
+    } else {
+      cfg_clear_flag(&show_osd);
+    }
     cfg_set_value(&deblur_mode,cfg_get_value(&deblur_mode_powercycle,0));
     cfg_set_value(&mode16bit,cfg_get_value(&mode16bit_powercycle,0));
   }
-
 
   cfg_load_linex_word(NTSC);
   cfg_load_timing_word(NTSC_PROGRESSIVE);
