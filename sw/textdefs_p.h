@@ -344,6 +344,7 @@ const char *OffOn[]         = {"Off","On"};
 const char *NTSCPAL_SEL[]   = {"NTSC  ","PAL   ", "Current"};
 const char *Force5060[]     = {"Off (N64 Auto)","60Hz","50Hz"};
 const char *Resolutions[]   = {"480p/576p","720p","960p","1080p","1200p"};
+const char *FallbackRes[]   = {"1080p","480p/576p"};
 const char *DeInterModes[]  = {"Bob","Weave","Fully Buffered"};
 const char *InterpModes[]   = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
 const char *VTimingSel[]    = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};

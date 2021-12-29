@@ -101,6 +101,17 @@ config_t igr_16bitmode = {
     .val2char_func = &flag2set_func
 };
 
+config_t fallbackmode = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_FALLBACK_OFFSET,
+    .cfg_type     = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_FALBACK_SETMASK,
+        .clrflag_mask = CFG_FALLBACK_CLRMASK
+    },
+    .value_string = &FallbackRes
+};
+
 config_t res_selection = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
