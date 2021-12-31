@@ -76,32 +76,44 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
     alt_u8 case_val = (pal_pattern_tmp << 1 | palmode_tmp);
     switch (case_val) {
       case 3:
-        return PAL1_N64_576p + linex_setting;
+        return PAL1_N64_288p + linex_setting;
       case 1:
-        return PAL0_N64_576p + linex_setting;
+        return PAL0_N64_288p + linex_setting;
       default:
-        if ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == 0)  return NTSC_N64_VGA;
-        else return NTSC_N64_480p + linex_setting;
+        if ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == LineX2)  return NTSC_N64_VGA;
+        else return NTSC_N64_240p + linex_setting;
     }
   } else {
-    if (linex_setting > 2) return FREE_1080p_1200p;
-    if (linex_setting > 0) return FREE_720p_960p;
-    if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
-      if (palmode_tmp == NTSC) return FREE_480p_VGA;
-      else                     return FREE_576p;
-    } else {
-      if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) return FREE_480p_VGA;
-      else return FREE_576p;
+    switch (linex_setting) {
+      case PASSTHROUGH:
+        return FREE_240p_288p;
+      case LineX2:
+        if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
+          if (palmode_tmp == NTSC) return FREE_480p_VGA;
+          else                     return FREE_576p;
+        } else {
+          if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) return FREE_480p_VGA;
+          else return FREE_576p;
+        }
+      case LineX3:
+      case LineX4:
+        return FREE_720p_960p;
+      case LineX4p5:
+      case LineX5:
+        return FREE_1080p_1200p;
+      case LineX6:
+        return FREE_1440p;
     }
   }
+  return FREE_480p_VGA; // should never happen
 }
 
 cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 {
   alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
 
-  if (palmode_tmp) return (PAL_TO_576 + linex_setting);
-  else return (NTSC_TO_480 + linex_setting);
+  if (palmode_tmp) return (PAL_TO_288 + linex_setting);
+  else return (NTSC_TO_240 + linex_setting);
 }
 
 int main()

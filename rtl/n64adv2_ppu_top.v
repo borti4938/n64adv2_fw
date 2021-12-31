@@ -253,23 +253,27 @@ register_sync #(
 );
 
 
-assign sys_vmode_ntsc_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p60 :
+assign sys_vmode_ntsc_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1440P ? `USE_1440p60 :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p60 :
                           ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p60 :
                           ConfigSet[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p60  :
                           ConfigSet[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p60  :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P  ? `USE_240p60  :
                           ConfigSet[`use_vga_for_480p_bit]                          ? `USE_VGAp60  :
                                                                                       `USE_480p60  ;
 
-assign sys_vmode_pal_w =  ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p50 :
+assign sys_vmode_pal_w =  ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1440P ? `USE_1440p50 :
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p50 :
                           ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p50 :
                           ConfigSet[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p50  :
                           ConfigSet[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p50  :
-                                                                                      `USE_576p50  ;
+                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_576P  ? `USE_576p50  :
+                                                                                      `USE_288p50  ;
 
 always @(posedge SYS_CLK) begin
-  if (ConfigSet[`force60hz_bit] & !ConfigSet[`lowlatencymode_bit]) // do not allow forcing 60Hz mode in llm
+  if (ConfigSet[`force60hz_bit] & !ConfigSet[`lowlatencymode_bit] & (ConfigSet[`target_resolution_slice] != `HDMI_TARGET_288P)) // do not allow forcing 60Hz mode in llm and in 288p mode
     sys_videomode <= sys_vmode_ntsc_w;
-  else if (ConfigSet[`force50hz_bit] & !ConfigSet[`lowlatencymode_bit]) // do not allow forcing 50Hz mode in llm
+  else if (ConfigSet[`force50hz_bit] & !ConfigSet[`lowlatencymode_bit] & (ConfigSet[`target_resolution_slice] != `HDMI_TARGET_240P)) // do not allow forcing 50Hz mode in llm and in 240p mode
     sys_videomode <= sys_vmode_pal_w;
   else begin
     if (palmode)
@@ -279,14 +283,17 @@ always @(posedge SYS_CLK) begin
   end
 end
 
+wire [10:0] vlines_set_w = ConfigSet[`target_vlines_slice];
+wire [11:0] hpixels_set_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P ? {ConfigSet[`target_hpixels_slice],1'b0} : ConfigSet[`target_hpixels_slice];
+
 
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
   .palmode_i(palmode_sysclk_resynced),
   .palmode_boxed_i(ConfigSet[`pal_boxed_scale_bit]),
   .video_config_i(sys_videomode),
-  .vlines_out_i(ConfigSet[`target_vlines_slice]),
-  .hpixels_out_i(ConfigSet[`target_hpixels_slice]),
+  .vlines_out_i(vlines_set_w),
+  .hpixels_out_i(hpixels_set_w),
   .vpos_1st_rdline_o(cfg_vpos_1st_rdline_w),
   .vlines_in_needed_o(cfg_vlines_in_needed_w),
   .vlines_in_full_o(cfg_vlines_in_full_w),
@@ -380,23 +387,28 @@ register_sync #(
   .reg_o(ConfigSet_resynced)
 );
 
-assign videomode_ntsc_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p60 :
+
+assign videomode_ntsc_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1440P ? `USE_1440p60 :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p60 :
                           ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p60 :
                           ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p60  :
                           ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p60  :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P  ? `USE_240p60  :
                           ConfigSet_resynced[`use_vga_for_480p_bit]                          ? `USE_VGAp60  :
                                                                                                `USE_480p60  ;
 
-assign videomode_pal_w =  ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p50 :
+assign videomode_pal_w =  ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1440P ? `USE_1440p50 :
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P ? `USE_1200p50 :
                           ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1080P ? `USE_1080p50 :
                           ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_960P  ? `USE_960p50  :
                           ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_720P  ? `USE_720p50  :
-                                                                                               `USE_576p50  ;
+                          ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_576P  ? `USE_576p50  :
+                                                                                               `USE_288p50  ;
 
 always @(posedge VCLK_Tx) begin
-  if (ConfigSet_resynced[`force60hz_bit] & !ConfigSet_resynced[`lowlatencymode_bit]) // do not allow forcing 60Hz mode in llm
+  if (ConfigSet_resynced[`force60hz_bit] & !ConfigSet_resynced[`lowlatencymode_bit] & (ConfigSet_resynced[`target_resolution_slice] != `HDMI_TARGET_288P)) // do not allow forcing 60Hz mode in llm and in 288p mode
     cfg_videomode <= videomode_ntsc_w;
-  else if (ConfigSet_resynced[`force50hz_bit] & !ConfigSet_resynced[`lowlatencymode_bit]) // do not allow forcing 50Hz mode in llm
+  else if (ConfigSet_resynced[`force50hz_bit] & !ConfigSet_resynced[`lowlatencymode_bit] & (ConfigSet_resynced[`target_resolution_slice] != `HDMI_TARGET_240P)) // do not allow forcing 50Hz mode in llm and in 240p mode
     cfg_videomode <= videomode_pal_w;
   else begin
     if (palmode_resynced)
@@ -404,7 +416,7 @@ always @(posedge VCLK_Tx) begin
     else
       cfg_videomode <= videomode_ntsc_w;
   end
-  cfg_interpolation_mode <= ConfigSet_resynced[`interpolation_mode_slice];
+  cfg_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`interpolation_mode_slice];
   cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
   if (ConfigSet_resynced[`target_vlines_slice] < 11'd924) // just a coarse estimate
     cfg_SL_thickness <= 2'b00;

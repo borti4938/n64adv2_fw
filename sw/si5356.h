@@ -40,15 +40,16 @@
 #define SI5356_INIT_FAILED_1 141
 
 
-#define PLL_LOSSLOCK_REG    218
-  #define PLL_LOSSLOCK_BIT    4
-#define OEB_REG             230
-  #define OEB_REG_VAL_OFF     0x1F
-  #define OEB_REG_VAL_ON      0x0C // OEB register; just use CLK0/1 and CLK2/3
-#define DIS_LOL_REG         241
-  #define DIS_LOL_REG_VAL     0x65
-#define SOFT_RST_REG        246
-  #define SOFT_RST_BIT        1
+#define PLL_LOSSLOCK_REG      218
+  #define PLL_LOSSLOCK_BIT      4
+#define OEB_REG               230
+  #define OEB_REG_VAL_OFF       0x1F
+  #define OEB_REG_VAL_ALL_ON    0x0C // OEB register; just use CLK0/1 and CLK2/3
+  #define OEB_REG_VAL_SINGLE_ON 0x0E // OEB register; just use CLK0/1 (e.g. 240p/288p and 1440p)
+#define DIS_LOL_REG           241
+  #define DIS_LOL_REG_VAL       0x65
+#define SOFT_RST_REG          246
+  #define SOFT_RST_BIT          1
 
 
 typedef enum {
@@ -59,27 +60,35 @@ typedef enum {
 
 typedef enum {
   NTSC_N64_VGA = 0,
+  NTSC_N64_240p,
   NTSC_N64_480p,
   NTSC_N64_720p,
   NTSC_N64_960p,
   NTSC_N64_1080p,
   NTSC_N64_1200p,
+  NTSC_N64_1440p,
+  PAL0_N64_288p,
   PAL0_N64_576p,
   PAL0_N64_720p,
   PAL0_N64_960p,
   PAL0_N64_1080p,
   PAL0_N64_1200p,
+  PAL0_N64_1440p,
+  PAL1_N64_288p,
   PAL1_N64_576p,
   PAL1_N64_720p,
   PAL1_N64_960p,
   PAL1_N64_1080p,
   PAL1_N64_1200p,
+  PAL1_N64_1440p,
+  FREE_240p_288p, // use only CLK0/1
   FREE_480p_VGA,
   FREE_576p,
   FREE_720p_960p,
-  FREE_1080p_1200p
+  FREE_1080p_1200p,
+  FREE_1440p     // use only CLK0/1
 } clk_config_t;
-#define NUM_SUPPORTED_CONFIGS 20
+#define NUM_SUPPORTED_CONFIGS (FREE_1440p+1)
 
 #define SI5356_PLL_LOCKSTATUS() ((si5356_readreg(PLL_LOSSLOCK_REG) & (1<<PLL_LOSSLOCK_BIT)) == 0x00)
 

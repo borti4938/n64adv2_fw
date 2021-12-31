@@ -152,24 +152,23 @@ menu_t vires_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-//    .number_selections = 11,
-    .number_selections = 9,
+    .number_selections = 11,
     .leaves = {
         {.id = RESCFG_INPUT_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &res_selection},
-//        {.id = RESCFG_240P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
+        {.id = RESCFG_240P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_480P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_720P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_960P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_1080P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_1200P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-//        {.id = RESCFG_1440P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
+        {.id = RESCFG_1440P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_USE_VGA_RES_V_OFFSET, .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &vga_for_480p},
         {.id = RESCFG_USE_SRCSYNC_V_OFFSET, .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &low_latency_mode},
         {.id = RESCFG_FORCE_5060_V_OFFSET , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &linex_force_5060}
     }
 };
 
-#define FORCE5060_SELECTION 8
+#define FORCE5060_SELECTION 10
 
 menu_t viscaling_screen = {
     .type = CONFIG,
@@ -182,16 +181,16 @@ menu_t viscaling_screen = {
     .current_selection = 0,
     .number_selections = 10,
     .leaves = {
-        {.id = SCALERCFG_INTERP_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value = &interpolation_mode},
-        {.id = SCALERCFG_IN2OUT_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value = &scaling_selection},
-        {.id = SCALERCFG_LINKVH_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value = &link_hv_scale},
-        {.id = SCALERCFG_VHSTEPS_V_OFFSET    , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value = &scaling_steps},
-        {.id = SCALERCFG_VERTSCALE_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICFGCMDFUNC3, .cfgfct_call_3  = &cfgfct_scale},
-        {.id = SCALERCFG_HORISCALE_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICFGCMDFUNC3, .cfgfct_call_3  = &cfgfct_scale},
-        {.id = SCALERCFG_PALBOXED_V_OFFSET   , .arrow_desc = &viscaling_opt_arrow ,.leavetype = ICONFIG     , .config_value = &pal_boxed_mode},
-        {.id = SCALERCFG_INSHIFTMODE_V_OFFSET, .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value = &timing_selection},
-        {.id = SCALERCFG_VERTSHIFT_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value = &vert_shift},
-        {.id = SCALERCFG_HORISHIFT_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value = &hor_shift}
+        {.id = SCALERCFG_INTERP_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &interpolation_mode},
+        {.id = SCALERCFG_IN2OUT_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &scaling_selection},
+        {.id = SCALERCFG_LINKVH_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &link_hv_scale},
+        {.id = SCALERCFG_VHSTEPS_V_OFFSET    , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &scaling_steps},
+        {.id = SCALERCFG_VERTSCALE_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICFGCMDFUNC3, .cfgfct_call_3 = &cfgfct_scale},
+        {.id = SCALERCFG_HORISCALE_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICFGCMDFUNC3, .cfgfct_call_3 = &cfgfct_scale},
+        {.id = SCALERCFG_PALBOXED_V_OFFSET   , .arrow_desc = &viscaling_opt_arrow ,.leavetype = ICONFIG     , .config_value  = &pal_boxed_mode},
+        {.id = SCALERCFG_INSHIFTMODE_V_OFFSET, .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &timing_selection},
+        {.id = SCALERCFG_VERTSHIFT_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &vert_shift},
+        {.id = SCALERCFG_HORISHIFT_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &hor_shift}
     }
 };
 
@@ -361,12 +360,12 @@ void val2txt_scale_sel_func(alt_u16 v) {
   if (v == 0) {
     sprintf(szText,NTSCPAL_SEL[2]);
   } else {
-    if (v < PAL_TO_576) {
+    if (v < PAL_TO_288) {
       sprintf(szText,"NTSC to ");
-      sprintf(&szText[8],Resolutions[v - NTSC_TO_480]);
+      sprintf(&szText[8],Resolutions[v - NTSC_TO_240]);
     } else {
       sprintf(szText,"PAL to ");
-      sprintf(&szText[7],Resolutions[v - PAL_TO_576]);
+      sprintf(&szText[7],Resolutions[v - PAL_TO_288]);
     }
   }
 };
@@ -576,8 +575,8 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : FORCE5060_SELECTION - 1;
   }
 
-  if (is_viscaling_screen(*current_menu) && (current_sel == HORISCALE_SELECTION)) {
-    if (cfg_get_value(&link_hv_scale,0) == 0)
+  if (is_viscaling_screen(*current_menu)) {
+    if((current_sel == HORISCALE_SELECTION) && (cfg_get_value(&link_hv_scale,0) == 0))
       (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? current_sel + 1 : current_sel - 1;
   }
 
@@ -735,106 +734,40 @@ int update_vinfo_screen(menu_t* current_menu)
   vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
 
   // Video Output
-  alt_u8 ppu_output_res_val = ((ppu_state & (PPU_FORCE5060_GETMASK | PPU_USE_VGA_FOR_480P_GETMASK | PPU_RESOLUTION_GETMASK)) >> PPU_RESOLUTION_OFFSET);
+  linex_cnt linex_mode = (ppu_state & PPU_RESOLUTION_GETMASK) >> PPU_RESOLUTION_OFFSET;
+  bool_t is_lowlatency_mode = ((ppu_state & PPU_LOWLATENCYMODE_GETMASK) >> PPU_LOWLATENCYMODE_OFFSET);
+  alt_u8 force5060val = (ppu_state & PPU_FORCE5060_GETMASK) >> PPU_FORCE5060_OFFSET;
+  bool_t is_50Hz_mode = (is_lowlatency_mode || (linex_mode == PASSTHROUGH) || (force5060val == 0x00)) ? palmode : (force5060val == 0x02);
+  bool_t printhz4vga = FALSE;
+
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET);
-  switch (ppu_output_res_val) { // 2bit 50/60, 1 bit VGA, 3 bit resolution
-    case 0b000000:
-      if (palmode) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
-      else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution480p);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+  switch (linex_mode) {
+    case PASSTHROUGH:
+      if (palmode) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution288p576p[0]);
+      else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution240p480p[0]);
       break;
-    case 0b001000:
-      if (palmode) {
-        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
-        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
+    case LineX2:
+      if (is_50Hz_mode) {
+        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution288p576p[1]);
+      } else {
+        if ((ppu_state & PPU_USE_VGA_FOR_480P_GETMASK) >> PPU_USE_VGA_FOR_480P_OFFSET) {
+          vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,ResolutionVGA);
+          printhz4vga = TRUE;
+        } else {
+          vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution240p480p[1]);
+        }
       }
-      else {
-        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,ResolutionVGA);
-        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
-      }
-      break;
-    case 0b010000:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution480p);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
-      break;
-    case 0b011000:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,ResolutionVGA);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
-      break;
-    case 0b100000:
-    case 0b101000:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution576p);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
-      break;
-    case 0b000001:
-    case 0b001001:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
-      break;
-    case 0b010001:
-    case 0b011001:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
-      break;
-    case 0b100001:
-    case 0b101001:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[1]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
-      break;
-    case 0b000010:
-    case 0b001010:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
-      break;
-    case 0b010010:
-    case 0b011010:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
-      break;
-    case 0b100010:
-    case 0b101010:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[2]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
-      break;
-    case 0b000011:
-    case 0b001011:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
-      break;
-    case 0b010011:
-    case 0b011011:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
-      break;
-    case 0b100011:
-    case 0b101011:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[3]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
-      break;
-    case 0b000100:
-    case 0b001100:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
-      break;
-    case 0b010100:
-    case 0b011100:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
-      break;
-    case 0b100100:
-    case 0b101100:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[4]);
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[1]);
       break;
     default:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,not_available);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[linex_mode]);
   }
+  if (printhz4vga) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
+  else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5 + (linex_mode > LineX4),INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[is_50Hz_mode]);
 
   // Source-Sync. Mode
-  str_select = ((ppu_state & PPU_LOWLATENCYMODE_GETMASK) >> PPU_LOWLATENCYMODE_OFFSET);
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[str_select]);
-  if (str_select) {
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
+  if (is_lowlatency_mode) {
     sprintf(szText,"(%d sl. buffered)",(uint) ((ppu_state & PPU_LLM_SLBUF_FB_GETMASK) >> PPU_LLM_SLBUF_FB_OFFSET));
     vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET+3,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
   }
@@ -868,7 +801,6 @@ int update_cfg_screen(menu_t* current_menu)
   bool_t val_is_ref;
 
   bool_t use_sl_linked_vals = FALSE;
-  bool_t hv_is_linked = !((bool_t) cfg_get_value(&link_hv_scale,0));
 
   alt_u8 v_run_offset = 0;
   if (is_slcfg_screen(current_menu)) {
@@ -958,7 +890,7 @@ int update_cfg_screen(menu_t* current_menu)
         vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
         break;
       case ICFGCMDFUNC3:  // at the moment just for horizontal and vertical scale
-        if (v_run==HORISCALE_SELECTION && hv_is_linked) {
+        if (v_run == HORISCALE_SELECTION && cfg_get_value(&link_hv_scale,0) == 0) {
           cfg_scale_v2h_update();
           val_select = current_menu->leaves[v_run].cfgfct_call_3(0,0,0,0);
           ref_val_select = current_menu->leaves[v_run].cfgfct_call_3(0,0,0,1);

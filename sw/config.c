@@ -68,10 +68,6 @@ config_tray_t linex_words[2] = {
 };
 
 config_tray_u16_t timing_words[NUM_TIMING_MODES] = {
-//    { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-//    { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-//    { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-//    { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS}
   { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
   { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
   { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
@@ -79,26 +75,20 @@ config_tray_u16_t timing_words[NUM_TIMING_MODES] = {
 };
 
 config_tray_t scaling_words[NUM_SCALING_MODES] = {
-//    { .config_val = CFG_SCALING_NTSC_480_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_480_DEFAULT},
-//    { .config_val = CFG_SCALING_NTSC_720_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_720_DEFAULT},
-//    { .config_val = CFG_SCALING_NTSC_960_DEFAULT ,  .config_ref_val = CFG_SCALING_NTSC_960_DEFAULT},
-//    { .config_val = CFG_SCALING_NTSC_1080_DEFAULT,  .config_ref_val = CFG_SCALING_NTSC_1080_DEFAULT},
-//    { .config_val = CFG_SCALING_NTSC_1200_DEFAULT,  .config_ref_val = CFG_SCALING_NTSC_1200_DEFAULT},
-//    { .config_val = CFG_SCALING_PAL_576_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_576_DEFAULT},
-//    { .config_val = CFG_SCALING_PAL_720_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_720_DEFAULT},
-//    { .config_val = CFG_SCALING_PAL_960_DEFAULT  ,  .config_ref_val = CFG_SCALING_PAL_960_DEFAULT},
-//    { .config_val = CFG_SCALING_PAL_1080_DEFAULT ,  .config_ref_val = CFG_SCALING_PAL_1080_DEFAULT},
-//    { .config_val = CFG_SCALING_PAL_1200_DEFAULT ,  .config_ref_val = CFG_SCALING_PAL_1200_DEFAULT}
+    { .config_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_PAL_288_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_288_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED},
-    { .config_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED}
+    { .config_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED}
 };
 
 const alt_u16 predef_scaling_vals[LINEX_TYPES+1][PREDEFINED_SCALE_STEPS] __ufmdata_section__ = {
@@ -111,6 +101,7 @@ const alt_u16 predef_hscaling_vals[PREDEFINED_SCALE_STEPS] __ufmdata_section__ =
 };
 
 //extern bool_t use_flash;
+extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 extern vmode_t vmode_scaling_menu;
 
 static const char *confirm_message = "< Really? >";
@@ -221,9 +212,9 @@ alt_u8 cfg_scale_is_predefined(alt_u16 value, bool_t use_vertical) {
 }
 
 void cfg_scale_v2h_update() {
-  if (cfg_get_value(&link_hv_scale,0) != 0) return;
+  if ((cfg_get_value(&link_hv_scale,0) != 0) || (cfg_get_value(&linex_resolution,0) == PASSTHROUGH)) return;
   alt_u16 hscale = cfg_get_value(&vert_scale,0);
-  hscale = (4*hscale)/3;
+  hscale = 4*hscale/3;
   cfg_set_value(&hor_scale,hscale);
 }
 
@@ -233,22 +224,25 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
   if (set_value) {  // ensure from outside that command is valid (left or right)
     alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
     alt_u8 idx;
+    bool_t use_240p_288p = ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288));
+    alt_u16 scale_max = use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;
+    alt_u16 scale_min = (use_240p_288p == FALSE) ? predef_scaling_vals[jdx][0] :
+                        ((bool_t) cfg_get_value(&pal_boxed_mode,0)) ? CFG_VERTSCALE_PAL_MIN : CFG_VERTSCALE_NTSC_MIN;
+    bool_t scale_pixelwise = cfg_get_value(&scaling_steps,0) > 0 || (use_240p_288p && use_vertical);
     for (idx = 0; idx < PREDEFINED_SCALE_STEPS; idx++) {
       if (predef_scaling_vals[jdx][idx] >= current_scale) break;
     }
     if (((cmd_t) command) == CMD_MENU_RIGHT) {  // increment
-      if (cfg_get_value(&scaling_steps,0)) {  // pixelwise
-        if (use_vertical) current_scale = current_scale < CFG_VERTSCALE_MAX_VALUE ? current_scale + 1 : predef_scaling_vals[jdx][0];
-        else current_scale = current_scale < CFG_HORSCALE_MAX_VALUE ? current_scale + 1 : predef_scaling_vals[jdx][0];
+      if (scale_pixelwise) {  // pixelwise
+        current_scale = current_scale < scale_max ? current_scale + 1 : scale_min;
       } else {  // by 0.25x steps
         if (predef_scaling_vals[jdx][idx] > current_scale) idx--;
-        if (idx >= PREDEFINED_SCALE_STEPS-1) current_scale = predef_scaling_vals[jdx][0];
+        if (idx >= PREDEFINED_SCALE_STEPS-1) current_scale = scale_min;
         else current_scale = predef_scaling_vals[jdx][idx+1];
       }
     } else {  // decrement
-      if (cfg_get_value(&scaling_steps,0)) {  // pixelwise
-        current_scale = current_scale > predef_scaling_vals[jdx][0] ? current_scale-1 :
-                                                       use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;
+      if (scale_pixelwise) {  // pixelwise
+        current_scale = current_scale > scale_min ? current_scale-1 : scale_max;
       } else {  // by 0.25x steps
         if (idx == 0) current_scale = predef_scaling_vals[jdx][PREDEFINED_SCALE_STEPS-1];
         else current_scale = predef_scaling_vals[jdx][idx-1];
@@ -286,6 +280,7 @@ bool_t confirmation_routine()
 
 int cfg_save_to_flash(bool_t need_confirm)
 {
+//  if (!use_flash) return -CFG_FLASH_NOT_USED;
 
   if (need_confirm) {
     bool_t abort = confirmation_routine();
@@ -325,6 +320,7 @@ int cfg_save_to_flash(bool_t need_confirm)
 
 int cfg_load_from_flash(bool_t need_confirm)
 {
+//  if (!use_flash) return -CFG_FLASH_NOT_USED;
 
   if (need_confirm) {
     bool_t abort = confirmation_routine();
@@ -405,14 +401,11 @@ void cfg_reset_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
   timing_word_select--;
   timing_words[timing_word_select].config_val = CFG_TIMING_DEFAULTS_SHIFTED;
-//  timing_words[timing_word_select].config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED;
 }
 
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
   timing_word_select--;
-//  timing_words[timing_word_select].config_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
-//  timing_words[timing_word_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
   timing_words[timing_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK);
   timing_words[timing_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK);
 }
@@ -422,55 +415,55 @@ void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   timing_word_select--;
 
   sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
-//  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= ((timing_words[timing_word_select].config_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
   sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= (timing_words[timing_word_select].config_val & CFG_EXTCFG1_GETTIMINGS_MASK);
 
   sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
-//  sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val |= ((timing_words[timing_word_select].config_ref_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
   sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val |= (timing_words[timing_word_select].config_ref_val & CFG_EXTCFG1_GETTIMINGS_MASK);
 }
 
 void cfg_reset_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   switch (scaling_word_select) {
+    case NTSC_TO_240:
+      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED;
+      break;
     case NTSC_TO_480:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED;
       break;
     case NTSC_TO_720:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED;
       break;
     case NTSC_TO_960:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED;
       break;
     case NTSC_TO_1080:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED;
       break;
     case NTSC_TO_1200:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED;
+      break;
+    case NTSC_TO_1440:
+      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED;
+      break;
+    case PAL_TO_288:
+      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_288_DEFAULT_SHIFTED;
       break;
     case PAL_TO_576:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED;
       break;
     case PAL_TO_720:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED;
       break;
     case PAL_TO_960:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED;
       break;
     case PAL_TO_1080:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED;
       break;
     case PAL_TO_1200:
       scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED;
-//      scaling_words[scaling_word_select-1].config_ref_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED;
+      break;
+    case PAL_TO_1440:
+      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED;
       break;
     default:
       break;
@@ -480,8 +473,6 @@ void cfg_reset_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   if (scaling_word_select == PPU_SCALING_CURRENT || scaling_word_select > NUM_SCALING_MODES) return;
   scaling_word_select--;
-//  scaling_words[scaling_word_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETSCALING_MASK) >> CFG_HORSCALE_OFFSET);
-//  scaling_words[scaling_word_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETSCALING_MASK) >> CFG_HORSCALE_OFFSET);
   scaling_words[scaling_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETSCALING_MASK);
   scaling_words[scaling_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETSCALING_MASK);
 }
@@ -491,11 +482,9 @@ void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   scaling_word_select--;
 
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
-//  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= ((scaling_words[scaling_word_select].config_val << CFG_HORSCALE_OFFSET) & CFG_EXTCFG0_GETSCALING_MASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= (scaling_words[scaling_word_select].config_val & CFG_EXTCFG0_GETSCALING_MASK);
 
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
-//  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= ((scaling_words[scaling_word_select].config_ref_val << CFG_HORSCALE_OFFSET) & CFG_EXTCFG0_GETSCALING_MASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= (scaling_words[scaling_word_select].config_ref_val & CFG_EXTCFG0_GETSCALING_MASK);
 }
 
@@ -544,6 +533,8 @@ int cfg_load_defaults(bool_t video1080p, bool_t need_confirm)
 
 void cfg_apply_to_logic()
 {
+  if ((scaling_n64adv == PAL_TO_288) && ((bool_t) cfg_get_value(&pal_boxed_mode,0) == FALSE) && (cfg_get_value(&vert_scale,0) < CFG_VERTSCALE_PAL_MIN))
+    cfg_set_value(&vert_scale,288);
   cfg_scale_v2h_update();
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE,sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val);
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG1_OUT_BASE,sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val);

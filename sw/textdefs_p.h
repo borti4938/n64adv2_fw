@@ -342,7 +342,7 @@ const char *Global __ufmdata_section__        = "Global";
 const char *OffOn[]         = {"Off","On"};
 const char *NTSCPAL_SEL[]   = {"NTSC  ","PAL   ", "Current"};
 const char *Force5060[]     = {"Off (N64 Auto)","60Hz","50Hz"};
-const char *Resolutions[]   = {"480p/576p","720p","960p","1080p","1200p"};
+const char *Resolutions[]   = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p"};
 const char *FallbackRes[]   = {"1080p","480p/576p"};
 const char *DeInterModes[]  = {"Bob","Weave","Fully Buffered"};
 const char *InterpModes[]   = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
@@ -354,10 +354,10 @@ const char *VideoMode[]     = {"240p","480i","288p","576i"};
 const char *VRefresh[]      = {"@ 60Hz","@ 50Hz"};
 const char *VideoColor[]    = {"21bit","16bit"};
 
-const char *ResolutionVGA     = "VGA (640x480)";
-const char *Resolution480p    = "480p";
-const char *Resolution576p    = "576p";
-const char *text_480i_576i_br = "(480i/576i)";
+const char *ResolutionVGA        = "VGA (640x480)";
+const char *Resolution240p480p[] = {"240p","480p"};
+const char *Resolution288p576p[] = {"288p","576p"};
+const char *text_480i_576i_br    = "(480i/576i)";
 
 const char *ScaleSteps[] = {"0.25x","Pixelwise"};
 const char *PredefScaleSteps[] __ufmdata_section__ = {"(2.00x)","(2.25x)","(2.50x)","(2.75x)",

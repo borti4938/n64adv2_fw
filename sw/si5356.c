@@ -94,7 +94,7 @@ void configure_clk_si5356(clk_config_t target_cfg) {
   int i;
   si5356_writereg(OEB_REG,OEB_REG_VAL_OFF,0xFF);      // disable outputs
   
-  si_clk_src_t clk_src = target_cfg < FREE_480p_VGA;
+  si_clk_src_t clk_src = target_cfg < FREE_240p_288p;
   for (i=0; i<NUM_INPSW_REGS; i++)
     si5356_writereg(inpsw_regs[i].reg_addr,inpsw_regs[i].reg_val[clk_src],inpsw_regs[i].reg_mask);
   
@@ -102,8 +102,11 @@ void configure_clk_si5356(clk_config_t target_cfg) {
     si5356_writereg(si_mode_regs[i].reg_addr,si_mode_regs[i].reg_val[target_cfg],0xFF);
 
 //  si5356_reg_bitset(SOFT_RST_REG,SOFT_RST_BIT,0xFF);    // soft reset
-  si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT),0xFF); // soft reset
-  si5356_writereg(OEB_REG,OEB_REG_VAL_ON,0xFF);         // enable outputs
+  si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT),0xFF);   // soft reset
+  if (target_cfg == FREE_240p_288p || target_cfg == FREE_1440p)
+    si5356_writereg(OEB_REG,OEB_REG_VAL_SINGLE_ON,0xFF);  // enable outputs
+  else
+    si5356_writereg(OEB_REG,OEB_REG_VAL_ALL_ON,0xFF);     // enable outputs
   
   while (!SI5356_PLL_LOCKSTATUS()) {};  // wait for PLL lock
   usleep(PLL_LOCK_2_FPGA_TIMEOUT_US);
