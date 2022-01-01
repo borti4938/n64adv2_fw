@@ -147,6 +147,7 @@ void gamma2txt_func(alt_u16 v);
 
 void print_current_timing_mode(void);
 void print_ctrl_data(void);
+void print_cr_info(void);
 
 void update_vmode_menu(menu_t *menu);
 

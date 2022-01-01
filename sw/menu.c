@@ -407,6 +407,12 @@ void print_ctrl_data() {
   vd_print_string(VD_INFO,0,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }
 
+void print_cr_info() {
+  vd_clear_info_area(COPYRIGHT_SIGN_H_OFFSET,VD_WIDTH-1,0,0);
+  vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,copyright_note);
+  vd_print_char(VD_INFO,COPYRIGHT_SIGN_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,(char) COPYRIGHT_SIGN);
+}
+
 void print_fw_version()
 {
   alt_u16 ext_fw = (alt_u16) get_pcb_version();
@@ -686,21 +692,8 @@ void print_overlay(menu_t* current_menu)
   if (current_menu->header) vd_wr_hdr(BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,*current_menu->header);
   vd_print_string(VD_TEXT,current_menu->body.hoffset,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,*current_menu->body.text);
 
-  switch (current_menu->type) {
-    case HOME:
-    case CONFIG:
-    case VINFO:
-    case RWDATA:
-      vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,copyright_note);
-      vd_print_char(VD_INFO,COPYRIGHT_SIGN_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,(char) COPYRIGHT_SIGN);
-      break;
-    case TEXT:
-      if (is_about_screen(current_menu)) print_fw_version();
-      if (is_license_screen(current_menu)) vd_print_char(VD_TEXT,CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
-      break;
-    default:
-      break;
-  }
+  if (is_about_screen(current_menu)) print_fw_version();
+  if (is_license_screen(current_menu)) vd_print_char(VD_TEXT,CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
 }
 
 void print_selection_arrow(menu_t* current_menu)

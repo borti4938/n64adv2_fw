@@ -121,6 +121,7 @@ int main()
   cmd_t command;
   updateaction_t todo;
   menu_t *menu = &home_menu;
+  print_cr_info();
 
   bool_t ctrl_update = 1;
   bool_t ctrl_ignore = 0;
