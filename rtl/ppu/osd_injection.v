@@ -577,7 +577,7 @@ always @(posedge VCLK or negedge nVRST) // delay font selection according to mem
   end
 
 
-font_rom font_rom_u(
+font_rom_v2 font_rom_u(
   .CLK(VCLK),
   .nRST(nVRST),
   .char_addr(font_char_select),
