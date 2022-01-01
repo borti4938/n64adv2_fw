@@ -225,27 +225,41 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
     alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
     alt_u8 idx;
     bool_t use_240p_288p = ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288));
-    alt_u16 scale_max = use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;
-    alt_u16 scale_min = (use_240p_288p == FALSE) ? predef_scaling_vals[jdx][0] :
-                        ((bool_t) cfg_get_value(&pal_boxed_mode,0)) ? CFG_VERTSCALE_PAL_MIN : CFG_VERTSCALE_NTSC_MIN;
+    alt_u16 scale_max, scale_min;
+    alt_u8 scale_inc = 1;
+    if (use_240p_288p) {
+      if (use_vertical) {
+        scale_max = 2*CFG_VERTSCALE_PAL_MIN;
+        scale_min = ((vmode_scaling_menu == PAL) && !((bool_t) cfg_get_value(&pal_boxed_mode,0))) ? (CFG_VERTSCALE_PAL_MIN & 0xFFFE) : (CFG_VERTSCALE_NTSC_MIN & 0xFFFE);
+      } else {
+        scale_max = 2*predef_scaling_vals[2][0];
+        scale_min = predef_scaling_vals[2][0];
+        scale_inc++;
+      }
+    } else {
+      scale_max = use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;
+      scale_min = predef_scaling_vals[jdx][0];
+    }
     bool_t scale_pixelwise = cfg_get_value(&scaling_steps,0) > 0 || (use_240p_288p && use_vertical);
     for (idx = 0; idx < PREDEFINED_SCALE_STEPS; idx++) {
       if (predef_scaling_vals[jdx][idx] >= current_scale) break;
     }
     if (((cmd_t) command) == CMD_MENU_RIGHT) {  // increment
       if (scale_pixelwise) {  // pixelwise
-        current_scale = current_scale < scale_max ? current_scale + 1 : scale_min;
+        current_scale = current_scale < scale_max ? current_scale + scale_inc : scale_min;
       } else {  // by 0.25x steps
         if (predef_scaling_vals[jdx][idx] > current_scale) idx--;
         if (idx >= PREDEFINED_SCALE_STEPS-1) current_scale = scale_min;
         else current_scale = predef_scaling_vals[jdx][idx+1];
+        if (current_scale > scale_max) current_scale = scale_min;
       }
     } else {  // decrement
       if (scale_pixelwise) {  // pixelwise
-        current_scale = current_scale > scale_min ? current_scale-1 : scale_max;
+        current_scale = current_scale > scale_min ? current_scale - scale_inc : scale_max;
       } else {  // by 0.25x steps
         if (idx == 0) current_scale = predef_scaling_vals[jdx][PREDEFINED_SCALE_STEPS-1];
         else current_scale = predef_scaling_vals[jdx][idx-1];
+        if (current_scale > scale_max) current_scale = scale_max;
       }
     }
     if (use_vertical) cfg_set_value(&vert_scale,current_scale);
