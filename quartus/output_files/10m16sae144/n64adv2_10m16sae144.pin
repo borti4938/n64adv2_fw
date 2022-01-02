@@ -66,7 +66,7 @@
  ---------------------------------------------------------------------------------
 
 Quartus Prime Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
-CHIP  "n64adv2_10m16sae144"  ASSIGNED TO AN: 10M16SAE144C8G
+CHIP  "n64adv2_10m16sae144"  ASSIGNED TO AN: 10M16SAE144I7G
 
 Pin Name/Usage               : Location  : Dir.   : I/O Standard      : Voltage : I/O Bank  : User Assignment
 -------------------------------------------------------------------------------------------------------------
@@ -195,7 +195,7 @@ ASDATA_i                     : 122       : input  : 3.3-V LVTTL       :         
 ALRCLK_i                     : 123       : input  : 3.3-V LVTTL       :         : 8         : Y              
 VD_i[0]                      : 124       : input  : 3.3-V LVTTL       :         : 8         : Y              
 GND                          : 125       : gnd    :                   :         :           :                
-~ALTERA_CONFIG_SEL~ / RESERVED_INPUT : 126       : input  : 3.3-V LVTTL       :         : 8         : N              
+RESERVED_INPUT_WITH_WEAK_PULLUP : 126       :        :                   :         : 8         :                
 VD_i[1]                      : 127       : input  : 3.3-V LVTTL       :         : 8         : Y              
 VCCIO8                       : 128       : power  :                   : 3.3V    : 8         :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : 129       :        :                   :         : 8         :                
