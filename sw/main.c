@@ -122,7 +122,7 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 int main()
 {
   cmd_t command;
-  updateaction_t todo;
+  updateaction_t todo = NON;
   menu_t *menu = &home_menu;
   print_cr_info();
 
@@ -285,6 +285,7 @@ int main()
       }
       
     } else { /* END OF if(cfg_get_value(&show_osd)) */
+      todo = NON;
 
       if (command == CMD_OPEN_MENU) {
         open_osd_main(&menu);
@@ -321,11 +322,10 @@ int main()
 
     } /* END OF if(!cfg_get_value(&show_osd)) */
 
-
     cfg_load_linex_word(vmode_n64adv);
     cfg_load_timing_word(timing_n64adv);
     cfg_load_scaling_word(scaling_n64adv);
-    cfg_apply_to_logic();
+    if (todo == NEW_CONF_VALUE) cfg_apply_to_logic();
 
     target_resolution = get_target_resolution(pal_pattern,palmode);
     if (((pal_pattern_pre != pal_pattern) & (palmode == NTSC)) ||
@@ -340,7 +340,10 @@ int main()
 //      adv7513_vic_manual_setup();
     }
 
-    set_avi_info();
+    if ((palmode_pre != palmode)                     ||
+        (target_resolution_pre != target_resolution) ||
+        (todo == NEW_CONF_VALUE))
+      set_avi_info();
 
     if (unlock_1440p_pre != unlock_1440p) {
       vd_print_string(VD_TEXT,VD_WIDTH - 17,RWM_V_OFFSET+1,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
