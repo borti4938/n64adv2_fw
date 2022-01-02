@@ -180,6 +180,8 @@ int main()
 
   update_ppu_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
 
+  set_avi_info();
+
   cfg_pal_pattern_t pal_pattern_pre = PAL_PAT0;
   vmode_t palmode_pre = NTSC;
   clk_config_t target_resolution_pre = target_resolution;
@@ -337,6 +339,8 @@ int main()
       init_adv7513();
 //      adv7513_vic_manual_setup();
     }
+
+    set_avi_info();
 
     if (unlock_1440p_pre != unlock_1440p) {
       vd_print_string(VD_TEXT,VD_WIDTH - 17,RWM_V_OFFSET+1,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);

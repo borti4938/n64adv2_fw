@@ -35,6 +35,7 @@
 #include "adv7513.h"
 #include "adv7513_regs_p.h"
 #include "n64.h"
+#include "config.h"
 #include "led.h"
 
 
@@ -77,6 +78,51 @@ void set_vclk_div(alt_u8 divider) {
   }
 }
 
+void set_avi_info(void) {
+  linex_cnt linex_val = cfg_get_value(&linex_resolution,0);
+
+  adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0x80); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
+                                                        // [6] AVI Packet Update: 0 = AVI Packet I2C update inactive
+                                                        // [5] Audio InfoFrame Packet Update: 0 = Audio InfoFrame Packet I2C update inactive
+
+  if (linex_val > PASSTHROUGH) {
+    adv7513_writereg(ADV7513_REG_PIXEL_REPETITION, 0x80);
+    adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
+  } else {
+    adv7513_writereg(ADV7513_REG_PIXEL_REPETITION, 0x82);
+    if (palmode) adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b010111);
+    else adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b001000);
+  }
+
+  adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(0), 0x01); // [6:5] Output format: 00 = RGB
+                                                        // [1:0] Scan Information: 01 = TV, 10 = PC
+  switch (linex_val) {
+    case LineX3:
+    case LineX4p5:
+      adv7513_reg_bitset(ADV7513_REG_VIDEO_INPUT_CFG2,1); // set 16:9 aspect ratio of input video
+      adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(1), 0x2A); // [5:4] Picture Aspect Ratio: 10 = 16:9
+                                                            // [3:0] Active Format Aspect Ratio: 1010 = 16:9 (center)
+      break;
+//    case PASSTHROUGH:
+//    case LineX2:
+//    case LineX4:
+//    case LineX5:
+//    case LineX6:
+    default:
+      adv7513_reg_bitclear(ADV7513_REG_VIDEO_INPUT_CFG2,1); // set 4:3 aspect ratio of input video
+      adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(1), 0x19); // [5:4] Picture Aspect Ratio: 01 = 4:3
+                                                            // [3:0] Active Format Aspect Ratio: 1001 = 4:3 (center)
+      break;
+  }
+
+  if (cfg_get_value(&limited_rgb,0)) adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x04); // [3:2] RGB Quantization range: 01 = full range
+  else adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08); // [3:2] RGB Quantization range: 10 = full range
+
+  adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0xE0); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
+                                                        // [6] AVI Packet Update: 1 = AVI Packet I2C update active
+                                                        // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
+}
+
 int check_adv7513()
 {
   if (adv7513_readreg(ADV7513_REG_CHIP_REVISION) != ADV7513_CHIP_ID)
@@ -112,7 +158,7 @@ void init_adv7513() {
                                                         // [0] Input Color Space Selection: 0 = RGB
 //  adv7513_reg_bitset(ADV7513_REG_TIMING_GEN_SEQ,1);     // first generate DE (and then adjust HV sync if needed)
 //  adv7513_reg_bitset(ADV7513_REG_VIDEO_INPUT_CFG2,0);   // enable internal DE generator
-  adv7513_writereg(ADV7513_REG_PIXEL_REPETITION,0x10);  // [7] must be set to 1
+  adv7513_writereg(ADV7513_REG_PIXEL_REPETITION,0x80);  // [7] must be set to 1
 
   adv7513_writereg(ADV7513_REG_HDCP_HDMI_CFG, 0x06);    // [6:5] and [3:2] Must be set to Default Value (00 and 01 respectively)
                                                         // [1] HDMI Mode: 1 = HDMI Mode
@@ -133,18 +179,6 @@ void init_adv7513() {
                                                         // [2] I2S0 enable for the 4 I2S pins: 1 = Enabled
                                                         // [1:0] I2S Format: 10 = left justified mode, 00 = standard
   adv7513_writereg(ADV7513_REG_AUDIO_CFG3, 0x0B);       // [3:0] I2S Word length per channel: 1011 = 24bit
-
-  adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0xE0); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
-                                                        // [6] AVI Packet Update: 1 = AVI Packet I2C update active
-                                                        // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
-  adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(0), 0x01); // [6:5] Output format: 00 = RGB
-                                                        // [1:0] Scan Information: 01 = TV, 10 = PC
-  adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(1), 0x19); // [5:4] Picture Aspect Ratio: 01 = 4:3
-                                                        // [3:0] Active Format Aspect Ratio: 1001 = 4:3 (center)
-  adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08); // [3:2] RGB Quantization range: 10 = full range
-  adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0x80); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
-                                                        // [6] AVI Packet Update: 0 = AVI Packet I2C update inactive
-                                                        // [5] Audio InfoFrame Packet Update: 0 = Audio InfoFrame Packet I2C update inactive
   led_drive(LED_2, LED_OFF);
 }
 

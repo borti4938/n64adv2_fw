@@ -26,6 +26,9 @@
  *
  ********************************************************************************/
 
+#include "alt_types.h"
+#include "app_cfg.h"
+
 #ifndef ADV7513_REGS_P_H_
 #define ADV7513_REGS_P_H_
 
@@ -114,7 +117,6 @@
 
 #define ADV7513_STATUS_HPD                    BIT(6)
 #define ADV7513_STATUS_MONITOR_SENSE          BIT(5)
-
 
 
 #endif /* ADV7513_REGS_P_H_ */

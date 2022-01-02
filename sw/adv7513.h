@@ -45,6 +45,7 @@
 #define ADV_MONITOR_SENSE_STATE() ((adv7513_readreg(ADV7513_REG_STATUS) & 0x20) == 0x20)
 
 
+void set_avi_info(void);
 int check_adv7513(void);
 void init_adv7513(void);
 //void adv7513_vic_manual_setup(void);
