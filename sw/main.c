@@ -50,6 +50,7 @@ const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_M
 const char *RW_Message[] __ufmdata_section__ = {"< Success >","< Failed >","< Aborted >"};
 const char *Unlock_1440p_Message __ufmdata_section__ = "< Good Luck! > :)";
 
+//bool_t use_flash;
 vmode_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
 cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
@@ -131,6 +132,14 @@ int main()
 
   int message_cnt = 0;
 
+//  use_flash = FALSE;
+//  if (check_flash() == 0) use_flash = TRUE;
+//
+//  bool_t load_n64_defaults = FALSE;
+//  cfg_clear_words();
+//  if (use_flash) {
+//    load_n64_defaults = (cfg_load_from_flash(0) != 0);
+//  }
 
   cfg_clear_words();
   init_flash();
@@ -185,6 +194,7 @@ int main()
   cfg_pal_pattern_t pal_pattern_pre = PAL_PAT0;
   vmode_t palmode_pre = NTSC;
   clk_config_t target_resolution_pre = target_resolution;
+  bool_t hor_hires_pre = hor_hires;
 
   /* Event loop never exits. */
   while (1) {
@@ -310,7 +320,7 @@ int main()
     cfg_load_linex_word(vmode_n64adv);
     cfg_load_timing_word(timing_n64adv);
     cfg_load_scaling_word(scaling_n64adv);
-    if (todo == NEW_CONF_VALUE) cfg_apply_to_logic();
+    cfg_apply_to_logic();
 
     target_resolution = get_target_resolution(pal_pattern,palmode);
     if (((pal_pattern_pre != pal_pattern) & (palmode == NTSC)) ||
@@ -326,6 +336,7 @@ int main()
 
     if ((palmode_pre != palmode)                     ||
         (target_resolution_pre != target_resolution) ||
+        (hor_hires_pre != hor_hires)                 ||
         (todo == NEW_CONF_VALUE))
       set_avi_info();
 

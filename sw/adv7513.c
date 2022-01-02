@@ -81,9 +81,9 @@ void set_vclk_div(alt_u8 divider) {
 void set_avi_info(void) {
   linex_cnt linex_val = cfg_get_value(&linex_resolution,0);
 
-  adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0x80); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
-                                                        // [6] AVI Packet Update: 0 = AVI Packet I2C update inactive
-                                                        // [5] Audio InfoFrame Packet Update: 0 = Audio InfoFrame Packet I2C update inactive
+  adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0xE0); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
+                                                        // [6] AVI Packet Update: 1 = AVI Packet I2C update active
+                                                        // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
 
   if (linex_val > PASSTHROUGH) {
     adv7513_writereg(ADV7513_REG_PIXEL_REPETITION, 0x80);
@@ -118,9 +118,9 @@ void set_avi_info(void) {
   if (cfg_get_value(&limited_rgb,0)) adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x04); // [3:2] RGB Quantization range: 01 = full range
   else adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08); // [3:2] RGB Quantization range: 10 = full range
 
-  adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0xE0); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
-                                                        // [6] AVI Packet Update: 1 = AVI Packet I2C update active
-                                                        // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
+  adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0x80); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
+                                                        // [6] AVI Packet Update: 0 = AVI Packet I2C update inactive
+                                                        // [5] Audio InfoFrame Packet Update: 0 = Audio InfoFrame Packet I2C update inactive
 }
 
 int check_adv7513()
