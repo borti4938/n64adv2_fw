@@ -48,8 +48,6 @@
 void set_avi_info(void);
 int check_adv7513(void);
 void init_adv7513(void);
-//void adv7513_vic_manual_setup(void);
-//void adv7513_de_gen_setup(void);
 alt_u8 adv7513_readreg(alt_u8 regaddr);
 void adv7513_writereg(alt_u8 regaddr,alt_u8 data);
 

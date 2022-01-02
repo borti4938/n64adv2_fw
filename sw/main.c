@@ -186,13 +186,6 @@ int main()
   vmode_t palmode_pre = NTSC;
   clk_config_t target_resolution_pre = target_resolution;
 
-//  adv7513_vic_manual_setup();
-  //  adv7513_de_gen_setup();
-
-
-//  volatile alt_u8 rd; // for debugging
-
-
   /* Event loop never exits. */
   while (1) {
     ctrl_update = new_ctrl_available();
@@ -220,15 +213,7 @@ int main()
     if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
     else vmode_scaling_menu = scaling_menu > NUM_SCALING_MODES/2; // NUM_SCALING_MODES/2 should be exactly the border between NTSC and PAL
 
-//    if ((palmode != palmode_pre) ||
-//        (scanmode != scanmode_pre) ||
-//        (linemult_mode != linemult_mode_pre)) {
-//      adv7513_vic_manual_setup();
-////      adv7513_de_gen_setup();
-//    }
-
     if(cfg_get_value(&show_osd,0)) {
-
       cfg_load_linex_word(vmode_menu);
       cfg_load_timing_word(timing_menu);
       cfg_load_scaling_word(scaling_menu);
@@ -337,7 +322,6 @@ int main()
 
     if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
       init_adv7513();
-//      adv7513_vic_manual_setup();
     }
 
     if ((palmode_pre != palmode)                     ||
