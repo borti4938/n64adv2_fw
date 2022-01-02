@@ -179,6 +179,7 @@ extern alt_u32 ppu_state;
 extern cfg_pal_pattern_t pal_pattern;
 extern vmode_t palmode;
 extern scanmode_t scanmode;
+extern bool_t hor_hires;
 
 void update_ppu_state(void);
 void update_ctrl_data(void);

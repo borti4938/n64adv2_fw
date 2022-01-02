@@ -69,6 +69,7 @@ alt_u32 ppu_state;
 cfg_pal_pattern_t pal_pattern;
 vmode_t palmode;
 scanmode_t scanmode;
+bool_t hor_hires;
 
 
 
@@ -78,6 +79,7 @@ void update_ppu_state()
   pal_pattern = ((ppu_state & PPU_INPUT_PALPATTERN_GETMASK) >> PPU_INPUT_PALPATTERN_OFFSET);
   palmode = ((ppu_state & PPU_INPUT_PALMODE_GETMASK) >> PPU_INPUT_PALMODE_OFFSET);
   scanmode = ((ppu_state & PPU_INPUT_INTERLACED_GETMASK) >> PPU_INPUT_INTERLACED_OFFSET);
+  hor_hires = (scanmode == INTERLACED) || ((ppu_state & PPU_240P_DEBLUR_GETMASK) == 0);
 }
 
 void update_ctrl_data()

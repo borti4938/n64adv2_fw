@@ -375,13 +375,12 @@ void val2txt_scale_sel_func(alt_u16 v) {
 };
 void val2txt_scale_func(alt_u16 v, bool_t use_vertical) {
   alt_u8 idx = cfg_scale_is_predefined(v,use_vertical);
-  bool_t ishires = ((ppu_state & PPU_240P_DEBLUR_GETMASK) == 0) | ((bool_t) scanmode);
-  if (!use_vertical && ishires) {
+  if (!use_vertical && hor_hires) {
     if (idx & 0x01) idx = PREDEFINED_SCALE_STEPS;
     else idx = idx/2;
   }
   if (idx < PREDEFINED_SCALE_STEPS && (scaling_menu != NTSC_TO_240) && (scaling_menu != PAL_TO_288)) {
-    if (!use_vertical && ishires) sprintf(szText,"%4u %s", v, PredefScaleStepsHalf[idx]);
+    if (!use_vertical && hor_hires) sprintf(szText,"%4u %s", v, PredefScaleStepsHalf[idx]);
     else sprintf(szText,"%4u %s", v, PredefScaleSteps[idx]);
   } else {
     sprintf(szText,"%4u", v);
@@ -724,17 +723,14 @@ int update_vinfo_screen(menu_t* current_menu)
 {
   if (current_menu->type != VINFO) return -1;
 
-  alt_u8 str_select;
-
   // PPU state
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET);
   sprintf(szText,"0x%08x",(uint) ppu_state);
   vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 
   // Video Input
-  str_select = (palmode << 1) | scanmode;
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VideoMode[str_select]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VideoMode[(palmode << 1) | scanmode]);
   vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
 
   // Video Output
@@ -778,12 +774,8 @@ int update_vinfo_screen(menu_t* current_menu)
 
   // 240p DeBlur
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET);
-  if (scanmode == INTERLACED) {
-    vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,text_480i_576i_br);
-  } else {
-    str_select = ((ppu_state & PPU_240P_DEBLUR_GETMASK) >> PPU_240P_DEBLUR_OFFSET);
-    vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[str_select]);
-  }
+  if (scanmode == INTERLACED) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,text_480i_576i_br);
+  else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[!hor_hires]);
 
   // Gamma Table
   gamma2txt_func((ppu_state & PPU_GAMMA_TABLE_GETMASK) >> PPU_GAMMA_TABLE_OFFSET);
