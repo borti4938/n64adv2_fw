@@ -1256,7 +1256,7 @@ always @(posedge VCLK_o or negedge nRST_o)
             end
           end
       endcase
-      pix_h_a0_pre <= |video_interpolation_mode_i ? a0_h_full_cmb[22:14] : 9'h040;
+      pix_h_a0_pre <= a0_h_full_cmb[22:14];
     end else begin
       hscale_phase <= HVSCALE_PHASE_INIT;
       h_pixel_load_cnt <= 10'd0;
@@ -1272,14 +1272,14 @@ always @(posedge VCLK_o or negedge nRST_o)
     
     rden_slbuf <= v_active_px & h_active_px;
 //    rden_slbuf <= v_active_px & h_active_px | hcnt_o_L == 0;
-    Y_pix_v_a0_current <= {1'b0,Y_pix_v_a0_pre[8:1]} + Y_pix_v_a0_pre[0];
-    Y_pix_v_a0_pre <= |video_interpolation_mode_i ? Y_a0_v_full_cmb[23:15] : 9'h100;
+    Y_pix_v_a0_current <= |video_interpolation_mode_i ? {1'b0,Y_pix_v_a0_pre[8:1]} + Y_pix_v_a0_pre[0] : 9'h100;
+    Y_pix_v_a0_pre <= Y_a0_v_full_cmb[23:15];
     
     pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
     pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
     for (int_idx = GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1; int_idx >= H_A0_CALC_DELAY; int_idx = int_idx - 1)
       pix_h_a0_current[int_idx] <= pix_h_a0_current[int_idx-1];
-    pix_h_a0_current[H_A0_CALC_DELAY-1] <= {1'b0,pix_h_a0_pre[8:1]} + pix_h_a0_pre[0];
+    pix_h_a0_current[H_A0_CALC_DELAY-1] <= |video_interpolation_mode_i ? {1'b0,pix_h_a0_pre[8:1]} + pix_h_a0_pre[0] : 9'h100;
     
     DE_virt_vpl_L <= {DE_virt_vpl_L[Videogen_Pipeline_Length-3:0],(v_active_px & h_active_px)};
     HSYNC_vpl_L <= {HSYNC_vpl_L[Videogen_Pipeline_Length-3:0],(hcnt_o_L < X_HSYNCLEN) ~^ X_HSYNC_active};
