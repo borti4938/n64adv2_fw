@@ -187,9 +187,10 @@ set_input_delay -clock altera_reserved_tck 20 [get_ports altera_reserved_tms]
 
 set adv_vtsu 1.0
 set adv_vth  0.7
-set adv_pcb_skew 0.15
-set adv_out_dly_max [expr $adv_vtsu + $adv_pcb_skew]
-set adv_out_dly_min [expr -$adv_vth - $adv_pcb_skew]
+set adv_pcb_data2clk_skew_min 0.0
+set adv_pcb_data2clk_skew_max 0.1
+set adv_out_dly_max [expr $adv_vtsu + $adv_pcb_data2clk_skew_min]
+set adv_out_dly_min [expr -$adv_vth - $adv_pcb_data2clk_skew_max]
 
 set adv_vid_ports [get_ports {VD_o* VSYNC_o HSYNC_o DE_o}]
 
