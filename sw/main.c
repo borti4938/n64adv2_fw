@@ -33,7 +33,7 @@
 #include <sys/alt_sys_init.h>
 #include "i2c_opencores.h"
 #include "system.h"
-
+#include "app_cfg.h"
 #include "adv7513.h"
 #include "si5356.h"
 #include "n64.h"
@@ -47,11 +47,14 @@
 
 
 const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
-const char   *RW_Message[] = {"< Success >","< Failed >","< Aborted >"};
+const char *RW_Message[] __ufmdata_section__ = {"< Success >","< Failed >","< Aborted >"};
+const char *Unlock_1440p_Message __ufmdata_section__ = "< Good Luck! > :)";
 
 vmode_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
 cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
+
+extern config_tray_t linex_words[2];
 
 
 /* ToDo's:
@@ -156,6 +159,13 @@ int main()
   cfg_load_timing_word(NTSC_PROGRESSIVE);
   cfg_load_scaling_word(get_target_scaler(NTSC));
 
+  if (((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK) ||
+      ((linex_words[PAL].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK))
+    unlock_1440p = TRUE;
+  else
+    unlock_1440p = FALSE;
+  bool_t unlock_1440p_pre = unlock_1440p;
+
 
   clk_config_t target_resolution = get_target_resolution(PAL_PAT0,NTSC);
 
@@ -226,7 +236,7 @@ int main()
           command = CMD_NON;
           message_cnt = 1;
         }
-        if (message_cnt == 1) vd_clear_txt_area(RWM_H_OFFSET,RWM_H_OFFSET+RWM_LENGTH,RWM_V_OFFSET,RWM_V_OFFSET);
+        if (message_cnt == 1) vd_clear_txt_area(RWM_H_OFFSET,VD_WIDTH-1,RWM_V_OFFSET,RWM_V_OFFSET+1);
         message_cnt--;
       }
 
@@ -326,6 +336,12 @@ int main()
     if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
       init_adv7513();
 //      adv7513_vic_manual_setup();
+    }
+
+    if (unlock_1440p_pre != unlock_1440p) {
+      vd_print_string(VD_TEXT,VD_WIDTH - 17,RWM_V_OFFSET+1,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
+      message_cnt = RWM_SHOW_CNT;
+      unlock_1440p_pre = unlock_1440p;
     }
 
     while(!get_osdvsync()){};  /* wait for OSD_VSYNC goes high (OSD vert. active area) */

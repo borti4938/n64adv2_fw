@@ -488,7 +488,6 @@ typedef struct {
 
 #define RWM_H_OFFSET 26
 #define RWM_V_OFFSET (VD_TXT_HEIGHT - 2)
-#define RWM_LENGTH   10
 #define RWM_SHOW_CNT 256
 
 
@@ -516,6 +515,9 @@ extern config_t audio_amp, audio_swap_lr, audio_spdif_en,
                 slhyb_str, sl_str, sl_method, sl_id, sl_en,
                 slhyb_str_480i, sl_str_480i, sl_method_480i, sl_id_480i, sl_en_480i;
 
+extern bool_t unlock_1440p;
+
+
 static inline bool_t is_local_cfg(config_t* cfg_data)
   { return cfg_data->cfg_word == NULL;  }
 
@@ -527,6 +529,7 @@ void cfg_dec_value(config_t* cfg_data);
 alt_u16 cfg_get_value(config_t* cfg_data,cfg_offon_t get_reference);
 void cfg_set_value(config_t* cfg_data, alt_u16 value);
 alt_u16 cfgfct_linex(alt_u16 value, bool_t set_value, bool_t ret_reference);
+alt_u16 cfgfct_unlock1440p(alt_u16 value, bool_t set_value, bool_t ret_reference);
 alt_u8 cfg_scale_is_predefined(alt_u16 value,bool_t use_vertical);
 void cfg_scale_v2h_update(void);
 alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t ret_reference);

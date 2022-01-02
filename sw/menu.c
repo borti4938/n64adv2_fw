@@ -168,6 +168,7 @@ menu_t vires_screen = {
     }
 };
 
+#define RES_1440P_SELECTION  7
 #define FORCE5060_SELECTION 10
 
 menu_t viscaling_screen = {
@@ -273,15 +274,16 @@ menu_t misc_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 6,
+    .number_selections = 7,
     .leaves = {
-        {.id = MISC_AUDIO_SWAP_LR_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG, .config_value = &audio_swap_lr},
-//        {.id = MISC_AUDIO_FILTER_V_OFFSET  , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG, .config_value = &audio_filter},
-        {.id = MISC_AUDIO_AMP_V_OFFSET     , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG, .config_value = &audio_amp},
-        {.id = MISC_AUDIO_SPDIF_EN_V_OFFSET, .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG, .config_value = &audio_spdif_en},
-        {.id = MISC_IGR_RESET_V_OFFSET     , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG, .config_value = &igr_reset},
-        {.id = MISC_IGR_DEBLUR_V_OFFSET    , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG, .config_value = &igr_deblur},
-        {.id = MISC_IGR_16BITMODE_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG, .config_value = &igr_16bitmode}
+        {.id = MISC_AUDIO_SWAP_LR_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_swap_lr},
+//        {.id = MISC_AUDIO_FILTER_V_OFFSET  , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_filter},
+        {.id = MISC_AUDIO_AMP_V_OFFSET     , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_amp},
+        {.id = MISC_AUDIO_SPDIF_EN_V_OFFSET, .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_spdif_en},
+        {.id = MISC_IGR_RESET_V_OFFSET     , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_reset},
+        {.id = MISC_IGR_DEBLUR_V_OFFSET    , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_deblur},
+        {.id = MISC_IGR_16BITMODE_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_16bitmode},
+        {.id = MISC_LUCKY_1440P_V_OFFSET   , .arrow_desc = &misc_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_unlock1440p}
     }
 };
 
@@ -579,7 +581,9 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   // menu specific modifications
 
   if (is_vires_screen(*current_menu)) {
-    if (cfg_get_value(&low_latency_mode,0) == ON && current_sel == FORCE5060_SELECTION)
+    if ((unlock_1440p == FALSE) && (current_sel == RES_1440P_SELECTION))
+      (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440P_SELECTION + 1 : RES_1440P_SELECTION - 1;
+    if (cfg_get_value(&low_latency_mode,0) == ON && (current_sel == FORCE5060_SELECTION))
       (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : FORCE5060_SELECTION - 1;
   }
 
@@ -884,8 +888,16 @@ int update_cfg_screen(menu_t* current_menu)
         val_select = current_menu->leaves[v_run].cfgfct_call_2(v_run-1,0,0) + 1;
         ref_val_select = current_menu->leaves[v_run].cfgfct_call_2(v_run-1,0,1) + 1;
         val_is_ref = ((val_select != v_run && ref_val_select != v_run) || val_select == ref_val_select);
-        flag2set_func(val_select == v_run);
-        font_color = val_is_ref ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
+        if (is_vires_screen(current_menu)) {
+          flag2set_func(val_select == v_run);
+          if ((unlock_1440p == FALSE) && (v_run == RES_1440P_SELECTION))
+            font_color = FONTCOLOR_GREY;
+          else
+            font_color = val_is_ref ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
+        } else {
+          flag2set_func(unlock_1440p);
+          font_color = FONTCOLOR_WHITE;
+        }
         vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
         vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
         break;

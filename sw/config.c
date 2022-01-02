@@ -108,6 +108,8 @@ extern vmode_t vmode_scaling_menu;
 static const char *confirm_message = "< Really? >";
 extern const char *btn_fct_confirm_overlay;
 
+bool_t unlock_1440p;
+
 
 void cfg_toggle_flag(config_t* cfg_data) {
   if (cfg_data->cfg_type == FLAG || cfg_data->cfg_type == FLAGTXT) {
@@ -202,6 +204,12 @@ alt_u16 cfgfct_linex(alt_u16 value, bool_t set_value, bool_t ret_reference)
   if (set_value) cfg_set_value(&linex_resolution,value);
   return cfg_get_value(&linex_resolution,ret_reference);
 }
+
+alt_u16 cfgfct_unlock1440p(alt_u16 value, bool_t set_value, bool_t ret_reference)
+{
+  if (set_value) unlock_1440p = TRUE;
+  return (alt_u16) unlock_1440p;
+};
 
 alt_u8 cfg_scale_is_predefined(alt_u16 value, bool_t use_vertical) {
   alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;

@@ -131,7 +131,7 @@
 
 #define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET
-#define MISC_VALS_H_OFFSET            (27 + MISC_OVERLAY_H_OFFSET)
+#define MISC_VALS_H_OFFSET            (26 + MISC_OVERLAY_H_OFFSET)
 #define MISC_VALS_V_OFFSET            VICFG_OVERLAY_V_OFFSET
 #define MISC_AUDIO_SWAP_LR_V_OFFSET   ( 1 + MISC_VALS_V_OFFSET)
 #define MISC_AUDIO_FILTER_V_OFFSET    ( 2 + MISC_VALS_V_OFFSET)
@@ -140,10 +140,11 @@
 #define MISC_IGR_RESET_V_OFFSET       ( 6 + MISC_VALS_V_OFFSET)
 #define MISC_IGR_DEBLUR_V_OFFSET      ( 7 + MISC_VALS_V_OFFSET)
 #define MISC_IGR_16BITMODE_V_OFFSET   ( 8 + MISC_VALS_V_OFFSET)
+#define MISC_LUCKY_1440P_V_OFFSET     (10 + MISC_VALS_V_OFFSET)
 
 #define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
 #define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
-#define RWDATA_VALS_H_OFFSET              (27 + MISC_OVERLAY_H_OFFSET)
+#define RWDATA_VALS_H_OFFSET              (26 + RWDATA_OVERLAY_H_OFFSET)
 #define RWDATA_VALS_V_OFFSET              VICFG_OVERLAY_V_OFFSET
 #define RWDATA_SAVE_FL_V_OFFSET           ( 1 + RWDATA_OVERLAY_V_OFFSET)
 #define RWDATA_LOAD_FL_V_OFFSET           ( 3 + RWDATA_OVERLAY_V_OFFSET)
@@ -251,7 +252,8 @@ static const char *misc_overlay __ufmdata_section__ =
     "* Controller Routines:\n"
     "  - Reset:\n"
     "  - VI-DeBlur:\n"
-    "  - 16bit Mode:";
+    "  - 16bit Mode:\n\n"
+    "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =
     "Save/Load/Fw";
@@ -350,9 +352,10 @@ const char *VTimingSel[]    = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr
 const char *EvenOdd[]       = {"Even","Odd "};
 const char *AdvSL[]         = {"Simple","Mean"};
 const char *LinkSL[]        = {"Off","Individual","Linked to progressive"};
-const char *VideoMode[]     = {"240p","480i","288p","576i"};
-const char *VRefresh[]      = {"@ 60Hz","@ 50Hz"};
-const char *VideoColor[]    = {"21bit","16bit"};
+
+const char *VideoMode[] __ufmdata_section__ = {" 240p"," 480i"," 288p"," 576i"};
+const char *VRefresh[] __ufmdata_section__  = {"@ 60Hz","@ 50Hz"};
+const char *VideoColor[] __ufmdata_section__  = {"21bit","16bit"};
 
 const char *ResolutionVGA        = "VGA (640x480)";
 const char *Resolution240p480p[] = {"240p","480p"};
