@@ -110,20 +110,20 @@
   `define VACTIVE_1200p60       1200
   `define VTOTAL_1200p60        1235
   
-  // 1440p-60, 4:3 (CVT-RBv2)
+  // 1440p-60, 4:3 (compromise between CVT-RB and CVT-RBv2)
   `define USE_1440p60           4'b0111
   `define HSYNC_active_1440p60  1'b1
-  `define HFRONTPORCH_1440p60   8
+  `define HFRONTPORCH_1440p60   30
   `define HSYNCLEN_1440p60      32
-  `define HBACKPORCH_1440p60    40
+  `define HBACKPORCH_1440p60    58
   `define HACTIVE_1440p60       1920
-  `define HTOTAL_1440p60        2000
+  `define HTOTAL_1440p60        2040
   `define VSYNC_active_1440p60  1'b0
-  `define VFRONTPORCH_1440p60   27
-  `define VSYNCLEN_1440p60      8
-  `define VBACKPORCH_1440p60    6
+  `define VFRONTPORCH_1440p60   3
+  `define VSYNCLEN_1440p60      4
+  `define VBACKPORCH_1440p60    28
   `define VACTIVE_1440p60       1440
-  `define VTOTAL_1440p60        1481
+  `define VTOTAL_1440p60        1475
   
   // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
   `define USE_288p50          4'b1000
@@ -215,19 +215,19 @@
   `define VACTIVE_1200p50       1200
   `define VTOTAL_1200p50        1235
   
-  // 1440p-50, 4:3 (CVT-RBv2)
+  // 1440p-50, 4:3 (compromise between CVT-RB and CVT-RBv2)
   `define USE_1440p50           4'b1111
   `define HSYNC_active_1440p50  1'b1
-  `define HFRONTPORCH_1440p50   408
+  `define HFRONTPORCH_1440p50   438
   `define HSYNCLEN_1440p50      32
-  `define HBACKPORCH_1440p50    40
+  `define HBACKPORCH_1440p50    58
   `define HACTIVE_1440p50       1920
-  `define HTOTAL_1440p50        2400
+  `define HTOTAL_1440p50        2448
   `define VSYNC_active_1440p50  1'b0
-  `define VFRONTPORCH_1440p50   27
-  `define VSYNCLEN_1440p50      8
-  `define VBACKPORCH_1440p50    6
+  `define VFRONTPORCH_1440p50   3
+  `define VSYNCLEN_1440p50      4
+  `define VBACKPORCH_1440p50    28
   `define VACTIVE_1440p50       1440
-  `define VTOTAL_1440p50        1481
+  `define VTOTAL_1440p50        1475
 
 `endif

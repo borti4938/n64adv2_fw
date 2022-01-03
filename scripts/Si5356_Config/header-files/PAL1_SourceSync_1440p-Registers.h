@@ -1,7 +1,7 @@
 //Register map for use with AN428 (JumpStart)
 //http://www.silabs.com/clocks 
 //#BEGIN_HEADER
-//Date = Friday, December 31, 2021 10:58 AM
+//Date = Monday, January 03, 2022 10:50 PM
 //File version = 3
 //Software Name = ClockBuilder Pro
 //Software version = 3.0.0.0
@@ -22,14 +22,14 @@
 //N = 89  39/49  (89.7959)
 //Internal feedback enabled
 //Output Clock 0
-// Output Frequency (MHz) = 175.090181211
+// Output Frequency (MHz) = 177.868452148
 // Mux Selection = IDn
-// MultiSynth = 12  2459887/4354140  (12.5650)
+// MultiSynth = 12  1630807/4423230  (12.3687)
 // R = 1
 //Output Clock 1
-// Output Frequency (MHz) = 175.370323978
+// Output Frequency (MHz) = 178.153040124
 // Mux Selection = IDn
-// MultiSynth = 12  593123/1088535  (12.5449)
+// MultiSynth = 12  771706/2211615  (12.3489)
 // R = 1
 //Output Clock 2
 // Output is off
@@ -123,26 +123,26 @@ Reg_Data const code Reg_Store[NUM_REGS_MAX] = {
 { 50,0xDE,0xC0},
 { 51,0x07,0x00},
 { 52,0x10,0x0C},
-{ 53,0x48,0xFF},
+{ 53,0x2F,0xFF},
 { 54,0x04,0xFF},
-{ 55,0x80,0xFF},
-{ 56,0x76,0xFF},
-{ 57,0x53,0xFF},
+{ 55,0x78,0xFF},
+{ 56,0xF8,0xFF},
+{ 57,0x33,0xFF},
 { 58,0x00,0xFF},
-{ 59,0x5C,0xFF},
-{ 60,0x70,0xFF},
-{ 61,0x42,0xFF},
+{ 59,0x3E,0xFF},
+{ 60,0x7E,0xFF},
+{ 61,0x43,0xFF},
 { 62,0x00,0x3F},
 { 63,0x10,0x0C},
-{ 64,0x45,0xFF},
+{ 64,0x2C,0xFF},
 { 65,0x04,0xFF},
-{ 66,0x34,0xFF},
-{ 67,0x7D,0xFF},
-{ 68,0x31,0xFF},
+{ 66,0xB0,0xFF},
+{ 67,0x8E,0xFF},
+{ 68,0x59,0xFF},
 { 69,0x00,0xFF},
-{ 70,0x17,0xFF},
-{ 71,0x9C,0xFF},
-{ 72,0x10,0xFF},
+{ 70,0x1F,0xFF},
+{ 71,0xBF,0xFF},
+{ 72,0x21,0xFF},
 { 73,0x00,0x3F},
 { 74,0x10,0x0C},
 { 75,0x00,0xFF},
