@@ -52,15 +52,15 @@ set hdmi_clk_vga_per 39.464
 set hdmi_clk_vga_waveform [list 0.000 [expr $hdmi_clk_vga_per/2]]
 set hdmi_clk_480p_per 36.724
 set hdmi_clk_480p_waveform [list 0.000 [expr $hdmi_clk_480p_per/2]]
-set hdmi_clk_720p_per 13.386
+set hdmi_clk_720p_per 13.394
 set hdmi_clk_720p_waveform [list 0.000 [expr $hdmi_clk_720p_per/2]]
-set hdmi_clk_960p_per 11.654
+set hdmi_clk_960p_per 11.656
 set hdmi_clk_960p_waveform [list 0.000 [expr $hdmi_clk_960p_per/2]]
 set hdmi_clk_1080p_per 6.698
 set hdmi_clk_1080p_waveform [list 0.000 [expr $hdmi_clk_1080p_per/2]]
-set hdmi_clk_1200p_per 7.626
+set hdmi_clk_1200p_per 7.628
 set hdmi_clk_1200p_waveform [list 0.000 [expr $hdmi_clk_1200p_per/2]]
-set hdmi_clk_1440p_per 5.596
+set hdmi_clk_1440p_per 5.510
 set hdmi_clk_1440p_waveform [list 0.000 [expr $hdmi_clk_1440p_per/2]]
 set audio_mclk_per 40.706
 set audio_mclk_waveform [list 0.000 [expr $audio_mclk_per/2]]
@@ -83,6 +83,7 @@ create_clock -name {HDMI_720P_CLK1} -period $hdmi_clk_720p_per -waveform $hdmi_c
 create_clock -name {HDMI_960P_CLK1} -period $hdmi_clk_960p_per -waveform $hdmi_clk_960p_waveform $hdmi_vclk1_input -add
 create_clock -name {HDMI_1080P_CLK1} -period $hdmi_clk_1080p_per -waveform $hdmi_clk_1080p_waveform $hdmi_vclk1_input -add
 create_clock -name {HDMI_1200P_CLK1} -period $hdmi_clk_1200p_per -waveform $hdmi_clk_1200p_waveform $hdmi_vclk1_input -add
+create_clock -name {HDMI_1440P_CLK1} -period $hdmi_clk_1440p_per -waveform $hdmi_clk_1440p_waveform $hdmi_vclk1_input -add
 
 # Audio clock
 create_clock -name {AMCLK} -period $audio_mclk_per -waveform $audio_mclk_waveform $aclk_input
@@ -130,6 +131,7 @@ create_generated_clock -name {HDMI_720P_CLK1_o_int} -source $hdmi_vclk1_input -m
 create_generated_clock -name {HDMI_960P_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_960P_CLK1} $vclk_mux_out -add
 create_generated_clock -name {HDMI_1080P_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_1080P_CLK1} $vclk_mux_out -add
 create_generated_clock -name {HDMI_1200P_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_1200P_CLK1} $vclk_mux_out -add
+create_generated_clock -name {HDMI_1440P_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_1440P_CLK1} $vclk_mux_out -add
 
 create_generated_clock -name {HDMI_VGA_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_VGA_CLK0_o_int} $vclk_out
 create_generated_clock -name {HDMI_480P_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_480P_CLK0_o_int} $vclk_out -add
@@ -144,6 +146,7 @@ create_generated_clock -name {HDMI_720P_CLK1_out} -source $vclk_mux_out -master_
 create_generated_clock -name {HDMI_960P_CLK1_out} -source $vclk_mux_out -master_clock {HDMI_960P_CLK1_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_1080P_CLK1_out} -source $vclk_mux_out -master_clock {HDMI_1080P_CLK1_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_1200P_CLK1_out} -source $vclk_mux_out -master_clock {HDMI_1200P_CLK1_o_int} $vclk_out -add
+create_generated_clock -name {HDMI_1440P_CLK1_out} -source $vclk_mux_out -master_clock {HDMI_1440P_CLK1_o_int} $vclk_out -add
 
 set sdram_clk_out [get_ports {DRAM_CLK}]
 create_generated_clock -name {DRAM_CLK_out} -source $sys_pll_sdram_ext_out -master_clock {DRAM_CLK_o_int} $sdram_clk_out
@@ -220,6 +223,8 @@ set_output_delay -clock {HDMI_1080P_CLK1_out} -max $adv_out_dly_max $adv_vid_por
 set_output_delay -clock {HDMI_1080P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
 set_output_delay -clock {HDMI_1200P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
 set_output_delay -clock {HDMI_1200P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
+set_output_delay -clock {HDMI_1440P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
+set_output_delay -clock {HDMI_1440P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
 
 set_output_delay -clock {AMCLK} -max 1 [get_ports {ASCLK_o ASDATA_o ALRCLK_o}]
 set_output_delay -clock {AMCLK} -min -1 [get_ports {ASCLK_o ASDATA_o ALRCLK_o}]
@@ -284,6 +289,7 @@ set_clock_groups -logically_exclusive \
                     -group {HDMI_960P_CLK1 HDMI_960P_CLK1_o_int HDMI_960P_CLK1_out} \
                     -group {HDMI_1080P_CLK1 HDMI_1080P_CLK1_o_int HDMI_1080P_CLK1_out} \
                     -group {HDMI_1200P_CLK1 HDMI_1200P_CLK1_o_int HDMI_1200P_CLK1_out} \
+                    -group {HDMI_1440P_CLK1 HDMI_1440P_CLK1_o_int HDMI_1440P_CLK1_out} \
                     -group {DRAM_CLK_int DRAM_CLK_o_int DRAM_CLK_out} \
                     -group {SYS_CLK_BASE} \
                     -group {CTRL_CLK} \
