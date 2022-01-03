@@ -48,7 +48,8 @@
 
 const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
 const char *RW_Message[] __ufmdata_section__ = {"< Success >","< Failed >","< Aborted >"};
-const char *Unlock_1440p_Message __ufmdata_section__ = "< Good Luck! > :)";
+const char *Unlock_1440p_Message __ufmdata_section__ = "On your own risk, so\n"
+                                                       "Good Luck I guess :)";
 
 //bool_t use_flash;
 vmode_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
@@ -341,7 +342,7 @@ int main()
       set_avi_info();
 
     if (unlock_1440p_pre != unlock_1440p) {
-      vd_print_string(VD_TEXT,VD_WIDTH - 17,RWM_V_OFFSET+1,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
+      vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
       message_cnt = RWM_SHOW_CNT;
       unlock_1440p_pre = unlock_1440p;
     }
