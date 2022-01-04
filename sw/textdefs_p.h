@@ -353,7 +353,7 @@ const char *EvenOdd[]       = {"Even","Odd "};
 const char *AdvSL[]         = {"Simple","Mean"};
 const char *LinkSL[]        = {"Off","Individual","Linked to progressive"};
 
-const char *VideoMode[] __ufmdata_section__ = {" 240p"," 480i"," 288p"," 576i"};
+const char *VideoMode[] __ufmdata_section__ = {"240p","480i","288p","576i"};
 const char *VRefresh[] __ufmdata_section__  = {"@ 60Hz","@ 50Hz"};
 const char *VideoColor[] __ufmdata_section__  = {"21bit","16bit"};
 

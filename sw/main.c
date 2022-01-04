@@ -127,12 +127,20 @@ int main()
   cmd_t command;
   updateaction_t todo = NON;
   menu_t *menu = &home_menu;
+
+  bool_t load_n64_defaults, use_fallback;
   print_cr_info();
 
   bool_t ctrl_update = 1;
   bool_t ctrl_ignore = 0;
 
-  int message_cnt = 0;
+  cfg_pal_pattern_t pal_pattern_pre;
+  vmode_t palmode_pre;
+  clk_config_t target_resolution, target_resolution_pre;
+  bool_t hor_hires_pre;
+  bool_t unlock_1440p_pre;
+
+  alt_u8 message_cnt = 0;
 
 //  use_flash = FALSE;
 //  if (check_flash() == 0) use_flash = TRUE;
@@ -145,9 +153,9 @@ int main()
 
   cfg_clear_words();
   init_flash();
-  bool_t load_n64_defaults = (cfg_load_from_flash(0) != 0);
+  load_n64_defaults = (cfg_load_from_flash(0) != 0);
 
-  bool_t use_fallback = get_fallback_mode();
+  use_fallback = get_fallback_mode();
   while (is_fallback_mode_valid() == FALSE) use_fallback = get_fallback_mode();
 
   if (load_n64_defaults) {
@@ -175,10 +183,9 @@ int main()
     unlock_1440p = TRUE;
   else
     unlock_1440p = FALSE;
-  bool_t unlock_1440p_pre = unlock_1440p;
+  unlock_1440p_pre = unlock_1440p;
 
-
-  clk_config_t target_resolution = get_target_resolution(PAL_PAT0,NTSC);
+  target_resolution = get_target_resolution(PAL_PAT0,NTSC);
 
   cfg_apply_to_logic();
 
@@ -193,15 +200,14 @@ int main()
   update_ppu_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
   set_avi_info();
 
-  cfg_pal_pattern_t pal_pattern_pre = PAL_PAT0;
-  vmode_t palmode_pre = NTSC;
-  clk_config_t target_resolution_pre = target_resolution;
-  bool_t hor_hires_pre = hor_hires;
+  pal_pattern_pre = PAL_PAT0;
+  palmode_pre = NTSC;
+  target_resolution_pre = target_resolution;
+  hor_hires_pre = hor_hires;
 
   /* Event loop never exits. */
   while (1) {
     ctrl_update = new_ctrl_available();
-    update_ppu_state();
 
     if (ctrl_update && !ctrl_ignore) {
       update_ctrl_data();
@@ -354,6 +360,8 @@ int main()
     pal_pattern_pre = pal_pattern;
     palmode_pre = palmode;
     target_resolution_pre = target_resolution;
+    hor_hires_pre = hor_hires;
+    update_ppu_state();
   }
 
   return 0;

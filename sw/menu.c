@@ -733,7 +733,7 @@ int update_vinfo_screen(menu_t* current_menu)
   // Video Input
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET);
   vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VideoMode[(palmode << 1) | scanmode]);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 6,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
 
   // Video Output
   linex_cnt linex_mode = (ppu_state & PPU_RESOLUTION_GETMASK) >> PPU_RESOLUTION_OFFSET;
