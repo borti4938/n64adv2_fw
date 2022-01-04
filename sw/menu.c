@@ -767,8 +767,8 @@ int update_vinfo_screen(menu_t* current_menu)
   else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5 + (linex_mode > LineX4),INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[is_50Hz_mode]);
 
   // Image size
-  sprintf(szText,"%ux%u", (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_HORSCALE_GETMASK) >> CFG_HORSCALE_OFFSET),
-                          (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_VERTSCALE_GETMASK) >> CFG_VERTSCALE_OFFSET));
+  sprintf(szText,"%ux%u", (alt_u16) ((scaling_words[scaling_n64adv-1].config_val & CFG_HORSCALE_GETMASK) >> CFG_HORSCALE_OFFSET),
+                          (alt_u16) ((scaling_words[scaling_n64adv-1].config_val & CFG_VERTSCALE_GETMASK) >> CFG_VERTSCALE_OFFSET));
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VRES_V_OFFSET);
   vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VRES_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 
