@@ -202,6 +202,7 @@ menu_t viscaling_screen = {
 #define SCALING_STEPS_SELECTION 3
 #define VERTSCALE_SELECTION     4
 #define HORISCALE_SELECTION     5
+#define PAL_BOXED_SELECTION     6
 #define TIMING_PAGE_SELECTION   7
 #define VERTSHIFT_SELECTION     8
 #define HORSHIFT_SELECTION      9
@@ -490,7 +491,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         break;
       }
       if (is_viscaling_screen(*current_menu)){
-        if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < TIMING_PAGE_SELECTION) {
+        if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < PAL_BOXED_SELECTION) {
           cfg_inc_value(&scaling_selection);
           scaling_menu = cfg_get_value(&scaling_selection,0);
           if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
@@ -525,7 +526,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         break;
       }
       if (is_viscaling_screen(*current_menu)){
-        if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < TIMING_PAGE_SELECTION) {
+        if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < PAL_BOXED_SELECTION) {
           cfg_dec_value(&scaling_selection);
           scaling_menu = cfg_get_value(&scaling_selection,0);
           if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
