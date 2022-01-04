@@ -151,7 +151,7 @@ int main()
 
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
-    cfg_load_defaults(1,0);
+    cfg_load_defaults(!use_fallback,0);
     cfg_update_reference();
     open_osd_main(&menu);
   } else {
