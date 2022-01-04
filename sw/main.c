@@ -44,6 +44,7 @@
 
 
 #define CTRL_IGNORE_FRAMES 10;
+#define INITIAL_WAIT_US 1000
 
 
 const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
@@ -188,8 +189,8 @@ int main()
   while (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {};
   init_adv7513(); // assume that hpd and monitor sense are up
 
+  usleep(INITIAL_WAIT_US);
   update_ppu_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
-
   set_avi_info();
 
   cfg_pal_pattern_t pal_pattern_pre = PAL_PAT0;
