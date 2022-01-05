@@ -399,6 +399,12 @@ int cfg_load_from_flash(bool_t need_confirm)
   cfg_set_value(&mode16bit_powercycle,cfg_get_value(&mode16bit,0));
   cfg_set_value(&mode16bit,(alt_u8) mode16bit_bak);
 
+  if (((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK) ||
+      ((linex_words[PAL].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK))
+    unlock_1440p = TRUE;
+  else
+    unlock_1440p = FALSE;
+
   return retval;
 }
 
@@ -550,6 +556,8 @@ int cfg_load_defaults(bool_t video1080p, bool_t need_confirm)
   cfg_load_linex_word(palmode);
   cfg_load_timing_word(palmode);
   cfg_load_scaling_word(palmode);
+
+  unlock_1440p = FALSE;
 
   return 0;
 }

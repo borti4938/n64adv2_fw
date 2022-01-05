@@ -44,7 +44,7 @@
 
 
 #define CTRL_IGNORE_FRAMES 10;
-#define INITIAL_WAIT_US 1000
+#define INITIAL_WAIT_US 1500
 
 
 const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
@@ -178,13 +178,6 @@ int main()
   cfg_load_timing_word(NTSC_PROGRESSIVE);
   cfg_load_scaling_word(get_target_scaler(NTSC));
 
-  if (((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK) ||
-      ((linex_words[PAL].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK))
-    unlock_1440p = TRUE;
-  else
-    unlock_1440p = FALSE;
-  unlock_1440p_pre = unlock_1440p;
-
   target_resolution = get_target_resolution(PAL_PAT0,NTSC);
 
   cfg_apply_to_logic();
@@ -204,6 +197,7 @@ int main()
   palmode_pre = NTSC;
   target_resolution_pre = target_resolution;
   hor_hires_pre = hor_hires;
+  unlock_1440p_pre = unlock_1440p;
 
   /* Event loop never exits. */
   while (1) {
@@ -348,10 +342,9 @@ int main()
         (todo == NEW_CONF_VALUE))
       set_avi_info();
 
-    if (unlock_1440p_pre != unlock_1440p) {
+    if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
       vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
       message_cnt = RWM_SHOW_CNT;
-      unlock_1440p_pre = unlock_1440p;
     }
 
     while(!get_osdvsync()){};  /* wait for OSD_VSYNC goes high (OSD vert. active area) */
@@ -361,6 +354,7 @@ int main()
     palmode_pre = palmode;
     target_resolution_pre = target_resolution;
     hor_hires_pre = hor_hires;
+    unlock_1440p_pre = unlock_1440p;
     update_ppu_state();
   }
 
