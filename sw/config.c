@@ -517,7 +517,7 @@ void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= (scaling_words[scaling_word_select].config_ref_val & CFG_EXTCFG0_GETSCALING_MASK);
 }
 
-int cfg_load_defaults(bool_t video1080p, bool_t need_confirm)
+int cfg_load_defaults(bool_t load_video_480p, bool_t need_confirm)
 {
   if (need_confirm) {
     alt_u8 abort = confirmation_routine();
@@ -533,19 +533,19 @@ int cfg_load_defaults(bool_t video1080p, bool_t need_confirm)
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val &= EXTCFG2_NODEFAULTS_GETMASK;
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val |= EXTCFG2_DEFAULTS;
 
-  if (video1080p) {
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL1080P;
-    cfg_store_linex_word(PAL);
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC1080P;
-    cfg_store_linex_word(NTSC);
-  } else {
+  if (load_video_480p) {
     sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
     sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL576P;
     cfg_store_linex_word(PAL);
     sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
     sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC480P;
+    cfg_store_linex_word(NTSC);
+  } else {
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL1080P;
+    cfg_store_linex_word(PAL);
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC1080P;
     cfg_store_linex_word(NTSC);
   }
 

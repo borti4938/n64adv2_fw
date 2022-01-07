@@ -682,7 +682,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     int retval = 0;
     if ((*current_menu)->leaves[current_sel].leavetype == IFUNC0) retval = (*current_menu)->leaves[current_sel].sys_fun_0();
     if ((*current_menu)->leaves[current_sel].leavetype == IFUNC1) retval = (*current_menu)->leaves[current_sel].sys_fun_1(1);
-    if ((*current_menu)->leaves[current_sel].leavetype == IFUNC2) retval = (*current_menu)->leaves[current_sel].sys_fun_2(RW_LOAD_DEFAULT1080P_SELECTION==(*current_menu)->current_selection,1);
+    if ((*current_menu)->leaves[current_sel].leavetype == IFUNC2) retval = (*current_menu)->leaves[current_sel].sys_fun_2(RW_LOAD_DEFAULT480P_SELECTION==(*current_menu)->current_selection,1);
     return (retval == 0                     ? RW_DONE  :
             retval == -CFG_FLASH_SAVE_ABORT ? RW_ABORT :
                                               RW_FAILED);
