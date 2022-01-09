@@ -66,7 +66,7 @@
  ---------------------------------------------------------------------------------
 
 Quartus Prime Version 20.1.1 Build 720 11/11/2020 SJ Lite Edition
-CHIP  "n64adv2_10m25sae144dev"  ASSIGNED TO AN: 10M25SAE144I7G
+CHIP  "n64adv2_10m25sae144dev"  ASSIGNED TO AN: 10M25SAE144C8G
 
 Pin Name/Usage               : Location  : Dir.   : I/O Standard      : Voltage : I/O Bank  : User Assignment
 -------------------------------------------------------------------------------------------------------------
