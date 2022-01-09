@@ -1,3 +1,20 @@
+N64 Advanced version 2
+---
+
+### Table of Contents
+
+- [User Information](https://github.com/borti4938/n64adv2_fw#user-information)
+  - [OSD Menu](https://github.com/borti4938/n64adv2_fw#osd-menu)
+  - [Default Configuration](https://github.com/borti4938/n64adv2_fw#default-configuration)
+  - [Firmware Update](https://github.com/borti4938/n64adv2_fw#firmware-update)
+- [Developer Information](https://github.com/borti4938/n64adv2_fw#developer-information)
+  - [Repository Management](https://github.com/borti4938/n64adv2_fw#repository-management)
+  - [Setup Toolchain](https://github.com/borti4938/n64adv2_fw#setup-toolchain)
+  - [Build Firmware](https://github.com/borti4938/n64adv2_fw#build-firmware)
+
+
+## User Information
+
 ### OSD Menu 
 
 #### Overview and Navigation 
@@ -179,6 +196,38 @@ Defaulted configuration are marked above with there default value.
 If no default value is provided, than the value is unaffected when loading defaults.
 However, if the N64Adv2 boots with an invalid configuration in the UFM, those configurations will be set to their very first value in the list.
 
+
+### Firmware Update
+
+#### Via JTAG
+
+In order to update, you need to have:
+
+- an Altera USB Blaster (or clone) for flashing the firmware
+  - external connected to the 10pin JTAG header on the N64Adv2 board, or
+  - with the on board add on solution \[1\]
+- _Quartus Prime Programmer_ software installed on you computer  
+(Programmer software is offered as stand-alone application; so you don't need to have the whole Quartus Prime suite installed.)
+
+\[1\] Using the [FPGA Programmer2 SMD-Module](https://shop.trenz-electronic.de/de/TEI0005-02-FPGA-USB-Programmer2-SMD-Modul-VPE1?c=26) needs you to have [separate drivers](https://shop.trenz-electronic.de/de/Download/?path=Trenz_Electronic/Software/Drivers/Arrow_USB_Programmer) installed.
+
+The update procedure is as follows:
+- Download the latest firmware from the [Github Repository](https://github.com/borti4938/n64adv2_fw_beta_releases)
+- Start the _Quartus Prime Programmer_ software
+- Select the programmer adapter under _Hardware Setup..._ if not automatically selected
+- Add the programming file with _Add File..._  
+  - Programming file ends with _\*.pof_.
+  - Programming file is named after the FPGA - either _n64adv2\_**10m16sae144**_ or _n64adv2\_**10m25sae144**dev_
+- Check _Program / Configure_ and _Verify_ for the whole device (_CFM0_ and _UFM_ should be checked)
+- Click on _Start_ and wait patiently
+
+Please note that with this update procedure, your configuration becomes invalid.
+The following picture summarizes the procedure.
+
+![](./doc/img/jtag_update.jpg)
+
+
+## Developer Information
 
 ### Repository Management
 
