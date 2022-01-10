@@ -75,40 +75,41 @@ An empty default value means that this value is not affected by loading defaults
 |:------|:--------|:------------|
 | **Input mode** \[1\] | | Mode where the following settings are applied |
 | **Output resolution - 240p/288p** | Off | Changes to 240p/288p (4:3 with pixel repetition) output resolution<br>Note that scaling options will be limited |
-| **Output resolution - 480p/576p** | On \[2.1\] | Changes to 480p/576p (4:3) output resolution |
+| **Output resolution - 480p/576p** | On \[2\] | Changes to 480p/576p (4:3) output resolution |
 | **Output resolution - 720p** | Off | Changes to 720p (16:9) output resolution |
 | **Output resolution - 960p** | Off | Changes to 960p (4:3) resolution at output |
-| **Output resolution - 1080p** | On \[2.1\] | Changes to 1080p (16:9) output resolution |
+| **Output resolution - 1080p** | On \[2\] | Changes to 1080p (16:9) output resolution |
 | **Output resolution - 1200p** | Off | Changes to 1200p (4:3) resolution with reduced blanking at output |
-| **Output resolution - 1440p** | _not available_ | Changes to 1440p (4:3) resolution with reduced blanking at output \[2\] |
+| **Output resolution - 1440p** | _not available_ | Changes to 1440p (4:3) resolution with reduced blanking at output \[3\] |
 | **Use VGA instead of 480p** | Off | Determines whether you want to use VGA (640x480) instead of standard 480p (720x480).<br>Note that this option has no effect for 576p. |
 | **Frame-Locked** | Off | Varies the pixel clock such that vertical sync matches the N64 generated vertical clock.<br>Vsync in this mode is slightly off spec. To my experience, NTSC runs fine on most TVs other than PAL.|
 | **Force 50/60** | Off (N64 Auto) | Forces 50Hz or 60Hz vertical output frequency. This may introduce additional shudder when running PAL in 60Hz and NTSC in 50Hz.<br>This option becomes inaccessible in frame locked mode. |
 
 \[1\] You are allowed to quickly change the _Input mode_ on this screen by pressing **L** or **R** on the controller.  
-\[2\] Note that this mode will only be available if you unlock it over the _Miscellaneous_ menu or if it is already configured.
+\[2\] Default depends on boot precedure (see section [Default Configuration](https://github.com/borti4938/n64adv2_fw_beta_releases#default-configuration))  
+\[3\] Note that this mode will only be available if you unlock it over the _Miscellaneous_ menu or if it is already configured.
 
 #### Scaler
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Interpolation type** | Integer | Selection of<br>- **Integer** simple 0-order hold interpolation \[3\]<br>- **Bi-linear (sharp)** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
-| **Scaling - Settings for** \[4\] | | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
+| **Interpolation type** | Integer | Selection of<br>- **Integer** simple 0-order hold interpolation \[4\]<br>- **Bi-linear (sharp)** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Scaling - Settings for** \[5\] | | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
 | **Scaling - Link v/h factors** | | Links vertical and horizontal to **4:3** or keep it **open**. |
 | **Scaling - V/h scaling steps** | | Changes between **0.25x** steps and **pixelwise** |
 | **Scaling - Vertical scale value** | _see notes_| Sets the number of desired output lines |
 | **Scaling - Horizontal scale value** | _see notes_ | Set the number of desired output pixel per line |
 | **Use PAL in 240p box** | Off | Uses 240 lines as input reference instead of 288 lines. |
-| **Shift N64 input image - Input Mode** \[5\] | | Switches between NTSC/PAL progressive/interlaced input |
+| **Shift N64 input image - Input Mode** \[6\] | | Switches between NTSC/PAL progressive/interlaced input |
 | **Shift N64 input image - Vertical shift**| 0 | Shifts the input by a certain number of lines before the buffer |
 | **Shift N64 input image - Horizontal shift** | 0 | Shifts the input by a certain number of pixels before the buffer |
 
-\[3\] Integer interpolation: If an output pixel is _exactly_ between two inputs, the output is the mean between both inputs to reduce uneven pixel and shimmering a bit. Scaling for 240p/288p is always integer scaling no matter what is set as _Interpolation type_.  
-\[4\] You are allowed to quickly change the _Scaling - Settings for_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Scaling_ related options.  
-\[4.1\] Scaling for 240p/288p output resolution is restricted to **open** _Link v/h factors_ and **pixelwise** _v/h scaling steps_.  
-\[4.2\] _Vertical scale value_ can only be set under 480 lines for 240p/288p scaling. Default depends on resolution.  
-\[4.3\] _Horizontal scale value_ for 240p/288p scaling increments and decrements in steps of two. Default depends on resolution.  
-\[5\] You are allowed to quickly change the _Shift N64 input image - Input Mode_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Shift N64 input image_ related options.
+\[4\] Integer interpolation: If an output pixel is _exactly_ between two inputs, the output is the mean between both inputs to reduce uneven pixel and shimmering a bit. Scaling for 240p/288p is always integer scaling no matter what is set as _Interpolation type_.  
+\[5\] You are allowed to quickly change the _Scaling - Settings for_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Scaling_ related options.  
+\[5.1\] Scaling for 240p/288p output resolution is restricted to **open** _Link v/h factors_ and **pixelwise** _v/h scaling steps_.  
+\[5.2\] _Vertical scale value_ can only be set under 480 lines for 240p/288p scaling. Default depends on resolution.  
+\[5.3\] _Horizontal scale value_ for 240p/288p scaling increments and decrements in steps of two. Default depends on resolution.  
+\[6\] You are allowed to quickly change the _Shift N64 input image - Input Mode_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Shift N64 input image_ related options.
 
 #### VI-Processing
 
@@ -118,13 +119,13 @@ An empty default value means that this value is not affected by loading defaults
 | **Scanline emulation** | | Enters the submenu for the scanline settings |
 | **Gamma Value** | 1.00 | Applies some gamma boost.<br>Gamma curve on output is defined as I = I_{in}^**\gamma**, where I is the intensity. |
 | **Limited RGB** | Off | Limits the 8bit RGB values in a range of 16 to 235. |
-| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[6\] |
+| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[7\] |
 | **LowRes.-DeBlur - power cycle default** | | Sets the power cycle default. |
-| **16bit mode** | Off | Selects between \[7\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
+| **16bit mode** | Off | Selects between \[8\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
 | **16bit mode - power cycle default** | | Sets the power cycle default. |
 
-\[6\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
-\[7\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
+\[7\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
+\[8\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
 
 #### Scanlines Config
 
@@ -134,16 +135,16 @@ A proper implementation is still on my _To-do_ list.
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Input mode** \[8\] | | Switches between NTSC/PAL progressive/interlaced input |
-| **Use Scanline** \[9\] | Off | Enables scanline for the particular input mode.<br>Settings for interlaced modes can be linked to the corresponding progressive mode. |
+| **Input mode** \[9\] | | Switches between NTSC/PAL progressive/interlaced input |
+| **Use Scanline** \[10\] | Off | Enables scanline for the particular input mode.<br>Settings for interlaced modes can be linked to the corresponding progressive mode. |
 | **Method** | | _no effect_ |
 | **Scanline ID** | | _no effect_ |
-| **Scanline Strength** \[10\] | | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
+| **Scanline Strength** \[11\] | | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
 | **Hybrid Depth** | | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
 
-\[8\] _Input mode_ can be changed using **L** or **R** button on the controller.  
-\[9\] Following options are inaccessible if scanlines are turned off. If interlaced options are linked to progressive options, the progressive mode must be enabled in order to have access to the following options.  
-\[10\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
+\[9\] _Input mode_ can be changed using **L** or **R** button on the controller.  
+\[10\] Following options are inaccessible if scanlines are turned off. If interlaced options are linked to progressive options, the progressive mode must be enabled in order to have access to the following options.  
+\[11\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
 
 #### Miscellaneous
 
@@ -156,9 +157,9 @@ A proper implementation is still on my _To-do_ list.
 | **Controller Routines - Reset** | | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
 | **Controller Routines - VI-DeBlur** | | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
 | **Controller Routines - 16bit Mode** | | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
-| **Unlock lucky 1440p** \[11\] | Off | Unlocks 1440p resolution in the _resolution_ configuration screen |
+| **Unlock lucky 1440p** \[12\] | Off | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
-\[11\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked!  
+\[12\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
 
 #### Save/Load/Fw.Update
 
@@ -219,7 +220,8 @@ The update procedure is as follows:
   - Programming file ends with _\*.pof_.
   - Programming file is named after the FPGA - either _n64adv2\_**10m16sae144**_ or _n64adv2\_**10m25sae144**dev_
 - Check _Program / Configure_ and _Verify_ for the whole device (_CFM0_ and _UFM_ should be checked)
-- Click on _Start_ and wait patiently
+- Click on _Start_ and wait patiently  
+Please note that the **console must be turned on** in order to provide a reference target voltage for the programming device.
 
 Please note that with this update procedure, your configuration becomes invalid.
 The following picture summarizes the procedure.
