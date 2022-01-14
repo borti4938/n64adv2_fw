@@ -204,7 +204,7 @@ static const char *resolution_overlay __ufmdata_section__ =
     "* Force 50/60:";
 
 static const char *scaler_header __ufmdata_section__ =
-    "Resolution";
+    "Scaler";
 static const char *scaler_overlay __ufmdata_section__ =
     "* Interpolation type:\n"
     "* Scaling:\n"
