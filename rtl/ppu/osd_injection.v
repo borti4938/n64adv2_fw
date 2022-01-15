@@ -247,8 +247,8 @@ reg [font_vcnt_width-1:0] Y_txt_vcnt_lsb = {font_vcnt_width{1'b0}};             
 reg [osd_letter_hcnt_width-1:0] Y_txt_hcnt_msb = {osd_letter_hcnt_width{1'b0}};   // MSB indexing actual letter (horizontal count)
 reg [font_hcnt_width-1:0] txt_hcnt_lsb = `OSD_FONT_WIDTH;                       // LSB indexing actual (horizontal) position in letter
 
-reg [7:0] vdata_valid_L = {8{vdata_valid_init}};
-reg [3*bits_per_color+3:0] vdata_L [0:7] /* synthesis ramstyle = "logic" */;
+reg [7:0] vdata_valid_L = {8{vdata_valid_init}} /* synthesis ramstyle = "logic" */;
+reg [3*bits_per_color+3:0] vdata_L [0:7]        /* synthesis ramstyle = "logic" */;
 initial 
   for (int_idx = 0; int_idx < 8; int_idx = int_idx+1)
     vdata_L[int_idx] = {(3*bits_per_color+4){1'b0}};
@@ -345,7 +345,7 @@ always @(posedge VCLK or negedge nVRST)
     txt_hcnt_delay <= 2'b00;
     Y_txt_vcnt_msb <= {osd_letter_vcnt_width{1'b0}};
     Y_txt_vcnt_lsb <= {font_vcnt_width{1'b0}};
-    Y_txt_hcnt_msb <= {osd_letter_hcnt_width{1'b0}};
+    Y_txt_hcnt_msb <= {osd_letter_hcnt_width{1'b1}};
     txt_hcnt_lsb <= `OSD_FONT_WIDTH;
 
     vdata_valid_L <= {8{vdata_valid_init}};
@@ -396,6 +396,13 @@ always @(posedge VCLK or negedge nVRST)
         hcnt_delay <= 2'b00;
         hcnt <= {hcnt_width{1'b0}};
         
+        logo_hcnt_delay <= osd_hscale_w;
+        logo_hcnt <= {logo_hcnt_width{1'b1}};
+        
+        txt_hcnt_delay <= osd_hscale_w;
+        Y_txt_hcnt_msb <= {osd_letter_hcnt_width{1'b1}};
+        txt_hcnt_lsb <= `OSD_FONT_WIDTH;
+        
         if (Y_vcnt < X_osd_logo_vstart | Y_vcnt >= X_osd_logo_vstop) begin
           Y_logo_vcnt_delay <= 3'b000;
           Y_logo_vcnt <= {logo_vcnt_width{1'b0}};
@@ -431,44 +438,33 @@ always @(posedge VCLK or negedge nVRST)
         end else begin
           hcnt_delay <= hcnt_delay + 2'b01;
         end
+    
+        if (vdata_valid_L[1] & draw_logo[1]) begin
+          if (logo_hcnt_delay == osd_hscale_w) begin
+            logo_hcnt_delay <= 2'b00;
+            logo_hcnt <= logo_hcnt + 1'b1;
+          end else begin
+            logo_hcnt_delay <= logo_hcnt_delay + 2'b01;
+          end
+        end
+          
+        if (vdata_valid_L[1] & en_txtrd[1]) begin
+          if (txt_hcnt_delay == osd_hscale_w) begin
+            txt_hcnt_delay <= 2'b00;
+            if (txt_hcnt_lsb < `OSD_FONT_WIDTH) begin
+              txt_hcnt_lsb <= txt_hcnt_lsb + 1'b1;
+            end else begin
+              txt_hcnt_lsb <= {font_hcnt_width{1'b0}};
+              Y_txt_hcnt_msb <= Y_txt_hcnt_msb + 1'b1;
+            end
+          end else begin
+            txt_hcnt_delay <= txt_hcnt_delay + 1'b1;
+          end
+        end
       end
       
       HSYNC_pre <= HSYNC_cur;
       VSYNC_pre <= VSYNC_cur;
-    end
-    
-    if (vdata_valid_L[1]) begin
-      if (draw_logo[1]) begin
-        if (logo_hcnt_delay == osd_hscale_w) begin
-          logo_hcnt_delay <= 2'b00;
-          logo_hcnt <= logo_hcnt + 1'b1;
-        end else begin
-          logo_hcnt_delay <= logo_hcnt_delay + 2'b01;
-        end
-      end else begin
-        logo_hcnt_delay <= osd_hscale_w;
-        logo_hcnt <= {logo_hcnt_width{1'b1}};
-      end
-      
-      if (en_txtrd[1]) begin
-        if (txt_hcnt_delay == osd_hscale_w) begin
-          txt_hcnt_delay <= 2'b00;
-          if (txt_hcnt_lsb < `OSD_FONT_WIDTH) begin
-            txt_hcnt_lsb <= txt_hcnt_lsb + 1'b1;
-          end else begin
-            txt_hcnt_lsb <= {font_hcnt_width{1'b0}};
-          end
-          if (txt_hcnt_lsb == {font_hcnt_width{1'b0}}) begin
-            Y_txt_hcnt_msb <= Y_txt_hcnt_msb + 1'b1;
-          end
-        end else begin
-          txt_hcnt_delay <= txt_hcnt_delay + 2'b01;
-        end
-      end else begin
-        txt_hcnt_delay <= osd_hscale_w;
-        Y_txt_hcnt_msb <= {osd_letter_hcnt_width{1'b0}};
-        txt_hcnt_lsb <= `OSD_FONT_WIDTH;
-      end
     end
 
     vdata_valid_L[7:1] <= vdata_valid_L[6:0];
@@ -571,9 +567,11 @@ always @(posedge VCLK or negedge nVRST) // delay font selection according to mem
   if (!nVRST) begin
     bg_color_sel <= {bg_color_sel_width{1'b0}};
     font_color_sel <= {font_color_sel_width{1'b0}};
-  end else if (en_fontrd[4]) begin
-    bg_color_sel   <= bg_color_sel_tmp;
-    font_color_sel <= font_color_sel_tmp;
+  end else begin
+    if (en_fontrd[4]) begin
+      bg_color_sel   <= bg_color_sel_tmp;
+      font_color_sel <= font_color_sel_tmp;
+    end
   end
 
 
@@ -631,6 +629,7 @@ always @(posedge VCLK or negedge nVRST)
     if (en_fontrd[6]) begin
       font_lineword <= font_lineword_tmp;
       act_char_px <= (font_color_sel == `FONTCOLOR_NON) ? 1'b0 : font_lineword_tmp[0];
+      txt_color <= txt_color_tmp;
     end else if (en_txtrd[6]) begin
       if (vdata_valid_L[6])
         act_char_px <= (font_color_sel == `FONTCOLOR_NON) ? 1'b0 : font_lineword[font_pixel_select_4x[font_hcnt_width+1:2]];
@@ -654,7 +653,7 @@ always @(posedge VCLK or negedge nVRST)
         vdata_o[3*bits_per_color-1:0] <= osd_logo_color;
       else if (draw_separ_line[7])
         vdata_o[3*bits_per_color-1:0] <= separation_line_color;
-      else if (&{en_txtrd[7],act_char_px})
+      else if (&{!draw_logo[7],en_txtrd[7],act_char_px})
         vdata_o[3*bits_per_color-1:0] <= txt_color;
       else begin
       // modify red
