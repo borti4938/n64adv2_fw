@@ -182,7 +182,7 @@ typedef struct {
 #define CFG_N64DEF_LOAD_ABORT CFG_FLASH_SAVE_ABORT
 #define CFG_DEF_LOAD_ABORT    CFG_FLASH_SAVE_ABORT
 
-#define PREDEFINED_SCALE_STEPS  19
+#define PREDEFINED_SCALE_STEPS  21
 
 // the overall masks
 #define INTCFG0_GETALL_MASK   0x0000003F
@@ -404,7 +404,7 @@ typedef struct {
 #define CFG_VERTSCALE_PAL_MIN   288
 
 // some max values
-#define CFG_VERTSCALE_MAX_VALUE      1872 // equals 6.50x @ PAL
+#define CFG_VERTSCALE_MAX_VALUE      2016 // equals 7.00x @ PAL
 #define CFG_HORSCALE_MAX_VALUE       (4*CFG_VERTSCALE_MAX_VALUE/3)
 #define CFG_FORCE5060_MAX_VALUE         2
 #define CFG_RESOLUTION_MAX_VALUE   LineX6
