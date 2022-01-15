@@ -224,9 +224,26 @@ The update procedure is as follows:
 Please note that the **console must be turned on** in order to provide a reference target voltage for the programming device.
 
 Please note that with this update procedure, your configuration becomes invalid.
+However, you can try the workaround described below, which is not extensively tested.
 The following picture summarizes the procedure.
 
 ![](./doc/img/jtag_update.jpg)
+
+#### JTAG - Configuration Workaround
+
+This workaround works if and only if the configuration signature of the running firmware matches the firmware you want to flash.
+If this is not the case, you do not have to continue.
+The workaround is as follows:
+- Power the N64 with a game running
+- Go into _\[Save/Load/Fw.Update\]_ menu
+- On you computer:
+  - Follow the steps above with just a minor difference
+  - Make sure that also **Enable real-time ISP to allow background programming when available** is checked
+  - Flash the firmware, which takes a bit longer than without the _real-time ISP_ option
+  - Wait for the programming procedure to be finished and **do not touch the controller** meanwhile  
+  Pleas note that the menu text on the right hand side may doing some quirk
+- Once the porgrammer finished his work, save the configuration by pressing two times **D-ri**
+- power cycle the N64
 
 
 ## Developer Information
