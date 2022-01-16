@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="altclkctrl" kind="altclkctrl" version="1.0" fabric="QSYS">
- <!-- Format version 20.1 720 (Future versions may contain additional information.) -->
- <!-- 2021.10.31.09:03:33 -->
+ <!-- Format version 21.1 842 (Future versions may contain additional information.) -->
+ <!-- 2022.01.16.00:06:12 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1635667413</value>
+  <value>1642287972</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -32,7 +32,7 @@
  </parameter>
  <parameter name="AUTO_DEVICE">
   <type>java.lang.String</type>
-  <value>10M16SAE144C8G</value>
+  <value>10M25SAE144C8G</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -68,7 +68,7 @@
  <module
    name="altclkctrl_0"
    kind="altclkctrl"
-   version="20.1"
+   version="21.1"
    path="altclkctrl_0">
   <!-- Describes a single module. Module parameters are
 the requested settings for a module instance. -->
@@ -137,7 +137,7 @@ the requested settings for a module instance. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <interface name="altclkctrl_input" kind="conduit_end" version="20.1">
+  <interface name="altclkctrl_input" kind="conduit_end" version="21.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
@@ -198,7 +198,7 @@ parameters are a RESULT of the module parameters. -->
     <role>clkselect</role>
    </port>
   </interface>
-  <interface name="altclkctrl_output" kind="conduit_end" version="20.1">
+  <interface name="altclkctrl_output" kind="conduit_end" version="21.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
@@ -254,7 +254,7 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
   <displayName>ALTCLKCTRL Intel FPGA IP</displayName>
-  <version>20.1</version>
+  <version>21.1</version>
  </plugin>
  <plugin>
   <instanceCount>2</instanceCount>
@@ -262,8 +262,8 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
   <displayName>Conduit</displayName>
-  <version>20.1</version>
+  <version>21.1</version>
  </plugin>
- <reportVersion>20.1 720</reportVersion>
+ <reportVersion>21.1 842</reportVersion>
  <uniqueIdentifier></uniqueIdentifier>
 </EnsembleReport>

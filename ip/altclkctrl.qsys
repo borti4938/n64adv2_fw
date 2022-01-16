@@ -20,7 +20,7 @@
 }
 ]]></parameter>
  <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
- <parameter name="device" value="10M16SAE144C8G" />
+ <parameter name="device" value="10M25SAE144C8G" />
  <parameter name="deviceFamily" value="MAX 10" />
  <parameter name="deviceSpeedGrade" value="8" />
  <parameter name="fabricMode" value="QSYS" />
@@ -57,7 +57,7 @@
  <module
    name="altclkctrl_0"
    kind="altclkctrl"
-   version="20.1"
+   version="21.1"
    enabled="1"
    autoexport="1">
   <parameter name="CLOCK_TYPE" value="1" />

@@ -42,7 +42,7 @@ set_global_assignment -name FAMILY "MAX 10"
 set_global_assignment -name DEVICE 10M16SAE144C8G
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:18:36  MAY 10, 2021"
-set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "21.1.0 Lite Edition"
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ENABLE_OCT_DONE OFF
@@ -259,8 +259,7 @@ set_global_assignment -name QIP_FILE ../ip/chip_id.qip
 set_global_assignment -name SIP_FILE ../ip/chip_id.sip
 set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
 set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
-set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio.qip
-set_global_assignment -name SIP_FILE ../ip/fir_2ch_audio.sip
+set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio.qip
 
 #rtl
 set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_top.v
@@ -277,7 +276,6 @@ set_global_assignment -name VERILOG_FILE ../rtl/misc/ram2port.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/font_rom_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/gamma_table_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/serial_divide.v
-
 
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64_vinfo_ext.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64a_vdemux.v
@@ -310,6 +308,7 @@ set_global_assignment -name OPTIMIZATION_MODE BALANCED
 set_global_assignment -name ALLOW_REGISTER_RETIMING OFF
 
 set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name SYNTH_PROTECT_SDC_CONSTRAINT ON
 set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 
 set_global_assignment -name SEED 41
