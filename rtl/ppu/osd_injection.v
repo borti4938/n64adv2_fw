@@ -244,7 +244,7 @@ reg [2:0] Y_txt_vcnt_delay = 3'b000;
 reg [1:0] txt_hcnt_delay = 2'b00;
 reg [osd_letter_vcnt_width-1:0] Y_txt_vcnt_msb = {osd_letter_vcnt_width{1'b0}}; // MSB indexing actual letter (vertical count)
 reg [font_vcnt_width-1:0] Y_txt_vcnt_lsb = {font_vcnt_width{1'b0}};             // LSB indexing actual (vertical) position in letter
-reg [osd_letter_hcnt_width-1:0] Y_txt_hcnt_msb = {osd_letter_hcnt_width{1'b0}};   // MSB indexing actual letter (horizontal count)
+reg [osd_letter_hcnt_width-1:0] Y_txt_hcnt_msb = {osd_letter_hcnt_width{1'b1}};   // MSB indexing actual letter (horizontal count)
 reg [font_hcnt_width-1:0] txt_hcnt_lsb = `OSD_FONT_WIDTH;                       // LSB indexing actual (horizontal) position in letter
 
 reg [7:0] vdata_valid_L = {8{vdata_valid_init}} /* synthesis ramstyle = "logic" */;
