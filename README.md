@@ -398,6 +398,11 @@ The you have to set the build properties.
 From this point on you should be able to build the application project.
 With the shortcut _Ctrl + F9_ (or just _F9_) you can create initialization files with the _mem\_init\_generate_ target.
 
+If the build fails with an error in elf2dat line 2 under Windows (_cannot find /bin/sh_pl.sh_), you have to create an environment variable with following properties.
+- name: _WSLENV_
+- value: _SPOC\_KIT\_NIOS2/p
+After logging out and logging in into your account, the build should work.
+
 By default, certain constants are placed in the user flash memory.
 However, during development this is not always wanted and somehow annoying during development.
 The following steps initiates the linker to place those constants in the BRAM memory, which consumes a bit more BRAM resources.
@@ -416,7 +421,7 @@ Afterwards you can create a _Debug build_ as follows
 - Right-click on project folder and select _Properties_
 - Select _C/C++ Build_
 - Click on _Manage Configurations..._ and in the pop-up window on _New..._
-  - _Name:_ Nios II Debug_
+  - _Name:_ Nios II Debug
   - Click on _OK_ 
   - Set _Nios II Debug_ as active and close the _Manage Configurations..._ window
 - In the _C/C++ Build_ properties window select the new configuration (should be marked with _\[Active\]_
