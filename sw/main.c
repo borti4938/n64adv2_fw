@@ -43,8 +43,8 @@
 #include "flash.h"
 
 
-#define CTRL_IGNORE_FRAMES 10;
-#define INITIAL_WAIT_US 1500
+#define CTRL_IGNORE_FRAMES 10
+#define INITIAL_WAIT_US 2500
 
 
 const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
@@ -56,8 +56,6 @@ const char *Unlock_1440p_Message __ufmdata_section__ = "On your own risk, so\n"
 vmode_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
 cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
-
-extern config_tray_t linex_words[2];
 
 
 /* ToDo's:
@@ -155,8 +153,8 @@ int main()
   init_flash();
   load_n64_defaults = (cfg_load_from_flash(0) != 0);
 
+  while (is_fallback_mode_valid() == FALSE) {};
   use_fallback = get_fallback_mode();
-  while (is_fallback_mode_valid() == FALSE) use_fallback = get_fallback_mode();
 
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
