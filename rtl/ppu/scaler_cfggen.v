@@ -38,17 +38,17 @@ input [`VID_CFG_W-1:0] video_config_i;
 input [10:0] vlines_out_i;
 input [11:0] hpixels_out_i;
 
-output reg [8:0] vpos_1st_rdline_o;
-output reg [8:0] vlines_in_needed_o;
-output reg [8:0] vlines_in_full_o;
-output reg [10:0] vlines_out_o;
-output reg [17:0] v_interp_factor_o;
+output reg [8:0] vpos_1st_rdline_o;   // first line to read (needed if scaling factor is so high such that not all lines are needed)
+output reg [8:0] vlines_in_needed_o;  // number of lines needed to scale for active lines
+output reg [8:0] vlines_in_full_o;    // number of lines at input (either 240 in NTSC or 288 in PAL)
+output reg [10:0] vlines_out_o;       // number of lines after scaling (max. 2047)
+output reg [17:0] v_interp_factor_o;  // factor needed to determine actual position during interpolation
 
-output reg [9:0] hpos_1st_rdpixel_o;
-output reg [9:0] hpixels_in_needed_o;
-output reg [9:0] hpixels_in_full_o;
-output reg [11:0] hpixels_out_o;
-output reg [17:0] h_interp_factor_o;
+output reg [9:0] hpos_1st_rdpixel_o;  // first horizontal pixel to read (needed if scaling factor is so high such that not all pixels are needed)
+output reg [9:0] hpixels_in_needed_o; // number of horizontal pixel needed to scale for active lines
+output reg [9:0] hpixels_in_full_o;   // number of horizontal pixel at input (should be 640, later 320 or 640)
+output reg [11:0] hpixels_out_o;      // number of horizontal pixel after scaling (max. 4093)
+output reg [17:0] h_interp_factor_o;  // factor needed to determine actual position during interpolation
 
 
 // params
@@ -151,7 +151,7 @@ assign hpixels_in_resmax_full_w = inv_hscale_L * (* multstyle = "dsp" *) hactive
 
 
 always @(posedge SYS_CLK) begin
-  setVideoVidACTIVE(video_config_i,vactive_L,hactive_L);
+  setVideoVidACTIVEwOS(video_config_i,vactive_L,hactive_L);
   v_divisor_L <= vlines_out_i;
   inv_vscale_L <= inv_vscale_w;
   vlines_in_resmax_full_L <= vlines_in_resmax_full_w;

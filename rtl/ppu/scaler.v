@@ -76,7 +76,7 @@ output [ 1:0] DRAM_DQM;
 output        DRAM_nRAS;
 output        DRAM_nWE;
 
-input [8:0] video_vpos_1st_rdline_i;
+input [8:0] video_vpos_1st_rdline_i;  // first line to read (needed if scaling factor is so high such that not all lines are needed)
 
 input VCLK_o;
 
@@ -88,16 +88,16 @@ input video_pal_boxed_i;
 
 output reg [8:0] vinfo_llm_slbuf_fb_o;
 
-input [8:0] video_vlines_in_needed_i;
-input [8:0] video_vlines_in_full_i;
-input [10:0] video_vlines_out_i;
-input [17:0] video_v_interpfactor_i;
+input [8:0] video_vlines_in_needed_i; // number of lines needed to scale for active lines
+input [8:0] video_vlines_in_full_i;   // number of lines at input (either 240 in NTSC or 288 in PAL)
+input [10:0] video_vlines_out_i;      // number of lines after scaling (max. 2047)
+input [17:0] video_v_interpfactor_i;  // factor needed to determine actual position during interpolation
 
-input [9:0] video_hpos_1st_rdpixel_i;
-input [9:0] video_hpixel_in_needed_i;
-input [9:0] video_hpixel_in_full_i;
-input [11:0] video_hpixel_out_i;
-input [17:0] video_h_interpfactor_i;
+input [9:0] video_hpos_1st_rdpixel_i; // first horizontal pixel to read (needed if scaling factor is so high such that not all pixels are needed)
+input [9:0] video_hpixel_in_needed_i; // number of horizontal pixel needed to scale for active lines
+input [9:0] video_hpixel_in_full_i;   // number of horizontal pixel at input (should be 640, later 320 or 640)
+input [11:0] video_hpixel_out_i;      // number of horizontal pixel after scaling (max. 4093)
+input [17:0] video_h_interpfactor_i;  // factor needed to determine actual position during interpolation
 
 output reg [2:0] drawSL = 3'b000;
 output reg HSYNC_o = 1'b0;
@@ -178,7 +178,6 @@ wire sdram_llm_sdr_clk_resynced;
 wire [3:0] datainfo_pre_sdram_buf_sdr_clk_resynced;
 wire lineid_pre_sdram_buf_sdr_clk_resynced;
 
-wire [10:0] vsynclen_o_sdr_clk_resynced;
 wire [11:0] vcnt_o_sdr_clk_resynced;
 wire [1:0] rdpage_slbuf_sdr_clk_resynced;
 
@@ -193,8 +192,8 @@ wire [8:0] vcnt_i_vclk_o_resynced;
 wire video_llm_vclk_o_resynced;
 wire in2out_en_resynced;
 
-wire [11:0] X_hpos_offset_w;
-wire [10:0] X_vpos_offset_w;
+wire [11:0] X_hpos_px_offset_w;
+wire [10:0] X_vpos_px_offset_w;
 
 wire rden_post_sdram_buf_p0_w, rden_post_sdram_buf_p1_w, rden_post_sdram_buf_p2_w;
 
@@ -262,7 +261,7 @@ reg [3:0] datainfo_pre_sdram_buf [0:1];
 reg [1:0] datainfo_rdy;
 
 // regs for sdram rtl
-reg [vcnt_width-1:0] X_vpos_1st_rdline;
+reg [vcnt_width-1:0] X_vpos_1st_rdline; // first line to read (needed if scaling factor is so high such that not all lines are needed)
 
 reg sdram_proc_en = 1'b0;
 reg [2:0] sdram_ctrl_state  = ST_SDRAM_WAIT; // state machine
@@ -299,34 +298,40 @@ reg [10:0] X_VSYNCLEN = `VSYNCLEN_480p60;
 reg [10:0] X_VSTART = `VSYNCLEN_480p60 + `VBACKPORCH_480p60;
 reg [10:0] X_VACTIVE = `VACTIVE_480p60;
 reg [10:0] X_VSTOP = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60;
+reg [10:0] X_VSTART_OS = `VSYNCLEN_480p60;
+reg [10:0] X_VACTIVE_OS = `VBACKPORCH_480p60 + `VACTIVE_480p60 + `VFRONTPORCH_480p60;
+reg [10:0] X_VSTOP_OS = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60 + `VFRONTPORCH_480p60;
 reg [10:0] X_VTOTAL = `VTOTAL_480p60;
 reg X_HSYNC_active = `HSYNC_active_480p60;
 reg [11:0] X_HSYNCLEN = `HSYNCLEN_480p60;
 reg [11:0] X_HSTART = `HSYNCLEN_480p60 + `HBACKPORCH_480p60;
 reg [11:0] X_HACTIVE = `HACTIVE_480p60;
 reg [11:0] X_HSTOP = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60;
+reg [11:0] X_HSTART_OS = `HSYNCLEN_480p60;
+reg [11:0] X_HACTIVE_OS = `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HFRONTPORCH_480p60;
+reg [11:0] X_HSTOP_OS = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HFRONTPORCH_480p60;
 reg [11:0] X_HTOTAL = `HTOTAL_480p60;
 
-reg [10:0] X_VSTART_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60;
-reg [10:0] X_VSTOP_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60;
+reg [10:0] X_VSTART_px = `VSYNCLEN_480p60;
+reg [10:0] X_VSTOP_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60 + `VFRONTPORCH_480p60;
 reg [11:0] X_HSTART_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60;
-reg [11:0] X_HSTOP_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60;
+reg [11:0] X_HSTOP_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HFRONTPORCH_480p60;
 
-reg [10:0] X_pix_vlines_in_full = `ACTIVE_LINES_NTSC_LX1;
-reg [8:0] X_pix_vlines_in_needed = `ACTIVE_LINES_NTSC_LX1;
-reg [10:0] X_pix_vlines_out_max = `HACTIVE_480p60;
-reg [10:0] X_pix_v_init_pixel_phase = `ACTIVE_LINES_NTSC_LX1/2;
-reg [17:0] X_pix_v_interpfactor = 18'b001000100010001000;
+reg [8:0] X_pix_vlines_in_needed = `ACTIVE_LINES_NTSC_LX1;      // number of lines needed to scale for active lines
+reg [10:0] X_pix_vlines_in_full = `ACTIVE_LINES_NTSC_LX1;       // number of lines at input (either 240 in NTSC or 288 in PAL)
+reg [10:0] X_pix_vlines_out_max = `HACTIVE_480p60;              // number of lines after scaling (max. 2047)
+reg [10:0] X_pix_v_init_pixel_phase = `ACTIVE_LINES_NTSC_LX1/2; // initial position for interpolation
+reg [17:0] X_pix_v_interpfactor = 18'b001000100010001000;       // factor needed to determine actual position during interpolation
 
-reg [11:0] X_pix_hpixel_in_full = `ACTIVE_PIXEL_PER_LINE;
-reg [9:0] X_pix_hpixel_in_needed = `ACTIVE_PIXEL_PER_LINE;
-reg [11:0] X_pix_hpixel_out_max = `ACTIVE_PIXEL_PER_LINE;
-reg [11:0] X_pix_h_init_pixel_phase = `ACTIVE_PIXEL_PER_LINE/2;
-reg [17:0] X_pix_h_interpfactor = 18'b000011001100110011;
+reg [9:0] X_pix_hpixel_in_needed = `ACTIVE_PIXEL_PER_LINE;      // number of horizontal pixel needed to scale for active lines
+reg [11:0] X_pix_hpixel_in_full = `ACTIVE_PIXEL_PER_LINE;       // number of horizontal pixel at input (should be 640, later 320 or 640)
+reg [11:0] X_pix_hpixel_out_max = `ACTIVE_PIXEL_PER_LINE;       // number of horizontal pixel after scaling (max. 4093)
+reg [11:0] X_pix_h_init_pixel_phase = `ACTIVE_PIXEL_PER_LINE/2; // initial position for interpolation
+reg [17:0] X_pix_h_interpfactor = 18'b000011001100110011;       // factor needed to determine actual position during interpolation
 
-reg [9:0] hpos_1st_rdpixel_decr;
-reg [7:0] X_hpos_1st_rdpixel_main, hpos_1st_rdpixel_main;
-reg [1:0] X_hpos_1st_rdpixel_sub, hpos_1st_rdpixel_sub;
+reg [9:0] hpos_1st_rdpixel_decr;                                // first horizontal pixel to read (needed if scaling factor is so high such that not all pixels are needed) ...
+reg [7:0] X_hpos_1st_rdpixel_main, hpos_1st_rdpixel_main;       // ... will be converted to main and sub address
+reg [1:0] X_hpos_1st_rdpixel_sub, hpos_1st_rdpixel_sub;         // due to BRAM optimization
 
 reg output_proc_en = 1'b0;
 
@@ -572,18 +577,6 @@ register_sync_2 #(
   .reg_o({datainfo_pre_sdram_buf_sdr_clk_resynced,lineid_pre_sdram_buf_sdr_clk_resynced})
 );
 
-register_sync #(
-  .reg_width(11),
-  .reg_preset(`VSYNCLEN_480p60)
-) register_sync_vclko2dram_u1 (
-  .clk(DRAM_CLK_i),
-  .clk_en(1'b1),
-  .nrst(1'b1),
-//  .nrst(nRST_DRAM_proc),
-  .reg_i(X_VSYNCLEN),
-  .reg_o(vsynclen_o_sdr_clk_resynced)
-);
-
 register_sync_2 #(
   .reg_width(12),
   .reg_preset({12{1'b0}}),
@@ -749,7 +742,7 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             end
             sdram_wr_hcnt <= {hpos_width{1'b0}};
             sdram_ctrl_state <= ST_SDRAM_FIFO2RAM0;
-          end else if (vcnt_o_sdr_clk_resynced == vsynclen_o_sdr_clk_resynced) begin // fetch first line
+          end else if (vcnt_o_sdr_clk_resynced == 1) begin // fetch first line
             sdram_rd_bank_sel <= frame_cnt_o;
             sdram_rd_vcnt <= X_vpos_1st_rdline;
             sdram_rd_hcnt <= {hpos_width{1'b0}};
@@ -758,7 +751,7 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             wraddr_post_sdram_buf_main <= 8'hff;
             wraddr_post_sdram_buf_sub <= 2'b10;
             sdram_ctrl_state <= ST_SDRAM_RAM2BUF0;
-          end else if (vcnt_o_sdr_clk_resynced > vsynclen_o_sdr_clk_resynced &&
+          end else if (vcnt_o_sdr_clk_resynced > 1 &&
                        wrpage_post_sdram_buf_cmb != rdpage_slbuf_sdr_clk_resynced ) begin  // fetch concurrent lines on demand
             sdram_rd_vcnt <= sdram_rd_vcnt + 1'b1;
             sdram_rd_hcnt <= {hpos_width{1'b0}};
@@ -877,28 +870,28 @@ register_sync_2 #(
 );
 
 // read configuration for output
-assign X_vpos_offset_w = (video_vlines_out_i < X_VACTIVE) ? (X_VACTIVE - video_vlines_out_i)/2 : 11'd0;
-assign X_hpos_offset_w = (video_hpixel_out_i < X_HACTIVE) ? (X_HACTIVE - video_hpixel_out_i)/2 : 12'd0;
+assign X_vpos_px_offset_w = (video_vlines_out_i < X_VACTIVE_OS) ? (X_VACTIVE_OS - video_vlines_out_i)/2 : 11'd0;
+assign X_hpos_px_offset_w = (video_hpixel_out_i < X_HACTIVE_OS) ? (X_HACTIVE_OS - video_hpixel_out_i)/2 : 12'd0;
 
 always @(posedge VCLK_o)
   if (vcnt_o_L == 0) begin
     if (hcnt_o_L[11:4] == 0) begin
-      setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VTOTAL);
-      setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HTOTAL);
+      setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VSTART_OS,X_VACTIVE_OS,X_VSTOP_OS,X_VTOTAL);
+      setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HSTART_OS,X_HACTIVE_OS,X_HSTOP_OS,X_HTOTAL);
       
-      X_VSTART_px <= X_VSTART + X_vpos_offset_w;
-      X_VSTOP_px <= X_VSTOP - X_vpos_offset_w;
-      X_HSTART_px <= X_HSTART + X_hpos_offset_w;
-      X_HSTOP_px <= X_HSTOP - X_hpos_offset_w;
+      X_VSTART_px <= X_VSTART_OS + X_vpos_px_offset_w;
+      X_VSTOP_px <= X_VSTOP_OS - X_vpos_px_offset_w;
+      X_HSTART_px <= X_HSTART_OS + X_hpos_px_offset_w;
+      X_HSTOP_px <= X_HSTOP_OS - X_hpos_px_offset_w;
       
-      X_pix_vlines_in_full <= video_vlines_in_full_i;
       X_pix_vlines_in_needed <= video_vlines_in_needed_i;
+      X_pix_vlines_in_full <= {2'b00,video_vlines_in_full_i};
       X_pix_vlines_out_max <= video_vlines_out_i;
       X_pix_v_init_pixel_phase <= |video_interpolation_mode_i ? video_vlines_in_full_i/2 + video_vlines_out_i/2 : video_vlines_in_full_i/2;
       X_pix_v_interpfactor <= video_v_interpfactor_i;
       
-      X_pix_hpixel_in_full <= video_hpixel_in_full_i;
       X_pix_hpixel_in_needed <= video_hpixel_in_needed_i;
+      X_pix_hpixel_in_full <= {2'b00,video_hpixel_in_full_i};
       X_pix_hpixel_out_max <= video_hpixel_out_i;
       X_pix_h_init_pixel_phase <= |video_interpolation_mode_i ? `ACTIVE_PIXEL_PER_LINE/2 + video_hpixel_out_i/2 : `ACTIVE_PIXEL_PER_LINE/2;
       X_pix_h_interpfactor <= video_h_interpfactor_i;
@@ -1108,7 +1101,7 @@ always @(posedge VCLK_o or negedge nRST_o)
     VSYNC_vpl_L <= {(Videogen_Pipeline_Length-1){1'b0}};
     DE_vpl_L <= {(Videogen_Pipeline_Length-1){1'b0}};
     
-    vinfo_llm_slbuf_fb_o <= 9'b0;
+    vinfo_llm_slbuf_fb_o <= 9'd0;
     
     drawSL <= 3'b000;
     HSYNC_o <= 1'b0;
@@ -1133,14 +1126,13 @@ always @(posedge VCLK_o or negedge nRST_o)
           vcnt_o_L <= vcnt_o_L + 1;
         end else begin
           vcnt_o_L <= 0;
+          vinfo_llm_slbuf_fb_o <= video_llm_vclk_o_resynced ? vcnt_i_vclk_o_resynced : 9'd0;
         end
         if ((vcnt_o_L == X_VSTART-1) || (vcnt_o_L == X_VSTOP-1)) // next clock cycle either vcnt_o_L == X_VSTART or vcnt_o_L == X_VSTOP
           v_active_de <= ~v_active_de;
         if ((vcnt_o_L == X_VSTART_px-1) || (vcnt_o_L == X_VSTOP_px-1)) // next clock cycle either vcnt_o_L == X_VSTART_px or vcnt_o_L == X_VSTOP_px
           v_active_px <= ~v_active_px;
       end
-      if (vcnt_o_L == 0 && hcnt_o_L == 4 && video_llm_vclk_o_resynced)
-        vinfo_llm_slbuf_fb_o <= vcnt_i_vclk_o_resynced;
     end else begin
       vcnt_o_L <= 0;
       hcnt_o_L <= 0;
