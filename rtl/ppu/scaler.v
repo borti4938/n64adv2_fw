@@ -939,20 +939,20 @@ end
 assign pix_v_a0_current_w = Y_pix_v_a0_current[7:0];
 assign pix_v_a1_current_w = ~Y_pix_v_a0_current[7:0] + 8'h01;
 
-assign pix_v_bypass_z1_w = (!video_interpolation_mode_i[1] & (pix_v_a1_current_w > FILT_AX_SHARP_TH)) | ~|Y_pix_v_a0_current | Y_pix_v_bypass_z1_current;
+assign pix_v_bypass_z1_w = (!video_interpolation_mode_i[1] & (pix_v_a1_current_w > FILT_AX_SHARP_TH)) | ~|Y_pix_v_a0_current  | Y_pix_v_bypass_z1_current;
 assign pix_v_bypass_z0_w = (!video_interpolation_mode_i[1] & (pix_v_a0_current_w > FILT_AX_SHARP_TH)) | Y_pix_v_a0_current[8] | Y_pix_v_bypass_z0_current;
 
-assign fir_v_calcopcode_w[1] = pix_v_bypass_z1_w | pix_v_bypass_z0_w;
-assign fir_v_calcopcode_w[0] = pix_v_bypass_z1_w;
+assign fir_v_calcopcode_w[1] = pix_v_bypass_z1_w |  pix_v_bypass_z0_w;
+assign fir_v_calcopcode_w[0] = pix_v_bypass_z1_w & ~pix_v_bypass_z0_w;
 
 assign pix_h_a0_current_w = pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1][7:0];
 assign pix_h_a1_current_w = ~pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1][7:0] + 8'h01;
 
-assign pix_h_bypass_z1_w = (!video_interpolation_mode_i[1] & (pix_h_a1_current_w > FILT_AX_SHARP_TH)) | ~|pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1] | pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1];
+assign pix_h_bypass_z1_w = (!video_interpolation_mode_i[1] & (pix_h_a1_current_w > FILT_AX_SHARP_TH)) | ~|pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1]  | pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1];
 assign pix_h_bypass_z0_w = (!video_interpolation_mode_i[1] & (pix_h_a0_current_w > FILT_AX_SHARP_TH)) | pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1][8] | pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1];
 
-assign fir_h_calcopcode_w[1] = pix_h_bypass_z1_w | pix_h_bypass_z0_w;
-assign fir_h_calcopcode_w[0] = pix_h_bypass_z1_w;
+assign fir_h_calcopcode_w[1] = pix_h_bypass_z1_w |  pix_h_bypass_z0_w;
+assign fir_h_calcopcode_w[0] = pix_h_bypass_z1_w & ~pix_h_bypass_z0_w;
 
 assign rd_vdata_slbuf_p0 = vdata_pixel_buf_p0[rdaddr_post_sdram_buf_sub_LL];
 assign rd_vdata_slbuf_p1 = vdata_pixel_buf_p1[rdaddr_post_sdram_buf_sub_LL];
@@ -1219,7 +1219,7 @@ always @(posedge VCLK_o or negedge nRST_o)
       case (hscale_phase)
         HVSCALE_PHASE_INIT: begin
             hscale_phase <= HVSCALE_PHASE_MAIN;
-            h_pixel_load_cnt <= 10'd1;
+            h_pixel_load_cnt <= {9'd0,|video_interpolation_mode_i};
             pix_h_bypass_z0_current[0] <= 1'b1; // always!
             pix_h_bypass_z1_current[0] <= 1'b0; // always!
           end
