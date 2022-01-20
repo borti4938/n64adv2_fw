@@ -261,6 +261,7 @@ set_global_assignment -name QIP_FILE ../ip/chip_id.qip
 set_global_assignment -name SIP_FILE ../ip/chip_id.sip
 set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
 set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
+set_global_assignment -name QSYS_FILE ../ip/fir_2ch_audio.qsys
 set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio.qip
 
 #rtl

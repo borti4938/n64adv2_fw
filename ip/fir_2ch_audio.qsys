@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags="INTERNAL_COMPONENT=true"
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element fir_compiler_ii_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="10M25SAE144C8G" />
+ <parameter name="deviceFamily" value="MAX 10" />
+ <parameter name="deviceSpeedGrade" value="8" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="true" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface
+   name="avalon_streaming_sink"
+   internal="fir_compiler_ii_0.avalon_streaming_sink"
+   type="avalon_streaming"
+   dir="end">
+  <port name="ast_sink_data" internal="ast_sink_data" />
+  <port name="ast_sink_valid" internal="ast_sink_valid" />
+  <port name="ast_sink_error" internal="ast_sink_error" />
+  <port name="ast_sink_sop" internal="ast_sink_sop" />
+  <port name="ast_sink_eop" internal="ast_sink_eop" />
+ </interface>
+ <interface
+   name="avalon_streaming_source"
+   internal="fir_compiler_ii_0.avalon_streaming_source"
+   type="avalon_streaming"
+   dir="start">
+  <port name="ast_source_data" internal="ast_source_data" />
+  <port name="ast_source_valid" internal="ast_source_valid" />
+  <port name="ast_source_error" internal="ast_source_error" />
+  <port name="ast_source_sop" internal="ast_source_sop" />
+  <port name="ast_source_eop" internal="ast_source_eop" />
+  <port name="ast_source_channel" internal="ast_source_channel" />
+ </interface>
+ <interface name="clk" internal="fir_compiler_ii_0.clk" type="clock" dir="end">
+  <port name="clk" internal="clk" />
+ </interface>
+ <interface name="rst" internal="fir_compiler_ii_0.rst" type="reset" dir="end">
+  <port name="reset_n" internal="reset_n" />
+ </interface>
+ <module
+   name="fir_compiler_ii_0"
+   kind="altera_fir_compiler_ii"
+   version="21.1"
+   enabled="1"
+   autoexport="1">
+  <parameter name="L_bandsFilter" value="1" />
+  <parameter name="MODE_STRING" value="None Set" />
+  <parameter name="backPressure" value="false" />
+  <parameter name="bankCount" value="1" />
+  <parameter name="bankDisplay" value="0" />
+  <parameter name="baseAddress" value="0" />
+  <parameter name="channelModes" value="0,1,2,3" />
+  <parameter name="clockRate" value="24.576" />
+  <parameter name="clockSlack" value="0" />
+  <parameter name="coeffBitWidth" value="10" />
+  <parameter name="coeffComplex" value="false" />
+  <parameter name="coeffFracBitWidth" value="0" />
+  <parameter name="coeffReload" value="false" />
+  <parameter name="coeffScaling" value="auto" />
+  <parameter name="coeffSetRealValue">0.0087890625,0.021484375,0.0078125,-0.0390625,-0.0625,0.017578125,0.19921875,0.357421875,0.357421875,0.19921875,0.017578125,-0.0625,-0.0390625,0.0078125,0.021484375,0.0087890625</parameter>
+  <parameter name="coeffSetRealValueImag">0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0530093, -0.04498, 0.0, 0.0749693, 0.159034, 0.224907, 0.249809, 0.224907, 0.159034, 0.0749693, 0.0, -0.04498, -0.0530093, -0.0321283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0</parameter>
+  <parameter name="coeffType" value="int" />
+  <parameter name="decimFactor" value="1" />
+  <parameter name="delayRAMBlockThreshold" value="20" />
+  <parameter name="deviceFamily" value="MAX 10" />
+  <parameter name="dualMemDistRAMThreshold" value="1280" />
+  <parameter name="filterType" value="single" />
+  <parameter name="hardMultiplierThreshold" value="-1" />
+  <parameter name="inputBitWidth" value="16" />
+  <parameter name="inputChannelNum" value="2" />
+  <parameter name="inputFracBitWidth" value="0" />
+  <parameter name="inputRate" value="0.096" />
+  <parameter name="inputType" value="int" />
+  <parameter name="interpFactor" value="1" />
+  <parameter name="karatsuba" value="false" />
+  <parameter name="mRAMThreshold" value="1000000" />
+  <parameter name="num_modes" value="2" />
+  <parameter name="outLSBRound" value="trunc" />
+  <parameter name="outLsbBitRem" value="6" />
+  <parameter name="outMSBRound" value="trunc" />
+  <parameter name="outMsbBitRem" value="0" />
+  <parameter name="outType" value="int" />
+  <parameter name="readWriteMode" value="read_write" />
+  <parameter name="reconfigurable" value="false" />
+  <parameter name="reconfigurable_list" value="0" />
+  <parameter name="speedGrade" value="fast" />
+  <parameter name="symmetryMode" value="sym" />
+ </module>
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>
