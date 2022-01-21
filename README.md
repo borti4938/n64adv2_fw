@@ -295,20 +295,56 @@ The revision is named after the FPGA you'd like to use / build the firmware for.
 The first time you use the sources you need to generate certain IP-cores.
 - Switch the _Project Navigator_ to _IP Components_
 - Open following IP core and
-  - altclkctrl: Click on _Generate HDL..._, on _Generate_ and _Close_ in the pop-up windows and then on _Finish_
   - chip\_id: Click on _Finish_ (Core is then generated automatically)
-  - fir\_2ch\_audio: Click on _Finish_ (Core is then generated automatically)
-  - system\_pll: Click on _Finish_ (Core is then generated automatically)  
+- Other IP cores do not need to be generated.
+- The IP cores based on QSYS (Platform Designer) are optional to build as this is done dynamically during synthesis.  
+  However, pre-building them reduces compilation time a lot and is recommended during development.
 
-These cores just need to be generated the first time you want to build the project.
-You are allowed to switch between revisions without re-generating the cores again.
-In contrast, the NIOS II system design needs to be generated if the revision changes (i.e. not only the first time).
-- Open the system\_n64adv2 IP
-- Click on _Generate HDL..._, on _Generate_ and _Close_ in the pop-up windows and then on _Finish_
-
-Of course, a change in any IP design needs you to re-generate the core, too.
 Once the IP cores are ready, you can _Compile Design_ (e.g. using the shortcut Ctrl. + L).
 If everything went correct the design should compile just fine (Warnings are ok).
+
+#### Pre-Building QSYS-IPs (Optional)
+
+In order to pre-build the QSYS-IPs
+- Open the _Platform Designer_ (Tools -> Platform Designer)
+- Open one after the other (File -> Open... / Ctrl. + O):
+  - ./ip/altclkctrl.qsys
+  - ./ip/fir\_2ch\_audio.qsys
+  - ./nios2/system\_n64adv2.qsys
+- and for each:
+  - click on _Generate HDL..._, on _Generate_ and _Close_ in the pop-up windows  
+  - and then on _Finish_ after the last IP
+
+The cores "altclkctrl.qsys" and "fir\_2ch\_audio.qsys" just need to be generated the first time you want to build the project.
+You are allowed to switch between revisions without re-generating the cores again.
+In contrast, the NIOS II system design needs to be re-generated if the revision changes (i.e. not only the first time).
+Of course, a change in any IP design needs you to re-generate the core, too.
+
+In order to now use the pre-builds, you have to open ./quartus/n64adv2\_10m16sae144.qsf and/or ./quartus/n64adv2\_10m25sae144dev.qsf, respectively.
+In each file change the lines
+~~~~
+#qsys-ip
+#set_global_assignment -name QIP_FILE ../ip/altclkctrl/synthesis/altclkctrl.qip
+#set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
+#set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio.qip
+
+set_global_assignment -name QSYS_FILE ../ip/altclkctrl.qsys
+set_global_assignment -name QSYS_FILE ../ip/fir_2ch_audio.qsys
+set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
+~~~~
+to
+~~~~
+#qsys-ip
+set_global_assignment -name QIP_FILE ../ip/altclkctrl/synthesis/altclkctrl.qip
+set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
+set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio.qip
+
+#set_global_assignment -name QSYS_FILE ../ip/altclkctrl.qsys
+#set_global_assignment -name QSYS_FILE ../ip/fir_2ch_audio.qsys
+#set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
+~~~~
+By the time this guide was written these lines were found around 260.
+Now you are using the pre-builded QSYS-IPs during synthesis.
 
 
 #### Software Core
