@@ -279,7 +279,7 @@ For serious development I recommend using the 10M25SAE144 FPGA as it offers more
 
 - Quartus Prime Lite by intelFPGA (currently version 21.1) with Max10 FPGA device support
 - NIOS II EDS
-  - Windows requires Ubuntu 18.04 LTS on Windows Subsystem for Linux (WSL)
+  - Windows requires Ubuntu 18.04 LTS on Windows Subsystem for Linux (WSL) in version 1 (WSL 2 is not compatible)
   - Description here uses Eclipse IDE as suggested by intelFPGA, however, other IDEs are possible, too
   - Both requires manual installation beside of Quartus Prime toolchain
   - see also _path\_to\_quartus\_installation_/nios2eds/bin/README
