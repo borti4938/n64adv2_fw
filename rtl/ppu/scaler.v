@@ -1087,6 +1087,7 @@ always @(posedge VCLK_o or negedge nRST_o)
     Y_pix_v_bypass_z0_current <= 1'b0;
     Y_pix_v_bypass_z1_current <= 1'b1;
     Y_pix_v_a0_current <= 9'h080;
+    Y_pix_v_a0_pre <= 9'h100;
     
     hscale_phase <= HVSCALE_PHASE_INVALID;
     h_pixel_cnt <= 12'd0;
@@ -1096,7 +1097,7 @@ always @(posedge VCLK_o or negedge nRST_o)
     pix_h_bypass_z1_current <= {(GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY){1'b0}};
     for (int_idx = H_A0_CALC_DELAY-1; int_idx < (GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY); int_idx = int_idx + 1)
       pix_h_a0_current[int_idx] <= 9'h080;
-    pix_h_a0_pre <= 9'h040;
+    pix_h_a0_pre <= 9'h100;
     
     Y_drawSL <= 3'b000;
     DE_virt_vpl_L <= {(Videogen_Pipeline_Length-GEN_SIGNALLING_DELAY-1){1'b0}};
@@ -1275,14 +1276,14 @@ always @(posedge VCLK_o or negedge nRST_o)
     end
     
     rden_post_sdram_buf <= v_active_px & h_active_px;
-    Y_pix_v_a0_current <= |video_interpolation_mode_i ? {1'b0,Y_pix_v_a0_pre[8:1]} + Y_pix_v_a0_pre[0] : 9'h100;
+    Y_pix_v_a0_current <= |video_interpolation_mode_i ? {1'b0,Y_pix_v_a0_pre[8:1]} + Y_pix_v_a0_pre[0] : 9'h080;
     Y_pix_v_a0_pre <= Y_a0_v_full_cmb[23:15];
     
     pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
     pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
     for (int_idx = GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1; int_idx >= H_A0_CALC_DELAY; int_idx = int_idx - 1)
       pix_h_a0_current[int_idx] <= pix_h_a0_current[int_idx-1];
-    pix_h_a0_current[H_A0_CALC_DELAY-1] <= |video_interpolation_mode_i ? {1'b0,pix_h_a0_pre[8:1]} + pix_h_a0_pre[0] : 9'h100;
+    pix_h_a0_current[H_A0_CALC_DELAY-1] <= |video_interpolation_mode_i ? {1'b0,pix_h_a0_pre[8:1]} + pix_h_a0_pre[0] : 9'h080;
     
     DE_virt_vpl_L <= {DE_virt_vpl_L[Videogen_Pipeline_Length-3:0],(v_active_px & h_active_px)};
     HSYNC_vpl_L <= {HSYNC_vpl_L[Videogen_Pipeline_Length-2:0],(hcnt_o_L < X_HSYNCLEN) ~^ X_HSYNC_active};
