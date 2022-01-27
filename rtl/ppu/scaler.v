@@ -44,6 +44,7 @@ module scaler(
   video_h_interpfactor_i,
   
   drawSL,
+  scale_vpos_rel,
   HSYNC_o,
   VSYNC_o,
   DE_o,
@@ -100,6 +101,7 @@ input [11:0] video_hpixel_out_i;      // number of horizontal pixel after scalin
 input [17:0] video_h_interpfactor_i;  // factor needed to determine actual position during interpolation
 
 output reg [2:0] drawSL;
+output reg [7:0] scale_vpos_rel;
 output reg HSYNC_o;
 output reg VSYNC_o;
 output reg DE_o;
@@ -366,6 +368,7 @@ reg [8:0] pix_h_a0_pre;
 reg [8:0] pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:H_A0_CALC_DELAY-1] /* synthesis ramstyle = "logic" */;
 
 reg [2:0] Y_drawSL;
+reg [7:0] Y_scale_vpos_rel;
 reg [Videogen_Pipeline_Length-2:0] DE_virt_vpl_L  /* synthesis ramstyle = "logic" */;
 reg [Videogen_Pipeline_Length-1:0] HSYNC_vpl_L    /* synthesis ramstyle = "logic" */;
 reg [Videogen_Pipeline_Length-1:0] VSYNC_vpl_L    /* synthesis ramstyle = "logic" */;
@@ -1285,6 +1288,8 @@ always @(posedge VCLK_o or negedge nRST_o)
       pix_h_a0_current[int_idx] <= pix_h_a0_current[int_idx-1];
     pix_h_a0_current[H_A0_CALC_DELAY-1] <= |video_interpolation_mode_i ? {1'b0,pix_h_a0_pre[8:1]} + pix_h_a0_pre[0] : 9'h080;
     
+    Y_scale_vpos_rel <= |video_interpolation_mode_i ? Y_pix_v_a0_pre[8:1] + Y_pix_v_a0_pre[0] : {~Y_pix_v_a0_pre[8],Y_pix_v_a0_pre[7:1]} + Y_pix_v_a0_pre[0];
+    
     DE_virt_vpl_L <= {DE_virt_vpl_L[Videogen_Pipeline_Length-3:0],(v_active_px & h_active_px)};
     HSYNC_vpl_L <= {HSYNC_vpl_L[Videogen_Pipeline_Length-2:0],(hcnt_o_L < X_HSYNCLEN) ~^ X_HSYNC_active};
     VSYNC_vpl_L <= {VSYNC_vpl_L[Videogen_Pipeline_Length-2:0],(vcnt_o_L < X_VSYNCLEN) ~^ X_VSYNC_active};
@@ -1299,6 +1304,7 @@ always @(posedge VCLK_o or negedge nRST_o)
 // assign final outputs
 always @(*) begin
   drawSL <= Y_drawSL;
+  scale_vpos_rel <= Y_scale_vpos_rel;
   HSYNC_o <= HSYNC_vpl_L[Videogen_Pipeline_Length-1];
   VSYNC_o <= VSYNC_vpl_L[Videogen_Pipeline_Length-1];
   DE_o <= DE_vpl_L[Videogen_Pipeline_Length-1];

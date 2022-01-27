@@ -182,6 +182,7 @@ wire [`VDATA_O_FU_SLICE] vdata24_pp_w[1:4];
 
 wire async_nRST_scaler_w;
 wire [2:0] drawSL_w;
+wire [7:0] sl_vpos_rel_w;
 
 wire [1:0] OSDInfo_resynced;
 
@@ -565,6 +566,7 @@ scaler scaler_u(
   .video_hpixel_out_i(cfg_hpixels_out_resynced),
   .video_h_interpfactor_i(cfg_h_interp_factor_resynced),
   .drawSL(drawSL_w),
+  .scale_vpos_rel(sl_vpos_rel_w),
   .HSYNC_o(vdata24_pp_w[2][3*color_width_o+1]),
   .VSYNC_o(vdata24_pp_w[2][3*color_width_o+3]),
   .DE_o(vdata24_pp_w[2][3*color_width_o+2]),
@@ -575,15 +577,28 @@ scaler scaler_u(
 // Scanline emulation
 // ==================
 
-scanline_emu scanline_emu_u (
+
+parameter SL_thickness = 8'h10; // area in middle in which the SL is fully drawn
+                                // must not exceed 8'h40!!!
+parameter SL_softening = 8'h40; // area width at each border where the SL strength becomes reduced until reaching zero
+                                // must be 8'h40, 8'h20, 8'h10  or 8'h08
+                                //         0.25,  0.125, 0.0625 or 0.03125
+
+scanline_emu #(
+  .FALSE_PATH_STR_CORRECTION("ON")
+) horizontal_scanline_emu_u (
   .VCLK_i(VCLK_Tx),
   .nVRST_i(nVRST_Tx),
   .HSYNC_i(vdata24_pp_w[2][3*color_width_o+1]),
   .VSYNC_i(vdata24_pp_w[2][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[2][3*color_width_o+2]),
   .vdata_i(vdata24_pp_w[2][`VDATA_O_CO_SLICE]),
-  .drawSL_i(drawSL_w),
-  .sl_settings_i({cfg_SLHyb_str,cfg_SL_str,cfg_SL_thickness,cfg_SL_id,cfg_SL_en}),
+  .sl_en_i(cfg_SL_en),
+  .sl_thickness_i(SL_thickness),
+  .sl_edge_softening_i(SL_softening),
+  .sl_rel_pos_i(sl_vpos_rel_w),
+  .sl_strength_i(cfg_SL_str),
+  .sl_bloom_i(cfg_SLHyb_str),
   .HSYNC_o(vdata24_pp_w[3][3*color_width_o+1]),
   .VSYNC_o(vdata24_pp_w[3][3*color_width_o+3]),
   .DE_o(vdata24_pp_w[3][3*color_width_o+2]),
