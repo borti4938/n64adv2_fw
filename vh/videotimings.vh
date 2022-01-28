@@ -36,7 +36,7 @@
   `define VSYNCLEN_VGA          2
   `define VBACKPORCH_VGA        33
   `define VACTIVE_VGA           480
-  `define VOVERSCAN_MAX_VGA    `HFRONTPORCH_VGA
+  `define VOVERSCAN_MAX_VGA    `VFRONTPORCH_VGA
   `define VTOTAL_VGA            525
   
   // 480p-60, 4:3 / 16:9
