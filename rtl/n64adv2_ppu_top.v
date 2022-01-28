@@ -178,11 +178,10 @@ wire [`VDATA_I_FU_SLICE] vdata_fwd_w;
 
 wire vdata_valid_pp_w[0:1], vdata_valid_pp_dummy_w_4;
 wire [`VDATA_I_FU_SLICE] vdata21_pp_w;
-wire [`VDATA_O_FU_SLICE] vdata24_pp_w[1:4];
+wire [`VDATA_O_FU_SLICE] vdata24_pp_w[1:5];
 
 wire async_nRST_scaler_w;
-wire [2:0] drawSL_w;
-wire [7:0] sl_vpos_rel_w;
+wire [7:0] sl_vpos_rel_w, sl_hpos_rel_w;
 
 wire [1:0] OSDInfo_resynced;
 
@@ -565,8 +564,8 @@ scaler scaler_u(
   .video_hpixel_in_full_i(cfg_hpixel_in_full_resynced),
   .video_hpixel_out_i(cfg_hpixels_out_resynced),
   .video_h_interpfactor_i(cfg_h_interp_factor_resynced),
-  .drawSL(drawSL_w),
-  .scale_vpos_rel(sl_vpos_rel_w),
+  .scale_vpos_rel_o(sl_vpos_rel_w),
+  .scale_hpos_rel_o(sl_hpos_rel_w),
   .HSYNC_o(vdata24_pp_w[2][3*color_width_o+1]),
   .VSYNC_o(vdata24_pp_w[2][3*color_width_o+3]),
   .DE_o(vdata24_pp_w[2][3*color_width_o+2]),
@@ -585,8 +584,8 @@ parameter SL_softening = 8'h40; // area width at each border where the SL streng
                                 //         0.25,  0.125, 0.0625 or 0.03125
 
 scanline_emu #(
-  .FALSE_PATH_STR_CORRECTION("ON")
-) horizontal_scanline_emu_u (
+  .FALSE_PATH_STR_CORRECTION("OFF")
+) vertical_scanline_emu_u (
   .VCLK_i(VCLK_Tx),
   .nVRST_i(nVRST_Tx),
   .HSYNC_i(vdata24_pp_w[2][3*color_width_o+1]),
@@ -596,13 +595,34 @@ scanline_emu #(
   .sl_en_i(cfg_SL_en),
   .sl_thickness_i(SL_thickness),
   .sl_edge_softening_i(SL_softening),
-  .sl_rel_pos_i(sl_vpos_rel_w),
+  .sl_rel_pos_i(sl_hpos_rel_w),
   .sl_strength_i(cfg_SL_str),
   .sl_bloom_i(cfg_SLHyb_str),
   .HSYNC_o(vdata24_pp_w[3][3*color_width_o+1]),
   .VSYNC_o(vdata24_pp_w[3][3*color_width_o+3]),
   .DE_o(vdata24_pp_w[3][3*color_width_o+2]),
   .vdata_o(vdata24_pp_w[3][`VDATA_O_CO_SLICE])
+);
+
+scanline_emu #(
+  .FALSE_PATH_STR_CORRECTION("ON")
+) horizontal_scanline_emu_u (
+  .VCLK_i(VCLK_Tx),
+  .nVRST_i(nVRST_Tx),
+  .HSYNC_i(vdata24_pp_w[3][3*color_width_o+1]),
+  .VSYNC_i(vdata24_pp_w[3][3*color_width_o+3]),
+  .DE_i(vdata24_pp_w[3][3*color_width_o+2]),
+  .vdata_i(vdata24_pp_w[3][`VDATA_O_CO_SLICE]),
+  .sl_en_i(cfg_SL_en),
+  .sl_thickness_i(SL_thickness),
+  .sl_edge_softening_i(SL_softening),
+  .sl_rel_pos_i(sl_vpos_rel_w),
+  .sl_strength_i(cfg_SL_str),
+  .sl_bloom_i(cfg_SLHyb_str),
+  .HSYNC_o(vdata24_pp_w[4][3*color_width_o+1]),
+  .VSYNC_o(vdata24_pp_w[4][3*color_width_o+3]),
+  .DE_o(vdata24_pp_w[4][3*color_width_o+2]),
+  .vdata_o(vdata24_pp_w[4][`VDATA_O_CO_SLICE])
 );
 
 
@@ -626,11 +646,11 @@ osd_injection #(
   .osd_voffset(cfg_osd_voffset),
   .osd_hoffset(cfg_osd_hoffset),
   .vdata_valid_i(1'b1),
-  .vdata_i(vdata24_pp_w[3]),
+  .vdata_i(vdata24_pp_w[4]),
   .active_vsync_i(cfg_active_vsync),
   .active_hsync_i(cfg_active_hsync),
   .vdata_valid_o(vdata_valid_pp_dummy_w_4),
-  .vdata_o(vdata24_pp_w[4])
+  .vdata_o(vdata24_pp_w[5])
 );
 
 
@@ -638,9 +658,9 @@ osd_injection #(
 // register final outputs
 // ======================
 
-assign limited_Re_pre = vdata24_pp_w[4][`VDATA_O_RE_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
-assign limited_Gr_pre = vdata24_pp_w[4][`VDATA_O_GR_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
-assign limited_Bl_pre = vdata24_pp_w[4][`VDATA_O_BL_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
+assign limited_Re_pre = vdata24_pp_w[5][`VDATA_O_RE_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
+assign limited_Gr_pre = vdata24_pp_w[5][`VDATA_O_GR_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
+assign limited_Bl_pre = vdata24_pp_w[5][`VDATA_O_BL_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
 
 always @(posedge VCLK_Tx or negedge nVRST_Tx)
   if (!nVRST_Tx) begin
@@ -674,14 +694,14 @@ always @(posedge VCLK_Tx or negedge nVRST_Tx)
     limited_Bl_pre_L <= limited_Bl_pre[2*color_width_o-1:2*color_width_o-9];
     
     full_RGB_pre_LL <= full_RGB_pre_L;
-    full_RGB_pre_L <= vdata24_pp_w[4][`VDATA_O_CO_SLICE];
+    full_RGB_pre_L <= vdata24_pp_w[5][`VDATA_O_CO_SLICE];
     
     VSYNC_pre_LL <= VSYNC_pre_L;
     HSYNC_pre_LL <= HSYNC_pre_L;
        DE_pre_LL <= DE_pre_L;
-    VSYNC_pre_L <= vdata24_pp_w[4][3*color_width_o+3];
-    HSYNC_pre_L <= vdata24_pp_w[4][3*color_width_o+1];
-       DE_pre_L <= vdata24_pp_w[4][3*color_width_o+2];
+    VSYNC_pre_L <= vdata24_pp_w[5][3*color_width_o+3];
+    HSYNC_pre_L <= vdata24_pp_w[5][3*color_width_o+1];
+       DE_pre_L <= vdata24_pp_w[5][3*color_width_o+2];
     
     VSYNC_o_L <= VSYNC_pre_LL;
     HSYNC_o_L <= HSYNC_pre_LL;
