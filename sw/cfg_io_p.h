@@ -264,45 +264,12 @@ config_t pal_boxed_mode = {
     .val2char_func = &flag2set_func
 };
 
-// audio and scanlines
+// scanlines
 cfg_b32word_t extcfg2_word =
   { .cfg_word_mask    = EXTCFG2_GETALL_MASK,
     .cfg_word_val     = 0x00000000,
     .cfg_ref_word_val = 0x00000000
   };
-
-config_t audio_amp = {
-    .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_AUDIO_AMP_OFFSET,
-    .cfg_type        = NUMVALUE,
-    .value_details   = {
-        .max_value     = CFG_AUDIO_AMP_MAX_VALUE,
-        .getvalue_mask = CFG_AUDIO_AMP_GETMASK
-    },
-    .val2char_func = &audioamp2txt_func
-};
-
-config_t audio_swap_lr = {
-    .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_AUDIO_SWAP_LR_OFFSET,
-    .cfg_type        = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_AUDIO_SWAP_LR_SETMASK,
-        .clrflag_mask = CFG_AUDIO_SWAP_LR_CLRMASK
-    },
-    .val2char_func = &flag2set_func
-};
-
-config_t audio_spdif_en = {
-    .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_AUDIO_SPDIF_EN_OFFSET,
-    .cfg_type        = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_AUDIO_SPDIF_EN_SETMASK,
-        .clrflag_mask = CFG_AUDIO_SPDIF_EN_CLRMASK
-    },
-    .val2char_func = &flag2set_func
-};
 
 config_t slhyb_str = {
     .cfg_word        = &extcfg2_word,
@@ -412,6 +379,46 @@ config_t sl_en_480i = {
         .getvalue_mask = CFG_480I_SL_EN_GETMASK
     },
     .value_string = &LinkSL
+};
+
+// audio
+cfg_b32word_t extcfg3_word =
+  { .cfg_word_mask    = EXTCFG3_GETALL_MASK,
+    .cfg_word_val     = 0x00000000,
+    .cfg_ref_word_val = 0x00000000
+  };
+
+config_t audio_amp = {
+    .cfg_word        = &extcfg3_word,
+    .cfg_word_offset = CFG_AUDIO_AMP_OFFSET,
+    .cfg_type        = NUMVALUE,
+    .value_details   = {
+        .max_value     = CFG_AUDIO_AMP_MAX_VALUE,
+        .getvalue_mask = CFG_AUDIO_AMP_GETMASK
+    },
+    .val2char_func = &audioamp2txt_func
+};
+
+config_t audio_swap_lr = {
+    .cfg_word        = &extcfg3_word,
+    .cfg_word_offset = CFG_AUDIO_SWAP_LR_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_AUDIO_SWAP_LR_SETMASK,
+        .clrflag_mask = CFG_AUDIO_SWAP_LR_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
+
+config_t audio_spdif_en = {
+    .cfg_word        = &extcfg3_word,
+    .cfg_word_offset = CFG_AUDIO_SPDIF_EN_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_AUDIO_SPDIF_EN_SETMASK,
+        .clrflag_mask = CFG_AUDIO_SPDIF_EN_CLRMASK
+    },
+    .val2char_func = &flag2set_func
 };
 
 

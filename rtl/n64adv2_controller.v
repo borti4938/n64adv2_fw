@@ -134,6 +134,7 @@ wire ctrl_data_tack, ctrl_data_tack_resynced;
 wire CHIP_ID_valid_w;
 wire [63:0] CHIP_ID_pre_w, CHIP_ID_w;
 
+wire [ 7:0] SysConfigSet3;                                // general structure of ConfigSet -> see vh/n64adv2_ppuconfig.vh
 wire [31:0] SysConfigSet2, SysConfigSet1 ,SysConfigSet0;  // general structure of ConfigSet -> see vh/n64adv2_ppuconfig.vh
 
 wire [2:0] hw_info_sel;
@@ -255,6 +256,7 @@ system_n64adv2 system_u(
   .ctrl_data_in_export(serial_data[2]),
   .ppu_state_in_export(PPUState_resynced),
   .fallback_in_export({FallbackMode_resynced,FallbackMode_valid_resynced}),
+  .cfg_set3_out_export(SysConfigSet3),
   .cfg_set2_out_export(SysConfigSet2),
   .cfg_set1_out_export(SysConfigSet1),
   .cfg_set0_out_export(SysConfigSet0),
@@ -286,7 +288,7 @@ end
 
 always @(*) begin
   OSDWrVector    <= {vd_wrctrl_w,vd_wrdata_w};
-  APUConfigSet   <= SysConfigSet2[`cfg2_audio_config_slice];
+  APUConfigSet   <= SysConfigSet3[`cfg3_audio_config_slice];
   use_igr        <= SysConfigSet1[`igr_reset_enable_bit];
 end
 

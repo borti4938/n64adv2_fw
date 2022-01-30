@@ -35,8 +35,9 @@
 `define _n64adv2_config_vh_
 
   // configuration as defined in n64adv_controller.v (must match software)
-  //  wire [31:0] SysConfigSet2; (Audio, Scanlines)
-  //    [31:25] {audio_amp (5bits),audio_swap_lr,audio_spdif_en}
+  //  wire [ 7:0] SysConfigSet3; (Audio)
+  //    [ 7: 0] {(1bit reserve),audio_amp (5bits),audio_swap_lr,audio_spdif_en}
+  //  wire [31:0] SysConfigSet2; (Scanlines)
   //    [24:13] SL 240p: {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_En}
   //    [12: 0] SL 480i: {Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_Method,Sl_ID,Sl_link,Sl_En}
   //  wire [31:0] SysConfigSet1; (OSD, IGR, VI-Processing)
@@ -63,7 +64,7 @@
   `define igr_reset_enable_bit  28
   
   // Separation slices
-  `define cfg2_audio_config_slice   31:25
+  `define cfg3_audio_config_slice    6: 0
   `define cfg2_scanline_slice       24: 0
   `define cfg1_ppu_config_slice     21: 0
   

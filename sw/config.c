@@ -60,7 +60,8 @@ configuration_t sysconfig = {
   .cfg_word_def[INTCFG0] = &intcfg0_word,
   .cfg_word_def[EXTCFG0] = &extcfg0_word,
   .cfg_word_def[EXTCFG1] = &extcfg1_word,
-  .cfg_word_def[EXTCFG2] = &extcfg2_word
+  .cfg_word_def[EXTCFG2] = &extcfg2_word,
+  .cfg_word_def[EXTCFG3] = &extcfg3_word
 };
 
 config_tray_t linex_words[2] = {
@@ -406,21 +407,29 @@ int cfg_load_from_flash(bool_t need_confirm)
 }
 
 void cfg_store_linex_word(vmode_t palmode_select) {
-  linex_words[palmode_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
-                                            (sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);
-  linex_words[palmode_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
-                                                (sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+//  linex_words[palmode_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
+//                                            (sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+//  linex_words[palmode_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
+//                                                (sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+  linex_words[palmode_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) | sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val;
+  linex_words[palmode_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) | sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val;
 }
 
 void cfg_load_linex_word(vmode_t palmode_select) {
+//  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
+//  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= ((linex_words[palmode_select].config_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
+//  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val &= CFG_EXTCFG2_GETNOSCANLINES_MASK;
+//  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val |= (linex_words[palmode_select].config_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+//  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
+//  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= ((linex_words[palmode_select].config_ref_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
+//  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val &= CFG_EXTCFG2_GETNOSCANLINES_MASK;
+//  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val |= (linex_words[palmode_select].config_ref_val & CFG_EXTCFG2_GETSCANLINES_MASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= ((linex_words[palmode_select].config_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
-  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val &= CFG_EXTCFG2_GETNOSCANLINES_MASK;
-  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val |= (linex_words[palmode_select].config_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val = (linex_words[palmode_select].config_val & CFG_EXTCFG2_GETSCANLINES_MASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= ((linex_words[palmode_select].config_ref_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
-  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val &= CFG_EXTCFG2_GETNOSCANLINES_MASK;
-  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val |= (linex_words[palmode_select].config_ref_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val = (linex_words[palmode_select].config_ref_val & CFG_EXTCFG2_GETSCANLINES_MASK);
 }
 
 void cfg_reset_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
@@ -530,6 +539,9 @@ int cfg_load_defaults(bool_t load_video_480p, bool_t need_confirm)
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val &= EXTCFG2_NODEFAULTS_GETMASK;
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val |= EXTCFG2_DEFAULTS;
 
+  sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val &= EXTCFG3_NODEFAULTS_GETMASK;
+  sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val |= EXTCFG3_DEFAULTS;
+
   if (load_video_480p) {
     sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
     sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL576P;
@@ -567,6 +579,7 @@ void cfg_apply_to_logic()
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE,sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val);
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG1_OUT_BASE,sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val);
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG2_OUT_BASE,sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val);
+  IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG3_OUT_BASE,sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val);
 }
 
 void cfg_read_from_logic()
@@ -574,6 +587,7 @@ void cfg_read_from_logic()
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG0]->cfg_word_mask);
   sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG1_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG1]->cfg_word_mask);
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG2_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG2]->cfg_word_mask);
+  sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG3_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG3]->cfg_word_mask);
 }
 
 void cfg_clear_words()
