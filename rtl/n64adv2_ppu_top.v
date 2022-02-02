@@ -197,10 +197,12 @@ reg [`VID_CFG_W-1:0] sys_videomode;
 reg [`VID_CFG_W-1:0] cfg_videomode;
 reg [1:0] cfg_interpolation_mode;
 reg cfg_pal_boxed;
-reg cfg_SL_method, cfg_SL_id, cfg_SL_en;
-reg [1:0] cfg_SL_thickness;
-reg [ 4:0] cfg_SLHyb_str;
-reg [ 7:0] cfg_SL_str;
+
+reg cfg_SL_v_en, cfg_SL_h_en;
+reg [7:0] cfg_SL_thickness;
+reg [7:0] cfg_SL_softening;
+reg [4:0] cfg_SLHyb_str;
+reg [7:0] cfg_SL_str;
 
 reg [2:0] cfg_osd_vscale;
 reg [1:0] cfg_osd_hscale;
@@ -433,24 +435,32 @@ always @(posedge VCLK_Tx) begin
     cfg_SL_thickness <= 2'b01;
   else
     cfg_SL_thickness <= 2'b10;  
-  if (!n64_480i_resynced) begin
-    cfg_SLHyb_str    <= ConfigSet[`v240p_SL_hybrid_slice];
+  if (!n64_480i_resynced | ConfigSet_resynced[`v480i_SL_linked_bit]) begin
+    cfg_SL_thickness <= ConfigSet_resynced[`v240p_SL_thickness_slice] == 2'b11 ? 8'h40 :
+                        ConfigSet_resynced[`v240p_SL_thickness_slice] == 2'b10 ? 8'h20 :
+                        ConfigSet_resynced[`v240p_SL_thickness_slice] == 2'b01 ? 8'h10 :
+                                                                                 8'h00;
+    cfg_SL_softening <= ConfigSet_resynced[`v240p_SL_scalesoft_slice] == 2'b11 ? 8'h40 :
+                        ConfigSet_resynced[`v240p_SL_scalesoft_slice] == 2'b10 ? 8'h20 :
+                        ConfigSet_resynced[`v240p_SL_scalesoft_slice] == 2'b01 ? 8'h10 :
+                                                                                 8'h08;
+    cfg_SLHyb_str    <= ConfigSet_resynced[`v240p_SL_hybrid_slice];
     cfg_SL_str       <= ((ConfigSet_resynced[`v240p_SL_str_slice]+8'h01)<<4)-1'b1;
-    cfg_SL_method    <= ConfigSet[`v240p_SL_method_bit];
-    cfg_SL_id        <= ConfigSet[`v240p_SL_ID_bit];
-    cfg_SL_en        <= ConfigSet[`v240p_SL_En_bit];
+    cfg_SL_v_en      <= ConfigSet_resynced[`v240p_SL_V_En_bit];
+    cfg_SL_h_en      <= ConfigSet_resynced[`v240p_SL_H_En_bit];
   end else begin
-    if (ConfigSet[`v480i_SL_linked_bit]) begin // check if SL mode is linked to 240p
-      cfg_SLHyb_str    <= ConfigSet[`v240p_SL_hybrid_slice];
-      cfg_SL_str        <= ((ConfigSet_resynced[`v240p_SL_str_slice]+8'h01)<<4)-1'b1;
-      cfg_SL_id        <= ConfigSet[`v240p_SL_ID_bit];
-    end else begin
-      cfg_SLHyb_str    <= ConfigSet[`v480i_SL_hybrid_slice];
-      cfg_SL_str        <= ((ConfigSet_resynced[`v480i_SL_str_slice]+8'h01)<<4)-1'b1;
-      cfg_SL_id        <= ConfigSet[`v480i_SL_ID_bit];
-    end
-    cfg_SL_method    <= 1'b0;
-    cfg_SL_en        <= ConfigSet[`v480i_SL_En_bit];
+    cfg_SL_thickness <= ConfigSet_resynced[`v480i_SL_thickness_slice] == 2'b11 ? 8'h40 :
+                        ConfigSet_resynced[`v480i_SL_thickness_slice] == 2'b10 ? 8'h20 :
+                        ConfigSet_resynced[`v480i_SL_thickness_slice] == 2'b01 ? 8'h10 :
+                                                                                 8'h00;
+    cfg_SL_softening <= ConfigSet_resynced[`v480i_SL_scalesoft_slice] == 2'b11 ? 8'h40 :
+                        ConfigSet_resynced[`v480i_SL_scalesoft_slice] == 2'b10 ? 8'h20 :
+                        ConfigSet_resynced[`v480i_SL_scalesoft_slice] == 2'b01 ? 8'h10 :
+                                                                                 8'h08;
+    cfg_SLHyb_str    <= ConfigSet_resynced[`v480i_SL_hybrid_slice];
+    cfg_SL_str       <= ((ConfigSet_resynced[`v480i_SL_str_slice]+8'h01)<<4)-1'b1;
+    cfg_SL_v_en      <= ConfigSet_resynced[`v480i_SL_V_En_bit];
+    cfg_SL_h_en      <= ConfigSet_resynced[`v480i_SL_H_En_bit];
   end
   
   setVideoSYNCactive(cfg_videomode,cfg_active_vsync,cfg_active_hsync);
@@ -458,7 +468,6 @@ always @(posedge VCLK_Tx) begin
   
   cfg_limitedRGB <= ConfigSet_resynced[`limitedRGB_bit];
 end
-
 
 register_sync #(
   .reg_width(2),
@@ -580,13 +589,6 @@ scaler scaler_u(
 // Scanline emulation
 // ==================
 
-
-parameter SL_thickness = 8'h10; // area in middle in which the SL is fully drawn
-                                // must not exceed 8'h40!!!
-parameter SL_softening = 8'h40; // area width at each border where the SL strength becomes reduced until reaching zero
-                                // must be 8'h40, 8'h20, 8'h10  or 8'h08
-                                //         0.25,  0.125, 0.0625 or 0.03125
-
 scanline_emu #(
   .FALSE_PATH_STR_CORRECTION("OFF")
 ) vertical_scanline_emu_u (
@@ -596,9 +598,9 @@ scanline_emu #(
   .VSYNC_i(vdata24_pp_w[2][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[2][3*color_width_o+2]),
   .vdata_i(vdata24_pp_w[2][`VDATA_O_CO_SLICE]),
-  .sl_en_i(cfg_SL_en),
-  .sl_thickness_i(SL_thickness),
-  .sl_edge_softening_i(SL_softening),
+  .sl_en_i(cfg_SL_v_en),
+  .sl_thickness_i(cfg_SL_thickness),
+  .sl_edge_softening_i(cfg_SL_softening),
   .sl_rel_pos_i(sl_hpos_rel_w),
   .sl_strength_i(cfg_SL_str),
   .sl_bloom_i(cfg_SLHyb_str),
@@ -617,9 +619,9 @@ scanline_emu #(
   .VSYNC_i(vdata24_pp_w[3][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[3][3*color_width_o+2]),
   .vdata_i(vdata24_pp_w[3][`VDATA_O_CO_SLICE]),
-  .sl_en_i(cfg_SL_en),
-  .sl_thickness_i(SL_thickness),
-  .sl_edge_softening_i(SL_softening),
+  .sl_en_i(cfg_SL_h_en),
+  .sl_thickness_i(cfg_SL_thickness),
+  .sl_edge_softening_i(cfg_SL_softening),
   .sl_rel_pos_i(sl_vpos_rel_w),
   .sl_strength_i(cfg_SL_str),
   .sl_bloom_i(cfg_SLHyb_str),

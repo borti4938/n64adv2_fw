@@ -118,16 +118,18 @@
 #define VICFG_16BITMODE_V_OFFSET    ( 6 + VICFG_VALS_V_OFFSET)
 #define VICFG_PC16BITMODE_V_OFFSET  ( 7 + VICFG_VALS_V_OFFSET)
 
-#define SLCFG_OVERLAY_H_OFFSET  OVERLAY_H_OFFSET
-#define SLCFG_OVERLAY_V_OFFSET  OVERLAY_V_OFFSET
-#define SLCFG_VALS_H_OFFSET     (26 + SLCFG_OVERLAY_H_OFFSET)
-#define SLCFG_VALS_V_OFFSET     SLCFG_OVERLAY_V_OFFSET
-#define SLCFG_INPUT_OFFSET      ( 0 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_EN_V_OFFSET       ( 2 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_METHOD_V_OFFSET   ( 3 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_ID_V_OFFSET       ( 4 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_STR_V_OFFSET      ( 5 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HYB_STR_V_OFFSET  ( 6 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_OVERLAY_H_OFFSET    OVERLAY_H_OFFSET
+#define SLCFG_OVERLAY_V_OFFSET    OVERLAY_V_OFFSET
+#define SLCFG_VALS_H_OFFSET       (28 + SLCFG_OVERLAY_H_OFFSET)
+#define SLCFG_VALS_V_OFFSET       SLCFG_OVERLAY_V_OFFSET
+#define SLCFG_INPUT_OFFSET        ( 0 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_LINK_OFFSET         ( 2 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HEN_V_OFFSET        ( 3 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VEN_V_OFFSET        ( 4 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_THICKNESS_V_OFFSET  ( 6 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_SCALESOFT_V_OFFSET  ( 7 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_STR_V_OFFSET        ( 8 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HYB_STR_V_OFFSET    ( 9 + SLCFG_VALS_V_OFFSET)
 
 #define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET
@@ -235,11 +237,14 @@ static const char *slcfg_opt_header __ufmdata_section__ =
     "Scanlines Config";
 static const char *slcfg_opt_overlay __ufmdata_section__ =
     "* Input mode:\n\n"
-    "* Use Scanlines:\n"
-    "  - Method:\n"
-    "  - Scanline ID:\n"
-    "  - Scanline Strength:\n"
-    "  - Hybrid Depth:";
+    "* Link interl. to prog.:\n"
+    "* Use horizontal sl.:\n"
+    "* Use vertical sl.:\n"
+    "* Appearance:\n"
+    "  - Thickness:\n"
+    "  - Scale softening:\n"
+    "  - Strength:\n"
+    "  - Bloom effect:";
 
 static const char *misc_header __ufmdata_section__ =
     "Miscellaneous";
@@ -341,20 +346,19 @@ const char *RunFunction __ufmdata_section__   = "[Run ...]";
 const char *not_available __ufmdata_section__ = "-----";
 const char *Global __ufmdata_section__        = "Global";
 
-const char *OffOn[]         = {"Off","On"};
-const char *NTSCPAL_SEL[]   = {"NTSC  ","PAL   ", "Current"};
-const char *Force5060[]     = {"Off (N64 Auto)","60Hz","50Hz"};
-const char *Resolutions[]   = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p"};
-const char *FallbackRes[]   = {"1080p","480p/576p"};
-const char *DeInterModes[]  = {"Bob","Weave","Fully Buffered"};
-const char *InterpModes[]   = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
-const char *VTimingSel[]    = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
-const char *EvenOdd[]       = {"Even","Odd "};
-const char *AdvSL[]         = {"Simple","Mean"};
-const char *LinkSL[]        = {"Off","Individual","Linked to progressive"};
+const char *OffOn[]                   = {"Off","On"};
+const char *NTSCPAL_SEL[]             = {"NTSC  ","PAL   ", "Current"};
+const char *Force5060[]               = {"Off (N64 Auto)","60Hz","50Hz"};
+const char *Resolutions[]             = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p"};
+const char *FallbackRes[]             = {"1080p","480p/576p"};
+const char *DeInterModes[]            = {"Bob","Weave","Fully Buffered"};
+const char *InterpModes[]             = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
+const char *VTimingSel[]              = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
+const char *ScanlinesThickness[]      = {"Super thin","Thin","Middle", "Thick"};
+const char *ScanlinesScaleSoftening[] = {"Hard","Middle","Soft","Super soft"};
 
-const char *VideoMode[] __ufmdata_section__ = {"240p","480i","288p","576i"};
-const char *VRefresh[] __ufmdata_section__  = {"@ 60Hz","@ 50Hz"};
+const char *VideoMode[] __ufmdata_section__   = {"240p","480i","288p","576i"};
+const char *VRefresh[] __ufmdata_section__    = {"@ 60Hz","@ 50Hz"};
 const char *VideoColor[] __ufmdata_section__  = {"21bit","16bit"};
 
 const char *ResolutionVGA        = "VGA (640x480)";
