@@ -245,13 +245,13 @@ menu_t slcfg_opt_subscreen = {
     .current_selection = 0,
     .number_selections = 6,
     .leaves = {
-        {.id = SLCFG_INPUT_OFFSET    , .arrow_desc = &slcfg_opt_arrow0, .leavetype = ICONFIG , .config_value = &scanline_selection},
+        {.id = SLCFG_INPUT_OFFSET    , .arrow_desc = &slcfg_opt_arrow0, .leavetype = ICONFIG , .config_value = &timing_selection},
         {.id = SLCFG_EN_V_OFFSET     , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en},
         {.id = SLCFG_METHOD_V_OFFSET , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_method},
         {.id = SLCFG_ID_V_OFFSET     , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_id},
         {.id = SLCFG_STR_V_OFFSET    , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str},
         {.id = SLCFG_HYB_STR_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str},
-        {.id = SLCFG_INPUT_OFFSET    , .arrow_desc = &slcfg_opt_arrow0, .leavetype = ICONFIG , .config_value = &scanline_selection},
+        {.id = SLCFG_INPUT_OFFSET    , .arrow_desc = &slcfg_opt_arrow0, .leavetype = ICONFIG , .config_value = &timing_selection},
         {.id = SLCFG_EN_V_OFFSET     , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_480i},
         {.id = SLCFG_METHOD_V_OFFSET , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_method_480i},
         {.id = SLCFG_ID_V_OFFSET     , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_id_480i},
@@ -439,7 +439,7 @@ void update_vmode_menu(menu_t *menu)
   if (is_vires_screen(menu)) {
     vmode_menu = cfg_get_value(&res_selection,0) == PPU_RES_CURRENT ? vmode_n64adv : (vmode_t) cfg_get_value(&res_selection,0);
   } else {
-    switch (cfg_get_value(&scanline_selection,0)) {
+    switch (cfg_get_value(&timing_selection,0)) {
       case NTSC_PROGRESSIVE:
       case NTSC_INTERLACED:
         vmode_menu = NTSC;
@@ -510,7 +510,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         }
       }
       if (is_slcfg_screen(*current_menu)) {
-        cfg_inc_value(&scanline_selection);
+        cfg_inc_value(&timing_selection);
         update_vmode_menu(*current_menu);
         cfg_load_linex_word(vmode_menu);
         todo = NEW_OVERLAY;
@@ -545,7 +545,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         }
       }
       if (is_slcfg_screen(*current_menu)) {
-        cfg_dec_value(&scanline_selection);
+        cfg_dec_value(&timing_selection);
         update_vmode_menu(*current_menu);
         cfg_load_linex_word(vmode_menu);
         todo = NEW_OVERLAY;
@@ -600,8 +600,8 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   }
 
   if (is_slcfg_screen(*current_menu)) {
-    if ((cfg_get_value(&scanline_selection,0) == PPU_TIMING_CURRENT && scanmode == INTERLACED) ||
-         cfg_get_value(&scanline_selection,0) == NTSC_INTERLACED || cfg_get_value(&scanline_selection,0) == PAL_INTERLACED) {
+    if ((cfg_get_value(&timing_selection,0) == PPU_TIMING_CURRENT && scanmode == INTERLACED) ||
+         cfg_get_value(&timing_selection,0) == NTSC_INTERLACED || cfg_get_value(&timing_selection,0) == PAL_INTERLACED) {
       current_sel = current_sel + (*current_menu)->number_selections; // apply offset
       if (cfg_get_value(&sl_en_480i,0) == OFF) {
         current_sel = (current_sel < SL_METHOD_480I_SELECTION) ? current_sel :
@@ -810,8 +810,8 @@ int update_cfg_screen(menu_t* current_menu)
 
   alt_u8 v_run_offset = 0;
   if (is_slcfg_screen(current_menu)) {
-    if ((cfg_get_value(&scanline_selection,0) == PPU_TIMING_CURRENT && scanmode == INTERLACED) ||
-         cfg_get_value(&scanline_selection,0) == NTSC_INTERLACED || cfg_get_value(&scanline_selection,0) == PAL_INTERLACED) {
+    if ((cfg_get_value(&timing_selection,0) == PPU_TIMING_CURRENT && scanmode == INTERLACED) ||
+         cfg_get_value(&timing_selection,0) == NTSC_INTERLACED || cfg_get_value(&timing_selection,0) == PAL_INTERLACED) {
       v_run_offset = (current_menu)->number_selections;
       if (is_vicfg_480i_sl_are_linked()) use_sl_linked_vals = TRUE;
     }

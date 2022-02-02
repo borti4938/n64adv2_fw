@@ -508,7 +508,7 @@ extern config_t link_hv_scale,
                 deblur_mode_powercycle, mode16bit_powercycle,
                 igr_deblur, igr_16bitmode,
                 fallbackmode;
-extern config_t scaling_steps, res_selection, scanline_selection,
+extern config_t scaling_steps, res_selection,
                 timing_selection, scaling_selection;
 
 extern config_t vert_scale, hor_scale,
