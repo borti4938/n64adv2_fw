@@ -152,8 +152,10 @@ wire cfg_lowlatencymode;
 wire [9:0] cfg_hvshift;
 
 wire [`VID_CFG_W-1:0] sys_vmode_ntsc_w, sys_vmode_pal_w;
+wire [10:0] vlines_set_w;
+wire [11:0] hpixels_set_w;
 
-wire palmode_sysclk_resynced;
+wire palmode_sysclk_resynced, cfg_nvideblur_sysclk_resynced;
 
 wire [8:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_resynced;
 wire [10:0] cfg_vlines_out_w, cfg_vlines_out_resynced;
@@ -244,17 +246,17 @@ assign PPUState[`PPU_gamma_table_slice]         = cfg_gamma;
 // write configuration register
 // ----------------------------
 
-// generate aprroximated multiplication factor for scaler config
+// generate aprroximated multiplication factor for scaler config in sysclk domain first
 
 register_sync #(
-  .reg_width(1),
-  .reg_preset(1'b0)
+  .reg_width(2),
+  .reg_preset(2'b00)
 ) sync4cpu_u0(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i(palmode),
-  .reg_o(palmode_sysclk_resynced)
+  .reg_i({palmode,cfg_nvideblur}),
+  .reg_o({palmode_sysclk_resynced,cfg_nvideblur_sysclk_resynced})
 );
 
 
@@ -288,14 +290,15 @@ always @(posedge SYS_CLK) begin
   end
 end
 
-wire [10:0] vlines_set_w = ConfigSet[`target_vlines_slice];
-wire [11:0] hpixels_set_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P ? {ConfigSet[`target_hpixels_slice],1'b0} : ConfigSet[`target_hpixels_slice];
+assign vlines_set_w = ConfigSet[`target_vlines_slice];
+assign hpixels_set_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P ? {ConfigSet[`target_hpixels_slice],1'b0} : ConfigSet[`target_hpixels_slice];
 
 
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
   .palmode_i(palmode_sysclk_resynced),
   .palmode_boxed_i(ConfigSet[`pal_boxed_scale_bit]),
+  .nvideblur_i(cfg_nvideblur_sysclk_resynced),
   .video_config_i(sys_videomode),
   .vlines_out_i(vlines_set_w),
   .hpixels_out_i(hpixels_set_w),
@@ -311,8 +314,9 @@ scaler_cfggen scaler_cfggen_u(
   .h_interp_factor_o(cfg_h_interp_factor_w)
 );
 
+// setup config in different clock domains ...
 
-// to N64_CLK_i first
+// ... in N64_CLK_i
 register_sync #(
   .reg_width(17), // 4 + 1 + 1 + 10 + 1
   .reg_preset(17'd0)
@@ -331,7 +335,7 @@ always @(*)
     cfg_nvideblur <= 1'b1;
 
 
-// to DRAM clock domain
+// ... in DRAM clock domain
 register_sync #(
   .reg_width(9),
   .reg_preset({(9){1'b0}})
@@ -344,7 +348,7 @@ register_sync #(
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
 
-// to VCLK_Tx clock domain
+// ... in VCLK_Tx clock domain
 register_sync #(
   .reg_width(47), // 9 + 9 + 11 + 18
   .reg_preset({(47){1'b0}})

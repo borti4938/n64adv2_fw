@@ -325,8 +325,9 @@ reg [10:0] X_pix_vlines_out_max = `HACTIVE_480p60;                // number of l
 reg [10:0] X_pix_init_vline_cnt_phase = `ACTIVE_LINES_NTSC_LX1/2; // initial position for interpolation
 reg [17:0] X_pix_v_interpfactor = 18'b001000100010001000;         // factor needed to determine actual position during interpolation
 
+reg X_pix_hpixel_addr_mult2 = 1'b0;                             // increment horizontal buffer read address by factor 2 if deblur is enabled (i.e. 320 input pixel)
 reg [9:0] X_pix_hpixel_in_needed = `ACTIVE_PIXEL_PER_LINE;      // number of horizontal pixel needed to scale for active lines
-reg [11:0] X_pix_hpixel_in_full = `ACTIVE_PIXEL_PER_LINE;       // number of horizontal pixel at input (should be 640, later 320 or 640)
+reg [11:0] X_pix_hpixel_in_full = `ACTIVE_PIXEL_PER_LINE;       // number of horizontal pixel at input (should be 320 or 640)
 reg [11:0] X_pix_hpixel_out_max = `ACTIVE_PIXEL_PER_LINE;       // number of horizontal pixel after scaling (max. 4093)
 reg [11:0] X_init_hpixel_cnt_phase = `ACTIVE_PIXEL_PER_LINE/2;  // initial position for interpolation
 reg [17:0] X_pix_h_interpfactor = 18'b000011001100110011;       // factor needed to determine actual position during interpolation
@@ -881,7 +882,7 @@ assign X_hpos_px_offset_w = (video_hpixel_out_i < X_HACTIVE_OS) ? (X_HACTIVE_OS 
 
 always @(posedge VCLK_o)
   if (vcnt_o_L == 0) begin
-    if (hcnt_o_L[11:4] == 0) begin
+    if (hcnt_o_L[3:0] == 0) begin
       setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VSTART_OS,X_VACTIVE_OS,X_VSTOP_OS,X_VTOTAL);
       setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HSTART_OS,X_HACTIVE_OS,X_HSTOP_OS,X_HTOTAL);
       
@@ -896,6 +897,7 @@ always @(posedge VCLK_o)
       X_pix_init_vline_cnt_phase <= |video_interpolation_mode_i ? video_vlines_out_i/2 : 0;
       X_pix_v_interpfactor <= video_v_interpfactor_i;
       
+      X_pix_hpixel_addr_mult2 <= video_hpixel_in_full_i == `ACTIVE_PIXEL_PER_LINE/2;
       X_pix_hpixel_in_needed <= video_hpixel_in_needed_i;
       X_pix_hpixel_in_full <= {2'b00,video_hpixel_in_full_i};
       X_pix_hpixel_out_max <= video_hpixel_out_i;
@@ -904,16 +906,24 @@ always @(posedge VCLK_o)
       
       hpos_1st_rdpixel_decr <= video_hpos_1st_rdpixel_i;
       hpos_1st_rdpixel_main <= 8'h00;
-      hpos_1st_rdpixel_sub <= 2'b00;
+//      hpos_1st_rdpixel_sub <= video_hpixel_in_full_i[9] ? {1'b0,!palmode_vclk_o_resynced}: 2'b00;
+      hpos_1st_rdpixel_sub <= {1'b0,video_hpixel_in_full_i[9]};
     end else begin
       if (hpos_1st_rdpixel_decr > 0) begin
         hpos_1st_rdpixel_decr <= hpos_1st_rdpixel_decr - 1'b1;
-        if (hpos_1st_rdpixel_sub == 2'b10) begin
-          hpos_1st_rdpixel_main <= hpos_1st_rdpixel_main + 1'b1;
-          hpos_1st_rdpixel_sub <= 2'b00;
+        if (X_pix_hpixel_addr_mult2) begin
+          if (|hpos_1st_rdpixel_sub)
+            hpos_1st_rdpixel_main <= hpos_1st_rdpixel_main + 1'b1;
+          hpos_1st_rdpixel_sub[0] <= hpos_1st_rdpixel_sub[1];
+          hpos_1st_rdpixel_sub[1] <= ~|hpos_1st_rdpixel_sub;
         end else begin
-          hpos_1st_rdpixel_main <= hpos_1st_rdpixel_main;
-          hpos_1st_rdpixel_sub <= hpos_1st_rdpixel_sub + 2'b01;
+          if (hpos_1st_rdpixel_sub == 2'b10) begin
+            hpos_1st_rdpixel_main <= hpos_1st_rdpixel_main + 1'b1;
+            hpos_1st_rdpixel_sub <= 2'b00;
+          end else begin
+            hpos_1st_rdpixel_main <= hpos_1st_rdpixel_main;
+            hpos_1st_rdpixel_sub <= hpos_1st_rdpixel_sub + 2'b01;
+          end
         end
       end
       X_hpos_1st_rdpixel_main <= hpos_1st_rdpixel_main;
@@ -969,7 +979,7 @@ assign rd_vdata_slbuf = (rdpage_post_sdram_buf == 2'b00) ? rd_vdata_slbuf_p0 :
                                                   rd_vdata_slbuf_p2;
 assign rd_vdata_next_slbuf = (rdpage_post_sdram_buf_cmb == 2'b00) ? rd_vdata_slbuf_p0 :
                              (rdpage_post_sdram_buf_cmb == 2'b01) ? rd_vdata_slbuf_p1 :
-                                                           rd_vdata_slbuf_p2;
+                                                                    rd_vdata_slbuf_p2;
 
 polyphase_2step_fir v_interpolate_red_u (
   .CLK_i(VCLK_o),
@@ -1217,12 +1227,19 @@ always @(posedge VCLK_o or negedge nRST_o)
               if (hpixel_load_cnt == X_pix_hpixel_in_needed - 1'b1)
                 hscale_phase <= HVSCALE_PHASE_POST;
               hpixel_cnt <= hpixel_cnt_cmb - X_pix_hpixel_out_max;
-              if (rdaddr_post_sdram_buf_sub == 2'b10) begin
-                rdaddr_post_sdram_buf_main <= rdaddr_post_sdram_buf_main + 1'b1;
-                rdaddr_post_sdram_buf_sub <= 2'b00;
+              if (X_pix_hpixel_addr_mult2) begin
+                if (|rdaddr_post_sdram_buf_sub)
+                  rdaddr_post_sdram_buf_main <= rdaddr_post_sdram_buf_main + 1'b1;
+                rdaddr_post_sdram_buf_sub[0] <= rdaddr_post_sdram_buf_sub[1];
+                rdaddr_post_sdram_buf_sub[1] <= ~|rdaddr_post_sdram_buf_sub;
               end else begin
-                rdaddr_post_sdram_buf_main <= rdaddr_post_sdram_buf_main;
-                rdaddr_post_sdram_buf_sub <= rdaddr_post_sdram_buf_sub + 2'b01;
+                if (rdaddr_post_sdram_buf_sub == 2'b10) begin
+                  rdaddr_post_sdram_buf_main <= rdaddr_post_sdram_buf_main + 1'b1;
+                  rdaddr_post_sdram_buf_sub <= 2'b00;
+                end else begin
+                  rdaddr_post_sdram_buf_main <= rdaddr_post_sdram_buf_main;
+                  rdaddr_post_sdram_buf_sub <= rdaddr_post_sdram_buf_sub + 2'b01;
+                end
               end
               if (|video_interpolation_mode_i) begin
                 pix_h_bypass_z0_current[0] <= 1'b0;
@@ -1276,8 +1293,7 @@ always @(posedge VCLK_o or negedge nRST_o)
     Y_scale_vpos_rel <= |video_interpolation_mode_i ? Y_pix_v_a0_pre[8:1] + Y_pix_v_a0_pre[0] : {~Y_pix_v_a0_pre[8],Y_pix_v_a0_pre[7:1]} + Y_pix_v_a0_pre[0];
     for (int_idx = Videogen_Pipeline_Length-1; int_idx >= H_A0_CALC_DELAY; int_idx = int_idx - 1)
       scale_hpos_rel[int_idx] <= scale_hpos_rel[int_idx-1];
-//    scale_hpos_rel[H_A0_CALC_DELAY-1] <= |video_interpolation_mode_i ? pix_h_a0_pre[8:1] + pix_h_a0_pre[0] : {~pix_h_a0_pre[8],pix_h_a0_pre[7:1]} + pix_h_a0_pre[0];
-    scale_hpos_rel[H_A0_CALC_DELAY-1] <= pix_h_a0_pre[7:0]; // hack as deblur is not considered during scaling atm
+    scale_hpos_rel[H_A0_CALC_DELAY-1] <= |video_interpolation_mode_i ? pix_h_a0_pre[8:1] + pix_h_a0_pre[0] : {~pix_h_a0_pre[8],pix_h_a0_pre[7:1]} + pix_h_a0_pre[0];
     
     DE_virt_vpl_L <= {DE_virt_vpl_L[Videogen_Pipeline_Length-3:0],(v_active_px & h_active_px)};
     HSYNC_vpl_L <= {HSYNC_vpl_L[Videogen_Pipeline_Length-2:0],(hcnt_o_L < X_HSYNCLEN) ~^ X_HSYNC_active};

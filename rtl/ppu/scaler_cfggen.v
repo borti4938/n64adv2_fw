@@ -4,6 +4,7 @@ module scaler_cfggen(
   
   palmode_i,
   palmode_boxed_i,
+  nvideblur_i,
   
   video_config_i,
   
@@ -32,6 +33,7 @@ input SYS_CLK;
 
 input palmode_i;
 input palmode_boxed_i;
+input nvideblur_i;
 
 input [`VID_CFG_W-1:0] video_config_i;
 
@@ -79,7 +81,7 @@ wire [27:0] inv_hscale_w;
 wire [39:0] hpixels_in_resmax_full_w;
 
 // regs
-reg palmode_L, palmode_boxed_L;
+reg palmode_L, palmode_boxed_L, nvideblur_L;
 reg tgl_trigger_v_cfggen_phases_i, tgl_trigger_v_cfggen_phases_o;
 reg tgl_trigger_h_cfggen_phases_i, tgl_trigger_h_cfggen_phases_o;
 
@@ -120,13 +122,17 @@ initial begin
   tgl_trigger_h_cfggen_phases_o = 1'b1;
 end
 
-always @(posedge SYS_CLK)
-  if (((palmode_L != palmode_i) | (palmode_boxed_L != palmode_boxed_i)) & !v_divide_busy_w) begin
+always @(posedge SYS_CLK) begin
+  if (((palmode_L != palmode_i) | (palmode_boxed_L != palmode_boxed_i)) & (v_cfggen_phase == ST_CFGGEN_RDY)) begin
     palmode_L <= palmode_i;
     palmode_boxed_L <= palmode_boxed_i;
     tgl_trigger_v_cfggen_phases_i <= ~tgl_trigger_v_cfggen_phases_i;
+  end
+  if ((nvideblur_L != nvideblur_i) & (h_cfggen_phase == ST_CFGGEN_RDY)) begin
+    nvideblur_L <= nvideblur_i;
     tgl_trigger_h_cfggen_phases_i <= ~tgl_trigger_h_cfggen_phases_i;
   end
+end
 
 
 assign vmode_pal_L_w = !palmode_boxed_L & palmode_L;
@@ -144,7 +150,7 @@ assign vpos_1st_rdline_pal_w = (vlines_in_resmax_L < `ACTIVE_LINES_PAL_LX1) ? (`
 assign vpos_1st_rdline_pal_boxed_w = (vlines_in_resmax_L < `ACTIVE_LINES_NTSC_LX1) ? (`ACTIVE_LINES_PAL_LX1 - vlines_in_resmax_L)/2 : 9'd24;
 
 
-assign n64_hpixels_w = `ACTIVE_PIXEL_PER_LINE;
+assign n64_hpixels_w = nvideblur_L ? `ACTIVE_PIXEL_PER_LINE : `ACTIVE_PIXEL_PER_LINE/2;
 assign inv_hscale_w = h_appr_mult_factor_w * (* multstyle = "dsp" *) n64_hpixels_w;
 
 assign hpixels_in_resmax_full_w = inv_hscale_L * (* multstyle = "dsp" *) hactive_LL;
@@ -157,8 +163,7 @@ always @(posedge SYS_CLK) begin
   vlines_in_resmax_full_L <= vlines_in_resmax_full_w;
   vlines_in_resmax_L <= vlines_in_resmax_full_L[33:24] + vlines_in_resmax_full_L[23];
   vlines_in_needed_L <= vmode_pal_L_w ? vlines_in_needed_pal_w : vlines_in_needed_ntsc_w;
-  vlines_in_full_L <= !palmode_L ? `ACTIVE_LINES_NTSC_LX1 :
-                 palmode_boxed_L ? `ACTIVE_LINES_NTSC_LX1 : `ACTIVE_LINES_PAL_LX1;
+  vlines_in_full_L <= n64_vlines_w;
   vpos_1st_rdline_L <= !palmode_L ? vpos_1st_rdline_ntsc_w :
                   palmode_boxed_L ? vpos_1st_rdline_pal_boxed_w : vpos_1st_rdline_pal_w;
   
@@ -201,9 +206,9 @@ always @(posedge SYS_CLK) begin
   inv_hscale_L <= inv_hscale_w;
   hpixels_in_resmax_full_L <= hpixels_in_resmax_full_w;
   hpixels_in_resmax_L <= hpixels_in_resmax_full_L[33:23] + hpixels_in_resmax_full_L[22];
-  hpixels_in_needed_L <= (hpixels_in_resmax_L < `ACTIVE_PIXEL_PER_LINE) ? hpixels_in_resmax_L : `ACTIVE_PIXEL_PER_LINE;
-  hpixels_in_full_L <= `ACTIVE_PIXEL_PER_LINE;
-  hpos_1st_rdpixel_L <= (hpixels_in_resmax_L < `ACTIVE_PIXEL_PER_LINE) ? `ACTIVE_PIXEL_PER_LINE/2 - hpixels_in_resmax_L/2 : 0;
+  hpixels_in_needed_L <= (hpixels_in_resmax_L < n64_hpixels_w) ? hpixels_in_resmax_L : n64_hpixels_w;
+  hpixels_in_full_L <= n64_hpixels_w;
+  hpos_1st_rdpixel_L <= (hpixels_in_resmax_L < n64_hpixels_w) ? n64_hpixels_w/2 - hpixels_in_resmax_L/2 : 0;
   
   case(h_cfggen_phase)
     ST_CFGGEN_DIVWAIT: begin
