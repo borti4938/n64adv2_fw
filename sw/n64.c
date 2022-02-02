@@ -61,8 +61,6 @@ typedef enum {
   HDL_FW_N_PCB_ID
 } hw_info_sel_t;
 
-static const char *running_message = "< Running >";
-
 alt_u8 info_sync_val;
 alt_u32 ctrl_data;
 alt_u32 ppu_state;
