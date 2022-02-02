@@ -406,6 +406,11 @@ int cfg_load_from_flash(bool_t need_confirm)
   return retval;
 }
 
+void cfg_reset_selections() {
+  cfg_set_value(&timing_selection,0);
+  cfg_set_value(&scaling_selection,0);
+}
+
 void cfg_store_linex_word(vmode_t palmode_select) {
 //  linex_words[palmode_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
 //                                            (sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);

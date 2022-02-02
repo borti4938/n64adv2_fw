@@ -543,6 +543,7 @@ void cfg_scale_v2h_update(void);
 alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t ret_reference);
 int cfg_save_to_flash(bool_t need_confirm);
 int cfg_load_from_flash(bool_t need_confirm);
+void cfg_reset_selections(void);
 void cfg_store_linex_word(vmode_t palmode_select);
 void cfg_load_linex_word(vmode_t palmode_select);
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_select);

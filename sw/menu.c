@@ -467,6 +467,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     case CMD_UNMUTE_MENU:
       return MENU_UNMUTE;
     case CMD_CLOSE_MENU:
+      cfg_reset_selections();
       while ((*current_menu)->parent) {
         (*current_menu)->current_selection = 0;
         *current_menu = (*current_menu)->parent;
@@ -474,6 +475,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       (*current_menu)->current_selection = 1;
       return MENU_CLOSE;
     case CMD_MENU_BACK:
+      cfg_reset_selections();
       if ((*current_menu)->parent) {
         (*current_menu)->current_selection = 0;
         *current_menu = (*current_menu)->parent;
