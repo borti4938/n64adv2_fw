@@ -93,7 +93,7 @@ reg [10:0] v_divisor_L, v_divisor_LL;
 reg [10:0] vactive_LL, vactive_L;
 reg [26:0] inv_vscale_L;
 reg [36:0] vlines_in_resmax_full_L;
-reg [9:0] vlines_in_resmax_L;
+reg [10:0] vlines_in_resmax_L;
 reg [8:0] vlines_in_needed_L;
 reg [8:0] vlines_in_full_L;
 reg [8:0] vpos_1st_rdline_L;
@@ -106,7 +106,7 @@ reg [11:0] h_divisor_L, h_divisor_LL;
 reg [11:0] hactive_LL, hactive_L;
 reg [27:0] inv_hscale_L;
 reg [39:0] hpixels_in_resmax_full_L;
-reg [10:0] hpixels_in_resmax_L;
+reg [11:0] hpixels_in_resmax_L;
 reg [9:0]  hpixels_in_needed_L;
 reg [9:0] hpixels_in_full_L;
 reg [9:0] hpos_1st_rdpixel_L;
@@ -161,7 +161,7 @@ always @(posedge SYS_CLK) begin
   v_divisor_L <= vlines_out_i;
   inv_vscale_L <= inv_vscale_w;
   vlines_in_resmax_full_L <= vlines_in_resmax_full_w;
-  vlines_in_resmax_L <= vlines_in_resmax_full_L[33:24] + vlines_in_resmax_full_L[23];
+  vlines_in_resmax_L <= vlines_in_resmax_full_L[34:24] + vlines_in_resmax_full_L[23];
   vlines_in_needed_L <= vmode_pal_L_w ? vlines_in_needed_pal_w : vlines_in_needed_ntsc_w;
   vlines_in_full_L <= n64_vlines_w;
   vpos_1st_rdline_L <= !palmode_L ? vpos_1st_rdline_ntsc_w :
@@ -205,10 +205,10 @@ always @(posedge SYS_CLK) begin
   h_divisor_L <= hpixels_out_i;
   inv_hscale_L <= inv_hscale_w;
   hpixels_in_resmax_full_L <= hpixels_in_resmax_full_w;
-  hpixels_in_resmax_L <= hpixels_in_resmax_full_L[33:23] + hpixels_in_resmax_full_L[22];
-  hpixels_in_needed_L <= (hpixels_in_resmax_L < n64_hpixels_w) ? hpixels_in_resmax_L : n64_hpixels_w;
+  hpixels_in_resmax_L <= hpixels_in_resmax_full_L[34:23] + hpixels_in_resmax_full_L[22];
+  hpixels_in_needed_L <= (hpixels_in_resmax_L < {2'b00,n64_hpixels_w}) ? hpixels_in_resmax_L[9:0] : n64_hpixels_w;
   hpixels_in_full_L <= n64_hpixels_w;
-  hpos_1st_rdpixel_L <= (hpixels_in_resmax_L < n64_hpixels_w) ? n64_hpixels_w/2 - hpixels_in_resmax_L/2 : 0;
+  hpos_1st_rdpixel_L <= (hpixels_in_resmax_L < {2'b00,n64_hpixels_w}) ? (n64_hpixels_w - hpixels_in_resmax_L[9:0]) >> 1 : 0;
   
   case(h_cfggen_phase)
     ST_CFGGEN_DIVWAIT: begin
