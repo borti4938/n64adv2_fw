@@ -37,12 +37,9 @@ input DE_i;
 input [`VDATA_O_CO_SLICE] vdata_i;
 
 input sl_en_i;
-input [7:0] sl_thickness_i;       // area in middle in which the SL is fully drawn
-                                  // must not exceed 8'h40!!!
-input [7:0] sl_edge_softening_i;  // area width at each border where the SL strength becomes reduced until reaching zero
-                                  // must be 8'h40, 8'h20, 8'h10  or 8'h08
-                                  //         0.25,  0.125, 0.0625 or 0.03125
-input [7:0] sl_rel_pos_i;         // used to correct scanline strength value
+input [1:0] sl_thickness_i;
+input [1:0] sl_edge_softening_i;
+input [7:0] sl_rel_pos_i; // used to correct scanline strength value
 input [7:0] sl_strength_i;
 input [4:0] sl_bloom_i;
 
@@ -61,6 +58,12 @@ integer int_idx;
 
 
 // wires
+wire [7:0] sl_thickness_w;      // area in middle in which the SL is fully drawn
+                                // must not exceed 8'h40!!!
+wire [7:0] sl_edge_softening_w; // area width at each border where the SL strength becomes reduced until reaching zero
+                                // must be 8'h40, 8'h20, 8'h10  or 8'h08
+                                //         0.25,  0.125, 0.0625 or 0.03125
+
 wire drawSL_w;
 wire [15:0] SL_str_corrected_3L_full_w;
 wire [7:0]  SL_str_corrected_3L_w, SL_str_corrected_4L_w;
@@ -105,26 +108,34 @@ reg [color_width_o-1:0] R_sl_l, G_sl_l ,B_sl_l;
 
 // strength correction first
 // method also generates drawSL indicator
+
+assign sl_thickness_w = sl_thickness_i == 2'b11 ? 8'h80 :
+                        sl_thickness_i == 2'b10 ? 8'h40 :
+                        sl_thickness_i == 2'b01 ? 8'h20 :
+                                                  8'h10;
+assign sl_edge_softening_w = sl_edge_softening_i == 2'b11 ? 8'h40 :
+                             sl_edge_softening_i == 2'b10 ? 8'h20 :
+                             sl_edge_softening_i == 2'b01 ? 8'h10 :
+                                                            8'h08;
 generate
   if (FALSE_PATH_STR_CORRECTION == "ON") begin
-    assign SL_str_corrected_3L_full_w = Y_SL_str_correction_factor_2L[8:0] * sl_strength_i;
+    assign SL_str_corrected_3L_full_w = Y_SL_str_correction_factor_2L[8:0] * (* multstyle = "dsp" *) sl_strength_i;
 
     always @(posedge VCLK_i) begin
       for (int_idx = 3; int_idx < proc_stages-1; int_idx = int_idx + 1)
         Y_drawSL[int_idx] <= Y_drawSL[int_idx-1];
       Y_drawSL[2] <= sl_en_i & Y_drawSL[1];
-      Y_drawSL[1] <= Y_SL_str_correction_factor_0L <= sl_edge_softening_i + sl_thickness_i/2;
+      Y_drawSL[1] <= Y_SL_str_correction_factor_0L <= sl_edge_softening_w + sl_thickness_w/2;
       
       Y_SL_str_correction_factor_0L <= sl_rel_pos_i > 8'h80 ? sl_rel_pos_i - 8'h80 : 8'h80 - sl_rel_pos_i;    // check how far we are from the scanline middle
-      Y_SL_str_correction_factor_1L <= Y_SL_str_correction_factor_0L > sl_edge_softening_i + sl_thickness_i/2 ? 8'h00 : 
-                                       Y_SL_str_correction_factor_0L <                       sl_thickness_i/2 ? 8'h00 : ~(Y_SL_str_correction_factor_0L - sl_thickness_i/2) + 1'b1; // apply correction if we are in the softening area
+      Y_SL_str_correction_factor_1L <= Y_SL_str_correction_factor_0L > sl_edge_softening_w + sl_thickness_w/2 ? 8'h00 : 
+                                       Y_SL_str_correction_factor_0L <                       sl_thickness_w/2 ? 8'h00 : ~(Y_SL_str_correction_factor_0L - sl_thickness_w/2) + 1'b1; // apply correction if we are in the softening area
       
       case (sl_edge_softening_i)
-        8'h80:   Y_SL_str_correction_factor_2L <= {4'b0000,Y_SL_str_correction_factor_1L,1'b0    } - 13'h0100; // x2 - 1
-        8'h40:   Y_SL_str_correction_factor_2L <= {3'b000 ,Y_SL_str_correction_factor_1L,2'b00   } - 13'h0300; // x4 - 3
-        8'h20:   Y_SL_str_correction_factor_2L <= {2'b00  ,Y_SL_str_correction_factor_1L,3'b000  } - 13'h0700; // x8 - 7
-        8'h10:   Y_SL_str_correction_factor_2L <= {1'b0   ,Y_SL_str_correction_factor_1L,4'b0000 } - 13'h0F00; // x16 - 15
-//        8'h08:   Y_SL_str_correction_factor_2L <= {        Y_SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
+        2'b11:   Y_SL_str_correction_factor_2L <= {3'b000 ,Y_SL_str_correction_factor_1L,2'b00   } - 13'h0300; // x4 - 3
+        2'b10:   Y_SL_str_correction_factor_2L <= {2'b00  ,Y_SL_str_correction_factor_1L,3'b000  } - 13'h0700; // x8 - 7
+        2'b01:   Y_SL_str_correction_factor_2L <= {1'b0   ,Y_SL_str_correction_factor_1L,4'b0000 } - 13'h0F00; // x16 - 15
+//        2'b00:   Y_SL_str_correction_factor_2L <= {        Y_SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
         default: Y_SL_str_correction_factor_2L <= {        Y_SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
       endcase
       
@@ -136,24 +147,23 @@ generate
     assign SL_str_corrected_3L_w = Y_SL_str_corrected_3L;
     assign SL_str_corrected_4L_w = Y_SL_str_corrected_4L;
   end else begin
-    assign SL_str_corrected_3L_full_w = SL_str_correction_factor_2L[8:0] * sl_strength_i;
+    assign SL_str_corrected_3L_full_w = SL_str_correction_factor_2L[8:0] * (* multstyle = "dsp" *) sl_strength_i;
 
     always @(posedge VCLK_i) begin
       for (int_idx = 3; int_idx < proc_stages-1; int_idx = int_idx + 1)
         drawSL[int_idx] <= drawSL[int_idx-1];
       drawSL[2] <= sl_en_i & drawSL[1];
-      drawSL[1] <= SL_str_correction_factor_0L <= sl_edge_softening_i + sl_thickness_i/2;
+      drawSL[1] <= SL_str_correction_factor_0L <= sl_edge_softening_w + sl_thickness_w/2;
       
       SL_str_correction_factor_0L <= sl_rel_pos_i > 8'h80 ? sl_rel_pos_i - 8'h80 : 8'h80 - sl_rel_pos_i;    // check how far we are from the scanline middle
-      SL_str_correction_factor_1L <= SL_str_correction_factor_0L > sl_edge_softening_i + sl_thickness_i/2 ? 8'h00 : 
-                                     SL_str_correction_factor_0L <                       sl_thickness_i/2 ? 8'h00 : ~(SL_str_correction_factor_0L - sl_thickness_i/2) + 1'b1; // apply correction if we are in the softening area
+      SL_str_correction_factor_1L <= SL_str_correction_factor_0L > sl_edge_softening_w + sl_thickness_w/2 ? 8'h00 : 
+                                     SL_str_correction_factor_0L <                       sl_thickness_w/2 ? 8'h00 : ~(SL_str_correction_factor_0L - sl_thickness_w/2) + 1'b1; // apply correction if we are in the softening area
       
       case (sl_edge_softening_i)
-        8'h80:   SL_str_correction_factor_2L <= {4'b0000,SL_str_correction_factor_1L,1'b0    } - 13'h0100; // x2 - 1
-        8'h40:   SL_str_correction_factor_2L <= {3'b000 ,SL_str_correction_factor_1L,2'b00   } - 13'h0300; // x4 - 3
-        8'h20:   SL_str_correction_factor_2L <= {2'b00  ,SL_str_correction_factor_1L,3'b000  } - 13'h0700; // x8 - 7
-        8'h10:   SL_str_correction_factor_2L <= {1'b0   ,SL_str_correction_factor_1L,4'b0000 } - 13'h0F00; // x16 - 15
-//        8'h08:   SL_str_correction_factor_2L <= {        SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
+        2'b11:   SL_str_correction_factor_2L <= {3'b000 ,SL_str_correction_factor_1L,2'b00   } - 13'h0300; // x4 - 3
+        2'b10:   SL_str_correction_factor_2L <= {2'b00  ,SL_str_correction_factor_1L,3'b000  } - 13'h0700; // x8 - 7
+        2'b01:   SL_str_correction_factor_2L <= {1'b0   ,SL_str_correction_factor_1L,4'b0000 } - 13'h0F00; // x16 - 15
+//        2'b00:   SL_str_correction_factor_2L <= {        SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
         default: SL_str_correction_factor_2L <= {        SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
       endcase
       

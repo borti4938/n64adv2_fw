@@ -199,8 +199,8 @@ reg [1:0] cfg_interpolation_mode;
 reg cfg_pal_boxed;
 
 reg cfg_SL_v_en, cfg_SL_h_en;
-reg [7:0] cfg_SL_thickness;
-reg [7:0] cfg_SL_softening;
+reg [1:0] cfg_SL_thickness;
+reg [1:0] cfg_SL_softening;
 reg [4:0] cfg_SLHyb_str;
 reg [7:0] cfg_SL_str;
 
@@ -429,34 +429,16 @@ always @(posedge VCLK_Tx) begin
   end
   cfg_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`interpolation_mode_slice];
   cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
-  if (ConfigSet_resynced[`target_vlines_slice] < 11'd924) // just a coarse estimate
-    cfg_SL_thickness <= 2'b00;
-  else if (ConfigSet_resynced[`target_vlines_slice] < 11'd1452) // just a coarse estimate
-    cfg_SL_thickness <= 2'b01;
-  else
-    cfg_SL_thickness <= 2'b10;  
   if (!n64_480i_resynced | ConfigSet_resynced[`v480i_SL_linked_bit]) begin
-    cfg_SL_thickness <= ConfigSet_resynced[`v240p_SL_thickness_slice] == 2'b11 ? 8'h40 :
-                        ConfigSet_resynced[`v240p_SL_thickness_slice] == 2'b10 ? 8'h20 :
-                        ConfigSet_resynced[`v240p_SL_thickness_slice] == 2'b01 ? 8'h10 :
-                                                                                 8'h00;
-    cfg_SL_softening <= ConfigSet_resynced[`v240p_SL_scalesoft_slice] == 2'b11 ? 8'h40 :
-                        ConfigSet_resynced[`v240p_SL_scalesoft_slice] == 2'b10 ? 8'h20 :
-                        ConfigSet_resynced[`v240p_SL_scalesoft_slice] == 2'b01 ? 8'h10 :
-                                                                                 8'h08;
+    cfg_SL_thickness <= ConfigSet_resynced[`v240p_SL_thickness_slice];
+    cfg_SL_softening <= ConfigSet_resynced[`v240p_SL_scalesoft_slice];
     cfg_SLHyb_str    <= ConfigSet_resynced[`v240p_SL_hybrid_slice];
     cfg_SL_str       <= ((ConfigSet_resynced[`v240p_SL_str_slice]+8'h01)<<4)-1'b1;
     cfg_SL_v_en      <= ConfigSet_resynced[`v240p_SL_V_En_bit];
     cfg_SL_h_en      <= ConfigSet_resynced[`v240p_SL_H_En_bit];
   end else begin
-    cfg_SL_thickness <= ConfigSet_resynced[`v480i_SL_thickness_slice] == 2'b11 ? 8'h40 :
-                        ConfigSet_resynced[`v480i_SL_thickness_slice] == 2'b10 ? 8'h20 :
-                        ConfigSet_resynced[`v480i_SL_thickness_slice] == 2'b01 ? 8'h10 :
-                                                                                 8'h00;
-    cfg_SL_softening <= ConfigSet_resynced[`v480i_SL_scalesoft_slice] == 2'b11 ? 8'h40 :
-                        ConfigSet_resynced[`v480i_SL_scalesoft_slice] == 2'b10 ? 8'h20 :
-                        ConfigSet_resynced[`v480i_SL_scalesoft_slice] == 2'b01 ? 8'h10 :
-                                                                                 8'h08;
+    cfg_SL_thickness <= ConfigSet_resynced[`v480i_SL_thickness_slice];
+    cfg_SL_softening <= ConfigSet_resynced[`v480i_SL_scalesoft_slice];
     cfg_SLHyb_str    <= ConfigSet_resynced[`v480i_SL_hybrid_slice];
     cfg_SL_str       <= ((ConfigSet_resynced[`v480i_SL_str_slice]+8'h01)<<4)-1'b1;
     cfg_SL_v_en      <= ConfigSet_resynced[`v480i_SL_V_En_bit];
