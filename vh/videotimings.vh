@@ -182,7 +182,7 @@
   `define HSYNCLEN_720p50       40
   `define HBACKPORCH_720p50     220
   `define HACTIVE_720p50        1280
-  `define HOVERSCAN_MAX_720p50 `HFRONTPORCH_720p50
+  `define HOVERSCAN_MAX_720p50 `HBACKPORCH_720p50
   `define HTOTAL_720p50         1980
   `define VSYNC_active_720p50   1'b1
   `define VFRONTPORCH_720p50    5
@@ -199,7 +199,7 @@
   `define HSYNCLEN_960p50       32
   `define HBACKPORCH_960p50     80
   `define HACTIVE_960p50        1280
-  `define HOVERSCAN_MAX_960p50 `HFRONTPORCH_960p50
+  `define HOVERSCAN_MAX_960p50 `HBACKPORCH_960p50
   `define HTOTAL_960p50         1728
   `define VSYNC_active_960p50   1'b0
   `define VFRONTPORCH_960p50    3
@@ -216,7 +216,7 @@
   `define HSYNCLEN_1080p50      44
   `define HBACKPORCH_1080p50    148
   `define HACTIVE_1080p50       1920
-  `define HOVERSCAN_MAX_1080p50 `HFRONTPORCH_1080p50
+  `define HOVERSCAN_MAX_1080p50 `HBACKPORCH_1080p50
   `define HTOTAL_1080p50        2640
   `define VSYNC_active_1080p50  1'b1
   `define VFRONTPORCH_1080p50   4
@@ -233,7 +233,7 @@
   `define HSYNCLEN_1200p50      32
   `define HBACKPORCH_1200p50    80
   `define HACTIVE_1200p50       1600
-  `define HOVERSCAN_MAX_1200p50 `HFRONTPORCH_1200p50
+  `define HOVERSCAN_MAX_1200p50 `HBACKPORCH_1200p50
   `define HTOTAL_1200p50        2112
   `define VSYNC_active_1200p50  1'b1
   `define VFRONTPORCH_1200p50   3
@@ -250,7 +250,7 @@
   `define HSYNCLEN_1440p50      32
   `define HBACKPORCH_1440p50    58
   `define HACTIVE_1440p50       1920
-  `define HOVERSCAN_MAX_1440p50 `HFRONTPORCH_1440p50
+  `define HOVERSCAN_MAX_1440p50 `HBACKPORCH_1440p50
   `define HTOTAL_1440p50        2448
   `define VSYNC_active_1440p50  1'b0
   `define VFRONTPORCH_1440p50   3
