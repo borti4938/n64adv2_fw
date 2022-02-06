@@ -293,7 +293,7 @@ always @(posedge SYS_CLK) begin
 end
 
 assign vlines_set_w = ConfigSet[`target_vlines_slice];
-assign hpixels_set_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P ? {ConfigSet[`target_hpixels_slice],1'b0} : ConfigSet[`target_hpixels_slice];
+assign hpixels_set_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P ? ConfigSet[`target_hpixels_slice] << 1 : ConfigSet[`target_hpixels_slice];
 
 
 scaler_cfggen scaler_cfggen_u(
