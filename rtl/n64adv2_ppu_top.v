@@ -530,7 +530,7 @@ scaler scaler_u(
   .vinfo_i(vinfo_pass),
   .vdata_i(vdata24_pp_w[1]),
   .vdata_valid_i(vdata_valid_pp_w[1]),
-  .vdata_hvshift(cfg_hvshift),
+  .vdata_hvshift_i(cfg_hvshift),
   .DRAM_CLK_i(DRAM_CLK_i),
   .DRAM_nRST_i(DRAM_nRST_i),
   .DRAM_ADDR(DRAM_ADDR),

@@ -6,7 +6,7 @@ module scaler(
   vinfo_i,
   vdata_i,
   vdata_valid_i,
-  vdata_hvshift,
+  vdata_hvshift_i,
   
   DRAM_CLK_i,
   DRAM_nRST_i,
@@ -63,7 +63,7 @@ input VCLK_i;
 input [1:0] vinfo_i;
 input vdata_valid_i;
 input [`VDATA_O_FU_SLICE] vdata_i;
-input [9:0] vdata_hvshift;
+input [9:0] vdata_hvshift_i;
 
 input         DRAM_CLK_i;
 input         DRAM_nRST_i;
@@ -158,10 +158,10 @@ wire interlaced = vinfo_i[0];
 wire palmode_vclk_o_resynced = vinfo_txsynced_i[1];
 wire interlaced_vclk_o_resynced = vinfo_txsynced_i[0];
 
-wire hshift_direction = vdata_hvshift[9];
-wire [3:0] hshift    = vdata_hvshift[9] ? vdata_hvshift[8:5] : ~vdata_hvshift[8:5] + 1'b1;
-wire vshift_direction = vdata_hvshift[4];
-wire [3:0] vshift    = vdata_hvshift[4] ? vdata_hvshift[3:0] : ~vdata_hvshift[3:0] + 1'b1;
+wire hshift_direction = vdata_hvshift_i[9];
+wire [3:0] hshift    = vdata_hvshift_i[9] ? vdata_hvshift_i[8:5] : ~vdata_hvshift_i[8:5] + 1'b1;
+wire vshift_direction = vdata_hvshift_i[4];
+wire [3:0] vshift    = vdata_hvshift_i[4] ? vdata_hvshift_i[3:0] : ~vdata_hvshift_i[3:0] + 1'b1;
 
 
 // wires
