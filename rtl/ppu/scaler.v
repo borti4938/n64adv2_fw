@@ -7,6 +7,7 @@ module scaler(
   vdata_i,
   vdata_valid_i,
   vdata_hvshift_i,
+  vdata_bob_deinterlacing_mode_i,
   
   DRAM_CLK_i,
   DRAM_nRST_i,
@@ -64,6 +65,7 @@ input [1:0] vinfo_i;
 input vdata_valid_i;
 input [`VDATA_O_FU_SLICE] vdata_i;
 input [9:0] vdata_hvshift_i;
+input vdata_bob_deinterlacing_mode_i;
 
 input         DRAM_CLK_i;
 input         DRAM_nRST_i;
@@ -112,7 +114,6 @@ output reg [`VDATA_O_CO_SLICE] vdata_o;
 localparam resync_stages = 3;
 
 localparam hcnt_width = $clog2(`PIXEL_PER_LINE_MAX);
-//localparam vcnt_width = $clog2(2*`TOTAL_LINES_PAL_LX1); // consider interlaced content
 localparam vcnt_width = $clog2(`TOTAL_LINES_PAL_LX1); // should be 9
 localparam hpos_width = $clog2(`ACTIVE_PIXEL_PER_LINE);
 
@@ -188,6 +189,9 @@ wire [`VDATA_O_CO_SLICE] sdram_data_o;
 wire sdram_cmd_ack_o, sdram_data_ack_o, sdram_ctrl_rdy_o;
 
 wire wren_post_sdram_buf_p0_w, wren_post_sdram_buf_p1_w, wren_post_sdram_buf_p2_w;
+
+wire [1:0] datainfo_pre_sdram_buf_bank_sel_w;
+wire datainfo_pre_sdram_buf_frame_rdy4out_w, datainfo_pre_sdram_buf_frame_id_w;
 
 // wires for output rtl
 wire [8:0] vcnt_i_vclk_o_resynced;
@@ -273,8 +277,9 @@ reg sdram_wr_en_i;
 reg [22:0] sdram_addr_i; // (13bits row),(2bits bank),(8bits dblcolumn)
 reg [`VDATA_O_CO_SLICE] sdram_data_i;
 
-reg [1:0] sdram_wr_bank_sel;
 reg sdram_wr_lineid;
+reg [1:0] sdram_wr_bank_sel_odd, sdram_wr_bank_sel_even;
+reg sdram_wr_frame_id;
 reg [vcnt_width-1:0] sdram_wr_vcnt;
 reg [hpos_width-1:0] sdram_wr_hcnt;
 
@@ -282,7 +287,7 @@ reg [1:0] frame_cnt_o;
 reg [9:0] vdata_pre_sdram_buf_out_cnt;
 
 reg [1:0] sdram_rd_bank_sel;
-reg [vcnt_width-1:0] sdram_rd_vcnt;
+reg [vcnt_width:0] sdram_rd_vcnt;
 reg [hpos_width-1:0] sdram_rd_hcnt;
 
 reg wren_post_sdram_buf;
@@ -461,7 +466,7 @@ always @(posedge VCLK_i or negedge nRST_i)
     vstart_i <= `VSTART_NTSC_LX1;
     vstop_i  <= `VSTOP_NTSC_LX1;
     
-    FrameID_i <= 1'b0;
+    FrameID_i <= 1'b1;
     frame_cnt_i <= 2'b00;
     input_proc_en <= 1'b0;
     in2out_en <= 1'b0;
@@ -502,10 +507,12 @@ always @(posedge VCLK_i or negedge nRST_i)
           vstop_i  <=  vshift_direction ? `VSTOP_NTSC_LX1  + vshift : `VSTOP_NTSC_LX1  - vshift;
         end
       
-        FrameID_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
+        if (interlaced & ~vdata_bob_deinterlacing_mode_i)
+          FrameID_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
+        else
+          FrameID_i <= 1'b1;
         vcnt_i_L <= {vcnt_width{1'b0}};
         if (in2out_en) begin
-  //        if (negedge_nHSYNC)
             frame_cnt_i <= frame_cnt_i + 1'b1;
         end else begin
           frame_cnt_i <= 2'b00;
@@ -674,6 +681,11 @@ end
 //   - true interlacing -> pushing even and odd frame into same frame page
 //                         repeating each frame twice
 
+assign datainfo_pre_sdram_buf_bank_sel_w = datainfo_pre_sdram_buf_sdr_clk_resynced[3:2];
+assign datainfo_pre_sdram_buf_frame_rdy4out_w = datainfo_pre_sdram_buf_sdr_clk_resynced[1];
+//assign datainfo_pre_sdram_buf_frame_id_w = datainfo_pre_sdram_buf_sdr_clk_resynced[0];
+assign datainfo_pre_sdram_buf_frame_id_w = 1'b1;
+
 always @(*) begin
   if (wrpage_post_sdram_buf[1]) begin
     wrpage_post_sdram_buf_cmb <= 2'b00;
@@ -703,8 +715,10 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
     sdram_addr_i <= {23{1'b0}};
     sdram_data_i <= {(3*color_width_o){1'b0}};
     
-    sdram_wr_bank_sel <= 2'b00;
     sdram_wr_lineid <= 1'b0;
+    sdram_wr_bank_sel_odd <= 2'b00;
+    sdram_wr_bank_sel_even <= 2'b00;
+    sdram_wr_frame_id <= 1'b1;
     sdram_wr_vcnt <= {vcnt_width{1'b0}};
     sdram_wr_hcnt <= {hpos_width{1'b0}};
 
@@ -730,22 +744,24 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
           sdram_proc_en <= 1'b1;
           if (sdram_wr_lineid ^ lineid_pre_sdram_buf_sdr_clk_resynced) begin
             // - Buffer hat umgeschaltet -> Elemente im SDRAM sichern
-            sdram_addr_i[20:19] <= 2'b00;               // unused
+            sdram_addr_i[20   ] <= 1'b0;                // unused
             sdram_addr_i[ 9: 0] <= {hpos_width{1'b0}};  // horizontal position
-            if (datainfo_pre_sdram_buf_sdr_clk_resynced[3:2] != sdram_wr_bank_sel) begin
-              sdram_wr_bank_sel <= datainfo_pre_sdram_buf_sdr_clk_resynced[3:2];   // set new bank for frame
-              sdram_wr_vcnt <= {vcnt_width{1'b0}};                            // reset vertical position
-              sdram_addr_i[22:21] <= datainfo_pre_sdram_buf_sdr_clk_resynced[3:2]; // use new bank for frame
-              sdram_addr_i[18:10] <= {vcnt_width{1'b0}};                      // use vertical position zero
+            if (( datainfo_pre_sdram_buf_frame_id_w & (datainfo_pre_sdram_buf_bank_sel_w != sdram_wr_bank_sel_odd )) ||
+                (~datainfo_pre_sdram_buf_frame_id_w & (datainfo_pre_sdram_buf_bank_sel_w != sdram_wr_bank_sel_even)) ) begin
+              sdram_wr_bank_sel_odd <= datainfo_pre_sdram_buf_bank_sel_w;                     // set new bank for frame
+              sdram_wr_frame_id <= datainfo_pre_sdram_buf_frame_id_w;                         // set new frame id
+              sdram_wr_vcnt <= {vcnt_width{1'b0}};                                            // reset vertical position
+              sdram_addr_i[22:21] <= datainfo_pre_sdram_buf_bank_sel_w;                       // use new bank for frame
+              sdram_addr_i[19:10] <= {{vcnt_width{1'b0}},datainfo_pre_sdram_buf_frame_id_w};  // use vertical position zero
             end else begin
-              sdram_addr_i[22:21] <= sdram_wr_bank_sel; // set bank for frame
-              sdram_addr_i[18:10] <= sdram_wr_vcnt;     // set vertical position
+              sdram_addr_i[22:21] <= sdram_wr_frame_id ? sdram_wr_bank_sel_odd : sdram_wr_bank_sel_even;  // set bank for frame
+              sdram_addr_i[19:10] <= {sdram_wr_vcnt,sdram_wr_frame_id};                                   // set vertical position
             end
             if (sdram_llm_sdr_clk_resynced) begin
-              frame_cnt_o <= datainfo_pre_sdram_buf_sdr_clk_resynced[3:2];   // set output frame to current frame in low latency mode
+              frame_cnt_o <= datainfo_pre_sdram_buf_bank_sel_w;   // set output frame to current frame in low latency mode
             end else begin
-              if (datainfo_pre_sdram_buf_sdr_clk_resynced[1])                // current input frame is fairly ahead for free running mode, ...
-                frame_cnt_o <= datainfo_pre_sdram_buf_sdr_clk_resynced[3:2]; // ... so set output frame to current frame 
+              if (datainfo_pre_sdram_buf_frame_rdy4out_w)         // current input frame is fairly ahead for free running mode, ...
+                frame_cnt_o <= datainfo_pre_sdram_buf_bank_sel_w; // ... so set output frame to current frame 
             end
             sdram_wr_hcnt <= {hpos_width{1'b0}};
             sdram_ctrl_state <= ST_SDRAM_FIFO2RAM0;
@@ -801,8 +817,9 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
       ST_SDRAM_RAM2BUF0: begin
           sdram_req_i <= 1'b1;
           sdram_addr_i[22:21] <= sdram_rd_bank_sel; // bank for frame
-          sdram_addr_i[20:19] <= 2'b00;             // unused
-          sdram_addr_i[18:10] <= sdram_rd_vcnt;     // vertical position
+          sdram_addr_i[20   ] <= 1'b0;              // unused
+          sdram_addr_i[19:11] <= sdram_rd_vcnt;     // vertical position
+          sdram_addr_i[   10] <= 1'b1;              // unused until weave de-interlacing is implemented
           sdram_addr_i[ 9: 0] <= sdram_rd_hcnt;     // horizontal position
           sdram_rd_hcnt <= sdram_rd_hcnt + 1'b1;
           sdram_ctrl_state <= ST_SDRAM_RAM2BUF1;
