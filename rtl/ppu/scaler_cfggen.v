@@ -147,7 +147,8 @@ assign inv_vscale_w = v_appr_mult_factor_w * (* multstyle = "dsp" *) n64_vlines_
 assign vlines_in_resmax_full_w = inv_vscale_L * (* multstyle = "dsp" *) vactive_LL;
 
 assign vpos_1st_rdline_normal_w = (vlines_in_resmax_L < {1'b0,n64_vlines_w}) ? (n64_vlines_w - vlines_in_resmax_L[9:0]) >> 1 : 0;
-assign vpos_1st_rdline_pal_boxed_w = (vlines_in_resmax_L < {1'b0,n64_vlines_ntsc_w}) ? (n64_vlines_pal_w - vlines_in_resmax_L[9:0]) >> 1 : 24;
+assign vpos_1st_rdline_pal_boxed_w = (vlines_in_resmax_L < {1'b0,n64_vlines_ntsc_w}) ? (n64_vlines_pal_w - vlines_in_resmax_L[9:0]) >> 1 :
+                                                               use_interlaced_full_L ? 48 : 24;
 
 
 assign n64_hpixels_w = nvideblur_L ? `ACTIVE_PIXEL_PER_LINE : `ACTIVE_PIXEL_PER_LINE/2;
