@@ -94,9 +94,7 @@ module n64adv2_top (
   PCB_ID_i
 );
 
-parameter [3:0] hdl_fw_main = 4'd2;
-parameter [7:0] hdl_fw_sub  = 8'd06;
-
+`include "../lib/n64adv2_hw_cfg.vh"
 `include "../lib/n64adv_vparams.vh"
 `include "../lib/n64adv2_config.vh"
 

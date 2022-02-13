@@ -246,6 +246,7 @@ set_location_assignment PIN_7 -to PCB_ID_i[0]
 set_global_assignment -name TOP_LEVEL_ENTITY n64adv2_top
 
 #vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv2_hw_cfg.vh
 set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv_vparams.vh
 set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv_cparams.vh
 set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv2_config.vh
