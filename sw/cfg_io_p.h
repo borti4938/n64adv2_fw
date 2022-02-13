@@ -41,7 +41,7 @@
 extern char szText[VD_WIDTH];
 
 extern const char *OffOn[], *Force5060[], *Resolutions[], *DeInterModes[], *InterpModes[],
-                  *ScanlinesThickness[], *ScanlinesScaleSoftening[], *QuickChange[];
+                  *ScanlinesThickness[], *ScanlinesScaleProfile[], *QuickChange[];
 
 
 // scaler
@@ -274,23 +274,23 @@ cfg_b32word_t extcfg2_word =
 config_t sl_thickness = {
     .cfg_word        = &extcfg2_word,
     .cfg_word_offset = CFG_240P_SL_THICKNESS_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_SL_THICKNESS_MAX_VALUE,
-        .getvalue_mask = CFG_240P_SL_THICKNESS_GETMASK
+    .cfg_type        = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_240P_SL_THICKNESS_SETMASK,
+        .clrflag_mask = CFG_240P_SL_THICKNESS_CLRMASK
     },
     .value_string = &ScanlinesThickness
 };
 
-config_t sl_scalesoftening = {
+config_t sl_profile = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_SL_SCALESOFT_OFFSET,
+    .cfg_word_offset = CFG_240P_SL_PROFILE_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
-        .max_value     = CFG_SL_SCALESOFT_MAX_VALUE,
-        .getvalue_mask = CFG_240P_SL_SCALESOFT_GETMASK
+        .max_value     = CFG_SL_PROFILE_MAX_VALUE,
+        .getvalue_mask = CFG_240P_SL_PROFILE_GETMASK
     },
-    .value_string = &ScanlinesScaleSoftening
+    .value_string = &ScanlinesScaleProfile
 };
 
 config_t slhyb_str = {
@@ -340,23 +340,23 @@ config_t hsl_en = {
 config_t sl_thickness_480i = {
     .cfg_word        = &extcfg2_word,
     .cfg_word_offset = CFG_480I_SL_THICKNESS_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_SL_THICKNESS_MAX_VALUE,
-        .getvalue_mask = CFG_480I_SL_THICKNESS_GETMASK
+    .cfg_type        = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_480I_SL_THICKNESS_SETMASK,
+        .clrflag_mask = CFG_480I_SL_THICKNESS_CLRMASK
     },
     .value_string = &ScanlinesThickness
 };
 
-config_t sl_scalesoftening_480i = {
+config_t sl_profile_480i = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SL_SCALESOFT_OFFSET,
+    .cfg_word_offset = CFG_480I_SL_PROFILE_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
-        .max_value     = CFG_SL_SCALESOFT_MAX_VALUE,
-        .getvalue_mask = CFG_480I_SL_SCALESOFT_GETMASK
+        .max_value     = CFG_SL_PROFILE_MAX_VALUE,
+        .getvalue_mask = CFG_480I_SL_PROFILE_GETMASK
     },
-    .value_string = &ScanlinesScaleSoftening
+    .value_string = &ScanlinesScaleProfile
 };
 
 config_t slhyb_str_480i = {
