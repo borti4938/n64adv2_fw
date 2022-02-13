@@ -58,8 +58,8 @@ module osd_injection #(
 );
 
 
-`include "../../vh/n64adv_cparams.vh"
-`include "../../vh/n64adv_vparams.vh"
+`include "../../lib/n64adv_cparams.vh"
+`include "../../lib/n64adv_vparams.vh"
 
 
 input OSDCLK;

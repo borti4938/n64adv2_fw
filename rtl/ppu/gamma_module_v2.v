@@ -40,8 +40,8 @@ module gamma_module_v2(
   vdata_o
 );
 
-`include "../../vh/n64adv_vparams.vh"
-`include "../../vh/n64adv2_config.vh"
+`include "../../lib/n64adv_vparams.vh"
+`include "../../lib/n64adv2_config.vh"
 
 input VCLK;
 input nRST;

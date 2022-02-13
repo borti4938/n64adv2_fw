@@ -47,7 +47,7 @@ module vconv(
   vdata_o
 );
 
-`include "vh/n64adv_vparams.vh"
+`include "../../lib/n64adv_vparams.vh"
 
 localparam coeff_width = 20;
 

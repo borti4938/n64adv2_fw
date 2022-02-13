@@ -55,7 +55,7 @@ module n64adv2_apu_top (
   SPDIF_o
 );
 
-`include "../vh/n64adv2_config.vh"
+`include "../lib/n64adv2_config.vh"
 
 
 input MCLK_i;

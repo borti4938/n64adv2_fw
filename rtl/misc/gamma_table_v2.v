@@ -44,7 +44,7 @@ module gamma_table_v2(
   vdata_out
 );
 
-`include "../../vh/n64adv_vparams.vh"
+`include "../../lib/n64adv_vparams.vh"
 
 input                     VCLK;
 input                     nRST;

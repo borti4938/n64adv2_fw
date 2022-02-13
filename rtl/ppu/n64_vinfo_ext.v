@@ -42,7 +42,7 @@ module n64_vinfo_ext(
   vinfo_o
 );
 
-`include "../../vh/n64adv_vparams.vh"
+`include "../../lib/n64adv_vparams.vh"
 
 input VCLK;
 input nRST;

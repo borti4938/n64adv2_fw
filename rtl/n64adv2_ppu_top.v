@@ -84,13 +84,13 @@ module n64adv2_ppu_top (
 );
 
 
-`include "../vh/n64adv_cparams.vh"
-`include "../vh/n64adv_vparams.vh"
-`include "../vh/n64adv2_config.vh"
-`include "../vh/videotimings.vh"
+`include "../lib/n64adv_cparams.vh"
+`include "../lib/n64adv_vparams.vh"
+`include "../lib/n64adv2_config.vh"
+`include "../lib/videotimings.vh"
 
-`include "../tasks/setVideoTimings.tasks.v"
-`include "../tasks/setOSDConfig.tasks.v"
+`include "../lib/setVideoTimings.tasks.v"
+`include "../lib/setOSDConfig.tasks.v"
 
 input N64_CLK_i;
 input N64_nVRST_i;

@@ -47,7 +47,7 @@ module n64a_vdemux(
   vdata_r_1
 );
 
-`include "../../vh/n64adv_vparams.vh"
+`include "../../lib/n64adv_vparams.vh"
 
 input VCLK;
 input nRST;

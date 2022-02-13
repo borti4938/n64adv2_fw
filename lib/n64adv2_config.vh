@@ -38,8 +38,9 @@
   //  wire [ 7:0] SysConfigSet3; (Audio)
   //    [ 7: 0] {(1bit reserve),audio_amp (5bits),audio_swap_lr,audio_spdif_en}
   //  wire [31:0] SysConfigSet2; (Scanlines)
-  //    [31:16] SL 240p: {(1bit reserved),Sl_thickness (2bits),Sl_scale_softening (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_V_En,Sl_H_En}
-  //    [15: 0] SL 480i: {Sl_thickness (2bits),Sl_scale_softening (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_V_En,Sl_H_En,Sl_link}
+  //    [31:29] {(3bits reserved)}
+  //    [28:15] SL 240p: {Sl_thickness (1bit),Sl_scale_softening (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_V_En,Sl_H_En}
+  //    [14: 0] SL 480i: {Sl_thickness (1bit),Sl_scale_softening (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits),Sl_V_En,Sl_H_En,Sl_link}
   //  wire [31:0] SysConfigSet1; (OSD, IGR, VI-Processing)
   //    [31:29] {show_osd_logo,show_osd,mute_osd}
   //    [28   ] {igr for reset}
@@ -76,23 +77,23 @@
   
   
   // PPU config
-  `define PPUConfig_WordWidth       85  // 31 + 22 + 32
+  `define PPUConfig_WordWidth       83  // 29 + 22 + 32
   
   `define SysCfg2_PPUCfg_Offset     54  // 22 + 32
   `define SysCfg1_PPUCfg_Offset     32  // 32
   `define SysCfg0_PPUCfg_Offset      0  // 0
   
-  `define SysConfigSet1_PPUConfig_slice 21: 0
+  `define SysConfigSet1_PPUConfig_slice 28: 0
   
-  `define v240p_SL_thickness_slice  30 + `SysCfg2_PPUCfg_Offset : 29 + `SysCfg2_PPUCfg_Offset
-  `define v240p_SL_scalesoft_slice  28 + `SysCfg2_PPUCfg_Offset : 27 + `SysCfg2_PPUCfg_Offset
-  `define v240p_SL_hybrid_slice     26 + `SysCfg2_PPUCfg_Offset : 22 + `SysCfg2_PPUCfg_Offset
-  `define v240p_SL_str_slice        21 + `SysCfg2_PPUCfg_Offset : 18 + `SysCfg2_PPUCfg_Offset
-  `define v240p_SL_V_En_bit         17 + `SysCfg2_PPUCfg_Offset
-  `define v240p_SL_H_En_bit         16 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_thickness_bit    28 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_profile_slice    27 + `SysCfg2_PPUCfg_Offset : 26 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_hybrid_slice     25 + `SysCfg2_PPUCfg_Offset : 21 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_str_slice        20 + `SysCfg2_PPUCfg_Offset : 17 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_V_En_bit         16 + `SysCfg2_PPUCfg_Offset
+  `define v240p_SL_H_En_bit         15 + `SysCfg2_PPUCfg_Offset
 
-  `define v480i_SL_thickness_slice  15 + `SysCfg2_PPUCfg_Offset : 14 + `SysCfg2_PPUCfg_Offset
-  `define v480i_SL_scalesoft_slice  13 + `SysCfg2_PPUCfg_Offset : 12 + `SysCfg2_PPUCfg_Offset
+  `define v480i_SL_thickness_bit    14 + `SysCfg2_PPUCfg_Offset
+  `define v480i_SL_profile_slice    13 + `SysCfg2_PPUCfg_Offset : 12 + `SysCfg2_PPUCfg_Offset
   `define v480i_SL_hybrid_slice     11 + `SysCfg2_PPUCfg_Offset :  7 + `SysCfg2_PPUCfg_Offset
   `define v480i_SL_str_slice         6 + `SysCfg2_PPUCfg_Offset :  3 + `SysCfg2_PPUCfg_Offset
   `define v480i_SL_V_En_bit          2 + `SysCfg2_PPUCfg_Offset

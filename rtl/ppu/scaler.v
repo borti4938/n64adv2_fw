@@ -56,10 +56,10 @@ module scaler(
 );
 
 
-`include "../../vh/n64adv_vparams.vh"
-`include "../../vh/videotimings.vh"
+`include "../../lib/n64adv_vparams.vh"
+`include "../../lib/videotimings.vh"
 
-`include "../../tasks/setVideoTimings.tasks.v"
+`include "../../lib/setVideoTimings.tasks.v"
 
 input async_nRST_i;
 

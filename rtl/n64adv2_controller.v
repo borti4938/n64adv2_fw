@@ -70,8 +70,8 @@ module n64adv2_controller #(
 );
 
 
-`include "../vh/n64adv_cparams.vh"
-`include "../vh/n64adv2_config.vh"
+`include "../lib/n64adv_cparams.vh"
+`include "../lib/n64adv2_config.vh"
 
 inout N64_nRST_io;
 

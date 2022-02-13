@@ -26,9 +26,9 @@ module scanline_emu #(
 
 );
 
-`include "../../vh/n64adv_vparams.vh"
+`include "../../lib/n64adv_vparams.vh"
 
-`include "../../tasks/getScanlineProfile.tasks.v"
+`include "../../lib/getScanlineProfile.tasks.v"
 
 input VCLK_i;
 input nVRST_i;

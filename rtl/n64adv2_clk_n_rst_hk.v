@@ -63,7 +63,7 @@ module n64adv2_clk_n_rst_hk(
 );
 
 
-`include "../vh/videotimings.vh"
+`include "../lib/videotimings.vh"
 
 input N64_CLK_i;
 input N64_nRST_i;
