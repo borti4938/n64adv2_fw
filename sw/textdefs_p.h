@@ -242,7 +242,7 @@ static const char *slcfg_opt_overlay __ufmdata_section__ =
     "* Use vertical sl.:\n"
     "* Appearance:\n"
     "  - Thickness:\n"
-    "  - Scale softening:\n"
+    "  - Profile:\n"
     "  - Strength:\n"
     "  - Bloom effect:";
 
@@ -346,16 +346,16 @@ const char *RunFunction __ufmdata_section__   = "[Run ...]";
 const char *not_available __ufmdata_section__ = "-----";
 const char *Global __ufmdata_section__        = "Global";
 
-const char *OffOn[]                   = {"Off","On"};
-const char *NTSCPAL_SEL[]             = {"NTSC  ","PAL   ", "Current"};
-const char *Force5060[]               = {"Off (N64 Auto)","60Hz","50Hz"};
-const char *Resolutions[]             = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p"};
-const char *FallbackRes[]             = {"1080p","480p/576p"};
-const char *DeInterModes[]            = {"Bob","Weave","Motion Adaptive"};
-const char *InterpModes[]             = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
-const char *VTimingSel[]              = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
-const char *ScanlinesThickness[]      = {"Super thin","Thin","Middle", "Thick"};
-const char *ScanlinesScaleSoftening[] = {"Hard","Middle","Soft","Super soft"};
+const char *OffOn[]                 = {"Off","On"};
+const char *NTSCPAL_SEL[]           = {"NTSC  ","PAL   ", "Current"};
+const char *Force5060[]             = {"Off (N64 Auto)","60Hz","50Hz"};
+const char *Resolutions[]           = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p"};
+const char *FallbackRes[]           = {"1080p","480p/576p"};
+const char *DeInterModes[]          = {"Bob","Weave","Motion Adaptive"};
+const char *InterpModes[]           = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
+const char *VTimingSel[]            = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
+const char *ScanlinesThickness[]    = {"Normal","Thick"};
+const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular","Flat top"};
 
 const char *VideoMode[] __ufmdata_section__   = {"240p","480i","288p","576i"};
 const char *VRefresh[] __ufmdata_section__    = {"@ 60Hz","@ 50Hz"};

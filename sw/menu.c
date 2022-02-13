@@ -250,13 +250,13 @@ menu_t slcfg_opt_subscreen = {
         {.id = SLCFG_HEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &hsl_en},
         {.id = SLCFG_VEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &vsl_en},
         {.id = SLCFG_THICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness},
-        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_scalesoftening},
+        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile},
         {.id = SLCFG_STR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str},
         {.id = SLCFG_HYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str},
         {.id = SLCFG_HEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &hsl_en_480i},
         {.id = SLCFG_VEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &vsl_en_480i},
         {.id = SLCFG_THICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_480i},
-        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_scalesoftening_480i},
+        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_480i},
         {.id = SLCFG_STR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_480i},
         {.id = SLCFG_HYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_480i}
     }
