@@ -28,6 +28,8 @@ module scanline_emu #(
 
 `include "../../vh/n64adv_vparams.vh"
 
+`include "../../tasks/getScanlineProfile.tasks.v"
+
 input VCLK_i;
 input nVRST_i;
 
@@ -66,7 +68,7 @@ wire [7:0] sl_edge_softening_w; // area width at each border where the SL streng
 
 wire drawSL_w;
 wire [7:0]  SL_str_correction_factor_1L_w;
-wire [13:0] SL_str_corrected_3L_full_w;
+wire [15:0] SL_str_corrected_3L_full_w;
 wire [7:0]  SL_str_corrected_3L_w, SL_str_corrected_4L_w;
 
 wire [Y_width+4:0] Y_ref_pre_full_w;
@@ -80,8 +82,8 @@ generate
     reg [proc_stages-2:1] Y_drawSL;
     reg [2:1] Y_max_SL_str;
     reg [7:0] Y_SL_str_correction_factor_0L;
-    reg [5:0] Y_SL_str_correction_factor_1L, Y_SL_str_correction_factor_2L;
-    reg [7:0] Y_SL_str_corrected_3L, Y_SL_str_corrected_4L;
+    reg [5:0] Y_SL_str_correction_factor_1L;
+    reg [7:0] Y_SL_str_correction_factor_2L, Y_SL_str_corrected_3L, Y_SL_str_corrected_4L;
   end else begin
     reg [proc_stages-2:1] drawSL;
     reg [2:1] max_SL_str;
@@ -124,14 +126,24 @@ generate
       Y_drawSL[1] <= sl_thickness_i ? Y_SL_str_correction_factor_0L > 8'b00100000 : Y_SL_str_correction_factor_0L > 8'b01000000;  // for thick sl, draw if value is over 0.125; for normal sl, if value is over 0.25
       
       Y_max_SL_str[2] <= Y_max_SL_str[1];
-      Y_max_SL_str[1] <= sl_thickness_i ? Y_SL_str_correction_factor_0L >= 8'b01100000 : Y_SL_str_correction_factor_0L[7];              // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
+      Y_max_SL_str[1] <= sl_thickness_i ? Y_SL_str_correction_factor_0L[7:5] >= 3'b011 : Y_SL_str_correction_factor_0L[7];  // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
 //      Y_max_SL_str[1] <= sl_thickness_i ? Y_SL_str_correction_factor_0L >= 8'b01100000 : Y_SL_str_correction_factor_0L >= 8'b10000000;  // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
       
       Y_SL_str_correction_factor_0L <= sl_rel_pos_i > 8'h80 ? ~sl_rel_pos_i + 1'b1 : sl_rel_pos_i;  // map everything between 0 and 0.5 (from 8'h00 to 8'h80)
       Y_SL_str_correction_factor_1L <= SL_str_correction_factor_1L_w[5:0];                          // 6bits are fine here
-      Y_SL_str_correction_factor_2L <= Y_SL_str_correction_factor_1L;                               // ToDo: insert profile here
-      
-      Y_SL_str_corrected_3L <= Y_max_SL_str[2] ? sl_strength_i : SL_str_corrected_3L_full_w[13:6];
+      case(sl_profile_i)
+        2'b01:  // gaussian
+          getGaussProfile(Y_SL_str_correction_factor_1L,Y_SL_str_correction_factor_2L);
+        2'b10:  // rectangular
+          Y_SL_str_correction_factor_2L <= {Y_SL_str_correction_factor_1L,Y_SL_str_correction_factor_1L[5:4]};
+        2'b11: begin  // flat top
+            Y_drawSL[2] <= sl_en_i & Y_SL_str_correction_factor_1L[5];
+            Y_max_SL_str[2] <= Y_SL_str_correction_factor_1L[5];
+          end
+        default:  // hanning
+          getHannProfile(Y_SL_str_correction_factor_1L,Y_SL_str_correction_factor_2L);
+      endcase
+      Y_SL_str_corrected_3L <= Y_max_SL_str[2] ? sl_strength_i : SL_str_corrected_3L_full_w[15:8];
       Y_SL_str_corrected_4L <= Y_SL_str_corrected_3L;
     end
   
@@ -149,14 +161,26 @@ generate
       drawSL[1] <= sl_thickness_i ? SL_str_correction_factor_0L > 8'b00100000 : SL_str_correction_factor_0L > 8'b01000000;  // for thick sl, draw if value is over 0.125; for normal sl, if value is over 0.25
       
       max_SL_str[2] <= max_SL_str[1];
-      max_SL_str[1] <= sl_thickness_i ? SL_str_correction_factor_0L >= 8'b01100000 : SL_str_correction_factor_0L[7];              // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
+      max_SL_str[1] <= sl_thickness_i ? SL_str_correction_factor_0L[7:5] >= 3'b011 : SL_str_correction_factor_0L[7];  // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
 //      max_SL_str[1] <= sl_thickness_i ? SL_str_correction_factor_0L >= 8'b01100000 : SL_str_correction_factor_0L >= 8'b10000000;  // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
       
       SL_str_correction_factor_0L <= sl_rel_pos_i > 8'h80 ? ~sl_rel_pos_i + 1'b1 : sl_rel_pos_i;  // map everything between 0 and 0.5 (from 8'h00 to 8'h80)
       SL_str_correction_factor_1L <= SL_str_correction_factor_1L_w[5:0];                          // 6bits are fine here
-      SL_str_correction_factor_2L <= SL_str_correction_factor_1L;                                 // ToDo: insert profile here
       
-      SL_str_corrected_3L <= max_SL_str[2] ? sl_strength_i : SL_str_corrected_3L_full_w[13:6];
+      case(sl_profile_i)
+        2'b01:  // gaussian
+          getGaussProfile(SL_str_correction_factor_1L,SL_str_correction_factor_2L);
+        2'b10:  // rectangular
+          SL_str_correction_factor_2L <= {SL_str_correction_factor_1L,SL_str_correction_factor_1L[5:4]};
+        2'b11: begin  // flat top
+            drawSL[2] <= sl_en_i & SL_str_correction_factor_1L[5];
+            max_SL_str[2] <= SL_str_correction_factor_1L[5];
+          end
+        default:  // hanning
+          getHannProfile(SL_str_correction_factor_1L,SL_str_correction_factor_2L);
+      endcase
+      
+      SL_str_corrected_3L <= max_SL_str[2] ? sl_strength_i : SL_str_corrected_3L_full_w[15:8];
       SL_str_corrected_4L <= SL_str_corrected_3L;
     end
   
