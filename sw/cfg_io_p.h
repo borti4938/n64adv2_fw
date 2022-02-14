@@ -236,7 +236,7 @@ config_t deinterlace_mode = {
     .cfg_word_offset = CFG_DEINTER_MODE_OFFSET,
     .cfg_type        = FLAG,
     .flag_masks      = {
-        .setflag_mask = (0x1<<CFG_DEINTER_MODE_OFFSET),
+        .setflag_mask = CFG_DEINTER_MODE_SETMASK,
         .clrflag_mask = CFG_DEINTER_MODE_CLRMASK
     },
     .value_string = &DeInterModes

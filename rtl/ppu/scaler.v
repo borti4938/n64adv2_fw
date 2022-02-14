@@ -116,7 +116,7 @@ output        DRAM_nRAS;
 output        DRAM_nWE;
 
 input [1:0] vinfo_dramsynced_i;
-input [1:0] video_deinterlacing_mode_i;
+input video_deinterlacing_mode_i;
 input [9:0] video_vpos_1st_rdline_i;  // first line to read (needed if scaling factor is so high such that not all lines are needed)
 
 input VCLK_o;
@@ -801,8 +801,8 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             sdram_wr_hcnt <= {hpos_width{1'b0}};
             sdram_ctrl_state <= ST_SDRAM_FIFO2RAM0;
           end else if (vcnt_o_sdr_clk_resynced == 1) begin // fetch first line
-            sdram_use_interlaced_out <= interlaced_dramclk_resynced & |video_deinterlacing_mode_i; // handle bob deinterlacing as non-deinterlacing
-            if (interlaced_dramclk_resynced & |video_deinterlacing_mode_i) begin
+            sdram_use_interlaced_out <= interlaced_dramclk_resynced & video_deinterlacing_mode_i; // handle bob deinterlacing as non-deinterlacing
+            if (interlaced_dramclk_resynced & video_deinterlacing_mode_i) begin
               sdram_rd_bank_sel_current <= X_vpos_1st_rdline[0] ? sdram_bank_rdy4out_even : sdram_bank_rdy4out_odd;
               sdram_rd_vcnt <= X_vpos_1st_rdline;
             end else begin

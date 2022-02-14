@@ -150,7 +150,7 @@ wire palmode_sysclk_resynced, n64_480i_sysclk_resynced;
 wire use_interlaced_full_w;
 wire cfg_nvideblur_sysclk_resynced;
 
-wire [1:0] cfg_deinterlacing_mode_dramclk_resynced;
+wire cfg_deinterlacing_mode_dramclk_resynced;
 wire palmode_dramclk_resynced, n64_480i_dramclk_resynced;
 
 wire cfg_lowlatencymode_resynced;
@@ -291,7 +291,7 @@ end
 
 assign vlines_set_w = ConfigSet[`target_vlines_slice];
 assign hpixels_set_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P ? ConfigSet[`target_hpixels_slice] << 1 : ConfigSet[`target_hpixels_slice];
-assign use_interlaced_full_w = n64_480i_sysclk_resynced & |ConfigSet[`deinterlacing_mode_slice];
+assign use_interlaced_full_w = n64_480i_sysclk_resynced & ConfigSet[`deinterlacing_mode_bit];
 
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
@@ -324,7 +324,7 @@ register_sync #(
   .clk(N64_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ConfigSet[`gamma_slice],~ConfigSet[`n16bit_mode_bit],ConfigSet[`hshift_slice],ConfigSet[`vshift_slice],~|ConfigSet[`deinterlacing_mode_slice],~ConfigSet[`videblur_bit]}),
+  .reg_i({ConfigSet[`gamma_slice],~ConfigSet[`n16bit_mode_bit],ConfigSet[`hshift_slice],ConfigSet[`vshift_slice],~ConfigSet[`deinterlacing_mode_bit],~ConfigSet[`videblur_bit]}),
   .reg_o({cfg_gamma              ,cfg_n16bit_mode             ,cfg_hvshift                                      ,cfg_bob_deinterlacing_mode            ,cfg_nvideblur_pre})
 ); // Note: add output reg as false path in sdc (cfg_sync4n64clk_u0|reg_synced_1[*])
 
@@ -337,13 +337,13 @@ always @(*)
 
 // ... in DRAM clock domain
 register_sync #(
-  .reg_width(12),  // 10 + 2
-  .reg_preset({12{1'b0}})
+  .reg_width(11),  // 10 + 1
+  .reg_preset(11'd0)
 ) cfg_sync4dramlogic_u0 (
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({cfg_vpos_1st_rdline_w       ,ConfigSet[`deinterlacing_mode_slice]}),
+  .reg_i({cfg_vpos_1st_rdline_w       ,ConfigSet[`deinterlacing_mode_bit]}),
   .reg_o({cfg_vpos_1st_rdline_resynced,cfg_deinterlacing_mode_dramclk_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
