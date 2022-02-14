@@ -116,10 +116,18 @@ output N64_CLK_o;
 input  HDMI_CLKsub_i;
 input  HDMI_CLKmain_i;
 output HDMI_CLK_o;
-output VSYNC_o;
-output HSYNC_o;
-output DE_o;
-output [3*color_width_o-1:0] VD_o;
+
+`ifdef VIDEO_USE_FAST_OUTPUT_REGs
+  output reg VSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
+  output reg HSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
+  output reg DE_o = 1'b0                                          /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
+  output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}} /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
+`else
+  output reg VSYNC_o = 1'b0;
+  output reg HSYNC_o = 1'b0;
+  output reg DE_o = 1'b0;
+  output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}};
+`endif
 
 output ASCLK_o;
 output ASDATA_o;
@@ -166,7 +174,8 @@ wire OSD_VSync_w;
 wire [24:0] OSDWrVector_w;
 wire [ 1:0] OSDInfo_w;
 
-wire HSYNC_w, VSYNC_w, DE_w;
+wire HSYNC_o_w, VSYNC_o_w, DE_o_w;
+wire [3*color_width_o-1:0] VD_o_w;
 
 wire DRAM_nCS_dummy;
 wire DRAM_ADDR12_dummy;
@@ -263,10 +272,10 @@ n64adv2_ppu_top n64adv2_ppu_u(
   .scaler_nresync_i(Si_cfg_done_w),
   .VCLK_Tx(HDMI_CLK_w),
   .nVRST_Tx(HDMI_nRST_w),
-  .VSYNC_o(VSYNC_w),
-  .HSYNC_o(HSYNC_w),
-  .DE_o(DE_w),
-  .VD_o(VD_o),
+  .VSYNC_o(VSYNC_o_w),
+  .HSYNC_o(HSYNC_o_w),
+  .DE_o(DE_o_w),
+  .VD_o(VD_o_w),
   .DRAM_CLK_i(DRAM_CLKs_w[0]),
   .DRAM_nRST_i(DRAM_nRST_w),
   .DRAM_ADDR({DRAM_ADDR12_dummy,DRAM_ADDR}),
@@ -282,9 +291,28 @@ n64adv2_ppu_top n64adv2_ppu_u(
 
 assign DRAM_CLK = DRAM_CLKs_w[1];
 assign HDMI_CLK_o = HDMI_CLK_w;
-assign HSYNC_o = HSYNC_w;
-assign VSYNC_o = VSYNC_w;
-assign DE_o = DE_w;
+
+`ifdef VIDEO_USE_FAST_OUTPUT_REGs
+  always @(posedge HDMI_CLK_w or negedge HDMI_nRST_w)
+    if (!nVRST_Tx) begin
+      VSYNC_o <= 1'b0;
+      HSYNC_o <= 1'b0;
+         DE_o <= 1'b0;
+         VD_o <= {3*color_width_o{1'b0}};
+    end else begin
+      VSYNC_o <= VSYNC_o_w;
+      HSYNC_o <= HSYNC_o_w;
+         DE_o <= DE_o_w;
+         VD_o <= VD_o_w;
+    end
+`else
+  always @(*) begin
+    VSYNC_o <= VSYNC_o_w;
+    HSYNC_o <= HSYNC_o_w;
+       DE_o <= DE_o_w;
+       VD_o <= VD_o_w;
+  end
+`endif
 
 
 // audio processing module

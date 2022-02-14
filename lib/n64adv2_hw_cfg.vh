@@ -36,5 +36,7 @@
 
   parameter [3:0] hdl_fw_main = 4'd2;
   parameter [7:0] hdl_fw_sub  = 8'd07;
+  
+  //`define VIDEO_USE_FAST_OUTPUT_REGs
 
 `endif

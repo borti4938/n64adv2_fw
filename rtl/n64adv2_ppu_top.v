@@ -37,8 +37,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-//`define VIDEO_USE_FAST_OUTPUT_REGs
-
 module n64adv2_ppu_top (
   // N64 Video Input
   N64_CLK_i,
@@ -111,17 +109,10 @@ input scaler_nresync_i;
 input VCLK_Tx;
 input nVRST_Tx;
 
-`ifdef VIDEO_USE_FAST_OUTPUT_REGs
-  output reg VSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-  output reg HSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-  output reg DE_o = 1'b0                                          /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-  output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}} /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-`else
-  output reg VSYNC_o = 1'b0;
-  output reg HSYNC_o = 1'b0;
-  output reg DE_o = 1'b0;
-  output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}};
-`endif
+output reg VSYNC_o = 1'b0;
+output reg HSYNC_o = 1'b0;
+output reg DE_o = 1'b0;
+output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}};
 
 input         DRAM_CLK_i;
 input         DRAM_nRST_i;
@@ -693,10 +684,10 @@ always @(posedge VCLK_Tx or negedge nVRST_Tx)
     HSYNC_pre_L <= 1'b0;
        DE_pre_L <= 1'b0;
     
-    VSYNC_o_L <= 1'b0;
-    HSYNC_o_L <= 1'b0;
-       DE_o_L <= 1'b0;
-       VD_o_L <= {3*color_width_o{1'b0}};
+    VSYNC_o <= 1'b0;
+    HSYNC_o <= 1'b0;
+       DE_o <= 1'b0;
+       VD_o <= {3*color_width_o{1'b0}};
   end else begin
     limited_Re_pre_LL <= limited_Re_pre_L[color_width_o:1] + limited_Re_pre_L[0];
     limited_Gr_pre_LL <= limited_Gr_pre_L[color_width_o:1] + limited_Gr_pre_L[0];
@@ -715,38 +706,16 @@ always @(posedge VCLK_Tx or negedge nVRST_Tx)
     HSYNC_pre_L <= vdata24_pp_w[5][3*color_width_o+1];
        DE_pre_L <= vdata24_pp_w[5][3*color_width_o+2];
     
-    VSYNC_o_L <= VSYNC_pre_LL;
-    HSYNC_o_L <= HSYNC_pre_LL;
-       DE_o_L <= DE_pre_LL;
+    VSYNC_o <= VSYNC_pre_LL;
+    HSYNC_o <= HSYNC_pre_LL;
+       DE_o <= DE_pre_LL;
     if (cfg_limitedRGB) begin
-      VD_o_L[`VDATA_O_RE_SLICE] <= {limited_Re_pre_LL[color_width_o-1:4] + 1'b1,limited_Re_pre_LL[3:0]};
-      VD_o_L[`VDATA_O_GR_SLICE] <= {limited_Gr_pre_LL[color_width_o-1:4] + 1'b1,limited_Gr_pre_LL[3:0]};
-      VD_o_L[`VDATA_O_BL_SLICE] <= {limited_Bl_pre_LL[color_width_o-1:4] + 1'b1,limited_Bl_pre_LL[3:0]};
+      VD_o[`VDATA_O_RE_SLICE] <= {limited_Re_pre_LL[color_width_o-1:4] + 1'b1,limited_Re_pre_LL[3:0]};
+      VD_o[`VDATA_O_GR_SLICE] <= {limited_Gr_pre_LL[color_width_o-1:4] + 1'b1,limited_Gr_pre_LL[3:0]};
+      VD_o[`VDATA_O_BL_SLICE] <= {limited_Bl_pre_LL[color_width_o-1:4] + 1'b1,limited_Bl_pre_LL[3:0]};
     end else begin
-      VD_o_L <= full_RGB_pre_LL;
+      VD_o <= full_RGB_pre_LL;
     end
   end
-
-`ifdef VIDEO_USE_FAST_OUTPUT_REGs
-  always @(posedge VCLK_Tx or negedge nVRST_Tx)
-    if (!nVRST_Tx) begin
-      VSYNC_o <= 1'b0;
-      HSYNC_o <= 1'b0;
-         DE_o <= 1'b0;
-         VD_o <= {3*color_width_o{1'b0}};
-    end else begin
-      VSYNC_o <= VSYNC_o_L;
-      HSYNC_o <= HSYNC_o_L;
-         DE_o <= DE_o_L;
-         VD_o <= VD_o_L;
-    end
-`else
-  always @(*) begin
-    VSYNC_o <= VSYNC_o_L;
-    HSYNC_o <= HSYNC_o_L;
-       DE_o <= DE_o_L;
-       VD_o <= VD_o_L;
-  end
-`endif
 
 endmodule
