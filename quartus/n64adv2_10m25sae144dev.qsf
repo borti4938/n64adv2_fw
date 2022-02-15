@@ -282,14 +282,14 @@ set_global_assignment -name VERILOG_FILE ../rtl/misc/ram2port.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/font_rom_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/gamma_table_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/serial_divide.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/sdram_ctrl.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/polyphase_2step_fir.v
 
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64_vinfo_ext.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64a_vdemux.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/gamma_module_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/scaler_cfggen.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/scaler.v
-set_global_assignment -name VERILOG_FILE ../rtl/ppu/sdram_ctrl.v
-set_global_assignment -name VERILOG_FILE ../rtl/ppu/polyphase_2step_fir.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/scanline_emu.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/osd_injection.v
 
