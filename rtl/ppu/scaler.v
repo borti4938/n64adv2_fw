@@ -291,7 +291,7 @@ reg [hcnt_width-1:0] hstart_i = `HSTART_NTSC;
 reg [vcnt_width-1:0] vstart_i = `VSTART_NTSC_LX1;
 reg [vcnt_width-1:0] vstop_i  = `VSTOP_NTSC_LX1;
 
-reg FrameID_i;
+reg field_id_i;
 reg [1:0] field_cnt_i;
 reg input_proc_en;
 reg in2out_en;
@@ -505,7 +505,7 @@ always @(posedge VCLK_i or negedge nRST_i)
     vstart_i <= `VSTART_NTSC_LX1;
     vstop_i  <= `VSTOP_NTSC_LX1;
     
-    FrameID_i <= 1'b1;
+    field_id_i <= 1'b1;
     field_cnt_i <= 2'b00;
     input_proc_en <= 1'b0;
     in2out_en <= 1'b0;
@@ -548,10 +548,10 @@ always @(posedge VCLK_i or negedge nRST_i)
         end
       
         if (interlaced & !vdata_bob_deinterlacing_mode_i) begin
-          FrameID_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
+          field_id_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
           field_cnt_i  <= negedge_nHSYNC ? field_cnt_i + 1'b1 : field_cnt_i;
         end else begin
-          FrameID_i <= 1'b1;
+          field_id_i <= 1'b1;
           field_cnt_i <= field_cnt_i + 1'b1;
         end
         vcnt_i_L <= {vcnt_width{1'b0}};
@@ -580,7 +580,7 @@ always @(posedge VCLK_i or negedge nRST_i)
           hcnt_pre_sdram_buf <= 0;
         end
         if (hcnt_pre_sdram_buf == `ACTIVE_PIXEL_PER_LINE - 52) begin // write page info early
-          datainfo_pre_sdram_buf <= {FrameID_i,field_cnt_i,field_rdy4out};
+          datainfo_pre_sdram_buf <= {field_id_i,field_cnt_i,field_rdy4out};
           datainfo_rdy <= 1'b1;
         end
       end
