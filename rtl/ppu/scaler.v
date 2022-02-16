@@ -820,7 +820,7 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
           end else if (vcnt_o_sdr_clk_resynced > 1 &&
                        wrpage_post_sdram_buf_cmb != rdpage_slbuf_sdr_clk_resynced ) begin  // fetch concurrent lines on demand
             if (sdram_use_interlaced_out) begin
-              sdram_rd_bank_sel_current <= sdram_rd_vcnt[0] ? sdram_rd_bank_sel_odd : sdram_rd_bank_sel_even; // toggle between even and odd field bank
+              sdram_rd_bank_sel_current <= sdram_rd_vcnt[0] ? sdram_rd_bank_sel_even : sdram_rd_bank_sel_odd; // toggle between even and odd field bank
               sdram_rd_vcnt <= sdram_rd_vcnt + 1'b1;
             end else begin
               sdram_rd_bank_sel_current <= sdram_rd_bank_sel_odd;
