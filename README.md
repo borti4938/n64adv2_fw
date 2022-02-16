@@ -115,18 +115,17 @@ An empty default value means that this value is not affected by loading defaults
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **De-Interlacing mode** | Bob | Selects between **Bob** or **Weave** deinterlacing for 480i/576i video input \[7\] |
+| **De-Interlacing mode** | Bob | Selects between **Bob** or **Weave** deinterlacing for 480i/576i video input |
 | **Scanline emulation** | | Enters the submenu for the scanline settings |
 | **Gamma Value** | 1.00 | Applies some gamma boost.<br>Gamma curve on output is defined as I = I_{in}^**\gamma**, where I is the intensity. |
 | **Limited RGB** | Off | Limits the 8bit RGB values in a range of 16 to 235. |
-| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[8\] |
-| **LowRes.-DeBlur - power cycle default** | | Sets the power cycle default. |
-| **16bit mode** | Off | Selects between \[9\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
-| **16bit mode - power cycle default** | | Sets the power cycle default. |
+| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[7\] |
+| **LowRes.-DeBlur - power cycle default** | Off | Sets the power cycle default. |
+| **16bit mode** | Off | Selects between \[8\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
+| **16bit mode - power cycle default** | Off | Sets the power cycle default. |
 
-\[7\] _Weave_ deinterlacing produces heavy artefacts in moving images; much larger than it should be -> bug will be addressed in a future update
-\[8\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
-\[9\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
+\[7\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
+\[8\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
 
 #### Scanlines Config
 
@@ -136,16 +135,16 @@ A proper implementation is still on my _To-do_ list.
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Input mode** \[10\] | | Switches between NTSC/PAL progressive/interlaced input |
-| **Use Scanline** \[11\] | Off | Enables scanline for the particular input mode.<br>Settings for interlaced modes can be linked to the corresponding progressive mode. |
+| **Input mode** \[9\] | | Switches between NTSC/PAL progressive/interlaced input |
+| **Use Scanline** \[10\] | Off | Enables scanline for the particular input mode.<br>Settings for interlaced modes can be linked to the corresponding progressive mode. |
 | **Thickness** | Normal | Switches between **Normal** or **Thick** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
 | **Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
-| **Scanline Strength** \[12\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
-| **Bloom effect** \[12\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
+| **Scanline Strength** \[11\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
+| **Bloom effect** \[11\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
 
-\[10\] _Input mode_ can be changed using **L** or **R** button on the controller.  
-\[11\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Scaling factor must be at least 2x to have scanlines drawn.  
-\[12\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
+\[9\] _Input mode_ can be changed using **L** or **R** button on the controller.  
+\[10\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Scaling factor must be at least 2x to have scanlines drawn.  
+\[11\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
 
 #### Miscellaneous
 
@@ -158,9 +157,9 @@ A proper implementation is still on my _To-do_ list.
 | **Controller Routines - Reset** | | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
 | **Controller Routines - VI-DeBlur** | | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
 | **Controller Routines - 16bit Mode** | | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
-| **Unlock lucky 1440p** \[13\] | Off | Unlocks 1440p resolution in the _resolution_ configuration screen |
+| **Unlock lucky 1440p** \[12\] | Off | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
-\[13\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
+\[12\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
 
 #### Save/Load/Fw.Update
 
