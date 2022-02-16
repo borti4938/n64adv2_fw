@@ -777,10 +777,8 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
                 sdram_addr_i[22:21] <= sdram_wr_bank_sel_odd; // set bank for frame
                 sdram_addr_i[19:10] <= {sdram_wr_vcnt,1'b1};  // set vertical position
               end
-              if (datainfo_pre_sdram_buf_field_rdy4out_w) begin // update output field if current input field is fairly ahead
+              if (datainfo_pre_sdram_buf_field_rdy4out_w) // update output field if current input field is fairly ahead
                 sdram_bank_rdy4out_odd  <= sdram_wr_bank_sel_odd;
-//                sdram_bank_rdy4out_even <= sdram_wr_bank_sel_even;
-              end
             end else begin
               if (datainfo_pre_sdram_buf_bank_sel_w != sdram_wr_bank_sel_even) begin
                 sdram_wr_bank_sel_even  <= datainfo_pre_sdram_buf_bank_sel_w; // set new bank for frame
@@ -791,10 +789,8 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
                 sdram_addr_i[22:21] <= sdram_wr_bank_sel_even;  // set bank for frame
                 sdram_addr_i[19:10] <= {sdram_wr_vcnt,1'b0};    // set vertical position
               end
-              if (datainfo_pre_sdram_buf_field_rdy4out_w) begin // update output field if current input field is fairly ahead
-//                sdram_bank_rdy4out_odd  <= sdram_wr_bank_sel_odd;
+              if (datainfo_pre_sdram_buf_field_rdy4out_w) // update output field if current input field is fairly ahead
                 sdram_bank_rdy4out_even <= sdram_wr_bank_sel_even;
-              end
             end
             sdram_addr_i[20   ] <= 1'b0;                // unused
             sdram_addr_i[ 9: 0] <= {hpos_width{1'b0}};  // horizontal position
