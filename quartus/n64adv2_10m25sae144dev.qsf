@@ -329,7 +329,7 @@ set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name SYNTH_PROTECT_SDC_CONSTRAINT ON
 set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 
-set_global_assignment -name SEED 37
+set_global_assignment -name SEED 26
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
