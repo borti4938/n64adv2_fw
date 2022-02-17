@@ -282,12 +282,12 @@ reg [hcnt_width-1:0] hcnt_i_L = {hcnt_width{1'b0}};
 reg [vcnt_width-1:0] Y_vcnt_i_L = {vcnt_width{1'b0}};
 reg [`VDATA_O_CO_SLICE] vdata_i_L = {(3*color_width_o){1'b0}};
 
-reg [hcnt_width-1:0] hstart_i = `HSTART_NTSC;
-//reg [hcnt_width-1:0] hstop_i  = `HSTOP_NTSC;
-//reg [vcnt_width-2:0] vstart_i = `VSTART_NTSC_LX1;
-//reg [vcnt_width-2:0] vstop_i  = `VSTOP_NTSC_LX1;
-reg [vcnt_width-1:0] vstart_i = `VSTART_NTSC_LX1;
-reg [vcnt_width-1:0] vstop_i  = `VSTOP_NTSC_LX1;
+reg [hcnt_width-1:0] X_hstart_i = `HSTART_NTSC;
+//reg [hcnt_width-1:0] X_hstop_i  = `HSTOP_NTSC;
+//reg [vcnt_width-2:0] X_vstart_i = `VSTART_NTSC_LX1;
+//reg [vcnt_width-2:0] X_vstop_i  = `VSTOP_NTSC_LX1;
+reg [vcnt_width-1:0] X_vstart_i = `VSTART_NTSC_LX1;
+reg [vcnt_width-1:0] X_vstop_i  = `VSTOP_NTSC_LX1;
 
 reg Y_field_id_i;
 reg [1:0] Y_field_cnt_i;
@@ -498,10 +498,10 @@ always @(posedge VCLK_i or negedge nRST_i)
     Y_vcnt_i_L <= {vcnt_width{1'b0}};
     vdata_i_L <= {(3*color_width_o){1'b0}};
     
-    hstart_i <= `HSTART_NTSC;
-//    hstop_i  <= `HSTOP_NTSC;
-    vstart_i <= `VSTART_NTSC_LX1;
-    vstop_i  <= `VSTOP_NTSC_LX1;
+    X_hstart_i <= `HSTART_NTSC;
+//    X_hstop_i  <= `HSTOP_NTSC;
+    X_vstart_i <= `VSTART_NTSC_LX1;
+    X_vstop_i  <= `VSTOP_NTSC_LX1;
     
     Y_field_id_i <= 1'b1;
     Y_field_cnt_i <= 2'b00;
@@ -534,15 +534,15 @@ always @(posedge VCLK_i or negedge nRST_i)
         Y_input_proc_en <= sdram_rdy_vclk_i_resynced & output_proc_en_vclk_i_resynced;
         // set new info
         if (palmode) begin
-          hstart_i <= !hshift_direction ? `HSTART_PAL + hshift : `HSTART_PAL - hshift;
-//          hstop_i  <= !hshift_direction ? `HSTOP_PAL  + hshift : `HSTOP_PAL  - hshift;
-          vstart_i <=  vshift_direction ? `VSTART_PAL_LX1 + vshift : `VSTART_PAL_LX1 - vshift;
-          vstop_i  <=  vshift_direction ? `VSTOP_PAL_LX1  + vshift : `VSTOP_PAL_LX1  - vshift;
+          X_hstart_i <= !hshift_direction ? `HSTART_PAL + hshift : `HSTART_PAL - hshift;
+//          X_hstop_i  <= !hshift_direction ? `HSTOP_PAL  + hshift : `HSTOP_PAL  - hshift;
+          X_vstart_i <=  vshift_direction ? `VSTART_PAL_LX1 + vshift : `VSTART_PAL_LX1 - vshift;
+          X_vstop_i  <=  vshift_direction ? `VSTOP_PAL_LX1  + vshift : `VSTOP_PAL_LX1  - vshift;
         end else begin
-          hstart_i <= !hshift_direction ? `HSTART_NTSC + hshift : `HSTART_NTSC - hshift;
-//          hstop_i  <= !hshift_direction ? `HSTOP_NTSC  + hshift : `HSTOP_NTSC  - hshift;
-          vstart_i <=  vshift_direction ? `VSTART_NTSC_LX1 + vshift : `VSTART_NTSC_LX1 - vshift;
-          vstop_i  <=  vshift_direction ? `VSTOP_NTSC_LX1  + vshift : `VSTOP_NTSC_LX1  - vshift;
+          X_hstart_i <= !hshift_direction ? `HSTART_NTSC + hshift : `HSTART_NTSC - hshift;
+//          X_hstop_i  <= !hshift_direction ? `HSTOP_NTSC  + hshift : `HSTOP_NTSC  - hshift;
+          X_vstart_i <=  vshift_direction ? `VSTART_NTSC_LX1 + vshift : `VSTART_NTSC_LX1 - vshift;
+          X_vstop_i  <=  vshift_direction ? `VSTOP_NTSC_LX1  + vshift : `VSTOP_NTSC_LX1  - vshift;
         end
       
         if (interlaced & !vdata_bob_deinterlacing_mode_i) begin
@@ -567,8 +567,8 @@ always @(posedge VCLK_i or negedge nRST_i)
     datainfo_rdy <= 1'b0;
   end else begin
     if (vdata_valid_i) begin
-      if (Y_input_proc_en & ((Y_vcnt_i_L >= vstart_i && Y_vcnt_i_L < vstop_i))) begin
-        if (hcnt_i_L >= hstart_i) begin
+      if (Y_input_proc_en & ((Y_vcnt_i_L >= X_vstart_i && Y_vcnt_i_L < X_vstop_i))) begin
+        if (hcnt_i_L >= X_hstart_i) begin
           if (hcnt_pre_sdram_buf < `ACTIVE_PIXEL_PER_LINE) begin
             vdata_pre_sdram_buf[vdata_pre_sdram_buf_in_cnt] <= vdata_i_L;
             vdata_pre_sdram_buf_in_cnt <= vdata_pre_sdram_buf_in_cnt + 10'd1; // increase running counter by 1
