@@ -297,7 +297,6 @@ reg Y_field_rdy4out;
 
 reg [9:0] vdata_pre_sdram_buf_in_cnt;
 
-reg inv_lineid_pre_sdram_buf = 1'b1;
 reg lineid_pre_sdram_buf = 1'b0;
 reg [hpos_width-1:0] hcnt_pre_sdram_buf;
 reg [3:0] datainfo_pre_sdram_buf;
@@ -559,7 +558,6 @@ always @(posedge VCLK_i or negedge nRST_i)
 
 always @(posedge VCLK_i or negedge nRST_i)
   if (!nRST_i) begin
-    inv_lineid_pre_sdram_buf <= 1'b1;
     lineid_pre_sdram_buf <= 1'b0;
     hcnt_pre_sdram_buf <= {hpos_width{1'b0}};
     vdata_pre_sdram_buf_in_cnt <= 10'd0;

@@ -219,11 +219,6 @@ reg [color_width_o  :0] limited_Re_pre_L, limited_Gr_pre_L, limited_Bl_pre_L;
 reg [`VDATA_O_CO_SLICE] full_RGB_pre_LL, full_RGB_pre_L;
 reg VSYNC_pre_LL, VSYNC_pre_L, HSYNC_pre_LL, HSYNC_pre_L, DE_pre_LL, DE_pre_L;
 
-reg VSYNC_o_L = 1'b0;
-reg HSYNC_o_L = 1'b0;
-reg DE_o_L = 1'b0;
-reg [3*color_width_o-1:0] VD_o_L = {3*color_width_o{1'b0}};
-
 
 // apply some assignments
 // ----------------------
