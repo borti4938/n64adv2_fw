@@ -69,7 +69,7 @@ reg n64_480i  = 1'b1; // 0 = 240p/288p , 1= 480i/576i
 
 always @(posedge VCLK or negedge nRST)
   if (!nRST) begin
-    field_id  <= 1'b0;
+    field_id  <= 1'b1;
     n64_480i <= 1'b1;
   end else if (!nVDSYNC) begin
     if (negedge_nVSYNC) begin 
