@@ -271,145 +271,123 @@ cfg_b32word_t extcfg2_word =
     .cfg_ref_word_val = 0x00000000
   };
 
-config_t sl_thickness = {
+config_t sl_thickness_vert = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_SL_THICKNESS_OFFSET,
+    .cfg_word_offset = CFG_VSL_THICKNESS_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
         .max_value     = CFG_SL_THICKNESS_MAX_VALUE,
-        .getvalue_mask = CFG_240P_SL_THICKNESS_GETMASK
+        .getvalue_mask = CFG_VSL_THICKNESS_GETMASK
     },
     .value_string = &ScanlinesThickness
 };
 
-config_t sl_profile = {
+config_t sl_profile_vert = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_SL_PROFILE_OFFSET,
+    .cfg_word_offset = CFG_VSL_PROFILE_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
         .max_value     = CFG_SL_PROFILE_MAX_VALUE,
-        .getvalue_mask = CFG_240P_SL_PROFILE_GETMASK
+        .getvalue_mask = CFG_VSL_PROFILE_GETMASK
     },
     .value_string = &ScanlinesScaleProfile
 };
 
-config_t slhyb_str = {
+config_t slhyb_str_vert = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_SLHYBDEP_OFFSET,
+    .cfg_word_offset = CFG_VSLHYBDEP_OFFSET,
     .cfg_type        = NUMVALUE,
     .value_details   = {
         .max_value     = CFG_SLHYBDEP_MAX_VALUE,
-        .getvalue_mask = CFG_240P_SLHYBDEP_GETMASK
+        .getvalue_mask = CFG_VSLHYBDEP_GETMASK
     },
     .val2char_func = &scanline_hybrstr2txt_func
 };
 
-config_t sl_str = {
+config_t sl_str_vert = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_SLSTR_OFFSET,
+    .cfg_word_offset = CFG_VSLSTR_OFFSET,
     .cfg_type        = NUMVALUE,
     .value_details   = {
         .max_value     = CFG_SLSTR_MAX_VALUE,
-        .getvalue_mask = CFG_240P_SLSTR_GETMASK
+        .getvalue_mask = CFG_VSLSTR_GETMASK
     },
     .val2char_func = &scanline_str2txt_func
 };
 
-config_t vsl_en = {
+config_t sl_thickness_hori = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_VSL_EN_OFFSET,
-    .cfg_type        = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_240P_VSL_EN_SETMASK,
-        .clrflag_mask = CFG_240P_VSL_EN_CLRMASK
-    },
-    .val2char_func = &flag2set_func
-};
-
-config_t hsl_en = {
-    .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_HSL_EN_OFFSET,
-    .cfg_type        = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_240P_HSL_EN_SETMASK,
-        .clrflag_mask = CFG_240P_HSL_EN_CLRMASK
-    },
-    .val2char_func = &flag2set_func
-};
-
-config_t sl_thickness_480i = {
-    .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SL_THICKNESS_OFFSET,
+    .cfg_word_offset = CFG_HSL_THICKNESS_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
         .max_value     = CFG_SL_THICKNESS_MAX_VALUE,
-        .getvalue_mask = CFG_480I_SL_THICKNESS_GETMASK
+        .getvalue_mask = CFG_HSL_THICKNESS_GETMASK
     },
     .value_string = &ScanlinesThickness
 };
 
-config_t sl_profile_480i = {
+config_t sl_profile_hori = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SL_PROFILE_OFFSET,
+    .cfg_word_offset = CFG_HSL_PROFILE_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
         .max_value     = CFG_SL_PROFILE_MAX_VALUE,
-        .getvalue_mask = CFG_480I_SL_PROFILE_GETMASK
+        .getvalue_mask = CFG_HSL_PROFILE_GETMASK
     },
     .value_string = &ScanlinesScaleProfile
 };
 
-config_t slhyb_str_480i = {
+config_t slhyb_str_hori = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SLHYBDEP_OFFSET,
+    .cfg_word_offset = CFG_HSLHYBDEP_OFFSET,
     .cfg_type        = NUMVALUE,
     .value_details   = {
         .max_value     = CFG_SLHYBDEP_MAX_VALUE,
-        .getvalue_mask = CFG_480I_SLHYBDEP_GETMASK
+        .getvalue_mask = CFG_HSLHYBDEP_GETMASK
     },
     .val2char_func = &scanline_hybrstr2txt_func
 };
 
-config_t sl_str_480i = {
+config_t sl_str_hori = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SLSTR_OFFSET,
+    .cfg_word_offset = CFG_HSLSTR_OFFSET,
     .cfg_type        = NUMVALUE,
     .value_details   = {
         .max_value     = CFG_SLSTR_MAX_VALUE,
-        .getvalue_mask = CFG_480I_SLSTR_GETMASK
+        .getvalue_mask = CFG_HSLSTR_GETMASK
     },
     .val2char_func = &scanline_str2txt_func
 };
 
-config_t vsl_en_480i = {
+config_t sl_en_vert = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_VSL_EN_OFFSET,
+    .cfg_word_offset = CFG_VSL_EN_OFFSET,
     .cfg_type        = FLAGTXT,
     .flag_masks      = {
-        .setflag_mask = CFG_480I_VSL_EN_SETMASK,
-        .clrflag_mask = CFG_480I_VSL_EN_CLRMASK
+        .setflag_mask = CFG_VSL_EN_SETMASK,
+        .clrflag_mask = CFG_VSL_EN_CLRMASK
     },
     .val2char_func = &flag2set_func
 };
 
-config_t hsl_en_480i = {
+config_t sl_en_hori = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_HSL_EN_OFFSET,
+    .cfg_word_offset = CFG_HSL_EN_OFFSET,
     .cfg_type        = FLAGTXT,
     .flag_masks      = {
-        .setflag_mask = CFG_480I_HSL_EN_SETMASK,
-        .clrflag_mask = CFG_480I_HSL_EN_CLRMASK
+        .setflag_mask = CFG_HSL_EN_SETMASK,
+        .clrflag_mask = CFG_HSL_EN_CLRMASK
     },
     .val2char_func = &flag2set_func
 };
 
-config_t sl_link_480i = {
+config_t sl_link_h2v = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SL_LINK_OFFSET,
+    .cfg_word_offset = CFG_H2V_SL_LINK_OFFSET,
     .cfg_type        = FLAGTXT,
     .flag_masks      = {
-        .setflag_mask = CFG_480I_SL_LINK_SETMASK,
-        .clrflag_mask = CFG_480I_SL_LINK_CLRMASK
+        .setflag_mask = CFG_H2V_SL_LINK_SETMASK,
+        .clrflag_mask = CFG_H2V_SL_LINK_CLRMASK
     },
     .val2char_func = &flag2set_func
 };

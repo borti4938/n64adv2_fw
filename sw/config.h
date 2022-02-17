@@ -56,13 +56,17 @@ typedef enum {
   INTERLACED
 } scanmode_t;
 
+typedef enum {
+  PPU_REGION_CURRENT = 0,
+  PPU_NTSC,
+  PPU_PAL
+} cfg_region_sel_type_t;
+#define NUM_REGION_MODES  2
 
 typedef enum {
-  PPU_NTSC = 0,
-  PPU_PAL,
-  PPU_RES_CURRENT
-} cfg_res_model_sel_type_t;
-#define NUM_RES_MODES  2
+  HORIZONTAL = 0,
+  VERTICAL
+} hv_t;
 
 typedef enum {
   PPU_TIMING_CURRENT = 0,
@@ -193,7 +197,7 @@ typedef struct {
 #define INTCFG0_GETALL_MASK   0x0000003F
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
 #define EXTCFG1_GETALL_MASK   0xF03FFFEF
-#define EXTCFG2_GETALL_MASK   0x7FFFFFFF
+#define EXTCFG2_GETALL_MASK   0x1FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x0000007F
 
 // internal cfg set 0
@@ -325,59 +329,51 @@ typedef struct {
 // external cfg set 2
 #define EXTCFG2_OUT_BASE  CFG_SET2_OUT_BASE
 
-#define CFG_240P_SL_THICKNESS_OFFSET  29
-#define CFG_240P_SL_PROFILE_OFFSET    27
-#define CFG_240P_SLHYBDEP_OFFSET      22
-#define CFG_240P_SLSTR_OFFSET         18
-#define CFG_240P_VSL_EN_OFFSET        17
-#define CFG_240P_HSL_EN_OFFSET        16
-#define CFG_480I_SL_THICKNESS_OFFSET  14
-#define CFG_480I_SL_PROFILE_OFFSET    12
-#define CFG_480I_SLHYBDEP_OFFSET       7
-#define CFG_480I_SLSTR_OFFSET          3
-#define CFG_480I_VSL_EN_OFFSET         2
-#define CFG_480I_HSL_EN_OFFSET         1
-#define CFG_480I_SL_LINK_OFFSET        0
+#define CFG_VSL_THICKNESS_OFFSET  27
+#define CFG_VSL_PROFILE_OFFSET    25
+#define CFG_VSLHYBDEP_OFFSET      20
+#define CFG_VSLSTR_OFFSET         16
+#define CFG_HSL_THICKNESS_OFFSET  14
+#define CFG_HSL_PROFILE_OFFSET    12
+#define CFG_HSLHYBDEP_OFFSET       7
+#define CFG_HSLSTR_OFFSET          3
+#define CFG_VSL_EN_OFFSET          2
+#define CFG_HSL_EN_OFFSET          1
+#define CFG_H2V_SL_LINK_OFFSET     0
 
-#define CFG_240P_SL_THICKNESS_GETMASK   (0x3<<CFG_240P_SL_THICKNESS_OFFSET)
-  #define CFG_240P_SL_THICKNESS_RSTMASK   (EXTCFG2_GETALL_MASK & ~CFG_240P_SL_THICKNESS_GETMASK)
-  #define CFG_240P_SL_THICKNESS_CLRMASK   (EXTCFG2_GETALL_MASK & ~CFG_240P_SL_THICKNESS_GETMASK)
-#define CFG_240P_SL_PROFILE_GETMASK     (0x3<<CFG_240P_SL_PROFILE_OFFSET)
-  #define CFG_240P_SL_PROFILE_RSTMASK     (EXTCFG2_GETALL_MASK & ~CFG_240P_SL_PROFILE_GETMASK)
-  #define CFG_240P_SL_PROFILE_CLRMASK     (EXTCFG2_GETALL_MASK & ~CFG_240P_SL_PROFILE_GETMASK)
-#define CFG_240P_SLHYBDEP_GETMASK       (0x1F<<CFG_240P_SLHYBDEP_OFFSET)
-  #define CFG_240P_SLHYBDEP_RSTMASK       (EXTCFG2_GETALL_MASK & ~CFG_240P_SLHYBDEP_GETMASK)
-  #define CFG_240P_SLHYBDEP_CLRMASK       (EXTCFG2_GETALL_MASK & ~CFG_240P_SLHYBDEP_GETMASK)
-#define CFG_240P_SLSTR_GETMASK          (0xF<<CFG_240P_SLSTR_OFFSET)
-  #define CFG_240P_SLSTR_RSTMASK          (EXTCFG2_GETALL_MASK & ~CFG_240P_SLSTR_GETMASK)
-  #define CFG_240P_SLSTR_CLRMASK          (EXTCFG2_GETALL_MASK & ~CFG_240P_SLSTR_GETMASK)
-#define CFG_240P_VSL_EN_GETMASK         (1<<CFG_240P_VSL_EN_OFFSET)
-  #define CFG_240P_VSL_EN_SETMASK         (1<<CFG_240P_VSL_EN_OFFSET)
-  #define CFG_240P_VSL_EN_CLRMASK         (EXTCFG2_GETALL_MASK & ~CFG_240P_HSL_EN_GETMASK)
-#define CFG_240P_HSL_EN_GETMASK         (1<<CFG_240P_HSL_EN_OFFSET)
-  #define CFG_240P_HSL_EN_SETMASK         (1<<CFG_240P_HSL_EN_OFFSET)
-  #define CFG_240P_HSL_EN_CLRMASK         (EXTCFG2_GETALL_MASK & ~CFG_240P_HSL_EN_GETMASK)
-#define CFG_480I_SL_THICKNESS_GETMASK   (0x3<<CFG_480I_SL_THICKNESS_OFFSET)
-  #define CFG_480I_SL_THICKNESS_RSTMASK   (EXTCFG2_GETALL_MASK & ~CFG_480I_SL_THICKNESS_GETMASK)
-  #define CFG_2480I_SL_THICKNESS_CLRMASK  (EXTCFG2_GETALL_MASK & ~CFG_480I_SL_THICKNESS_GETMASK)
-#define CFG_480I_SL_PROFILE_GETMASK     (0x3<<CFG_480I_SL_PROFILE_OFFSET)
-  #define CFG_480I_SL_PROFILE_RSTMASK     (EXTCFG2_GETALL_MASK & ~CFG_480I_SL_PROFILE_GETMASK)
-  #define CFG_480I_SL_PROFILE_CLRMASK     (EXTCFG2_GETALL_MASK & ~CFG_480I_SL_PROFILE_GETMASK)
-#define CFG_480I_SLHYBDEP_GETMASK       (0x1F<<CFG_480I_SLHYBDEP_OFFSET)
-  #define CFG_480I_SLHYBDEP_RSTMASK       (EXTCFG2_GETALL_MASK & ~CFG_480I_SLHYBDEP_GETMASK)
-  #define CFG_480I_SLHYBDEP_CLRMASK       (EXTCFG2_GETALL_MASK & ~CFG_480I_SLHYBDEP_GETMASK)
-#define CFG_480I_SLSTR_GETMASK          (0xF<<CFG_480I_SLSTR_OFFSET)
-  #define CFG_480I_SLSTR_RSTMASK          (EXTCFG2_GETALL_MASK & ~CFG_480I_SLSTR_GETMASK)
-  #define CFG_480I_SLSTR_CLRMASK          (EXTCFG2_GETALL_MASK & ~CFG_480I_SLSTR_GETMASK)
-#define CFG_480I_VSL_EN_GETMASK         (1<<CFG_480I_VSL_EN_OFFSET)
-  #define CFG_480I_VSL_EN_SETMASK         (1<<CFG_480I_VSL_EN_OFFSET)
-  #define CFG_480I_VSL_EN_CLRMASK         (EXTCFG2_GETALL_MASK & ~CFG_480I_HSL_EN_GETMASK)
-#define CFG_480I_HSL_EN_GETMASK         (1<<CFG_480I_HSL_EN_OFFSET)
-  #define CFG_480I_HSL_EN_SETMASK         (1<<CFG_480I_HSL_EN_OFFSET)
-  #define CFG_480I_HSL_EN_CLRMASK         (EXTCFG2_GETALL_MASK & ~CFG_480I_HSL_EN_GETMASK)
-#define CFG_480I_SL_LINK_GETMASK        (1<<CFG_480I_SL_LINK_OFFSET)
-  #define CFG_480I_SL_LINK_SETMASK        (1<<CFG_480I_SL_LINK_OFFSET)
-  #define CFG_480I_SL_LINK_CLRMASK        (EXTCFG2_GETALL_MASK & ~CFG_480I_SL_LINK_GETMASK)
+#define CFG_VSL_THICKNESS_GETMASK   (0x3<<CFG_VSL_THICKNESS_OFFSET)
+  #define CFG_VSL_THICKNESS_RSTMASK   (EXTCFG2_GETALL_MASK & ~CFG_VSL_THICKNESS_GETMASK)
+  #define CFG_VSL_THICKNESS_CLRMASK   (EXTCFG2_GETALL_MASK & ~CFG_VSL_THICKNESS_GETMASK)
+#define CFG_VSL_PROFILE_GETMASK     (0x3<<CFG_VSL_PROFILE_OFFSET)
+  #define CFG_VSL_PROFILE_RSTMASK     (EXTCFG2_GETALL_MASK & ~CFG_VSL_PROFILE_GETMASK)
+  #define CFG_VSL_PROFILE_CLRMASK     (EXTCFG2_GETALL_MASK & ~CFG_VSL_PROFILE_GETMASK)
+#define CFG_VSLHYBDEP_GETMASK       (0x1F<<CFG_VSLHYBDEP_OFFSET)
+  #define CFG_VSLHYBDEP_RSTMASK       (EXTCFG2_GETALL_MASK & ~CFG_VSLHYBDEP_GETMASK)
+  #define CFG_VSLHYBDEP_CLRMASK       (EXTCFG2_GETALL_MASK & ~CFG_VSLHYBDEP_GETMASK)
+#define CFG_VSLSTR_GETMASK          (0xF<<CFG_VSLSTR_OFFSET)
+  #define CFG_VSLSTR_RSTMASK          (EXTCFG2_GETALL_MASK & ~CFG_VSLSTR_GETMASK)
+  #define CFG_VSLSTR_CLRMASK          (EXTCFG2_GETALL_MASK & ~CFG_VSLSTR_GETMASK)
+#define CFG_HSL_THICKNESS_GETMASK   (0x3<<CFG_HSL_THICKNESS_OFFSET)
+  #define CFG_HSL_THICKNESS_RSTMASK   (EXTCFG2_GETALL_MASK & ~CFG_HSL_THICKNESS_GETMASK)
+  #define CFG_HSL_THICKNESS_CLRMASK  (EXTCFG2_GETALL_MASK & ~CFG_HSL_THICKNESS_GETMASK)
+#define CFG_HSL_PROFILE_GETMASK     (0x3<<CFG_HSL_PROFILE_OFFSET)
+  #define CFG_HSL_PROFILE_RSTMASK     (EXTCFG2_GETALL_MASK & ~CFG_HSL_PROFILE_GETMASK)
+  #define CFG_HSL_PROFILE_CLRMASK     (EXTCFG2_GETALL_MASK & ~CFG_HSL_PROFILE_GETMASK)
+#define CFG_HSLHYBDEP_GETMASK       (0x1F<<CFG_HSLHYBDEP_OFFSET)
+  #define CFG_HSLHYBDEP_RSTMASK       (EXTCFG2_GETALL_MASK & ~CFG_HSLHYBDEP_GETMASK)
+  #define CFG_HSLHYBDEP_CLRMASK       (EXTCFG2_GETALL_MASK & ~CFG_HSLHYBDEP_GETMASK)
+#define CFG_HSLSTR_GETMASK          (0xF<<CFG_HSLSTR_OFFSET)
+  #define CFG_HSLSTR_RSTMASK          (EXTCFG2_GETALL_MASK & ~CFG_HSLSTR_GETMASK)
+  #define CFG_HSLSTR_CLRMASK          (EXTCFG2_GETALL_MASK & ~CFG_HSLSTR_GETMASK)
+#define CFG_VSL_EN_GETMASK          (1<<CFG_VSL_EN_OFFSET)
+  #define CFG_VSL_EN_SETMASK          (1<<CFG_VSL_EN_OFFSET)
+  #define CFG_VSL_EN_CLRMASK          (EXTCFG2_GETALL_MASK & ~CFG_VSL_EN_GETMASK)
+#define CFG_HSL_EN_GETMASK          (1<<CFG_HSL_EN_OFFSET)
+  #define CFG_HSL_EN_SETMASK          (1<<CFG_HSL_EN_OFFSET)
+  #define CFG_HSL_EN_CLRMASK          (EXTCFG2_GETALL_MASK & ~CFG_HSL_EN_GETMASK)
+#define CFG_H2V_SL_LINK_GETMASK     (1<<CFG_H2V_SL_LINK_OFFSET)
+  #define CFG_H2V_SL_LINK_SETMASK     (1<<CFG_H2V_SL_LINK_OFFSET)
+  #define CFG_H2V_SL_LINK_CLRMASK     (EXTCFG2_GETALL_MASK & ~CFG_H2V_SL_LINK_GETMASK)
 
 // external cfg set 3
 #define EXTCFG3_OUT_BASE  CFG_SET3_OUT_BASE
@@ -492,9 +488,8 @@ typedef struct {
                                      CFG_DEINTER_MODE_GETMASK | CFG_INTERP_MODE_GETMASK | CFG_PAL_BOXED_MODE_GETMASK)
 #define EXTCFG1_NODEFAULTS_GETMASK  (EXTCFG1_GETALL_MASK & ~EXTCFG1_DEFAULTS_GETMASK)
 
-#define EXTCFG2_DEFAULTS            (CFG_480I_SL_LINK_SETMASK)
-#define EXTCFG2_DEFAULTS_GETMASK    (CFG_240P_VSL_EN_GETMASK | CFG_240P_HSL_EN_GETMASK | \
-                                     CFG_480I_SL_LINK_GETMASK | CFG_480I_VSL_EN_GETMASK | CFG_480I_HSL_EN_GETMASK)
+#define EXTCFG2_DEFAULTS            (CFG_H2V_SL_LINK_SETMASK)
+#define EXTCFG2_DEFAULTS_GETMASK    (CFG_VSL_EN_GETMASK | CFG_HSL_EN_GETMASK | CFG_H2V_SL_LINK_GETMASK)
 #define EXTCFG2_NODEFAULTS_GETMASK  (EXTCFG2_GETALL_MASK & ~EXTCFG2_DEFAULTS_GETMASK)
 
 #define EXTCFG3_DEFAULTS            (CFG_AUDIO_AMP_DEFAULT_SETMASK)
@@ -516,7 +511,7 @@ extern config_t link_hv_scale,
                 deblur_mode_powercycle, mode16bit_powercycle,
                 igr_deblur, igr_16bitmode,
                 fallbackmode;
-extern config_t scaling_steps, res_selection,
+extern config_t scaling_steps, region_selection, hv_selection,
                 timing_selection, scaling_selection;
 
 extern config_t vert_scale, hor_scale,
@@ -527,8 +522,9 @@ extern config_t show_logo, show_osd, mute_osd_tmp,
                 limited_rgb, gamma_lut, deblur_mode, mode16bit,
                 vert_shift, hor_shift,
                 deinterlace_mode, interpolation_mode, pal_boxed_mode;
-extern config_t sl_thickness, sl_profile, slhyb_str, sl_str, vsl_en, hsl_en,
-                sl_thickness_480i, sl_profile_480i, slhyb_str_480i, sl_str_480i, vsl_en_480i, hsl_en_480i, sl_link_480i;
+extern config_t sl_thickness_vert, sl_profile_vert, slhyb_str_vert, sl_str_vert,
+                sl_thickness_hori, sl_profile_hori, slhyb_str_hori, sl_str_hori,
+                sl_en_vert, sl_en_hori, sl_link_h2v;
 extern config_t audio_amp, audio_swap_lr, audio_spdif_en;
 
 extern bool_t unlock_1440p;
@@ -552,8 +548,8 @@ alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t
 int cfg_save_to_flash(bool_t need_confirm);
 int cfg_load_from_flash(bool_t need_confirm);
 void cfg_reset_selections(void);
-void cfg_store_linex_word(vmode_t palmode_select);
-void cfg_load_linex_word(vmode_t palmode_select);
+void cfg_store_linex_word(cfg_region_sel_type_t palmode_select);
+void cfg_load_linex_word(cfg_region_sel_type_t palmode_select);
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);

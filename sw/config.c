@@ -70,7 +70,7 @@ config_tray_u8_t linex_words[2] = {
   { .config_val = 0x00, .config_ref_val = 0x00}
 };
 
-config_tray_t linex_scanlines_words[2] = {
+config_tray_t linex_scanlines_words[NUM_REGION_MODES] = {
   { .config_val = 0x00000000, .config_ref_val = 0x00000000},
   { .config_val = 0x00000000, .config_ref_val = 0x00000000}
 };
@@ -421,18 +421,26 @@ int cfg_load_from_flash(bool_t need_confirm)
 }
 
 void cfg_reset_selections() {
+  cfg_set_value(&region_selection,0);
+  cfg_set_value(&hv_selection,0);
   cfg_set_value(&timing_selection,0);
   cfg_set_value(&scaling_selection,0);
 }
 
-void cfg_store_linex_word(vmode_t palmode_select) {
+void cfg_store_linex_word(cfg_region_sel_type_t palmode_select) {
+  if (palmode_select == PPU_REGION_CURRENT || palmode_select > NUM_REGION_MODES) return;
+  palmode_select--;
+
   linex_words[palmode_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);
   linex_words[palmode_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK);
   linex_scanlines_words[palmode_select].config_val = sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val;
   linex_scanlines_words[palmode_select].config_ref_val = sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val;
 }
 
-void cfg_load_linex_word(vmode_t palmode_select) {
+void cfg_load_linex_word(cfg_region_sel_type_t palmode_select) {
+  if (palmode_select == PPU_REGION_CURRENT || palmode_select > NUM_REGION_MODES) return;
+  palmode_select--;
+
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[palmode_select].config_val;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;

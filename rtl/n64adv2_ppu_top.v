@@ -195,11 +195,11 @@ reg [`VID_CFG_W-1:0] cfg_videomode;
 reg [1:0] cfg_interpolation_mode;
 reg cfg_pal_boxed;
 
-reg cfg_SL_v_en, cfg_SL_h_en;
-reg [1:0] cfg_SL_thickness;
-reg [1:0] cfg_SL_profile;
-reg [4:0] cfg_SLHyb_str;
-reg [7:0] cfg_SL_str;
+reg cfg_vSL_en, cfg_hSL_en;
+reg [1:0] cfg_vSL_thickness, cfg_hSL_thickness;
+reg [1:0] cfg_vSL_profile, cfg_hSL_profile;
+reg [4:0] cfg_vSLHyb_str, cfg_hSLHyb_str;
+reg [7:0] cfg_vSL_str, cfg_hSL_str;
 
 reg [2:0] cfg_osd_vscale;
 reg [1:0] cfg_osd_hscale;
@@ -441,21 +441,24 @@ always @(posedge VCLK_Tx) begin
   end
   cfg_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`interpolation_mode_slice];
   cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
-  if (!n64_480i_vclk_o_resynced | ConfigSet_resynced[`v480i_SL_linked_bit]) begin
-    cfg_SL_thickness <= ConfigSet_resynced[`v240p_SL_thickness_slice];
-    cfg_SL_profile   <= ConfigSet_resynced[`v240p_SL_profile_slice];
-    cfg_SLHyb_str    <= ConfigSet_resynced[`v240p_SL_hybrid_slice];
-    cfg_SL_str       <= ((ConfigSet_resynced[`v240p_SL_str_slice]+8'h01)<<4)-1'b1;
-    cfg_SL_v_en      <= ConfigSet_resynced[`v240p_SL_V_En_bit];
-    cfg_SL_h_en      <= ConfigSet_resynced[`v240p_SL_H_En_bit];
+  
+  cfg_hSL_thickness <= ConfigSet_resynced[`hSL_thickness_slice];
+  cfg_hSL_profile   <= ConfigSet_resynced[`hSL_profile_slice];
+  cfg_hSLHyb_str    <= ConfigSet_resynced[`hSL_hybrid_slice];
+  cfg_hSL_str       <= ((ConfigSet_resynced[`hSL_str_slice]+8'h01)<<4)-1'b1;
+  cfg_hSL_en        <= ConfigSet_resynced[`hSL_en_bit];
+  if (ConfigSet_resynced[`h2v_SL_linked_bit]) begin
+    cfg_vSL_thickness <= ConfigSet_resynced[`hSL_thickness_slice];
+    cfg_vSL_profile   <= ConfigSet_resynced[`hSL_profile_slice];
+    cfg_vSLHyb_str    <= ConfigSet_resynced[`hSL_hybrid_slice];
+    cfg_vSL_str       <= ((ConfigSet_resynced[`hSL_str_slice]+8'h01)<<4)-1'b1;
   end else begin
-    cfg_SL_thickness <= ConfigSet_resynced[`v480i_SL_thickness_slice];
-    cfg_SL_profile   <= ConfigSet_resynced[`v480i_SL_profile_slice];
-    cfg_SLHyb_str    <= ConfigSet_resynced[`v480i_SL_hybrid_slice];
-    cfg_SL_str       <= ((ConfigSet_resynced[`v480i_SL_str_slice]+8'h01)<<4)-1'b1;
-    cfg_SL_v_en      <= ConfigSet_resynced[`v480i_SL_V_En_bit];
-    cfg_SL_h_en      <= ConfigSet_resynced[`v480i_SL_H_En_bit];
+    cfg_vSL_thickness <= ConfigSet_resynced[`vSL_thickness_slice];
+    cfg_vSL_profile   <= ConfigSet_resynced[`vSL_profile_slice];
+    cfg_vSLHyb_str    <= ConfigSet_resynced[`vSL_hybrid_slice];
+    cfg_vSL_str       <= ((ConfigSet_resynced[`vSL_str_slice]+8'h01)<<4)-1'b1;
   end
+  cfg_vSL_en        <= ConfigSet_resynced[`vSL_en_bit];
   
   setVideoSYNCactive(cfg_videomode,cfg_active_vsync,cfg_active_hsync);
   setOSDConfig(cfg_videomode,cfg_osd_vscale,cfg_osd_hscale,cfg_osd_voffset,cfg_osd_hoffset);
@@ -593,12 +596,12 @@ scanline_emu vertical_scanline_emu_u (
   .VSYNC_i(vdata24_pp_w[2][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[2][3*color_width_o+2]),
   .vdata_i(vdata24_pp_w[2][`VDATA_O_CO_SLICE]),
-  .sl_en_i(cfg_SL_v_en),
-  .sl_thickness_i(cfg_SL_thickness),
-  .sl_profile_i(cfg_SL_profile),
+  .sl_en_i(cfg_vSL_en),
+  .sl_thickness_i(cfg_vSL_thickness),
+  .sl_profile_i(cfg_vSL_profile),
   .sl_rel_pos_i(sl_hpos_rel_w),
-  .sl_strength_i(cfg_SL_str),
-  .sl_bloom_i(cfg_SLHyb_str),
+  .sl_strength_i(cfg_vSL_str),
+  .sl_bloom_i(cfg_vSLHyb_str),
   .HSYNC_o(vdata24_pp_w[3][3*color_width_o+1]),
   .VSYNC_o(vdata24_pp_w[3][3*color_width_o+3]),
   .DE_o(vdata24_pp_w[3][3*color_width_o+2]),
@@ -612,12 +615,12 @@ scanline_emu horizontal_scanline_emu_u (
   .VSYNC_i(vdata24_pp_w[3][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[3][3*color_width_o+2]),
   .vdata_i(vdata24_pp_w[3][`VDATA_O_CO_SLICE]),
-  .sl_en_i(cfg_SL_h_en),
-  .sl_thickness_i(cfg_SL_thickness),
-  .sl_profile_i(cfg_SL_profile),
+  .sl_en_i(cfg_hSL_en),
+  .sl_thickness_i(cfg_hSL_thickness),
+  .sl_profile_i(cfg_hSL_profile),
   .sl_rel_pos_i(sl_vpos_rel_w),
-  .sl_strength_i(cfg_SL_str),
-  .sl_bloom_i(cfg_SLHyb_str),
+  .sl_strength_i(cfg_hSL_str),
+  .sl_bloom_i(cfg_hSLHyb_str),
   .HSYNC_o(vdata24_pp_w[4][3*color_width_o+1]),
   .VSYNC_o(vdata24_pp_w[4][3*color_width_o+3]),
   .DE_o(vdata24_pp_w[4][3*color_width_o+2]),

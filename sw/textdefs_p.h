@@ -120,16 +120,17 @@
 
 #define SLCFG_OVERLAY_H_OFFSET    OVERLAY_H_OFFSET
 #define SLCFG_OVERLAY_V_OFFSET    OVERLAY_V_OFFSET
-#define SLCFG_VALS_H_OFFSET       (28 + SLCFG_OVERLAY_H_OFFSET)
+#define SLCFG_VALS_H_OFFSET       (26 + SLCFG_OVERLAY_H_OFFSET)
 #define SLCFG_VALS_V_OFFSET       SLCFG_OVERLAY_V_OFFSET
 #define SLCFG_INPUT_OFFSET        ( 0 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_LINK_OFFSET         ( 2 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HEN_V_OFFSET        ( 3 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_VEN_V_OFFSET        ( 4 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_THICKNESS_V_OFFSET  ( 6 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_SCALESOFT_V_OFFSET  ( 7 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_STR_V_OFFSET        ( 8 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HYB_STR_V_OFFSET    ( 9 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HEN_V_OFFSET        ( 2 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VEN_V_OFFSET        ( 3 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_LINK_OFFSET         ( 4 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HVSEL_OFFSET        ( 6 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_THICKNESS_V_OFFSET  ( 7 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_SCALESOFT_V_OFFSET  ( 8 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_STR_V_OFFSET        ( 9 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HYB_STR_V_OFFSET    (10 + SLCFG_VALS_V_OFFSET)
 
 #define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET
@@ -237,9 +238,9 @@ static const char *slcfg_opt_header __ufmdata_section__ =
     "Scanlines Config";
 static const char *slcfg_opt_overlay __ufmdata_section__ =
     "* Input mode:\n\n"
-    "* Link interl. to prog.:\n"
     "* Use horizontal sl.:\n"
     "* Use vertical sl.:\n"
+    "* Use hori. for vert.:\n\n"
     "* Appearance:\n"
     "  - Thickness:\n"
     "  - Profile:\n"
@@ -347,11 +348,12 @@ const char *not_available __ufmdata_section__ = "-----";
 const char *Global __ufmdata_section__        = "Global";
 
 const char *OffOn[]                 = {"Off","On"};
-const char *NTSCPAL_SEL[]           = {"NTSC  ","PAL   ", "Current"};
+const char *NTSCPAL_SEL[]           = {"Current","NTSC  ","PAL   "};
+const char *HV_SEL[]                = {"Horizontal","Vertical"};
 const char *Force5060[]             = {"Off (N64 Auto)","60Hz","50Hz"};
 const char *Resolutions[]           = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p"};
 const char *FallbackRes[]           = {"1080p","480p/576p"};
-const char *DeInterModes[]          = {"Bob","Weave","Motion Adaptive"};
+const char *DeInterModes[]          = {"Bob","Weave"};
 const char *InterpModes[]           = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
 const char *VTimingSel[]            = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
 const char *ScanlinesThickness[]    = {"Normal","Thick","Adaptive 1","Adaptive 2"};

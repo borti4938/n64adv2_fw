@@ -38,7 +38,7 @@
 #ifndef CFG_INT_P_H_
 #define CFG_INT_P_H_
 
-extern const char  *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[];
+extern const char  *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[];
 
 cfg_b32word_t intcfg0_word =
   { .cfg_word_mask    = INTCFG0_GETALL_MASK,
@@ -122,14 +122,24 @@ config_t scaling_steps = {
     .value_string = &ScaleSteps
 };
 
-config_t res_selection = {
+config_t region_selection = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = PPU_RES_CURRENT,
+    .cfg_value    = PPU_REGION_CURRENT,
     .value_details = {
-      .max_value = PPU_RES_CURRENT,
+      .max_value = PPU_PAL,
     },
     .value_string = &NTSCPAL_SEL
+};
+
+config_t hv_selection = {
+    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
+    .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
+    .cfg_value    = HORIZONTAL,
+    .value_details = {
+      .max_value = VERTICAL,
+    },
+    .value_string = &HV_SEL
 };
 
 config_t timing_selection = {

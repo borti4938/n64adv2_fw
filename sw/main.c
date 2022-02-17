@@ -53,7 +53,7 @@ const char *Unlock_1440p_Message __ufmdata_section__ = "On your own risk, so\n"
                                                        "Good Luck I guess :)";
 
 //bool_t use_flash;
-vmode_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
+cfg_region_sel_type_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
 cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 
@@ -210,17 +210,17 @@ int main()
       command = CMD_NON;
     }
 
-    vmode_n64adv = palmode;
-    update_vmode_menu(menu);
+    vmode_n64adv = palmode + 1;
+    update_vmode_menu();
+    scaling_n64adv = get_target_scaler(palmode);
+    update_scaling_menu();
     if (palmode)
       timing_n64adv = scanmode ? PAL_INTERLACED : PAL_PROGRESSIVE;
     else
       timing_n64adv = scanmode ? NTSC_INTERLACED : NTSC_PROGRESSIVE;
+    update_timing_menu();
     timing_menu = (cfg_timing_model_sel_type_t) cfg_get_value(&timing_selection,0);
     if (timing_menu == PPU_TIMING_CURRENT) timing_menu = timing_n64adv;
-    scaling_n64adv = get_target_scaler(palmode);
-    scaling_menu = (cfg_scaler_in2out_sel_type_t) cfg_get_value(&scaling_selection,0);
-    if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
     if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
     else vmode_scaling_menu = scaling_menu > NUM_SCALING_MODES/2; // NUM_SCALING_MODES/2 should be exactly the border between NTSC and PAL
 

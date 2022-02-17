@@ -42,7 +42,7 @@
 
 char szText[VD_WIDTH];
 //extern bool_t use_flash;
-extern vmode_t vmode_menu, vmode_n64adv;
+extern cfg_region_sel_type_t vmode_menu, vmode_n64adv;
 extern cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 extern config_tray_t scaling_words[NUM_SCALING_MODES];
@@ -156,7 +156,7 @@ menu_t vires_screen = {
     .current_selection = 0,
     .number_selections = 11,
     .leaves = {
-        {.id = RESCFG_INPUT_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &res_selection},
+        {.id = RESCFG_INPUT_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &region_selection},
         {.id = RESCFG_240P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_480P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_720P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
@@ -243,34 +243,29 @@ menu_t slcfg_opt_subscreen = {
     },
     .parent = &vicfg_screen,
     .current_selection = 0,
-    .number_selections = 8,
+    .number_selections = 9,
     .leaves = {
-        {.id = SLCFG_INPUT_OFFSET      , .arrow_desc = &slcfg_opt_arrow0, .leavetype = ICONFIG , .config_value = &timing_selection},
-        {.id = SLCFG_LINK_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_link_480i},
-        {.id = SLCFG_HEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &hsl_en},
-        {.id = SLCFG_VEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &vsl_en},
-        {.id = SLCFG_THICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness},
-        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile},
-        {.id = SLCFG_STR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str},
-        {.id = SLCFG_HYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str},
-        {.id = SLCFG_HEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &hsl_en_480i},
-        {.id = SLCFG_VEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &vsl_en_480i},
-        {.id = SLCFG_THICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_480i},
-        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_480i},
-        {.id = SLCFG_STR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_480i},
-        {.id = SLCFG_HYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_480i}
+        {.id = SLCFG_INPUT_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &region_selection},
+        {.id = SLCFG_HEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_hori},
+        {.id = SLCFG_VEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_vert},
+        {.id = SLCFG_LINK_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_link_h2v},
+        {.id = SLCFG_HVSEL_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &hv_selection},
+        {.id = SLCFG_THICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_hori},
+        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_hori},
+        {.id = SLCFG_STR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_hori},
+        {.id = SLCFG_HYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_hori},
+        {.id = SLCFG_THICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_vert},
+        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_vert},
+        {.id = SLCFG_STR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_vert},
+        {.id = SLCFG_HYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_vert}
     }
 };
 
 #define SL_INPUT_SELECTION           0
-#define SL_LINK_SELECTION            1
-#define SL_HEN_SELECTION             2
-#define SL_VEN_SELECTION             3
-#define SL_THICKNESS_SELECTION       4
-#define SL_240P_TO_480I_OFFSET       6
-#define SL_HEN_480I_SELECTION        8
-#define SL_VEN_480I_SELECTION        9
-#define SL_THICKNESS_480I_SELECTION 10
+#define SL_HEN_SELECTION             1
+#define SL_VEN_SELECTION             2
+#define SL_HV_SELECTION              4
+#define SL_HORI_TO_VERT_OFFSET       4
 
 menu_t misc_screen = {
     .type = CONFIG,
@@ -356,8 +351,8 @@ static inline bool_t is_vicfg_screen (menu_t *menu)
   {  return (menu == &vicfg_screen); }
 static inline bool_t is_slcfg_screen (menu_t *menu)
   {  return (menu == &slcfg_opt_subscreen); }
-static inline bool_t is_vicfg_480i_sl_are_linked ()
-  {  return (bool_t) cfg_get_value(&sl_link_480i,0); }
+static inline bool_t is_vicfg_h2v_sl_are_linked ()
+  {  return (bool_t) cfg_get_value(&sl_link_h2v,0); }
 static inline bool_t is_about_screen (menu_t *menu)
   {  return (menu == &about_screen); }
 static inline bool_t is_license_screen (menu_t *menu)
@@ -369,7 +364,7 @@ void val2txt_4u_func(alt_u16 v) { sprintf(szText,"%4u", v); };
 void val2txt_5b_binaryoffset_func(alt_u16 v) { if (v & 0x10) sprintf(szText," %2u", (v&0xF)); else sprintf(szText,"-%2u", (v^0xF)+1); };
 void val2txt_scale_sel_func(alt_u16 v) {
   if (v == 0) {
-    sprintf(szText,NTSCPAL_SEL[2]);
+    sprintf(szText,NTSCPAL_SEL[PPU_REGION_CURRENT]);
   } else {
     if (v < PAL_TO_288) {
       sprintf(szText,"NTSC to ");
@@ -399,11 +394,8 @@ void scanline_str2txt_func(alt_u16 v) { v++; sprintf(szText,"%3u.%02u%%", (v*625
 void scanline_hybrstr2txt_func(alt_u16 v) { sprintf(szText,"%3u.%02u%%", (v*625)/100, 25*(v&3)); };
 void gamma2txt_func(alt_u16 v) { sprintf(szText,"%u.%02u", v > 4, 5* v + 75 - (100 * (v > 4))); };
 
-bool_t apply_sl_480i_offset(menu_t* current_menu) {
-  return (is_slcfg_screen(current_menu) &&
-          ((cfg_get_value(&timing_selection,0) == PPU_TIMING_CURRENT && scanmode == INTERLACED) ||
-            cfg_get_value(&timing_selection,0) == NTSC_INTERLACED || cfg_get_value(&timing_selection,0) == PAL_INTERLACED) &&
-          !is_vicfg_480i_sl_are_linked());
+bool_t apply_sl_vert_offset(menu_t* current_menu) {
+  return (is_slcfg_screen(current_menu) && (cfg_get_value(&hv_selection,0) == VERTICAL) && !is_vicfg_h2v_sl_are_linked());
 }
 
 
@@ -445,26 +437,22 @@ void print_fw_version()
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+3,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 }
 
-void update_vmode_menu(menu_t *menu)
+void update_vmode_menu()
 {
-  if (is_vires_screen(menu)) {
-    vmode_menu = cfg_get_value(&res_selection,0) == PPU_RES_CURRENT ? vmode_n64adv : (vmode_t) cfg_get_value(&res_selection,0);
-  } else {
-    switch (cfg_get_value(&timing_selection,0)) {
-      case NTSC_PROGRESSIVE:
-      case NTSC_INTERLACED:
-        vmode_menu = NTSC;
-        break;
-      case PAL_PROGRESSIVE:
-      case PAL_INTERLACED:
-        vmode_menu = PAL;
-        break;
-      case PPU_TIMING_CURRENT:
-      default:
-        vmode_menu = vmode_n64adv;
-        break;
-    }
-  }
+  vmode_menu = cfg_get_value(&region_selection,0);
+  if (vmode_menu == PPU_REGION_CURRENT) vmode_menu = vmode_n64adv;
+}
+
+void update_scaling_menu()
+{
+  timing_menu = cfg_get_value(&timing_selection,0);
+  if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
+}
+
+void update_timing_menu()
+{
+  timing_menu = cfg_get_value(&timing_selection,0);
+  if (timing_menu == PPU_TIMING_CURRENT) timing_menu = timing_n64adv;
 }
 
 updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
@@ -497,72 +485,70 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       }
     case CMD_MENU_PAGE_RIGHT:
       if (is_vires_screen(*current_menu)) {
-        cfg_inc_value(&res_selection);
-        update_vmode_menu(*current_menu);
+        cfg_inc_value(&region_selection);
+        update_vmode_menu();
         cfg_load_linex_word(vmode_menu);
-        todo = NEW_OVERLAY;
-        break;
+        return NEW_OVERLAY;
       }
       if (is_viscaling_screen(*current_menu)){
         if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < PAL_BOXED_SELECTION) {
           cfg_inc_value(&scaling_selection);
-          scaling_menu = cfg_get_value(&scaling_selection,0);
-          if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
+          update_scaling_menu();
           cfg_load_scaling_word(scaling_menu);
-          todo = NEW_OVERLAY;
-          break;
+          return NEW_OVERLAY;
         }
 //        if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION && (*current_menu)->current_selection <= HORSHIFT_SELECTION) {
         if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION) {
           cfg_inc_value(&timing_selection);
-          timing_menu = cfg_get_value(&timing_selection,0);
-          if (timing_menu == PPU_TIMING_CURRENT) timing_menu = timing_n64adv;
+          update_timing_menu();
           cfg_load_timing_word(timing_menu);
-          todo = NEW_OVERLAY;
-          break;
+          return NEW_OVERLAY;
         }
       }
       if (is_slcfg_screen(*current_menu)) {
-        cfg_inc_value(&timing_selection);
-        update_vmode_menu(*current_menu);
-        cfg_load_linex_word(vmode_menu);
-        todo = NEW_OVERLAY;
-        break;
+        if ((*current_menu)->current_selection < SL_HV_SELECTION) {
+          cfg_inc_value(&region_selection);
+          update_vmode_menu();
+          cfg_load_linex_word(vmode_menu);
+          return NEW_OVERLAY;
+        } else {
+          cfg_inc_value(&hv_selection);
+          return NEW_CONF_VALUE;
+        }
       }
       break;
     case CMD_MENU_PAGE_LEFT:
       if (is_vires_screen(*current_menu)) {
-        cfg_dec_value(&res_selection);
-        update_vmode_menu(*current_menu);
+        cfg_dec_value(&region_selection);
+        update_vmode_menu();
         cfg_load_linex_word(vmode_menu);
-        todo = NEW_OVERLAY;
-        break;
+        return NEW_OVERLAY;
       }
       if (is_viscaling_screen(*current_menu)){
         if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < PAL_BOXED_SELECTION) {
           cfg_dec_value(&scaling_selection);
-          scaling_menu = cfg_get_value(&scaling_selection,0);
-          if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
+          update_scaling_menu();
           cfg_load_scaling_word(scaling_menu);
-          todo = NEW_OVERLAY;
-          break;
+          return NEW_OVERLAY;
         }
 //        if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION && (*current_menu)->current_selection <= HORSHIFT_SELECTION) {
         if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION) {
           cfg_dec_value(&timing_selection);
-          timing_menu = cfg_get_value(&timing_selection,0);
-          if (timing_menu == PPU_TIMING_CURRENT) timing_menu = timing_n64adv;
+          update_timing_menu();
           cfg_load_timing_word(timing_menu);
-          todo = NEW_OVERLAY;
-          break;
+          return NEW_OVERLAY;
         }
       }
       if (is_slcfg_screen(*current_menu)) {
-        cfg_dec_value(&timing_selection);
-        update_vmode_menu(*current_menu);
-        cfg_load_linex_word(vmode_menu);
-        todo = NEW_OVERLAY;
-        break;
+        if ((*current_menu)->current_selection < SL_HV_SELECTION) {
+          cfg_dec_value(&region_selection);
+          update_vmode_menu();
+          cfg_load_linex_word(vmode_menu);
+          return NEW_OVERLAY;
+        } else {
+          cfg_dec_value(&hv_selection);
+          return NEW_CONF_VALUE;
+        }
       }
       break;
     default:
@@ -612,32 +598,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     }
   }
 
-  if (apply_sl_480i_offset(*current_menu) && current_sel > SL_LINK_SELECTION) current_sel += SL_240P_TO_480I_OFFSET;
-//
-//  if (is_slcfg_screen(*current_menu)) {
-//    if ((cfg_get_value(&timing_selection,0) == PPU_TIMING_CURRENT && scanmode == INTERLACED) ||
-//         cfg_get_value(&timing_selection,0) == NTSC_INTERLACED || cfg_get_value(&timing_selection,0) == PAL_INTERLACED) {
-//      current_sel = current_sel + (*current_menu)->number_selections; // apply offset
-//      if (cfg_get_value(&sl_en_480i,0) == OFF) {
-//        current_sel = (current_sel < SL_METHOD_480I_SELECTION) ? current_sel :
-//                                    (command == CMD_MENU_DOWN) ? SL_INPUT_480I_SELECTION :
-//                                                                 SL_EN_480I_SELECTION;
-//        (*current_menu)->current_selection = current_sel - (*current_menu)->number_selections;
-//      } else if (is_vicfg_480i_sl_are_linked() && current_sel > SL_EN_480I_SELECTION) { // options are linked; so use 240p/288p values instead for modifications
-//        current_sel = current_sel - (*current_menu)->number_selections;
-//        if (cfg_get_value(&sl_en,0) == OFF) {
-//          current_sel = (command == CMD_MENU_DOWN) ? SL_INPUT_480I_SELECTION : SL_EN_480I_SELECTION;
-//          (*current_menu)->current_selection = current_sel - (*current_menu)->number_selections;
-//        }
-//      }
-//    } else {
-//      if (cfg_get_value(&sl_en,0) == OFF)
-//        (*current_menu)->current_selection = (current_sel < SL_METHOD_SELECTION) ? current_sel :
-//                                                      (command == CMD_MENU_DOWN) ? SL_INPUT_SELECTION :
-//                                                                                   SL_EN_SELECTION;
-//    }
-//  }
-
+  if (apply_sl_vert_offset(*current_menu) && current_sel > SL_HV_SELECTION) current_sel += SL_HORI_TO_VERT_OFFSET;
 
   if (todo == NEW_OVERLAY || todo == NEW_SELECTION) return todo;
 
@@ -821,7 +782,7 @@ int update_cfg_screen(menu_t* current_menu)
 
   bool_t use_240p_288p = (scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288);
 
-  bool_t use_sl_480i_offset = apply_sl_480i_offset(current_menu);
+  bool_t use_sl_vert_offset = apply_sl_vert_offset(current_menu);
   alt_u8 v_run_offset = 0;
 
   background_color = BACKGROUNDCOLOR_STANDARD;
@@ -830,10 +791,10 @@ int update_cfg_screen(menu_t* current_menu)
     h_l_offset = current_menu->leaves[v_run].arrow_desc->hpos + 3;
     v_offset   = current_menu->leaves[v_run].id;
 
-    if (use_sl_480i_offset && v_run > SL_LINK_SELECTION) {
-      use_sl_480i_offset = FALSE;
-      v_run += SL_240P_TO_480I_OFFSET;
-      v_run_offset = SL_240P_TO_480I_OFFSET;
+    if (use_sl_vert_offset && v_run > SL_HV_SELECTION) {
+        use_sl_vert_offset = FALSE;
+      v_run += SL_HORI_TO_VERT_OFFSET;
+      v_run_offset = SL_HORI_TO_VERT_OFFSET;
     }
 
     switch (current_menu->leaves[v_run].leavetype) {
