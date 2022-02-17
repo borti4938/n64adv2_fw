@@ -274,10 +274,10 @@ cfg_b32word_t extcfg2_word =
 config_t sl_thickness = {
     .cfg_word        = &extcfg2_word,
     .cfg_word_offset = CFG_240P_SL_THICKNESS_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_240P_SL_THICKNESS_SETMASK,
-        .clrflag_mask = CFG_240P_SL_THICKNESS_CLRMASK
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_SL_THICKNESS_MAX_VALUE,
+        .getvalue_mask = CFG_240P_SL_THICKNESS_GETMASK
     },
     .value_string = &ScanlinesThickness
 };
@@ -340,10 +340,10 @@ config_t hsl_en = {
 config_t sl_thickness_480i = {
     .cfg_word        = &extcfg2_word,
     .cfg_word_offset = CFG_480I_SL_THICKNESS_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_480I_SL_THICKNESS_SETMASK,
-        .clrflag_mask = CFG_480I_SL_THICKNESS_CLRMASK
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_SL_THICKNESS_MAX_VALUE,
+        .getvalue_mask = CFG_480I_SL_THICKNESS_GETMASK
     },
     .value_string = &ScanlinesThickness
 };
