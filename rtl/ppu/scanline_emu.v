@@ -150,7 +150,7 @@ generate
 
     always @(posedge VCLK_i) begin
       Y_drawSL[3] <= sl_en_i & Y_drawSL[2];
-      Y_drawSL[2] <= &sl_profile_i ? Y_SL_str_corrected_L[1][5] : Y_drawSL[1];                                  // correct if flat top profile
+      Y_drawSL[2] <= &sl_profile_i ? Y_SL_str_corrected_L[1][5] & Y_drawSL[1] : Y_drawSL[1];                    // correct if flat top profile
       Y_drawSL[1] <= sl_thickness_i ? Y_SL_str_corrected_L[0] > pos_0p125 : Y_SL_str_corrected_L[0] > pos_0p25; // for thick sl, draw if value is over 0.125; for normal sl, if value is over 0.25
       
       Y_max_SL_str[2] <= &sl_profile_i ? Y_SL_str_corrected_L[1][5] : Y_max_SL_str[1];                          // correct if flat top profile
@@ -181,7 +181,7 @@ generate
       for (int_idx = 4; int_idx < proc_stages-1; int_idx = int_idx + 1)
         drawSL[int_idx] <= drawSL[int_idx-1];
       drawSL[3] <= sl_en_i & drawSL[2];
-      drawSL[2] <= &sl_profile_i ? SL_str_corrected_L[1][5] : drawSL[1];                                  // correct if flat top profile
+      drawSL[2] <= &sl_profile_i ? SL_str_corrected_L[1][5] & drawSL[1] : drawSL[1];                      // correct if flat top profile
       drawSL[1] <= sl_thickness_i ? SL_str_corrected_L[0] > pos_0p125 : SL_str_corrected_L[0] > pos_0p25; // for thick sl, draw if value is over 0.125; for normal sl, if value is over 0.25
       
       max_SL_str[2] <= &sl_profile_i ? SL_str_corrected_L[1][5] : max_SL_str[1];                          // correct if flat top profile
