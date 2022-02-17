@@ -174,9 +174,7 @@ localparam HVSCALE_PHASE_INVALID = 2'b11;
 localparam GEN_SIGNALLING_DELAY = 1;
 localparam LOAD_PIXEL_BUF_DELAY = 2;
 localparam VERT_INTERP_DELAY = 3;
-//localparam HORI_INTERP_DELAY = 3;
-localparam HORI_INTERP_DELAY = 4; // signaltap analyzes shows that horizontal interpolation has four delay steps
-                                  // although I don't know where the additional step is coming from 
+localparam HORI_INTERP_DELAY = 3;
 localparam POST_BUF_DELAY = 1;
 localparam Videogen_Pipeline_Length = GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY+HORI_INTERP_DELAY+POST_BUF_DELAY;
 // current pipeline stages:
