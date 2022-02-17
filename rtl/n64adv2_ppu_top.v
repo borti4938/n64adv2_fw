@@ -586,9 +586,7 @@ scaler scaler_u(
 // Scanline emulation
 // ==================
 
-scanline_emu #(
-  .FALSE_PATH_STR_CORRECTION("OFF")
-) vertical_scanline_emu_u (
+scanline_emu vertical_scanline_emu_u (
   .VCLK_i(VCLK_Tx),
   .nVRST_i(nVRST_Tx),
   .HSYNC_i(vdata24_pp_w[2][3*color_width_o+1]),
@@ -607,9 +605,7 @@ scanline_emu #(
   .vdata_o(vdata24_pp_w[3][`VDATA_O_CO_SLICE])
 );
 
-scanline_emu #(
-  .FALSE_PATH_STR_CORRECTION("ON")
-) horizontal_scanline_emu_u (
+scanline_emu horizontal_scanline_emu_u (
   .VCLK_i(VCLK_Tx),
   .nVRST_i(nVRST_Tx),
   .HSYNC_i(vdata24_pp_w[3][3*color_width_o+1]),
