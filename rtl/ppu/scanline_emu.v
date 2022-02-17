@@ -1,3 +1,34 @@
+//////////////////////////////////////////////////////////////////////////////////
+//
+// This file is part of the N64 RGB/YPbPr DAC project.
+//
+// Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
+//
+// N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Company:  Circuit-Board.de
+// Engineer: borti4938
+//
+// Module Name:    scanline_emu
+// Project Name:   N64 Advanced
+// Target Devices: 
+// Tool versions:  Altera Quartus Prime
+// Description:    
+//
+//////////////////////////////////////////////////////////////////////////////////
 
 
 module scanline_emu #(
@@ -14,7 +45,7 @@ module scanline_emu #(
   
   sl_en_i,
   sl_thickness_i,
-  sl_edge_softening_i,
+  sl_profile_i,
   sl_rel_pos_i,
   sl_strength_i,
   sl_bloom_i,
@@ -26,7 +57,9 @@ module scanline_emu #(
 
 );
 
-`include "../../vh/n64adv_vparams.vh"
+`include "../../lib/n64adv_vparams.vh"
+
+`include "../../lib/getScanlineProfile.tasks.v"
 
 input VCLK_i;
 input nVRST_i;
@@ -37,12 +70,9 @@ input DE_i;
 input [`VDATA_O_CO_SLICE] vdata_i;
 
 input sl_en_i;
-input [7:0] sl_thickness_i;       // area in middle in which the SL is fully drawn
-                                  // must not exceed 8'h40!!!
-input [7:0] sl_edge_softening_i;  // area width at each border where the SL strength becomes reduced until reaching zero
-                                  // must be 8'h40, 8'h20, 8'h10  or 8'h08
-                                  //         0.25,  0.125, 0.0625 or 0.03125
-input [7:0] sl_rel_pos_i;         // used to correct scanline strength value
+input sl_thickness_i;
+input [1:0] sl_profile_i;
+input [7:0] sl_rel_pos_i; // used to correct scanline strength value
 input [7:0] sl_strength_i;
 input [4:0] sl_bloom_i;
 
@@ -61,7 +91,14 @@ integer int_idx;
 
 
 // wires
+wire [7:0] sl_thickness_w;      // area in middle in which the SL is fully drawn
+                                // must not exceed 8'h40!!!
+wire [7:0] sl_edge_softening_w; // area width at each border where the SL strength becomes reduced until reaching zero
+                                // must be 8'h40, 8'h20, 8'h10  or 8'h08
+                                //         0.25,  0.125, 0.0625 or 0.03125
+
 wire drawSL_w;
+wire [7:0]  SL_str_correction_factor_1L_w;
 wire [15:0] SL_str_corrected_3L_full_w;
 wire [7:0]  SL_str_corrected_3L_w, SL_str_corrected_4L_w;
 
@@ -73,15 +110,17 @@ wire [color_width_o+SL_bloom_calc_width-1:0] R_sl_full_w, G_sl_full_w, B_sl_full
 // regs
 generate
   if (FALSE_PATH_STR_CORRECTION == "ON") begin
-    reg [proc_stages-2:1] Y_drawSL;
-    reg [7:0] Y_SL_str_correction_factor_0L, Y_SL_str_correction_factor_1L;
-    reg [12:0] Y_SL_str_correction_factor_2L;
-    reg [7:0] Y_SL_str_corrected_3L, Y_SL_str_corrected_4L;
+    reg [3:1] Y_drawSL;
+    reg [2:1] Y_max_SL_str;
+    reg [7:0] Y_SL_str_correction_factor_0L;
+    reg [5:0] Y_SL_str_correction_factor_1L;
+    reg [7:0] Y_SL_str_correction_factor_2L, Y_SL_str_corrected_3L, Y_SL_str_corrected_4L;
   end else begin
     reg [proc_stages-2:1] drawSL;
-    reg [7:0] SL_str_correction_factor_0L, SL_str_correction_factor_1L;
-    reg [12:0] SL_str_correction_factor_2L;
-    reg [7:0] SL_str_corrected_3L, SL_str_corrected_4L;
+    reg [2:1] max_SL_str;
+    reg [7:0] SL_str_correction_factor_0L;
+    reg [5:0] SL_str_correction_factor_1L;
+    reg [7:0] SL_str_correction_factor_2L, SL_str_corrected_3L, SL_str_corrected_4L;
   end
 endgenerate
 
@@ -103,61 +142,66 @@ reg [color_width_o-1:0] R_sl_l, G_sl_l ,B_sl_l;
 
 // begin of rtl
 
-// strength correction first
+// strength correction first depending on profile
 // method also generates drawSL indicator
+
 generate
   if (FALSE_PATH_STR_CORRECTION == "ON") begin
-    assign SL_str_corrected_3L_full_w = Y_SL_str_correction_factor_2L[8:0] * sl_strength_i;
+    assign SL_str_correction_factor_1L_w = sl_thickness_i ? Y_SL_str_correction_factor_0L - 8'b00100000 : Y_SL_str_correction_factor_0L - 8'b01000000; // subtract with 0.125 for thick sl or 0.25 for normal
+    assign SL_str_corrected_3L_full_w = Y_SL_str_correction_factor_2L * (* multstyle = "dsp" *) sl_strength_i;
 
     always @(posedge VCLK_i) begin
-      for (int_idx = 3; int_idx < proc_stages-1; int_idx = int_idx + 1)
-        Y_drawSL[int_idx] <= Y_drawSL[int_idx-1];
-      Y_drawSL[2] <= sl_en_i & Y_drawSL[1];
-      Y_drawSL[1] <= Y_SL_str_correction_factor_0L <= sl_edge_softening_i + sl_thickness_i/2;
+      Y_drawSL[3] <= sl_en_i & Y_drawSL[2];
+      Y_drawSL[2] <= &sl_profile_i ? Y_SL_str_correction_factor_1L[5] : Y_drawSL[1];                                              // correct if flat top profile
+      Y_drawSL[1] <= sl_thickness_i ? Y_SL_str_correction_factor_0L > 8'b00100000 : Y_SL_str_correction_factor_0L > 8'b01000000;  // for thick sl, draw if value is over 0.125; for normal sl, if value is over 0.25
       
-      Y_SL_str_correction_factor_0L <= sl_rel_pos_i > 8'h80 ? sl_rel_pos_i - 8'h80 : 8'h80 - sl_rel_pos_i;    // check how far we are from the scanline middle
-      Y_SL_str_correction_factor_1L <= Y_SL_str_correction_factor_0L > sl_edge_softening_i + sl_thickness_i/2 ? 8'h00 : 
-                                       Y_SL_str_correction_factor_0L <                       sl_thickness_i/2 ? 8'h00 : ~(Y_SL_str_correction_factor_0L - sl_thickness_i/2) + 1'b1; // apply correction if we are in the softening area
+      Y_max_SL_str[2] <= &sl_profile_i ? Y_SL_str_correction_factor_1L[5] : Y_max_SL_str[1];                                // correct if flat top profile
+      Y_max_SL_str[1] <= sl_thickness_i ? Y_SL_str_correction_factor_0L[7:5] >= 3'b011 : Y_SL_str_correction_factor_0L[7];  // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
+//      Y_max_SL_str[1] <= sl_thickness_i ? Y_SL_str_correction_factor_0L >= 8'b01100000 : Y_SL_str_correction_factor_0L >= 8'b10000000;  // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
       
-      case (sl_edge_softening_i)
-        8'h80:   Y_SL_str_correction_factor_2L <= {4'b0000,Y_SL_str_correction_factor_1L,1'b0    } - 13'h0100; // x2 - 1
-        8'h40:   Y_SL_str_correction_factor_2L <= {3'b000 ,Y_SL_str_correction_factor_1L,2'b00   } - 13'h0300; // x4 - 3
-        8'h20:   Y_SL_str_correction_factor_2L <= {2'b00  ,Y_SL_str_correction_factor_1L,3'b000  } - 13'h0700; // x8 - 7
-        8'h10:   Y_SL_str_correction_factor_2L <= {1'b0   ,Y_SL_str_correction_factor_1L,4'b0000 } - 13'h0F00; // x16 - 15
-//        8'h08:   Y_SL_str_correction_factor_2L <= {        Y_SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
-        default: Y_SL_str_correction_factor_2L <= {        Y_SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
+      Y_SL_str_correction_factor_0L <= sl_rel_pos_i > 8'h80 ? ~sl_rel_pos_i + 1'b1 : sl_rel_pos_i;  // map everything between 0 and 0.5 (from 8'h00 to 8'h80)
+      Y_SL_str_correction_factor_1L <= SL_str_correction_factor_1L_w[5:0];                          // 6bits are fine here
+      case(sl_profile_i)
+        2'b00:  // hanning
+          getHannProfile(Y_SL_str_correction_factor_1L,Y_SL_str_correction_factor_2L);
+        2'b01:  // gaussian
+          getGaussProfile(Y_SL_str_correction_factor_1L,Y_SL_str_correction_factor_2L);
+        default:  // rectangular and flat top
+          Y_SL_str_correction_factor_2L <= {Y_SL_str_correction_factor_1L,Y_SL_str_correction_factor_1L[5:4]};
       endcase
-      
-      Y_SL_str_corrected_3L <= SL_str_corrected_3L_full_w[15:8];
+      Y_SL_str_corrected_3L <= Y_max_SL_str[2] ? sl_strength_i : SL_str_corrected_3L_full_w[15:8];
       Y_SL_str_corrected_4L <= Y_SL_str_corrected_3L;
     end
   
-    assign drawSL_w = Y_drawSL[proc_stages-2];
+    assign drawSL_w = Y_drawSL[3];
     assign SL_str_corrected_3L_w = Y_SL_str_corrected_3L;
     assign SL_str_corrected_4L_w = Y_SL_str_corrected_4L;
   end else begin
-    assign SL_str_corrected_3L_full_w = SL_str_correction_factor_2L[8:0] * sl_strength_i;
+    assign SL_str_correction_factor_1L_w = sl_thickness_i ? SL_str_correction_factor_0L - 8'b00100000 : SL_str_correction_factor_0L - 8'b01000000; // subtract with 0.125 for thick sl or 0.25 for normal
+    assign SL_str_corrected_3L_full_w = SL_str_correction_factor_2L * (* multstyle = "dsp" *) sl_strength_i;
 
     always @(posedge VCLK_i) begin
-      for (int_idx = 3; int_idx < proc_stages-1; int_idx = int_idx + 1)
+      for (int_idx = 4; int_idx < proc_stages-1; int_idx = int_idx + 1)
         drawSL[int_idx] <= drawSL[int_idx-1];
-      drawSL[2] <= sl_en_i & drawSL[1];
-      drawSL[1] <= SL_str_correction_factor_0L <= sl_edge_softening_i + sl_thickness_i/2;
+      drawSL[3] <= sl_en_i & drawSL[2];
+      drawSL[2] <= &sl_profile_i ? SL_str_correction_factor_1L[5] : drawSL[1];                                              // correct if flat top profile
+      drawSL[1] <= sl_thickness_i ? SL_str_correction_factor_0L > 8'b00100000 : SL_str_correction_factor_0L > 8'b01000000;  // for thick sl, draw if value is over 0.125; for normal sl, if value is over 0.25
       
-      SL_str_correction_factor_0L <= sl_rel_pos_i > 8'h80 ? sl_rel_pos_i - 8'h80 : 8'h80 - sl_rel_pos_i;    // check how far we are from the scanline middle
-      SL_str_correction_factor_1L <= SL_str_correction_factor_0L > sl_edge_softening_i + sl_thickness_i/2 ? 8'h00 : 
-                                     SL_str_correction_factor_0L <                       sl_thickness_i/2 ? 8'h00 : ~(SL_str_correction_factor_0L - sl_thickness_i/2) + 1'b1; // apply correction if we are in the softening area
+      max_SL_str[2] <= &sl_profile_i ? SL_str_correction_factor_1L[5] : max_SL_str[1];                                // correct if flat top profile
+      max_SL_str[1] <= sl_thickness_i ? SL_str_correction_factor_0L[7:5] >= 3'b011 : SL_str_correction_factor_0L[7];  // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
+//      max_SL_str[1] <= sl_thickness_i ? SL_str_correction_factor_0L >= 8'b01100000 : SL_str_correction_factor_0L >= 8'b10000000;  // for thick sl, maxed out at 0.375; for normal sl, maxed out at 0.5
       
-      case (sl_edge_softening_i)
-        8'h80:   SL_str_correction_factor_2L <= {4'b0000,SL_str_correction_factor_1L,1'b0    } - 13'h0100; // x2 - 1
-        8'h40:   SL_str_correction_factor_2L <= {3'b000 ,SL_str_correction_factor_1L,2'b00   } - 13'h0300; // x4 - 3
-        8'h20:   SL_str_correction_factor_2L <= {2'b00  ,SL_str_correction_factor_1L,3'b000  } - 13'h0700; // x8 - 7
-        8'h10:   SL_str_correction_factor_2L <= {1'b0   ,SL_str_correction_factor_1L,4'b0000 } - 13'h0F00; // x16 - 15
-//        8'h08:   SL_str_correction_factor_2L <= {        SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
-        default: SL_str_correction_factor_2L <= {        SL_str_correction_factor_1L,5'b00000} - 13'h1F00; // x32 - 31
+      SL_str_correction_factor_0L <= sl_rel_pos_i > 8'h80 ? ~sl_rel_pos_i + 1'b1 : sl_rel_pos_i;  // map everything between 0 and 0.5 (from 8'h00 to 8'h80)
+      SL_str_correction_factor_1L <= SL_str_correction_factor_1L_w[5:0];                          // 6bits are fine here
+      case(sl_profile_i)
+        2'b00:  // hanning
+          getHannProfile(SL_str_correction_factor_1L,SL_str_correction_factor_2L);
+        2'b01:  // gaussian
+          getGaussProfile(SL_str_correction_factor_1L,SL_str_correction_factor_2L);
+        default:  // rectangular and flat top
+          SL_str_correction_factor_2L <= {SL_str_correction_factor_1L,SL_str_correction_factor_1L[5:4]};
       endcase
-      
-      SL_str_corrected_3L <= SL_str_corrected_3L_full_w[15:8];
+      SL_str_corrected_3L <= max_SL_str[2] ? sl_strength_i : SL_str_corrected_3L_full_w[15:8];
       SL_str_corrected_4L <= SL_str_corrected_3L;
     end
   

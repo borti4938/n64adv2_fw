@@ -2,7 +2,7 @@
 //
 // This file is part of the N64 RGB/YPbPr DAC project.
 //
-// Copyright (C) 2016-2021 by Peter Bartmann <borti4938@gmx.de>
+// Copyright (C) 2016-2022 by Peter Bartmann <borti4938@gmx.de>
 //
 // N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -70,8 +70,8 @@ module n64adv2_controller #(
 );
 
 
-`include "../vh/n64adv_cparams.vh"
-`include "../vh/n64adv2_config.vh"
+`include "../lib/n64adv_cparams.vh"
+`include "../lib/n64adv2_config.vh"
 
 inout N64_nRST_io;
 

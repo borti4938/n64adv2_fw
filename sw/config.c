@@ -2,7 +2,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2021 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,8 @@ typedef struct {
   alt_u8  vers_cfg_main;
   alt_u8  vers_cfg_sub;
   alt_u8  cfg_words[CFG2FLASH_WORD_FACTOR_U32*NUM_CFG_B32WORDS];
-  alt_u8  cfg_linex_trays[CFG2FLASH_WORD_FACTOR_U32*LINEX_TYPES];
+  alt_u8  cfg_linex_trays[LINEX_TYPES];
+  alt_u8  cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32*LINEX_TYPES];
   alt_u8  cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*NUM_TIMING_MODES];
   alt_u8  cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*NUM_SCALING_MODES];
 } cfg4flash_t;
@@ -64,7 +65,12 @@ configuration_t sysconfig = {
   .cfg_word_def[EXTCFG3] = &extcfg3_word
 };
 
-config_tray_t linex_words[2] = {
+config_tray_u8_t linex_words[2] = {
+  { .config_val = 0x00, .config_ref_val = 0x00},
+  { .config_val = 0x00, .config_ref_val = 0x00}
+};
+
+config_tray_t linex_scanlines_words[2] = {
   { .config_val = 0x00000000, .config_ref_val = 0x00000000},
   { .config_val = 0x00000000, .config_ref_val = 0x00000000}
 };
@@ -318,9 +324,12 @@ int cfg_save_to_flash(bool_t need_confirm)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
       ((cfg4flash_t*) databuf)->cfg_words[CFG2FLASH_WORD_FACTOR_U32*idx+jdx] = (alt_u8) ((sysconfig.cfg_word_def[idx]->cfg_word_val >> (8*jdx)) & 0xFF);
 
+  ((cfg4flash_t*) databuf)->cfg_linex_trays[NTSC] = linex_words[NTSC].config_val; // global/ntsc
+  ((cfg4flash_t*) databuf)->cfg_linex_trays[PAL] = linex_words[PAL].config_val; // pal
+
   for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++) {
-    ((cfg4flash_t*) databuf)->cfg_linex_trays[                          jdx] = (alt_u8) ((linex_words[NTSC].config_val >> (8*jdx)) & 0xFF); // global/ntsc
-    ((cfg4flash_t*) databuf)->cfg_linex_trays[CFG2FLASH_WORD_FACTOR_U32+jdx] = (alt_u8) ((linex_words[PAL].config_val  >> (8*jdx)) & 0xFF); // pal
+    ((cfg4flash_t*) databuf)->cfg_linex_scanlines_trays[                          jdx] = (alt_u8) ((linex_scanlines_words[NTSC].config_val >> (8*jdx)) & 0xFF); // global/ntsc
+    ((cfg4flash_t*) databuf)->cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32+jdx] = (alt_u8) ((linex_scanlines_words[PAL].config_val  >> (8*jdx)) & 0xFF); // pal
   }
 
   for (idx = 0; idx < NUM_TIMING_MODES; idx++)
@@ -371,9 +380,14 @@ int cfg_load_from_flash(bool_t need_confirm)
 
   linex_words[NTSC].config_val = 0;
   linex_words[PAL].config_val = 0;
+  linex_words[NTSC].config_val |= ((cfg4flash_t*) databuf)->cfg_linex_trays[NTSC];
+  linex_words[PAL].config_val  |= ((cfg4flash_t*) databuf)->cfg_linex_trays[PAL];
+
+  linex_scanlines_words[NTSC].config_val = 0;
+  linex_scanlines_words[PAL].config_val = 0;
   for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++) {
-    linex_words[NTSC].config_val |= (((cfg4flash_t*) databuf)->cfg_linex_trays[                          jdx]  << (8*jdx)); // global/ntsc
-    linex_words[PAL].config_val  |= (((cfg4flash_t*) databuf)->cfg_linex_trays[CFG2FLASH_WORD_FACTOR_U32+jdx]  << (8*jdx)); // pal
+    linex_scanlines_words[NTSC].config_val |= (((cfg4flash_t*) databuf)->cfg_linex_scanlines_trays[                          jdx]  << (8*jdx)); // global/ntsc
+    linex_scanlines_words[PAL].config_val  |= (((cfg4flash_t*) databuf)->cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32+jdx]  << (8*jdx)); // pal
   }
 
   for (idx = 0; idx < NUM_TIMING_MODES; idx++) {
@@ -397,8 +411,8 @@ int cfg_load_from_flash(bool_t need_confirm)
   cfg_set_value(&mode16bit_powercycle,cfg_get_value(&mode16bit,0));
   cfg_set_value(&mode16bit,(alt_u8) mode16bit_bak);
 
-  if ((((linex_words[NTSC].config_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK) ||
-      (((linex_words[PAL].config_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK))
+  if (((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK) ||
+      ((linex_words[PAL].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK ))
     unlock_1440p = TRUE;
   else
     unlock_1440p = FALSE;
@@ -406,30 +420,25 @@ int cfg_load_from_flash(bool_t need_confirm)
   return retval;
 }
 
+void cfg_reset_selections() {
+  cfg_set_value(&timing_selection,0);
+  cfg_set_value(&scaling_selection,0);
+}
+
 void cfg_store_linex_word(vmode_t palmode_select) {
-//  linex_words[palmode_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
-//                                            (sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);
-//  linex_words[palmode_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) |
-//                                                (sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val & CFG_EXTCFG2_GETSCANLINES_MASK);
-  linex_words[palmode_select].config_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) | sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val;
-  linex_words[palmode_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK) << (CFG_240P_SLHYBDEPMSB_OFFSET+1)) | sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val;
+  linex_words[palmode_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);
+  linex_words[palmode_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK);
+  linex_scanlines_words[palmode_select].config_val = sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val;
+  linex_scanlines_words[palmode_select].config_ref_val = sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val;
 }
 
 void cfg_load_linex_word(vmode_t palmode_select) {
-//  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
-//  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= ((linex_words[palmode_select].config_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
-//  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val &= CFG_EXTCFG2_GETNOSCANLINES_MASK;
-//  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val |= (linex_words[palmode_select].config_val & CFG_EXTCFG2_GETSCANLINES_MASK);
-//  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
-//  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= ((linex_words[palmode_select].config_ref_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
-//  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val &= CFG_EXTCFG2_GETNOSCANLINES_MASK;
-//  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val |= (linex_words[palmode_select].config_ref_val & CFG_EXTCFG2_GETSCANLINES_MASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
-  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= ((linex_words[palmode_select].config_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
-  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val = (linex_words[palmode_select].config_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[palmode_select].config_val;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
-  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= ((linex_words[palmode_select].config_ref_val >> (CFG_240P_SLHYBDEPMSB_OFFSET+1)) & CFG_EXTCFG0_GETLINEX_MASK);
-  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val = (linex_words[palmode_select].config_ref_val & CFG_EXTCFG2_GETSCANLINES_MASK);
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= linex_words[palmode_select].config_ref_val;
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val = linex_scanlines_words[palmode_select].config_val;
+  sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val = linex_scanlines_words[palmode_select].config_ref_val;
 }
 
 void cfg_reset_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
@@ -605,6 +614,8 @@ void cfg_update_reference()
 
   linex_words[NTSC].config_ref_val = linex_words[NTSC].config_val;
   linex_words[PAL].config_ref_val  = linex_words[PAL].config_val;
+  linex_scanlines_words[NTSC].config_ref_val = linex_scanlines_words[NTSC].config_val;
+  linex_scanlines_words[PAL].config_ref_val  = linex_scanlines_words[PAL].config_val;
   for (idx = 0; idx < NUM_TIMING_MODES; idx++) timing_words[idx].config_ref_val = timing_words[idx].config_val;
   for (idx = 0; idx < NUM_SCALING_MODES; idx++) scaling_words[idx].config_ref_val = scaling_words[idx].config_val;
 }

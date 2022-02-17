@@ -2,7 +2,7 @@
 //
 // This file is part of the N64 RGB/YPbPr DAC project.
 //
-// Copyright (C) 2015-2021 by Peter Bartmann <borti4938@gmail.com>
+// Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
 //
 // N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ module n64_vinfo_ext(
   vinfo_o
 );
 
-`include "../../vh/n64adv_vparams.vh"
+`include "../../lib/n64adv_vparams.vh"
 
 input VCLK;
 input nRST;
@@ -56,9 +56,7 @@ output [1:0] vinfo_o;   // order: palmode,n64_480i
 
 // some pre-assignments
 
-wire posedge_nVSYNC = !Sync_pre[3] &  Sync_cur[3];
 wire negedge_nVSYNC =  Sync_pre[3] & !Sync_cur[3];
-wire posedge_nHSYNC = !Sync_pre[1] &  Sync_cur[1];
 wire negedge_nHSYNC =  Sync_pre[1] & !Sync_cur[1];
 
 
@@ -66,22 +64,17 @@ wire negedge_nHSYNC =  Sync_pre[1] & !Sync_cur[1];
 // estimation of 240p/288p
 // =======================
 
-reg FrameID  = 1'b0; // 0 = even frame, 1 = odd frame; 240p: only even or only odd frames; 480i: even and odd frames
-reg n64_480i = 1'b1; // 0 = 240p/288p , 1= 480i/576i
+reg field_id  = 1'b1; // 0 = even frame, 1 = odd frame; 240p: only even or only odd frames; 480i: even and odd frames
+reg n64_480i  = 1'b1; // 0 = 240p/288p , 1= 480i/576i
 
 always @(posedge VCLK or negedge nRST)
   if (!nRST) begin
-    FrameID  <= 1'b0;
+    field_id  <= 1'b0;
     n64_480i <= 1'b1;
   end else if (!nVDSYNC) begin
-    if (negedge_nVSYNC) begin    // negedge at nVSYNC
-      if (negedge_nHSYNC) begin  // negedge at nHSYNC, too -> odd frame
-        n64_480i <= ~FrameID;
-        FrameID  <= 1'b1;
-      end else begin             // no negedge at nHSYNC -> even frame
-        n64_480i <= FrameID;
-        FrameID  <= 1'b0;
-      end
+    if (negedge_nVSYNC) begin 
+      field_id <= negedge_nHSYNC;
+      n64_480i <= field_id ^ negedge_nHSYNC;
     end
   end
 
@@ -97,10 +90,10 @@ always @(posedge VCLK or negedge nRST)
     line_cnt <= 2'b00;
     palmode  <= 1'b0;
   end else if (!nVDSYNC) begin
-    if(posedge_nVSYNC) begin // posedge at nVSYNC detected - reset line_cnt and set palmode
+    if(negedge_nVSYNC) begin // reset line_cnt and set palmode
       line_cnt <= 2'b00;
       palmode  <= ~line_cnt[1];
-    end else if(posedge_nHSYNC) // posedge nHSYNC -> increase line_cnt
+    end else if(negedge_nHSYNC) // new line -> increase line_cnt
       line_cnt <= line_cnt + 1'b1;
   end
 

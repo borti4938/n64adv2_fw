@@ -19,21 +19,37 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-filename = 'n64_advanced2_header.png';
 
-[X,map,alpha] = imread(filename);
-header = double((alpha(:,:,1)-X(:,:,1)) > 0);
+fractional_bits = 6;
+factor_bits = 8;
 
-size = [1 8; 1 128];
+%% hanning profile
 
-init_val = [];
-for row_idx = 1:(size(1,2)-size(1,1)+1)
-    for col_idx = 1:4:(size(2,2)-size(2,1)+1)
-        value = 0;
-        for idx = 0:3
-            value = value + header(row_idx,col_idx+idx)*2^idx;
-        end
-        init_val = [dec2hex(value) init_val]; % reverse order
-    end
+y_hann = hann(2*2^fractional_bits+7);
+y_hann = y_hann(3:2^fractional_bits+2);
+y_hann = round(y_hann*2^factor_bits);
+
+disp('Hanning profile')
+disp('case(x)')
+for idx = 1:length(y_hann)
+  txt = ['  ' int2str(fractional_bits) '''d' int2str(idx-1) ': y <= ' int2str(factor_bits) '''d' int2str(y_hann(idx)) ';'];
+  disp(txt);
 end
-init_val = [int2str(128*8) '''h' init_val];
+disp('endcase')
+
+%% Gaussian profile
+
+x_start = -sqrt(2*(factor_bits+1)*log(2)) + 1e-12;
+x = linspace(x_start,0,2^fractional_bits+1);
+x = x(1:end-1);
+y_gauss = exp(-2\x.^2);
+y_gauss = round(y_gauss*2^factor_bits);
+y_gauss(end) = 2^factor_bits-1;
+
+disp('Gaussian profile')
+disp('case(x)')
+for idx = 1:length(y_gauss)
+  txt = ['  ' int2str(fractional_bits) '''d' int2str(idx-1) ': y <= ' int2str(factor_bits) '''d' int2str(y_gauss(idx)) ';'];
+  disp(txt);
+end
+disp('endcase')

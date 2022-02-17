@@ -248,10 +248,11 @@ set_location_assignment PIN_7 -to PCB_ID_i[0]
 set_global_assignment -name TOP_LEVEL_ENTITY n64adv2_top
 
 #vh
-set_global_assignment -name VERILOG_INCLUDE_FILE ../vh/n64adv_vparams.vh
-set_global_assignment -name VERILOG_INCLUDE_FILE ../vh/n64adv_cparams.vh
-set_global_assignment -name VERILOG_INCLUDE_FILE ../vh/n64adv2_config.vh
-set_global_assignment -name VERILOG_INCLUDE_FILE ../vh/videotimings.vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv2_hw_cfg.vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv_vparams.vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv_cparams.vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv2_config.vh
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/videotimings.vh
 
 #ip
 set_global_assignment -name QIP_FILE ../ip/system_pll.qip
@@ -281,14 +282,14 @@ set_global_assignment -name VERILOG_FILE ../rtl/misc/ram2port.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/font_rom_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/gamma_table_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/serial_divide.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/sdram_ctrl.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/polyphase_2step_fir.v
 
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64_vinfo_ext.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64a_vdemux.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/gamma_module_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/scaler_cfggen.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/scaler.v
-set_global_assignment -name VERILOG_FILE ../rtl/ppu/sdram_ctrl.v
-set_global_assignment -name VERILOG_FILE ../rtl/ppu/polyphase_2step_fir.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/scanline_emu.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/osd_injection.v
 
@@ -328,7 +329,7 @@ set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name SYNTH_PROTECT_SDC_CONSTRAINT ON
 set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 
-set_global_assignment -name SEED 37
+set_global_assignment -name SEED 47
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM

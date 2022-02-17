@@ -3,7 +3,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2021 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,16 +130,6 @@ config_t res_selection = {
       .max_value = PPU_RES_CURRENT,
     },
     .value_string = &NTSCPAL_SEL
-};
-
-config_t scanline_selection = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
-    .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = 0,
-    .value_details = {
-      .max_value = NUM_TIMING_MODES,
-    },
-    .value_string = &VTimingSel
 };
 
 config_t timing_selection = {

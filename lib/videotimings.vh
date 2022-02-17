@@ -1,3 +1,35 @@
+//////////////////////////////////////////////////////////////////////////////////
+//
+// This file is part of the N64 RGB/YPbPr DAC project.
+//
+// Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
+//
+// N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Company: Circuit-Board.de
+// Engineer: borti4938
+//
+// VH-file Name:   videotimings.vh
+// Project Name:   N64 Advanced Mod
+// Target Devices: several devices
+// Tool versions:  Altera Quartus Prime
+// Description:
+//
+//////////////////////////////////////////////////////////////////////////////////
+
 
 `ifndef _videotimings_vh_
 `define _videotimings_vh_
@@ -182,7 +214,7 @@
   `define HSYNCLEN_720p50       40
   `define HBACKPORCH_720p50     220
   `define HACTIVE_720p50        1280
-  `define HOVERSCAN_MAX_720p50 `HFRONTPORCH_720p50
+  `define HOVERSCAN_MAX_720p50 `HBACKPORCH_720p50
   `define HTOTAL_720p50         1980
   `define VSYNC_active_720p50   1'b1
   `define VFRONTPORCH_720p50    5
@@ -199,7 +231,7 @@
   `define HSYNCLEN_960p50       32
   `define HBACKPORCH_960p50     80
   `define HACTIVE_960p50        1280
-  `define HOVERSCAN_MAX_960p50 `HFRONTPORCH_960p50
+  `define HOVERSCAN_MAX_960p50 `HBACKPORCH_960p50
   `define HTOTAL_960p50         1728
   `define VSYNC_active_960p50   1'b0
   `define VFRONTPORCH_960p50    3
@@ -216,7 +248,7 @@
   `define HSYNCLEN_1080p50      44
   `define HBACKPORCH_1080p50    148
   `define HACTIVE_1080p50       1920
-  `define HOVERSCAN_MAX_1080p50 `HFRONTPORCH_1080p50
+  `define HOVERSCAN_MAX_1080p50 `HBACKPORCH_1080p50
   `define HTOTAL_1080p50        2640
   `define VSYNC_active_1080p50  1'b1
   `define VFRONTPORCH_1080p50   4
@@ -233,7 +265,7 @@
   `define HSYNCLEN_1200p50      32
   `define HBACKPORCH_1200p50    80
   `define HACTIVE_1200p50       1600
-  `define HOVERSCAN_MAX_1200p50 `HFRONTPORCH_1200p50
+  `define HOVERSCAN_MAX_1200p50 `HBACKPORCH_1200p50
   `define HTOTAL_1200p50        2112
   `define VSYNC_active_1200p50  1'b1
   `define VFRONTPORCH_1200p50   3
@@ -250,7 +282,7 @@
   `define HSYNCLEN_1440p50      32
   `define HBACKPORCH_1440p50    58
   `define HACTIVE_1440p50       1920
-  `define HOVERSCAN_MAX_1440p50 `HFRONTPORCH_1440p50
+  `define HOVERSCAN_MAX_1440p50 `HBACKPORCH_1440p50
   `define HTOTAL_1440p50        2448
   `define VSYNC_active_1440p50  1'b0
   `define VFRONTPORCH_1440p50   3

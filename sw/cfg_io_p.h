@@ -2,7 +2,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2021 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@
 extern char szText[VD_WIDTH];
 
 extern const char *OffOn[], *Force5060[], *Resolutions[], *DeInterModes[], *InterpModes[],
-                  *AdvSL[], *LinkSL[], *EvenOdd[], *QuickChange[];
+                  *ScanlinesThickness[], *ScanlinesScaleProfile[], *QuickChange[];
 
 
 // scaler
@@ -234,10 +234,10 @@ config_t hor_shift = {
 config_t deinterlace_mode = {
     .cfg_word        = &extcfg1_word,
     .cfg_word_offset = CFG_DEINTER_MODE_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_DEINTER_MODE_MAX_VALUE,
-        .getvalue_mask = CFG_DEINTER_MODE_GETMASK
+    .cfg_type        = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_DEINTER_MODE_SETMASK,
+        .clrflag_mask = CFG_DEINTER_MODE_CLRMASK
     },
     .value_string = &DeInterModes
 };
@@ -271,6 +271,28 @@ cfg_b32word_t extcfg2_word =
     .cfg_ref_word_val = 0x00000000
   };
 
+config_t sl_thickness = {
+    .cfg_word        = &extcfg2_word,
+    .cfg_word_offset = CFG_240P_SL_THICKNESS_OFFSET,
+    .cfg_type        = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_240P_SL_THICKNESS_SETMASK,
+        .clrflag_mask = CFG_240P_SL_THICKNESS_CLRMASK
+    },
+    .value_string = &ScanlinesThickness
+};
+
+config_t sl_profile = {
+    .cfg_word        = &extcfg2_word,
+    .cfg_word_offset = CFG_240P_SL_PROFILE_OFFSET,
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_SL_PROFILE_MAX_VALUE,
+        .getvalue_mask = CFG_240P_SL_PROFILE_GETMASK
+    },
+    .value_string = &ScanlinesScaleProfile
+};
+
 config_t slhyb_str = {
     .cfg_word        = &extcfg2_word,
     .cfg_word_offset = CFG_240P_SLHYBDEP_OFFSET,
@@ -293,37 +315,48 @@ config_t sl_str = {
     .val2char_func = &scanline_str2txt_func
 };
 
-config_t sl_method = {
+config_t vsl_en = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_SL_METHOD_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks   = {
-        .setflag_mask = CFG_240P_SL_METHOD_SETMASK,
-        .clrflag_mask = CFG_240P_SL_METHOD_CLRMASK
+    .cfg_word_offset = CFG_240P_VSL_EN_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_240P_VSL_EN_SETMASK,
+        .clrflag_mask = CFG_240P_VSL_EN_CLRMASK
     },
-    .value_string = &AdvSL
+    .val2char_func = &flag2set_func
 };
 
-config_t sl_id = {
+config_t hsl_en = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_SL_ID_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks   = {
-        .setflag_mask = CFG_240P_SL_ID_SETMASK,
-        .clrflag_mask = CFG_240P_SL_ID_CLRMASK
+    .cfg_word_offset = CFG_240P_HSL_EN_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_240P_HSL_EN_SETMASK,
+        .clrflag_mask = CFG_240P_HSL_EN_CLRMASK
     },
-    .value_string = &EvenOdd
+    .val2char_func = &flag2set_func
 };
 
-config_t sl_en = {
+config_t sl_thickness_480i = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_240P_SL_EN_OFFSET,
+    .cfg_word_offset = CFG_480I_SL_THICKNESS_OFFSET,
     .cfg_type        = FLAG,
     .flag_masks      = {
-        .setflag_mask = CFG_240P_SL_EN_SETMASK,
-        .clrflag_mask = CFG_240P_SL_EN_CLRMASK
+        .setflag_mask = CFG_480I_SL_THICKNESS_SETMASK,
+        .clrflag_mask = CFG_480I_SL_THICKNESS_CLRMASK
     },
-    .value_string = &OffOn
+    .value_string = &ScanlinesThickness
+};
+
+config_t sl_profile_480i = {
+    .cfg_word        = &extcfg2_word,
+    .cfg_word_offset = CFG_480I_SL_PROFILE_OFFSET,
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_SL_PROFILE_MAX_VALUE,
+        .getvalue_mask = CFG_480I_SL_PROFILE_GETMASK
+    },
+    .value_string = &ScanlinesScaleProfile
 };
 
 config_t slhyb_str_480i = {
@@ -348,37 +381,37 @@ config_t sl_str_480i = {
     .val2char_func = &scanline_str2txt_func
 };
 
-config_t sl_id_480i = {
+config_t vsl_en_480i = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SL_ID_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks   = {
-        .setflag_mask = CFG_480I_SL_ID_SETMASK,
-        .clrflag_mask = CFG_480I_SL_ID_CLRMASK
-    },
-    .value_string = &EvenOdd
-};
-
-config_t sl_method_480i = {
-    .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SL_METHOD_OFFSET,
-    .cfg_type        = FLAG,
+    .cfg_word_offset = CFG_480I_VSL_EN_OFFSET,
+    .cfg_type        = FLAGTXT,
     .flag_masks      = {
-        .setflag_mask = CFG_480I_SL_METHOD_SETMASK,
-        .clrflag_mask = CFG_480I_SL_METHOD_CLRMASK
+        .setflag_mask = CFG_480I_VSL_EN_SETMASK,
+        .clrflag_mask = CFG_480I_VSL_EN_CLRMASK
     },
-    .value_string = &AdvSL
+    .val2char_func = &flag2set_func
 };
 
-config_t sl_en_480i = {
+config_t hsl_en_480i = {
     .cfg_word        = &extcfg2_word,
-    .cfg_word_offset = CFG_480I_SL_EN_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_480I_SL_EN_MAX_VALUE,
-        .getvalue_mask = CFG_480I_SL_EN_GETMASK
+    .cfg_word_offset = CFG_480I_HSL_EN_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_480I_HSL_EN_SETMASK,
+        .clrflag_mask = CFG_480I_HSL_EN_CLRMASK
     },
-    .value_string = &LinkSL
+    .val2char_func = &flag2set_func
+};
+
+config_t sl_link_480i = {
+    .cfg_word        = &extcfg2_word,
+    .cfg_word_offset = CFG_480I_SL_LINK_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_480I_SL_LINK_SETMASK,
+        .clrflag_mask = CFG_480I_SL_LINK_CLRMASK
+    },
+    .val2char_func = &flag2set_func
 };
 
 // audio

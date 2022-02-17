@@ -2,7 +2,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2020 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,8 +60,6 @@ typedef enum {
   HWINFO_CHIP_ID_3,
   HDL_FW_N_PCB_ID
 } hw_info_sel_t;
-
-static const char *running_message = "< Running >";
 
 alt_u8 info_sync_val;
 alt_u32 ctrl_data;

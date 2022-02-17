@@ -2,7 +2,7 @@
 //
 // This file is part of the N64 RGB/YPbPr DAC project.
 //
-// Copyright (C) 2016-2019 by Peter Bartmann <borti4938@gmx.de>
+// Copyright (C) 2016-2022 by Peter Bartmann <borti4938@gmx.de>
 //
 // N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,8 +36,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-
-//`define VIDEO_USE_FAST_OUTPUT_REGs
 
 module n64adv2_ppu_top (
   // N64 Video Input
@@ -84,13 +82,13 @@ module n64adv2_ppu_top (
 );
 
 
-`include "../vh/n64adv_cparams.vh"
-`include "../vh/n64adv_vparams.vh"
-`include "../vh/n64adv2_config.vh"
-`include "../vh/videotimings.vh"
+`include "../lib/n64adv_cparams.vh"
+`include "../lib/n64adv_vparams.vh"
+`include "../lib/n64adv2_config.vh"
+`include "../lib/videotimings.vh"
 
-`include "../tasks/setVideoTimings.tasks.v"
-`include "../tasks/setOSDConfig.tasks.v"
+`include "../lib/setVideoTimings.tasks.v"
+`include "../lib/setOSDConfig.tasks.v"
 
 input N64_CLK_i;
 input N64_nVRST_i;
@@ -111,17 +109,10 @@ input scaler_nresync_i;
 input VCLK_Tx;
 input nVRST_Tx;
 
-`ifdef VIDEO_USE_FAST_OUTPUT_REGs
-  output reg VSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-  output reg HSYNC_o = 1'b0                                       /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-  output reg DE_o = 1'b0                                          /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-  output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}} /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON" */;
-`else
-  output reg VSYNC_o = 1'b0;
-  output reg HSYNC_o = 1'b0;
-  output reg DE_o = 1'b0;
-  output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}};
-`endif
+output reg VSYNC_o = 1'b0;
+output reg HSYNC_o = 1'b0;
+output reg DE_o = 1'b0;
+output reg [3*color_width_o-1:0] VD_o = {3*color_width_o{1'b0}};
 
 input         DRAM_CLK_i;
 input         DRAM_nRST_i;
@@ -148,18 +139,26 @@ wire palmode, n64_480i;
 
 wire [ 3:0] cfg_gamma;
 wire cfg_nvideblur_pre, cfg_n16bit_mode;
-wire cfg_lowlatencymode;
 wire [9:0] cfg_hvshift;
+wire cfg_bob_deinterlacing_mode;
 
 wire [`VID_CFG_W-1:0] sys_vmode_ntsc_w, sys_vmode_pal_w;
+wire [10:0] vlines_set_w;
+wire [11:0] hpixels_set_w;
 
-wire palmode_sysclk_resynced;
+wire palmode_sysclk_resynced, n64_480i_sysclk_resynced;
+wire use_interlaced_full_w;
+wire cfg_nvideblur_sysclk_resynced;
 
-wire [8:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_resynced;
+wire cfg_deinterlacing_mode_dramclk_resynced;
+wire palmode_dramclk_resynced, n64_480i_dramclk_resynced;
+
+wire cfg_lowlatencymode_resynced;
+wire [9:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_resynced;
 wire [10:0] cfg_vlines_out_w, cfg_vlines_out_resynced;
 wire [17:0] cfg_v_interp_factor_w, cfg_v_interp_factor_resynced;
-wire [8:0] cfg_vlines_in_needed_w, cfg_vlines_in_needed_resynced;
-wire [8:0] cfg_vlines_in_full_w, cfg_vlines_in_full_resynced;
+wire [9:0] cfg_vlines_in_needed_w, cfg_vlines_in_needed_resynced;
+wire [9:0] cfg_vlines_in_full_w, cfg_vlines_in_full_resynced;
 
 wire [9:0] cfg_hpos_1st_rdpixel_w, cfg_hpos_1st_rdpixel_resynced;
 wire [11:0] cfg_hpixels_out_w, cfg_hpixels_out_resynced;
@@ -167,7 +166,7 @@ wire [17:0] cfg_h_interp_factor_w, cfg_h_interp_factor_resynced;
 wire [9:0] cfg_hpixel_in_needed_w, cfg_hpixel_in_needed_resynced;
 wire [9:0] cfg_hpixel_in_full_w, cfg_hpixel_in_full_resynced;
 
-wire palmode_resynced, n64_480i_resynced;
+wire palmode_vclk_o_resynced, n64_480i_vclk_o_resynced;
 wire [`VID_CFG_W-1:0] videomode_ntsc_w, videomode_pal_w;
 
 wire [`PPUConfig_WordWidth-1:0] ConfigSet_resynced;
@@ -195,10 +194,12 @@ reg [`VID_CFG_W-1:0] sys_videomode;
 reg [`VID_CFG_W-1:0] cfg_videomode;
 reg [1:0] cfg_interpolation_mode;
 reg cfg_pal_boxed;
-reg cfg_SL_method, cfg_SL_id, cfg_SL_en;
-reg [1:0] cfg_SL_thickness;
-reg [ 4:0] cfg_SLHyb_str;
-reg [ 7:0] cfg_SL_str;
+
+reg cfg_SL_v_en, cfg_SL_h_en;
+reg cfg_SL_thickness;
+reg [1:0] cfg_SL_profile;
+reg [4:0] cfg_SLHyb_str;
+reg [7:0] cfg_SL_str;
 
 reg [2:0] cfg_osd_vscale;
 reg [1:0] cfg_osd_hscale;
@@ -244,17 +245,17 @@ assign PPUState[`PPU_gamma_table_slice]         = cfg_gamma;
 // write configuration register
 // ----------------------------
 
-// generate aprroximated multiplication factor for scaler config
+// generate aprroximated multiplication factor for scaler config in sysclk domain first
 
 register_sync #(
-  .reg_width(1),
-  .reg_preset(1'b0)
+  .reg_width(3),
+  .reg_preset(3'd0)
 ) sync4cpu_u0(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i(palmode),
-  .reg_o(palmode_sysclk_resynced)
+  .reg_i({palmode                ,n64_480i                ,cfg_nvideblur}),
+  .reg_o({palmode_sysclk_resynced,n64_480i_sysclk_resynced,cfg_nvideblur_sysclk_resynced})
 );
 
 
@@ -288,14 +289,16 @@ always @(posedge SYS_CLK) begin
   end
 end
 
-wire [10:0] vlines_set_w = ConfigSet[`target_vlines_slice];
-wire [11:0] hpixels_set_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P ? {ConfigSet[`target_hpixels_slice],1'b0} : ConfigSet[`target_hpixels_slice];
-
+assign vlines_set_w = ConfigSet[`target_vlines_slice];
+assign hpixels_set_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P ? ConfigSet[`target_hpixels_slice] << 1 : ConfigSet[`target_hpixels_slice];
+assign use_interlaced_full_w = n64_480i_sysclk_resynced & ConfigSet[`deinterlacing_mode_bit];
 
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
   .palmode_i(palmode_sysclk_resynced),
   .palmode_boxed_i(ConfigSet[`pal_boxed_scale_bit]),
+  .use_interlaced_full_i(use_interlaced_full_w),
+  .nvideblur_i(cfg_nvideblur_sysclk_resynced),
   .video_config_i(sys_videomode),
   .vlines_out_i(vlines_set_w),
   .hpixels_out_i(hpixels_set_w),
@@ -311,17 +314,18 @@ scaler_cfggen scaler_cfggen_u(
   .h_interp_factor_o(cfg_h_interp_factor_w)
 );
 
+// setup config in different clock domains ...
 
-// to N64_CLK_i first
+// ... in N64_CLK_i
 register_sync #(
-  .reg_width(17), // 4 + 1 + 1 + 10 + 1
+  .reg_width(17), // 4 + 1 + 10 + 1 + 1
   .reg_preset(17'd0)
 ) cfg_sync4n64clk_u0 (
   .clk(N64_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ConfigSet[`gamma_slice],~ConfigSet[`n16bit_mode_bit],ConfigSet[`lowlatencymode_bit],ConfigSet[`hshift_slice],ConfigSet[`vshift_slice],~ConfigSet[`videblur_bit]}),
-  .reg_o({cfg_gamma,cfg_n16bit_mode,cfg_lowlatencymode,cfg_hvshift,cfg_nvideblur_pre})
+  .reg_i({ConfigSet[`gamma_slice],~ConfigSet[`n16bit_mode_bit],ConfigSet[`hshift_slice],ConfigSet[`vshift_slice],~ConfigSet[`deinterlacing_mode_bit],~ConfigSet[`videblur_bit]}),
+  .reg_o({cfg_gamma              ,cfg_n16bit_mode             ,cfg_hvshift                                      ,cfg_bob_deinterlacing_mode            ,cfg_nvideblur_pre})
 ); // Note: add output reg as false path in sdc (cfg_sync4n64clk_u0|reg_synced_1[*])
 
 always @(*)
@@ -331,29 +335,43 @@ always @(*)
     cfg_nvideblur <= 1'b1;
 
 
-// to DRAM clock domain
+// ... in DRAM clock domain
 register_sync #(
-  .reg_width(9),
-  .reg_preset({(9){1'b0}})
+  .reg_width(11),  // 10 + 1
+  .reg_preset(11'd0)
 ) cfg_sync4dramlogic_u0 (
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i(cfg_vpos_1st_rdline_w),
-  .reg_o(cfg_vpos_1st_rdline_resynced)
+  .reg_i({cfg_vpos_1st_rdline_w       ,ConfigSet[`deinterlacing_mode_bit]}),
+  .reg_o({cfg_vpos_1st_rdline_resynced,cfg_deinterlacing_mode_dramclk_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
+register_sync_2 #(
+  .reg_width(2),
+  .reg_preset(2'd0),
+  .resync_stages(3)
+) cfg_sync4dramlogic_u1 (
+  .nrst(1'b1),
+  .clk_i(N64_CLK_i),
+  .clk_i_en(1'b1),
+  .reg_i(vinfo_pass),
+  .clk_o(DRAM_CLK_i),
+  .clk_o_en(1'b1),
+  .reg_o({palmode_dramclk_resynced,n64_480i_dramclk_resynced})
+);
 
-// to VCLK_Tx clock domain
+
+// ... in VCLK_Tx clock domain
 register_sync #(
-  .reg_width(47), // 9 + 9 + 11 + 18
-  .reg_preset({(47){1'b0}})
+  .reg_width(50), // 1 + 10 + 10 + 11 + 18
+  .reg_preset(50'd0)
 ) cfg_sync4txlogic_u0 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
-  .reg_o({cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
+  .reg_i({ConfigSet[`lowlatencymode_bit],cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
+  .reg_o({cfg_lowlatencymode_resynced   ,cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
 
 register_sync #(
@@ -378,7 +396,7 @@ register_sync_2 #(
   .reg_i(vinfo_pass),
   .clk_o(VCLK_Tx),
   .clk_o_en(1'b1),
-  .reg_o({palmode_resynced,n64_480i_resynced})
+  .reg_o({palmode_vclk_o_resynced,n64_480i_vclk_o_resynced})
 );
 
 register_sync #(
@@ -416,37 +434,27 @@ always @(posedge VCLK_Tx) begin
   else if (ConfigSet_resynced[`force50hz_bit] & !ConfigSet_resynced[`lowlatencymode_bit] & (ConfigSet_resynced[`target_resolution_slice] != `HDMI_TARGET_240P)) // do not allow forcing 50Hz mode in llm and in 240p mode
     cfg_videomode <= videomode_pal_w;
   else begin
-    if (palmode_resynced)
+    if (palmode_vclk_o_resynced)
       cfg_videomode <= videomode_pal_w;
     else
       cfg_videomode <= videomode_ntsc_w;
   end
   cfg_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`interpolation_mode_slice];
   cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
-  if (ConfigSet_resynced[`target_vlines_slice] < 11'd924) // just a coarse estimate
-    cfg_SL_thickness <= 2'b00;
-  else if (ConfigSet_resynced[`target_vlines_slice] < 11'd1452) // just a coarse estimate
-    cfg_SL_thickness <= 2'b01;
-  else
-    cfg_SL_thickness <= 2'b10;  
-  if (!n64_480i_resynced) begin
-    cfg_SLHyb_str    <= ConfigSet[`v240p_SL_hybrid_slice];
+  if (!n64_480i_vclk_o_resynced | ConfigSet_resynced[`v480i_SL_linked_bit]) begin
+    cfg_SL_thickness <= ConfigSet_resynced[`v240p_SL_thickness_bit];
+    cfg_SL_profile   <= ConfigSet_resynced[`v240p_SL_profile_slice];
+    cfg_SLHyb_str    <= ConfigSet_resynced[`v240p_SL_hybrid_slice];
     cfg_SL_str       <= ((ConfigSet_resynced[`v240p_SL_str_slice]+8'h01)<<4)-1'b1;
-    cfg_SL_method    <= ConfigSet[`v240p_SL_method_bit];
-    cfg_SL_id        <= ConfigSet[`v240p_SL_ID_bit];
-    cfg_SL_en        <= ConfigSet[`v240p_SL_En_bit];
+    cfg_SL_v_en      <= ConfigSet_resynced[`v240p_SL_V_En_bit];
+    cfg_SL_h_en      <= ConfigSet_resynced[`v240p_SL_H_En_bit];
   end else begin
-    if (ConfigSet[`v480i_SL_linked_bit]) begin // check if SL mode is linked to 240p
-      cfg_SLHyb_str    <= ConfigSet[`v240p_SL_hybrid_slice];
-      cfg_SL_str        <= ((ConfigSet_resynced[`v240p_SL_str_slice]+8'h01)<<4)-1'b1;
-      cfg_SL_id        <= ConfigSet[`v240p_SL_ID_bit];
-    end else begin
-      cfg_SLHyb_str    <= ConfigSet[`v480i_SL_hybrid_slice];
-      cfg_SL_str        <= ((ConfigSet_resynced[`v480i_SL_str_slice]+8'h01)<<4)-1'b1;
-      cfg_SL_id        <= ConfigSet[`v480i_SL_ID_bit];
-    end
-    cfg_SL_method    <= 1'b0;
-    cfg_SL_en        <= ConfigSet[`v480i_SL_En_bit];
+    cfg_SL_thickness <= ConfigSet_resynced[`v480i_SL_thickness_bit];
+    cfg_SL_profile   <= ConfigSet_resynced[`v480i_SL_profile_slice];
+    cfg_SLHyb_str    <= ConfigSet_resynced[`v480i_SL_hybrid_slice];
+    cfg_SL_str       <= ((ConfigSet_resynced[`v480i_SL_str_slice]+8'h01)<<4)-1'b1;
+    cfg_SL_v_en      <= ConfigSet_resynced[`v480i_SL_V_En_bit];
+    cfg_SL_h_en      <= ConfigSet_resynced[`v480i_SL_H_En_bit];
   end
   
   setVideoSYNCactive(cfg_videomode,cfg_active_vsync,cfg_active_hsync);
@@ -454,7 +462,6 @@ always @(posedge VCLK_Tx) begin
   
   cfg_limitedRGB <= ConfigSet_resynced[`limitedRGB_bit];
 end
-
 
 register_sync #(
   .reg_width(2),
@@ -535,7 +542,8 @@ scaler scaler_u(
   .vinfo_i(vinfo_pass),
   .vdata_i(vdata24_pp_w[1]),
   .vdata_valid_i(vdata_valid_pp_w[1]),
-  .vdata_hvshift(cfg_hvshift),
+  .vdata_hvshift_i(cfg_hvshift),
+  .vdata_bob_deinterlacing_mode_i(cfg_bob_deinterlacing_mode),
   .DRAM_CLK_i(DRAM_CLK_i),
   .DRAM_nRST_i(DRAM_nRST_i),
   .DRAM_ADDR(DRAM_ADDR),
@@ -547,11 +555,13 @@ scaler scaler_u(
   .DRAM_DQM(DRAM_DQM),
   .DRAM_nRAS(DRAM_nRAS),
   .DRAM_nWE(DRAM_nWE),
+  .vinfo_dramsynced_i({palmode_dramclk_resynced,n64_480i_dramclk_resynced}),
+  .video_deinterlacing_mode_i(cfg_deinterlacing_mode_dramclk_resynced),
   .video_vpos_1st_rdline_i(cfg_vpos_1st_rdline_resynced),
   .VCLK_o(VCLK_Tx),
-  .vinfo_txsynced_i({palmode_resynced,n64_480i_resynced}),
+  .vinfo_txsynced_i({palmode_vclk_o_resynced,n64_480i_vclk_o_resynced}),
   .video_config_i(cfg_videomode),
-  .video_llm_i(cfg_lowlatencymode),
+  .video_llm_i(cfg_lowlatencymode_resynced),
   .video_interpolation_mode_i(cfg_interpolation_mode),
   .video_pal_boxed_i(cfg_pal_boxed),
   .vinfo_llm_slbuf_fb_o(PPUState[`PPU_output_llm_slbuf_slice]),
@@ -576,13 +586,6 @@ scaler scaler_u(
 // Scanline emulation
 // ==================
 
-
-parameter SL_thickness = 8'h10; // area in middle in which the SL is fully drawn
-                                // must not exceed 8'h40!!!
-parameter SL_softening = 8'h40; // area width at each border where the SL strength becomes reduced until reaching zero
-                                // must be 8'h40, 8'h20, 8'h10  or 8'h08
-                                //         0.25,  0.125, 0.0625 or 0.03125
-
 scanline_emu #(
   .FALSE_PATH_STR_CORRECTION("OFF")
 ) vertical_scanline_emu_u (
@@ -592,9 +595,9 @@ scanline_emu #(
   .VSYNC_i(vdata24_pp_w[2][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[2][3*color_width_o+2]),
   .vdata_i(vdata24_pp_w[2][`VDATA_O_CO_SLICE]),
-  .sl_en_i(cfg_SL_en),
-  .sl_thickness_i(SL_thickness),
-  .sl_edge_softening_i(SL_softening),
+  .sl_en_i(cfg_SL_v_en),
+  .sl_thickness_i(cfg_SL_thickness),
+  .sl_profile_i(cfg_SL_profile),
   .sl_rel_pos_i(sl_hpos_rel_w),
   .sl_strength_i(cfg_SL_str),
   .sl_bloom_i(cfg_SLHyb_str),
@@ -613,9 +616,9 @@ scanline_emu #(
   .VSYNC_i(vdata24_pp_w[3][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[3][3*color_width_o+2]),
   .vdata_i(vdata24_pp_w[3][`VDATA_O_CO_SLICE]),
-  .sl_en_i(cfg_SL_en),
-  .sl_thickness_i(SL_thickness),
-  .sl_edge_softening_i(SL_softening),
+  .sl_en_i(cfg_SL_h_en),
+  .sl_thickness_i(cfg_SL_thickness),
+  .sl_profile_i(cfg_SL_profile),
   .sl_rel_pos_i(sl_vpos_rel_w),
   .sl_strength_i(cfg_SL_str),
   .sl_bloom_i(cfg_SLHyb_str),
@@ -681,10 +684,10 @@ always @(posedge VCLK_Tx or negedge nVRST_Tx)
     HSYNC_pre_L <= 1'b0;
        DE_pre_L <= 1'b0;
     
-    VSYNC_o_L <= 1'b0;
-    HSYNC_o_L <= 1'b0;
-       DE_o_L <= 1'b0;
-       VD_o_L <= {3*color_width_o{1'b0}};
+    VSYNC_o <= 1'b0;
+    HSYNC_o <= 1'b0;
+       DE_o <= 1'b0;
+       VD_o <= {3*color_width_o{1'b0}};
   end else begin
     limited_Re_pre_LL <= limited_Re_pre_L[color_width_o:1] + limited_Re_pre_L[0];
     limited_Gr_pre_LL <= limited_Gr_pre_L[color_width_o:1] + limited_Gr_pre_L[0];
@@ -703,38 +706,16 @@ always @(posedge VCLK_Tx or negedge nVRST_Tx)
     HSYNC_pre_L <= vdata24_pp_w[5][3*color_width_o+1];
        DE_pre_L <= vdata24_pp_w[5][3*color_width_o+2];
     
-    VSYNC_o_L <= VSYNC_pre_LL;
-    HSYNC_o_L <= HSYNC_pre_LL;
-       DE_o_L <= DE_pre_LL;
+    VSYNC_o <= VSYNC_pre_LL;
+    HSYNC_o <= HSYNC_pre_LL;
+       DE_o <= DE_pre_LL;
     if (cfg_limitedRGB) begin
-      VD_o_L[`VDATA_O_RE_SLICE] <= {limited_Re_pre_LL[color_width_o-1:4] + 1'b1,limited_Re_pre_LL[3:0]};
-      VD_o_L[`VDATA_O_GR_SLICE] <= {limited_Gr_pre_LL[color_width_o-1:4] + 1'b1,limited_Gr_pre_LL[3:0]};
-      VD_o_L[`VDATA_O_BL_SLICE] <= {limited_Bl_pre_LL[color_width_o-1:4] + 1'b1,limited_Bl_pre_LL[3:0]};
+      VD_o[`VDATA_O_RE_SLICE] <= {limited_Re_pre_LL[color_width_o-1:4] + 1'b1,limited_Re_pre_LL[3:0]};
+      VD_o[`VDATA_O_GR_SLICE] <= {limited_Gr_pre_LL[color_width_o-1:4] + 1'b1,limited_Gr_pre_LL[3:0]};
+      VD_o[`VDATA_O_BL_SLICE] <= {limited_Bl_pre_LL[color_width_o-1:4] + 1'b1,limited_Bl_pre_LL[3:0]};
     end else begin
-      VD_o_L <= full_RGB_pre_LL;
+      VD_o <= full_RGB_pre_LL;
     end
   end
-
-`ifdef VIDEO_USE_FAST_OUTPUT_REGs
-  always @(posedge VCLK_Tx or negedge nVRST_Tx)
-    if (!nVRST_Tx) begin
-      VSYNC_o <= 1'b0;
-      HSYNC_o <= 1'b0;
-         DE_o <= 1'b0;
-         VD_o <= {3*color_width_o{1'b0}};
-    end else begin
-      VSYNC_o <= VSYNC_o_L;
-      HSYNC_o <= HSYNC_o_L;
-         DE_o <= DE_o_L;
-         VD_o <= VD_o_L;
-    end
-`else
-  always @(*) begin
-    VSYNC_o <= VSYNC_o_L;
-    HSYNC_o <= HSYNC_o_L;
-       DE_o <= DE_o_L;
-       VD_o <= VD_o_L;
-  end
-`endif
 
 endmodule

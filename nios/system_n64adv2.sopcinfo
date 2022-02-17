@@ -5,11 +5,11 @@
  version="1.0"
  fabric="QSYS">
  <!-- Format version 21.1 842 (Future versions may contain additional information.) -->
- <!-- 2022.01.30.22:00:00 -->
+ <!-- 2022.02.16.07:09:01 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1643576400</value>
+  <value>1644991741</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -934,7 +934,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.RESET_VALUE</name>
-   <value>1327616</value>
+   <value>269763072</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.compatible</name>
@@ -954,7 +954,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.dts.params.resetvalue</name>
-   <value>1327616</value>
+   <value>269763072</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.vendor</name>
@@ -1018,7 +1018,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="resetValue">
    <type>long</type>
-   <value>1327616</value>
+   <value>269763072</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>

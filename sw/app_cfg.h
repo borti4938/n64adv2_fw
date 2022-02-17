@@ -2,7 +2,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2021 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,10 +30,10 @@
 #define APP_CFG_H_
 
 #define SW_FW_MAIN  2
-#define SW_FW_SUB   06
+#define SW_FW_SUB   07
 
 #define CFG_FW_MAIN SW_FW_MAIN
-#define CFG_FW_SUB  07
+#define CFG_FW_SUB  01
 
 #ifndef DEBUG
   #define db_printf(...)

@@ -2,7 +2,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2021 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,6 +159,7 @@ int main()
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
     cfg_load_defaults(use_fallback,0);
+    cfg_set_flag(&igr_reset); // handle a bit different from other defaults
     cfg_update_reference();
     open_osd_main(&menu);
   } else {
