@@ -294,7 +294,7 @@ assign HDMI_CLK_o = HDMI_CLK_w;
 
 `ifdef VIDEO_USE_FAST_OUTPUT_REGs
   always @(posedge HDMI_CLK_w or negedge HDMI_nRST_w)
-    if (!nVRST_Tx) begin
+    if (!HDMI_nRST_w) begin
       VSYNC_o <= 1'b0;
       HSYNC_o <= 1'b0;
          DE_o <= 1'b0;
