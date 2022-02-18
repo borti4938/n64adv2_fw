@@ -73,22 +73,12 @@ static const arrow_t viscaling_opt_arrow = {
     .hpos = (SCALERCFG_VALS_H_OFFSET - 2)
 };
 
-static const arrow_t vicfg_sel_arrow = {
-    .shape = &selection_arrow,
-    .hpos = (VICFG_VALS_H_OFFSET - 2)
-};
-
 static const arrow_t vicfg_opt_arrow = {
     .shape = &optval_arrow,
     .hpos = (VICFG_VALS_H_OFFSET - 2)
 };
 
-static const arrow_t slcfg_opt_arrow0 = {
-    .shape = &optval_arrow,
-    .hpos = (SLCFG_VALS_H_OFFSET - 11)
-};
-
-static const arrow_t slcfg_opt_arrow1 = {
+static const arrow_t slcfg_opt_arrow = {
     .shape = &optval_arrow,
     .hpos = (SLCFG_VALS_H_OFFSET - 2)
 };
@@ -109,7 +99,7 @@ static const arrow_t rwdata_optval_arrow = {
 };
 
 
-menu_t home_menu, vinfo_screen, vires_screen, viscaling_screen, vicfg_screen, slcfg_opt_subscreen,
+menu_t home_menu, vinfo_screen, vires_screen, viscaling_screen, slcfg_opt_subscreen, vicfg_screen,
        misc_screen, rwdata_screen, about_screen, thanks_screen, license_screen;
 
 
@@ -121,17 +111,18 @@ menu_t home_menu = {
       .text = &home_overlay
     },
     .current_selection = 1,
-    .number_selections = 9,
+    .number_selections = 10,
     .leaves = {
-        {.id = MAIN2VINFO_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vinfo_screen},
-        {.id = MAIN2RES_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vires_screen},
-        {.id = MAIN2SCALER_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &viscaling_screen},
-        {.id = MAIN2VIPROC_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_screen},
-        {.id = MAIN2MISC_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &misc_screen},
-        {.id = MAIN2SAVE_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
-        {.id = MAIN2ABOUT_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &about_screen},
-        {.id = MAIN2THANKS_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &thanks_screen},
-        {.id = MAIN2LICENSE_V_OFFSET, .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &license_screen}
+        {.id = MAIN2VINFO_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vinfo_screen},
+        {.id = MAIN2RES_V_OFFSET     , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vires_screen},
+        {.id = MAIN2SCALER_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &viscaling_screen},
+        {.id = MAIN2SCANLINE_V_OFFSET, .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &slcfg_opt_subscreen},
+        {.id = MAIN2VIPROC_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_screen},
+        {.id = MAIN2MISC_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &misc_screen},
+        {.id = MAIN2SAVE_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
+        {.id = MAIN2ABOUT_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &about_screen},
+        {.id = MAIN2THANKS_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &thanks_screen},
+        {.id = MAIN2LICENSE_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &license_screen}
     }
 };
 
@@ -207,6 +198,35 @@ menu_t viscaling_screen = {
 #define VERTSHIFT_SELECTION     8
 #define HORSHIFT_SELECTION      9
 
+menu_t slcfg_opt_subscreen = {
+    .type = CONFIG,
+    .header = &slcfg_opt_header,
+    .body = {
+      .hoffset = SLCFG_OVERLAY_H_OFFSET,
+      .text = &slcfg_opt_overlay
+    },
+    .parent = &home_menu,
+    .current_selection = 0,
+    .number_selections = 12,
+    .leaves = {
+        {.id = SLCFG_INPUT_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &region_selection},
+        {.id = SLCFG_HEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_en_hori},
+        {.id = SLCFG_HTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_thickness_hori},
+        {.id = SLCFG_HPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_profile_hori},
+        {.id = SLCFG_HSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_str_hori},
+        {.id = SLCFG_HHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &slhyb_str_hori},
+        {.id = SLCFG_VEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_en_vert},
+        {.id = SLCFG_VLINK_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_link_h2v},
+        {.id = SLCFG_VTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_thickness_vert},
+        {.id = SLCFG_VPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_profile_vert},
+        {.id = SLCFG_VSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_str_vert},
+        {.id = SLCFG_VHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &slhyb_str_vert}
+    }
+};
+
+#define SL_VLINK_SELECTION           7
+#define SL_HORI_TO_VERT_OFFSET       6
+
 menu_t vicfg_screen = {
     .type = CONFIG,
     .header = &vicfg_header,
@@ -216,10 +236,9 @@ menu_t vicfg_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 8,
+    .number_selections = 7,
     .leaves = {
         {.id = VICFG_DEINTERL_V_OFFSET   , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deinterlace_mode},
-        {.id = VICFG_SCANLINE_V_OFFSET   , .arrow_desc = &vicfg_sel_arrow, .leavetype = ISUBMENU, .submenu = &slcfg_opt_subscreen},
         {.id = VICFG_GAMMA_V_OFFSET      , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &gamma_lut},
         {.id = VICFG_LIMITEDRGB_V_OFFSET , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &limited_rgb},
         {.id = VICFG_DEBLUR_V_OFFSET     , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode},
@@ -233,35 +252,6 @@ menu_t vicfg_screen = {
 #define DEBLUR_POWERCYCLE_SELECTION 5
 #define M16BIT_CURRENT_SELECTION    6
 #define M16BIT_POWERCYCLE_SELECTION 7
-
-menu_t slcfg_opt_subscreen = {
-    .type = CONFIG,
-    .header = &slcfg_opt_header,
-    .body = {
-      .hoffset = SLCFG_OVERLAY_H_OFFSET,
-      .text = &slcfg_opt_overlay
-    },
-    .parent = &vicfg_screen,
-    .current_selection = 0,
-    .number_selections = 12,
-    .leaves = {
-        {.id = SLCFG_INPUT_OFFSET       , .arrow_desc = &slcfg_opt_arrow0, .leavetype = ICONFIG , .config_value = &region_selection},
-        {.id = SLCFG_HEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_hori},
-        {.id = SLCFG_HTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_hori},
-        {.id = SLCFG_HPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_hori},
-        {.id = SLCFG_HSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_hori},
-        {.id = SLCFG_HHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_hori},
-        {.id = SLCFG_VEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_vert},
-        {.id = SLCFG_VLINK_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_link_h2v},
-        {.id = SLCFG_VTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_vert},
-        {.id = SLCFG_VPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_vert},
-        {.id = SLCFG_VSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_vert},
-        {.id = SLCFG_VHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_vert}
-    }
-};
-
-#define SL_VLINK_SELECTION           7
-#define SL_HORI_TO_VERT_OFFSET       6
 
 menu_t misc_screen = {
     .type = CONFIG,
@@ -343,12 +333,12 @@ static inline bool_t is_vires_screen (menu_t *menu)
   {  return (menu == &vires_screen); }
 static inline bool_t is_viscaling_screen (menu_t *menu)
   {  return (menu == &viscaling_screen); }
-static inline bool_t is_vicfg_screen (menu_t *menu)
-  {  return (menu == &vicfg_screen); }
 static inline bool_t is_slcfg_screen (menu_t *menu)
   {  return (menu == &slcfg_opt_subscreen); }
 static inline bool_t is_vicfg_h2v_sl_are_linked ()
   {  return (bool_t) cfg_get_value(&sl_link_h2v,0); }
+static inline bool_t is_vicfg_screen (menu_t *menu)
+  {  return (menu == &vicfg_screen); }
 static inline bool_t is_about_screen (menu_t *menu)
   {  return (menu == &about_screen); }
 static inline bool_t is_license_screen (menu_t *menu)
@@ -359,15 +349,15 @@ void val2txt_func(alt_u16 v) { sprintf(szText,"%u", v); };
 void val2txt_4u_func(alt_u16 v) { sprintf(szText,"%4u", v); };
 void val2txt_5b_binaryoffset_func(alt_u16 v) { if (v & 0x10) sprintf(szText," %2u", (v&0xF)); else sprintf(szText,"-%2u", (v^0xF)+1); };
 void val2txt_scale_sel_func(alt_u16 v) {
-  if (v == 0) {
+  if (v == PPU_SCALING_CURRENT) {
     sprintf(szText,NTSCPAL_SEL[PPU_REGION_CURRENT]);
   } else {
-    if (v < PAL_TO_288) {
-      sprintf(szText,"NTSC to ");
-      sprintf(&szText[8],Resolutions[v - NTSC_TO_240]);
-    } else {
+    if (v > NTSC_LAST_SCALING_MODE) {
       sprintf(szText,"PAL to ");
       sprintf(&szText[7],Resolutions[v - PAL_TO_288]);
+    } else {
+      sprintf(szText,"NTSC to ");
+      sprintf(&szText[8],Resolutions[v - NTSC_TO_240]);
     }
   }
 };
@@ -441,7 +431,7 @@ void update_vmode_menu()
 
 void update_scaling_menu()
 {
-  timing_menu = cfg_get_value(&timing_selection,0);
+  scaling_menu = cfg_get_value(&scaling_selection,0);
   if (scaling_menu == PPU_SCALING_CURRENT) scaling_menu = scaling_n64adv;
 }
 

@@ -210,7 +210,7 @@ int main()
       command = CMD_NON;
     }
 
-    vmode_n64adv = palmode + 1;
+    vmode_n64adv = palmode;
     update_vmode_menu();
     scaling_n64adv = get_target_scaler(palmode);
     update_scaling_menu();
@@ -219,10 +219,8 @@ int main()
     else
       timing_n64adv = scanmode ? NTSC_INTERLACED : NTSC_PROGRESSIVE;
     update_timing_menu();
-    timing_menu = (cfg_timing_model_sel_type_t) cfg_get_value(&timing_selection,0);
-    if (timing_menu == PPU_TIMING_CURRENT) timing_menu = timing_n64adv;
     if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
-    else vmode_scaling_menu = scaling_menu > NUM_SCALING_MODES/2; // NUM_SCALING_MODES/2 should be exactly the border between NTSC and PAL
+    else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
 
     if(cfg_get_value(&show_osd,0)) {
       cfg_load_linex_word(vmode_menu);

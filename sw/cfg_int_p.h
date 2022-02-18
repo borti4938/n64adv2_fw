@@ -127,7 +127,7 @@ config_t region_selection = {
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
     .cfg_value    = PPU_REGION_CURRENT,
     .value_details = {
-      .max_value = PPU_PAL,
+      .max_value = NUM_REGION_MODES,
     },
     .value_string = &NTSCPAL_SEL
 };
@@ -135,7 +135,7 @@ config_t region_selection = {
 config_t timing_selection = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = 0,
+    .cfg_value    = PPU_TIMING_CURRENT,
     .value_details = {
       .max_value = NUM_TIMING_MODES,
     },
@@ -145,7 +145,7 @@ config_t timing_selection = {
 config_t scaling_selection = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = NUMVALUE, // treat as numvalue for modifying function
-    .cfg_value    = 0,
+    .cfg_value    = PPU_SCALING_CURRENT,
     .value_details = {
       .max_value = NUM_SCALING_MODES,
     },

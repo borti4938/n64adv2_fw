@@ -82,6 +82,15 @@ config_tray_u16_t timing_words[NUM_TIMING_MODES] = {
   { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED}
 };
 
+const alt_u32 scaling_defaults[NUM_SCALING_MODES] __ufmdata_section__ =
+    {(alt_u32) CFG_SCALING_NTSC_240_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_NTSC_480_DEFAULT_SHIFTED ,
+     (alt_u32) CFG_SCALING_NTSC_720_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_NTSC_960_DEFAULT_SHIFTED ,
+     (alt_u32) CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED,(alt_u32) CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED,
+     (alt_u32) CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,(alt_u32) CFG_SCALING_PAL_288_DEFAULT_SHIFTED  ,
+     (alt_u32) CFG_SCALING_PAL_576_DEFAULT_SHIFTED  ,(alt_u32) CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,
+     (alt_u32) CFG_SCALING_PAL_960_DEFAULT_SHIFTED  ,(alt_u32) CFG_SCALING_PAL_1080_DEFAULT_SHIFTED ,
+     (alt_u32) CFG_SCALING_PAL_1200_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_PAL_1440_DEFAULT_SHIFTED };
+
 config_tray_t scaling_words[NUM_SCALING_MODES] = {
     { .config_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED},
@@ -421,14 +430,13 @@ int cfg_load_from_flash(bool_t need_confirm)
 }
 
 void cfg_reset_selections() {
-  cfg_set_value(&region_selection,0);
-  cfg_set_value(&timing_selection,0);
-  cfg_set_value(&scaling_selection,0);
+  cfg_set_value(&region_selection,PPU_REGION_CURRENT);
+  cfg_set_value(&scaling_selection,PPU_SCALING_CURRENT);
+  cfg_set_value(&timing_selection,PPU_TIMING_CURRENT);
 }
 
 void cfg_store_linex_word(cfg_region_sel_type_t palmode_select) {
   if (palmode_select == PPU_REGION_CURRENT || palmode_select > NUM_REGION_MODES) return;
-  palmode_select--;
 
   linex_words[palmode_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);
   linex_words[palmode_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK);
@@ -438,7 +446,6 @@ void cfg_store_linex_word(cfg_region_sel_type_t palmode_select) {
 
 void cfg_load_linex_word(cfg_region_sel_type_t palmode_select) {
   if (palmode_select == PPU_REGION_CURRENT || palmode_select > NUM_REGION_MODES) return;
-  palmode_select--;
 
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[palmode_select].config_val;
@@ -450,20 +457,19 @@ void cfg_load_linex_word(cfg_region_sel_type_t palmode_select) {
 
 void cfg_reset_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
-  timing_word_select--;
+
   timing_words[timing_word_select].config_val = CFG_TIMING_DEFAULTS_SHIFTED;
 }
 
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
-  timing_word_select--;
+
   timing_words[timing_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK);
   timing_words[timing_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK);
 }
 
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
-  timing_word_select--;
 
   sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
   sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= (timing_words[timing_word_select].config_val & CFG_EXTCFG1_GETTIMINGS_MASK);
@@ -473,64 +479,20 @@ void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
 }
 
 void cfg_reset_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
-  switch (scaling_word_select) {
-    case NTSC_TO_240:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED;
-      break;
-    case NTSC_TO_480:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED;
-      break;
-    case NTSC_TO_720:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED;
-      break;
-    case NTSC_TO_960:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED;
-      break;
-    case NTSC_TO_1080:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED;
-      break;
-    case NTSC_TO_1200:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED;
-      break;
-    case NTSC_TO_1440:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED;
-      break;
-    case PAL_TO_288:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_288_DEFAULT_SHIFTED;
-      break;
-    case PAL_TO_576:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED;
-      break;
-    case PAL_TO_720:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED;
-      break;
-    case PAL_TO_960:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED;
-      break;
-    case PAL_TO_1080:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED;
-      break;
-    case PAL_TO_1200:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED;
-      break;
-    case PAL_TO_1440:
-      scaling_words[scaling_word_select-1].config_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED;
-      break;
-    default:
-      break;
-  }
+  if (scaling_word_select == PPU_SCALING_CURRENT || scaling_word_select > NUM_SCALING_MODES) return;
+
+  scaling_words[scaling_word_select].config_val = scaling_defaults[scaling_word_select];
 }
 
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   if (scaling_word_select == PPU_SCALING_CURRENT || scaling_word_select > NUM_SCALING_MODES) return;
-  scaling_word_select--;
+
   scaling_words[scaling_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETSCALING_MASK);
   scaling_words[scaling_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETSCALING_MASK);
 }
 
 void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   if (scaling_word_select == PPU_SCALING_CURRENT || scaling_word_select > NUM_SCALING_MODES) return;
-  scaling_word_select--;
 
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= (scaling_words[scaling_word_select].config_val & CFG_EXTCFG0_GETSCALING_MASK);
@@ -575,8 +537,8 @@ int cfg_load_defaults(bool_t load_video_480p, bool_t need_confirm)
   }
 
   int idx;
-  for (idx = 0; idx < NUM_TIMING_MODES; idx++) cfg_reset_timing_word(idx+1);
-  for (idx = 0; idx < NUM_SCALING_MODES; idx++) cfg_reset_scaling_word(idx+1);
+  for (idx = 0; idx < NUM_TIMING_MODES; idx++) cfg_reset_timing_word(idx);
+  for (idx = 0; idx < NUM_SCALING_MODES; idx++) cfg_reset_scaling_word(idx);
 
   cfg_load_linex_word(palmode);
   cfg_load_timing_word(palmode);

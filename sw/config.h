@@ -57,24 +57,23 @@ typedef enum {
 } scanmode_t;
 
 typedef enum {
-  PPU_REGION_CURRENT = 0,
-  PPU_NTSC,
-  PPU_PAL
+  PPU_NTSC = 0,
+  PPU_PAL,
+  PPU_REGION_CURRENT
 } cfg_region_sel_type_t;
-#define NUM_REGION_MODES  2
+#define NUM_REGION_MODES  PPU_REGION_CURRENT
 
 typedef enum {
-  PPU_TIMING_CURRENT = 0,
-  NTSC_PROGRESSIVE,
+  NTSC_PROGRESSIVE = 0,
   NTSC_INTERLACED,
   PAL_PROGRESSIVE,
-  PAL_INTERLACED
+  PAL_INTERLACED,
+  PPU_TIMING_CURRENT
 } cfg_timing_model_sel_type_t;
-#define NUM_TIMING_MODES  4
+#define NUM_TIMING_MODES  PPU_TIMING_CURRENT
 
 typedef enum {
-  PPU_SCALING_CURRENT = 0,
-  NTSC_TO_240,
+  NTSC_TO_240 = 0,
   NTSC_TO_480,
   NTSC_TO_720,
   NTSC_TO_960,
@@ -87,9 +86,11 @@ typedef enum {
   PAL_TO_960,
   PAL_TO_1080,
   PAL_TO_1200,
-  PAL_TO_1440
+  PAL_TO_1440,
+  PPU_SCALING_CURRENT
 } cfg_scaler_in2out_sel_type_t;
-#define NUM_SCALING_MODES  PAL_TO_1440
+#define NTSC_LAST_SCALING_MODE  NTSC_TO_1440
+#define NUM_SCALING_MODES       PPU_SCALING_CURRENT
 
 typedef enum {
   PASSTHROUGH = 0,

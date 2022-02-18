@@ -105,19 +105,6 @@
 #define SCALERCFG_VERTSHIFT_V_OFFSET    (10 + SCALERCFG_VALS_V_OFFSET)
 #define SCALERCFG_HORISHIFT_V_OFFSET    (11 + SCALERCFG_VALS_V_OFFSET)
 
-#define VICFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
-#define VICFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
-#define VICFG_VALS_H_OFFSET         (28 + OVERLAY_H_OFFSET)
-#define VICFG_VALS_V_OFFSET         OVERLAY_V_OFFSET
-#define VICFG_DEINTERL_V_OFFSET     ( 0 + VICFG_VALS_V_OFFSET)
-#define VICFG_SCANLINE_V_OFFSET     ( 1 + VICFG_VALS_V_OFFSET)
-#define VICFG_GAMMA_V_OFFSET        ( 2 + VICFG_VALS_V_OFFSET)
-#define VICFG_LIMITEDRGB_V_OFFSET   ( 3 + VICFG_VALS_V_OFFSET)
-#define VICFG_DEBLUR_V_OFFSET       ( 4 + VICFG_VALS_V_OFFSET)
-#define VICFG_PCDEBLUR_V_OFFSET     ( 5 + VICFG_VALS_V_OFFSET)
-#define VICFG_16BITMODE_V_OFFSET    ( 6 + VICFG_VALS_V_OFFSET)
-#define VICFG_PC16BITMODE_V_OFFSET  ( 7 + VICFG_VALS_V_OFFSET)
-
 #define SLCFG_OVERLAY_H_OFFSET    OVERLAY_H_OFFSET
 #define SLCFG_OVERLAY_V_OFFSET    OVERLAY_V_OFFSET
 #define SLCFG_VALS_H_OFFSET       (26 + SLCFG_OVERLAY_H_OFFSET)
@@ -134,6 +121,18 @@
 #define SLCFG_VPROFILE_V_OFFSET   ( 9 + SLCFG_VALS_V_OFFSET)
 #define SLCFG_VSTR_V_OFFSET       (10 + SLCFG_VALS_V_OFFSET)
 #define SLCFG_VHYB_STR_V_OFFSET   (11 + SLCFG_VALS_V_OFFSET)
+
+#define VICFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
+#define VICFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
+#define VICFG_VALS_H_OFFSET         (28 + OVERLAY_H_OFFSET)
+#define VICFG_VALS_V_OFFSET         OVERLAY_V_OFFSET
+#define VICFG_DEINTERL_V_OFFSET     ( 0 + VICFG_VALS_V_OFFSET)
+#define VICFG_GAMMA_V_OFFSET        ( 1 + VICFG_VALS_V_OFFSET)
+#define VICFG_LIMITEDRGB_V_OFFSET   ( 2 + VICFG_VALS_V_OFFSET)
+#define VICFG_DEBLUR_V_OFFSET       ( 3 + VICFG_VALS_V_OFFSET)
+#define VICFG_PCDEBLUR_V_OFFSET     ( 4 + VICFG_VALS_V_OFFSET)
+#define VICFG_16BITMODE_V_OFFSET    ( 5 + VICFG_VALS_V_OFFSET)
+#define VICFG_PC16BITMODE_V_OFFSET  ( 6 + VICFG_VALS_V_OFFSET)
 
 #define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET
@@ -161,17 +160,18 @@
 #define RWDATA_FWROM_V_OFFSET             ( 8 + RWDATA_OVERLAY_V_OFFSET)
 #define RWDATA_UPDATE_V_OFFSET            ( 9 + RWDATA_OVERLAY_V_OFFSET)
 
-#define MAIN_OVERLAY_H_OFFSET ( 3 + OVERLAY_H_OFFSET)
-#define MAIN_OVERLAY_V_OFFSET OVERLAY_V_OFFSET
-#define MAIN2VINFO_V_OFFSET   ( 0 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2RES_V_OFFSET     ( 1 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2SCALER_V_OFFSET  ( 2 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2VIPROC_V_OFFSET  ( 3 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2MISC_V_OFFSET    ( 4 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2SAVE_V_OFFSET    ( 5 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2ABOUT_V_OFFSET   ( 7 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2THANKS_V_OFFSET  ( 8 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2LICENSE_V_OFFSET ( 9 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN_OVERLAY_H_OFFSET   ( 3 + OVERLAY_H_OFFSET)
+#define MAIN_OVERLAY_V_OFFSET   OVERLAY_V_OFFSET
+#define MAIN2VINFO_V_OFFSET     ( 0 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2RES_V_OFFSET       ( 1 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SCALER_V_OFFSET    ( 2 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SCANLINE_V_OFFSET  ( 3 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2VIPROC_V_OFFSET    ( 4 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2MISC_V_OFFSET      ( 5 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SAVE_V_OFFSET      ( 6 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2ABOUT_V_OFFSET     ( 8 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2THANKS_V_OFFSET    ( 9 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2LICENSE_V_OFFSET   (10 + MAIN_OVERLAY_V_OFFSET)
 
 
 static const char *copyright_note __ufmdata_section__ =
@@ -225,18 +225,6 @@ static const char *scaler_overlay __ufmdata_section__ =
     "  - Vertical shift:\n"
     "  - Horizontal shift:";
 
-static const char *vicfg_header __ufmdata_section__ =
-    "VI-Processing";
-static const char *vicfg_overlay __ufmdata_section__ =
-    "* De-Interlacing mode:\n"
-    "* Scanline emulation:\n"
-    "* Gamma Value:\n"
-    "* Limited RGB:\n"
-    "* LowRes.-DeBlur:\n"
-    "  - power-cycle default:\n"
-    "* 16bit mode:\n"
-    "  - power-cycle default:";
-
 static const char *slcfg_opt_header __ufmdata_section__ =
     "Scanlines Config";
 static const char *slcfg_opt_overlay __ufmdata_section__ =
@@ -252,6 +240,17 @@ static const char *slcfg_opt_overlay __ufmdata_section__ =
     "  - Profile:\n"
     "  - Strength:\n"
     "  - Blooming effect:";
+
+static const char *vicfg_header __ufmdata_section__ =
+    "VI-Processing";
+static const char *vicfg_overlay __ufmdata_section__ =
+    "* De-Interlacing mode:\n"
+    "* Gamma Value:\n"
+    "* Limited RGB:\n"
+    "* LowRes.-DeBlur:\n"
+    "  - power-cycle default:\n"
+    "* 16bit mode:\n"
+    "  - power-cycle default:";
 
 static const char *misc_header __ufmdata_section__ =
     "Miscellaneous";
@@ -340,6 +339,7 @@ static const char *home_overlay __ufmdata_section__ =
     "[Video-Info]\n"
     "[Resolution]\n"
     "[Scaler]\n"
+    "[Scanlines]\n"
     "[VI-Processing]\n"
     "[Miscellaneous]\n"
     "[Save/Load/Fw.Update]\n\n"
@@ -354,14 +354,13 @@ const char *not_available __ufmdata_section__ = "-----";
 const char *Global __ufmdata_section__        = "Global";
 
 const char *OffOn[]                 = {"Off","On"};
-const char *NTSCPAL_SEL[]           = {"Current","NTSC  ","PAL   "};
-const char *HV_SEL[]                = {"Horizontal","Vertical"};
+const char *NTSCPAL_SEL[]           = {"NTSC  ","PAL   ","Current"};
 const char *Force5060[]             = {"Off (N64 Auto)","60Hz","50Hz"};
 const char *Resolutions[]           = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p"};
 const char *FallbackRes[]           = {"1080p","480p/576p"};
 const char *DeInterModes[]          = {"Bob","Weave"};
 const char *InterpModes[]           = {"Integer","Bilinear (sharp)","Bilinear (soft)"};
-const char *VTimingSel[]            = {"Current","NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
+const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};
 const char *ScanlinesThickness[]    = {"Normal","Thick","Adaptive 1","Adaptive 2"};
 const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular","Flat top"};
 
