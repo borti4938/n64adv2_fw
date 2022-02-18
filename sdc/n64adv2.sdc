@@ -169,7 +169,8 @@ derive_clock_uncertainty
 # delays were carried out at the modding board and includes some potential skew (quite large for slow corner)
 set n64_data_delay_min 2.0
 set n64_data_delay_max 8.0
-set n64_margin 0.5
+# allow a trace/wire margin of +/-3cm difference in installation between clock and any data
+set n64_margin 0.15
 set n64_in_dly_min [expr $n64_data_delay_min - $n64_margin]
 set n64_in_dly_max [expr $n64_data_delay_max + $n64_margin]
 
