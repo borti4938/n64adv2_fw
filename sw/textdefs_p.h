@@ -123,14 +123,17 @@
 #define SLCFG_VALS_H_OFFSET       (26 + SLCFG_OVERLAY_H_OFFSET)
 #define SLCFG_VALS_V_OFFSET       SLCFG_OVERLAY_V_OFFSET
 #define SLCFG_INPUT_OFFSET        ( 0 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HEN_V_OFFSET        ( 2 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_VEN_V_OFFSET        ( 3 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_LINK_OFFSET         ( 4 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HVSEL_OFFSET        ( 6 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_THICKNESS_V_OFFSET  ( 7 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_SCALESOFT_V_OFFSET  ( 8 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_STR_V_OFFSET        ( 9 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HYB_STR_V_OFFSET    (10 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HEN_V_OFFSET        ( 1 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HTHICKNESS_V_OFFSET ( 2 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HPROFILE_V_OFFSET   ( 3 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HSTR_V_OFFSET       ( 4 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HHYB_STR_V_OFFSET   ( 5 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VEN_V_OFFSET        ( 6 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VLINK_OFFSET        ( 7 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VTHICKNESS_V_OFFSET ( 8 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VPROFILE_V_OFFSET   ( 9 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VSTR_V_OFFSET       (10 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VHYB_STR_V_OFFSET   (11 + SLCFG_VALS_V_OFFSET)
 
 #define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET
@@ -237,15 +240,18 @@ static const char *vicfg_overlay __ufmdata_section__ =
 static const char *slcfg_opt_header __ufmdata_section__ =
     "Scanlines Config";
 static const char *slcfg_opt_overlay __ufmdata_section__ =
-    "* Input mode:\n\n"
-    "* Use horizontal sl.:\n"
-    "* Use vertical sl.:\n"
-    "* Use hori. for vert.:\n\n"
-    "* Appearance:\n"
+    "* Input mode:\n"
+    "* Horizontal scanlines:\n"
     "  - Thickness:\n"
     "  - Profile:\n"
     "  - Strength:\n"
-    "  - Bloom effect:";
+    "  - Blooming effect:\n"
+    "* Vertical scanlines:\n"
+    "  - Link to horizontal:\n"
+    "  - Thickness:\n"
+    "  - Profile:\n"
+    "  - Strength:\n"
+    "  - Blooming effect:";
 
 static const char *misc_header __ufmdata_section__ =
     "Miscellaneous";

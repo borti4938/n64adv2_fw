@@ -422,7 +422,6 @@ int cfg_load_from_flash(bool_t need_confirm)
 
 void cfg_reset_selections() {
   cfg_set_value(&region_selection,0);
-  cfg_set_value(&hv_selection,0);
   cfg_set_value(&timing_selection,0);
   cfg_set_value(&scaling_selection,0);
 }

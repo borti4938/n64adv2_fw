@@ -64,11 +64,6 @@ typedef enum {
 #define NUM_REGION_MODES  2
 
 typedef enum {
-  HORIZONTAL = 0,
-  VERTICAL
-} hv_t;
-
-typedef enum {
   PPU_TIMING_CURRENT = 0,
   NTSC_PROGRESSIVE,
   NTSC_INTERLACED,
@@ -511,7 +506,7 @@ extern config_t link_hv_scale,
                 deblur_mode_powercycle, mode16bit_powercycle,
                 igr_deblur, igr_16bitmode,
                 fallbackmode;
-extern config_t scaling_steps, region_selection, hv_selection,
+extern config_t scaling_steps, region_selection,
                 timing_selection, scaling_selection;
 
 extern config_t vert_scale, hor_scale,

@@ -243,29 +243,25 @@ menu_t slcfg_opt_subscreen = {
     },
     .parent = &vicfg_screen,
     .current_selection = 0,
-    .number_selections = 9,
+    .number_selections = 12,
     .leaves = {
-        {.id = SLCFG_INPUT_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &region_selection},
-        {.id = SLCFG_HEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_hori},
-        {.id = SLCFG_VEN_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_vert},
-        {.id = SLCFG_LINK_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_link_h2v},
-        {.id = SLCFG_HVSEL_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &hv_selection},
-        {.id = SLCFG_THICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_hori},
-        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_hori},
-        {.id = SLCFG_STR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_hori},
-        {.id = SLCFG_HYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_hori},
-        {.id = SLCFG_THICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_vert},
-        {.id = SLCFG_SCALESOFT_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_vert},
-        {.id = SLCFG_STR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_vert},
-        {.id = SLCFG_HYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_vert}
+        {.id = SLCFG_INPUT_OFFSET       , .arrow_desc = &slcfg_opt_arrow0, .leavetype = ICONFIG , .config_value = &region_selection},
+        {.id = SLCFG_HEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_hori},
+        {.id = SLCFG_HTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_hori},
+        {.id = SLCFG_HPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_hori},
+        {.id = SLCFG_HSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_hori},
+        {.id = SLCFG_HHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_hori},
+        {.id = SLCFG_VEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_en_vert},
+        {.id = SLCFG_VLINK_OFFSET       , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_link_h2v},
+        {.id = SLCFG_VTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_thickness_vert},
+        {.id = SLCFG_VPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_profile_vert},
+        {.id = SLCFG_VSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &sl_str_vert},
+        {.id = SLCFG_VHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow1, .leavetype = ICONFIG , .config_value = &slhyb_str_vert}
     }
 };
 
-#define SL_INPUT_SELECTION           0
-#define SL_HEN_SELECTION             1
-#define SL_VEN_SELECTION             2
-#define SL_HV_SELECTION              4
-#define SL_HORI_TO_VERT_OFFSET       4
+#define SL_VLINK_SELECTION           7
+#define SL_HORI_TO_VERT_OFFSET       6
 
 menu_t misc_screen = {
     .type = CONFIG,
@@ -394,8 +390,8 @@ void scanline_str2txt_func(alt_u16 v) { v++; sprintf(szText,"%3u.%02u%%", (v*625
 void scanline_hybrstr2txt_func(alt_u16 v) { sprintf(szText,"%3u.%02u%%", (v*625)/100, 25*(v&3)); };
 void gamma2txt_func(alt_u16 v) { sprintf(szText,"%u.%02u", v > 4, 5* v + 75 - (100 * (v > 4))); };
 
-bool_t apply_sl_vert_offset(menu_t* current_menu) {
-  return (is_slcfg_screen(current_menu) && (cfg_get_value(&hv_selection,0) == VERTICAL) && !is_vicfg_h2v_sl_are_linked());
+bool_t apply_sl_vert_negoffset(menu_t* current_menu) {
+  return (is_slcfg_screen(current_menu) && is_vicfg_h2v_sl_are_linked());
 }
 
 
@@ -506,15 +502,10 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         }
       }
       if (is_slcfg_screen(*current_menu)) {
-        if ((*current_menu)->current_selection < SL_HV_SELECTION) {
-          cfg_inc_value(&region_selection);
-          update_vmode_menu();
-          cfg_load_linex_word(vmode_menu);
-          return NEW_OVERLAY;
-        } else {
-          cfg_inc_value(&hv_selection);
-          return NEW_CONF_VALUE;
-        }
+        cfg_inc_value(&region_selection);
+        update_vmode_menu();
+        cfg_load_linex_word(vmode_menu);
+        return NEW_OVERLAY;
       }
       break;
     case CMD_MENU_PAGE_LEFT:
@@ -540,15 +531,10 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         }
       }
       if (is_slcfg_screen(*current_menu)) {
-        if ((*current_menu)->current_selection < SL_HV_SELECTION) {
-          cfg_dec_value(&region_selection);
-          update_vmode_menu();
-          cfg_load_linex_word(vmode_menu);
-          return NEW_OVERLAY;
-        } else {
-          cfg_dec_value(&hv_selection);
-          return NEW_CONF_VALUE;
-        }
+        cfg_dec_value(&region_selection);
+        update_vmode_menu();
+        cfg_load_linex_word(vmode_menu);
+        return NEW_OVERLAY;
       }
       break;
     default:
@@ -598,7 +584,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     }
   }
 
-  if (apply_sl_vert_offset(*current_menu) && current_sel > SL_HV_SELECTION) current_sel += SL_HORI_TO_VERT_OFFSET;
+  if (apply_sl_vert_negoffset(*current_menu) && current_sel > SL_VLINK_SELECTION) current_sel -= SL_HORI_TO_VERT_OFFSET;
 
   if (todo == NEW_OVERLAY || todo == NEW_SELECTION) return todo;
 
@@ -782,19 +768,19 @@ int update_cfg_screen(menu_t* current_menu)
 
   bool_t use_240p_288p = (scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288);
 
-  bool_t use_sl_vert_offset = apply_sl_vert_offset(current_menu);
-  alt_u8 v_run_offset = 0;
+  bool_t use_sl_vert_negoffset = apply_sl_vert_negoffset(current_menu);
+  alt_u8 v_run_negoffset = 0;
 
   background_color = BACKGROUNDCOLOR_STANDARD;
 
-  for (v_run = 0; v_run < current_menu->number_selections + v_run_offset; v_run++) {
-    h_l_offset = current_menu->leaves[v_run].arrow_desc->hpos + 3;
-    v_offset   = current_menu->leaves[v_run].id;
+  for (v_run = 0; v_run < current_menu->number_selections - v_run_negoffset; v_run++) {
+    h_l_offset = current_menu->leaves[v_run + v_run_negoffset].arrow_desc->hpos + 3;
+    v_offset   = current_menu->leaves[v_run + v_run_negoffset].id;
 
-    if (use_sl_vert_offset && v_run > SL_HV_SELECTION) {
-        use_sl_vert_offset = FALSE;
-      v_run += SL_HORI_TO_VERT_OFFSET;
-      v_run_offset = SL_HORI_TO_VERT_OFFSET;
+    if (use_sl_vert_negoffset && v_run > SL_VLINK_SELECTION) {
+        use_sl_vert_negoffset = FALSE;
+      v_run -= SL_HORI_TO_VERT_OFFSET;
+      v_run_negoffset = SL_HORI_TO_VERT_OFFSET;
     }
 
     switch (current_menu->leaves[v_run].leavetype) {
