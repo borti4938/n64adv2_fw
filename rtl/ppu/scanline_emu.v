@@ -86,7 +86,9 @@ localparam Y_width = color_width_o+1;
 
 localparam [7:0] sl_profile_width = 8'b01000000;
 localparam [7:0] val_0p25 = 8'b01000000;
+localparam [7:0] val_0p1875 = 8'b00110000;
 localparam [7:0] val_0p125 = 8'b00100000;
+localparam [7:0] val_0p0625 = 8'b00010000;
 
 localparam SL_bloom_calc_width = 8; // do not change this localparam!
 
@@ -96,7 +98,7 @@ integer int_idx;
 // wires
 wire [7:0] red_i_w, green_i_w, blue_i_w;
 
-wire [7:0] sl_adapt_val_normal_w, sl_adapt_val_wide_w;
+wire [7:0] sl_adapt_val_w;
 wire [15:0] SL_str_corrected_4L_full_w;
 
 wire [Y_width+4:0] Yval_ref_pre_full_3L_w;
@@ -169,40 +171,42 @@ always @(posedge VCLK_i or negedge nVRST_i)
 
 // strength correction first depending on profile
 // method also generates drawSL indicator
-assign sl_adapt_val_normal_w = {3'b000,Yval_L[1][Y_width-1:Y_width-5]} + {7'b0010000,Yval_L[1][Y_width-6]};  // values between 0.125 (min luma) and 0.25 (max luma)
-assign sl_adapt_val_wide_w = {2'b00,Yval_L[1][Y_width-1:Y_width-6]} + Yval_L[1][Y_width-7]; // values between 0 (min luma) and 0.25 (max luma)
+assign sl_adapt_val_w = {2'b00,Yval_L[1][Y_width-1:Y_width-6]} + Yval_L[1][Y_width-7]; // values between 0 (min luma) and 0.25 (max luma)
 assign SL_str_corrected_4L_full_w = SL_str_corrected_L[3] * (* multstyle = "dsp" *) sl_strength_i;
 
 always @(posedge VCLK_i) begin
   for (int_idx = 5; int_idx < proc_stages-1; int_idx = int_idx + 1)
     drawSL[int_idx] <= drawSL[int_idx-1];
   drawSL[4] <= sl_en_i & drawSL[3];
-  drawSL[3] <= &sl_profile_i ? SL_str_corrected_L[2][5] & drawSL[2] : drawSL[2];  // correct if flat top profile
   
-  max_SL_str[3] <= &sl_profile_i ? SL_str_corrected_L[2][5] : max_SL_str[2];  // correct if flat top profile
+  if (sl_profile_i == 2'b11) begin // draw flat top profile
+    drawSL[3] <= |SL_str_corrected_L[2][7:5] & drawSL[2];
+    max_SL_str[3] <= |SL_str_corrected_L[2][7:5];
+  end else begin
+    drawSL[3] <= drawSL[2];
+    max_SL_str[3] <= max_SL_str[2];
+  end
   
   case (sl_thickness_i)
-    2'b00: begin  // normal
-        drawSL[2] <= SL_str_corrected_L[1] > val_0p25;              // for normal sl draw, if value is over 0.25
-//        max_SL_str[2] <= SL_str_corrected_L[1] >= val_0p25 + sl_profile_width;
-        max_SL_str[2] <= SL_str_corrected_L[1][7];                  // for normal sl, maxed out at 0.5 = val_0p25 + sl_profile_width
-        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - val_0p25;  // subtract 0.25 for normal
+    2'b00: begin  // thin
+        drawSL[2] <= SL_str_corrected_L[1] > val_0p1875;
+        max_SL_str[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
+        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - val_0p1875;
       end
-    2'b01: begin  // thick
-        drawSL[2] <= SL_str_corrected_L[1] > val_0p125;             // for thick sl draw, if value is over 0.125
-//        max_SL_str[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
-        max_SL_str[2] <= SL_str_corrected_L[1][7:5] >= 3'b011;      // for thick sl, maxed out at 0.375 = val_0p125 + sl_profile_width
-        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - val_0p125; // subtract 0.125
+    2'b01: begin  // normal
+        drawSL[2] <= SL_str_corrected_L[1] > val_0p125;
+        max_SL_str[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
+        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - val_0p125;
       end
-    2'b10: begin  // adaptive 1
-        drawSL[2] <= SL_str_corrected_L[1] > sl_adapt_val_normal_w;
-        max_SL_str[2] <= SL_str_corrected_L[1] >= sl_adapt_val_normal_w + sl_profile_width;
-        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_normal_w;
+    2'b10: begin  // thick
+        drawSL[2] <= SL_str_corrected_L[1] > val_0p0625;
+        max_SL_str[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
+        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - val_0p0625;
       end
-    default: begin // adaptive 2
-        drawSL[2] <= SL_str_corrected_L[1] > sl_adapt_val_wide_w;
-        max_SL_str[2] <= SL_str_corrected_L[1] >= sl_adapt_val_wide_w + sl_profile_width;
-        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_wide_w;
+    default: begin // adaptive
+        drawSL[2] <= SL_str_corrected_L[1] > sl_adapt_val_w;
+        max_SL_str[2] <= SL_str_corrected_L[1] >= sl_adapt_val_w + sl_profile_width;
+        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_w;
       end
   endcase
   
