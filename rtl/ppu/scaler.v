@@ -1313,6 +1313,7 @@ always @(posedge VCLK_o or negedge nRST_o)
             end else begin
               hpixel_cnt <= hpixel_cnt_cmb;
               pix_h_bypass_z0_current[0] <= hpixel_load_cnt == 10'd1 ? 1'b1 : ~|X_video_interpolation_mode;
+              pix_h_bypass_z1_current[0] <= 1'b0;
             end
             if (hpixel_cnt < X_pix_hpixel_in_full)
               hpixel_load_cnt <= hpixel_load_cnt + 10'd1;
