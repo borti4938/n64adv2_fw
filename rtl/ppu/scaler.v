@@ -336,6 +336,8 @@ reg [2:0] wren_post_sdram_buf_p_L;
 reg [`VDATA_O_CO_SLICE] vdata3_for_post_sdram_buf [0:2];
 
 // regs for output rtl
+reg Y_cfg_v_update_window;
+reg [3:0] Y_cfg_h_update_window;
 reg X_VSYNC_active = `VSYNC_active_480p60;
 reg [10:0] X_VSYNCLEN = `VSYNCLEN_480p60;
 reg [10:0] X_VSTART = `VSYNCLEN_480p60 + `VBACKPORCH_480p60;
@@ -929,11 +931,11 @@ assign X_vpos_px_offset_w = (video_vlines_out_i < X_VACTIVE_OS) ? (X_VACTIVE_OS 
 assign X_hpos_px_offset_w = (video_hpixel_out_i < X_HACTIVE_OS) ? (X_HACTIVE_OS - video_hpixel_out_i)/2 : 12'd0;
 
 always @(posedge VCLK_o)
-  if (Y_vcnt_o_L == 0) begin
-    if (hcnt_o_L[3:0] == 0) begin
+  if (Y_cfg_v_update_window) begin
+    if (Y_cfg_h_update_window == 4'h0) begin
       setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VSTART_OS,X_VACTIVE_OS,X_VSTOP_OS,X_VTOTAL);
       setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HSTART_OS,X_HACTIVE_OS,X_HSTOP_OS,X_HTOTAL);
-      
+    end else if (Y_cfg_h_update_window == 4'h4) begin
       X_VSTART_px <= X_VSTART_OS + X_vpos_px_offset_w;
       X_VSTOP_px <= X_VSTOP_OS - X_vpos_px_offset_w;
       X_HSTART_px <= X_HSTART_OS + X_hpos_px_offset_w;
@@ -1132,6 +1134,9 @@ always @(posedge VCLK_o or negedge nRST_o)
   if (!nRST_o) begin
     output_proc_en <= 1'b0;
     
+    Y_cfg_v_update_window <= 1'b1;
+    Y_cfg_h_update_window <= 4'h0;
+    
     hcnt_o_L <= 0;
     Y_vcnt_o_L <= 0;
     Y_v_active_de <= 1'b0;
@@ -1179,8 +1184,10 @@ always @(posedge VCLK_o or negedge nRST_o)
     // generate sync
     if (in2out_en_resynced) begin
       if (hcnt_o_L < X_HTOTAL - 1) begin
+        Y_cfg_h_update_window <= &Y_cfg_h_update_window ? Y_cfg_h_update_window : Y_cfg_h_update_window + 4'h1;
         hcnt_o_L <= hcnt_o_L + 1;
       end else begin
+        Y_cfg_h_update_window <= 4'h0;
         hcnt_o_L <= 0;
       end
       if ((hcnt_o_L == X_HSTART-1) || (hcnt_o_L == X_HSTOP-1))        // next clock cycle either hcnt_o_L == X_HSTART or hcnt_o_L == X_HSTOP
@@ -1189,8 +1196,10 @@ always @(posedge VCLK_o or negedge nRST_o)
         h_active_px <= ~h_active_px;
       if (hcnt_o_L == X_HTOTAL-1) begin
         if (Y_vcnt_o_L < X_VTOTAL - 1) begin
+          Y_cfg_v_update_window <= 1'b0;
           Y_vcnt_o_L <= Y_vcnt_o_L + 1;
         end else begin
+          Y_cfg_v_update_window <= 1'b1;
           Y_vcnt_o_L <= 0;
           vinfo_llm_slbuf_fb_o <= video_llm_i ? vcnt_i_vclk_o_resynced : 9'd0;
         end
@@ -1200,6 +1209,8 @@ always @(posedge VCLK_o or negedge nRST_o)
           Y_v_active_px <= ~Y_v_active_px;
       end
     end else begin
+      Y_cfg_v_update_window <= 1'b1;
+      Y_cfg_h_update_window <= 4'h0;
       Y_vcnt_o_L <= 0;
       hcnt_o_L <= 0;
       Y_v_active_de <= 1'b0;
