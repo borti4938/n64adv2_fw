@@ -242,13 +242,24 @@ config_t deinterlace_mode = {
     .value_string = &DeInterModes
 };
 
-config_t interpolation_mode = {
+config_t interpolation_mode_vert = {
     .cfg_word        = &extcfg1_word,
-    .cfg_word_offset = CFG_INTERP_MODE_OFFSET,
+    .cfg_word_offset = CFG_V_INTERP_MODE_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
         .max_value     = CFG_INTERP_MODE_MAX_VALUE,
-        .getvalue_mask = CFG_INTERP_MODE_GETMASK
+        .getvalue_mask = CFG_V_INTERP_MODE_GETMASK
+    },
+    .value_string = &InterpModes
+};
+
+config_t interpolation_mode_hori = {
+    .cfg_word        = &extcfg1_word,
+    .cfg_word_offset = CFG_H_INTERP_MODE_OFFSET,
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_INTERP_MODE_MAX_VALUE,
+        .getvalue_mask = CFG_H_INTERP_MODE_GETMASK
     },
     .value_string = &InterpModes
 };

@@ -76,10 +76,10 @@ config_tray_t linex_scanlines_words[NUM_REGION_MODES] = {
 };
 
 config_tray_u16_t timing_words[NUM_TIMING_MODES] = {
-  { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
-  { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
-  { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED},
-  { .config_val = CFG_TIMING_DEFAULTS_SHIFTED,  .config_ref_val = CFG_TIMING_DEFAULTS_SHIFTED}
+  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
+  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
+  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
+  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS}
 };
 
 const alt_u32 scaling_defaults[NUM_SCALING_MODES] __ufmdata_section__ =
@@ -458,24 +458,24 @@ void cfg_load_linex_word(cfg_region_sel_type_t palmode_select) {
 void cfg_reset_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
 
-  timing_words[timing_word_select].config_val = CFG_TIMING_DEFAULTS_SHIFTED;
+  timing_words[timing_word_select].config_val = CFG_TIMING_DEFAULTS;
 }
 
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
 
-  timing_words[timing_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK);
-  timing_words[timing_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK);
+  timing_words[timing_word_select].config_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
+  timing_words[timing_word_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
 }
 
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
   if (timing_word_select == PPU_TIMING_CURRENT || timing_word_select > NUM_TIMING_MODES) return;
 
   sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
-  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= (timing_words[timing_word_select].config_val & CFG_EXTCFG1_GETTIMINGS_MASK);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= ((timing_words[timing_word_select].config_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
 
   sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
-  sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val |= (timing_words[timing_word_select].config_ref_val & CFG_EXTCFG1_GETTIMINGS_MASK);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val |= ((timing_words[timing_word_select].config_ref_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
 }
 
 void cfg_reset_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {

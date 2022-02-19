@@ -173,9 +173,10 @@ menu_t viscaling_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 10,
+    .number_selections = 11,
     .leaves = {
-        {.id = SCALERCFG_INTERP_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &interpolation_mode},
+        {.id = SCALERCFG_V_INTERP_V_OFFSET   , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &interpolation_mode_vert},
+        {.id = SCALERCFG_H_INTERP_V_OFFSET   , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &interpolation_mode_hori},
         {.id = SCALERCFG_IN2OUT_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &scaling_selection},
         {.id = SCALERCFG_LINKVH_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &link_hv_scale},
         {.id = SCALERCFG_VHSTEPS_V_OFFSET    , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &scaling_steps},
@@ -188,15 +189,15 @@ menu_t viscaling_screen = {
     }
 };
 
-#define SCALING_PAGE_SELECTION  1
-#define VHLINK_SELECTION        2
-#define SCALING_STEPS_SELECTION 3
-#define VERTSCALE_SELECTION     4
-#define HORISCALE_SELECTION     5
-#define PAL_BOXED_SELECTION     6
-#define TIMING_PAGE_SELECTION   7
-#define VERTSHIFT_SELECTION     8
-#define HORSHIFT_SELECTION      9
+#define SCALING_PAGE_SELECTION  2
+#define VHLINK_SELECTION        3
+#define SCALING_STEPS_SELECTION 4
+#define VERTSCALE_SELECTION     5
+#define HORISCALE_SELECTION     6
+#define PAL_BOXED_SELECTION     7
+#define TIMING_PAGE_SELECTION   8
+#define VERTSHIFT_SELECTION     9
+#define HORSHIFT_SELECTION     10
 
 menu_t slcfg_opt_subscreen = {
     .type = CONFIG,

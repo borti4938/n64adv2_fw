@@ -192,7 +192,7 @@ typedef struct {
 // the overall masks
 #define INTCFG0_GETALL_MASK   0x0000003F
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
-#define EXTCFG1_GETALL_MASK   0xF03FFFEF
+#define EXTCFG1_GETALL_MASK   0xF0FFFFBF
 #define EXTCFG2_GETALL_MASK   0x1FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x0000007F
 
@@ -272,14 +272,15 @@ typedef struct {
 #define CFG_SHOWOSD_OFFSET        30
 #define CFG_MUTEOSDTMP_OFFSET     29
 #define CFG_IGRRST_OFFSET         28
-#define CFG_LIMITED_RGB_OFFSET    21
-#define CFG_GAMMA_OFFSET          17
-#define CFG_DEBLUR_MODE_OFFSET    16
-#define CFG_16BITMODE_OFFSET      15
-#define CFG_VERTSHIFT_OFFSET      10
-#define CFG_HORSHIFT_OFFSET        5
-#define CFG_DEINTER_MODE_OFFSET    3
-#define CFG_INTERP_MODE_OFFSET     1
+#define CFG_LIMITED_RGB_OFFSET    23
+#define CFG_GAMMA_OFFSET          19
+#define CFG_DEBLUR_MODE_OFFSET    18
+#define CFG_16BITMODE_OFFSET      17
+#define CFG_VERTSHIFT_OFFSET      12
+#define CFG_HORSHIFT_OFFSET        7
+#define CFG_DEINTER_MODE_OFFSET    5
+#define CFG_V_INTERP_MODE_OFFSET   3
+#define CFG_H_INTERP_MODE_OFFSET   1
 #define CFG_PAL_BOXED_MODE_OFFSET  0
 
 #define CFG_SHOWLOGO_GETMASK        (1<<CFG_SHOWLOGO_OFFSET)
@@ -315,9 +316,12 @@ typedef struct {
 #define CFG_DEINTER_MODE_GETMASK      (0x3<<CFG_DEINTER_MODE_OFFSET)
   #define CFG_DEINTER_MODE_SETMASK      (0x3<<CFG_DEINTER_MODE_OFFSET)
   #define CFG_DEINTER_MODE_CLRMASK      (EXTCFG1_GETALL_MASK & ~CFG_DEINTER_MODE_GETMASK)
-#define CFG_INTERP_MODE_GETMASK       (0x3<<CFG_INTERP_MODE_OFFSET)
-  #define CFG_INTERP_MODE_RSTMASK       (EXTCFG1_GETALL_MASK & ~CFG_INTERP_MODE_GETMASK)
-  #define CFG_INTERP_MODE_CLRMASK       (EXTCFG1_GETALL_MASK & ~CFG_INTERP_MODE_GETMASK)
+#define CFG_V_INTERP_MODE_GETMASK       (0x3<<CFG_V_INTERP_MODE_OFFSET)
+  #define CFG_V_INTERP_MODE_RSTMASK       (EXTCFG1_GETALL_MASK & ~CFG_V_INTERP_MODE_GETMASK)
+  #define CFG_V_INTERP_MODE_CLRMASK       (EXTCFG1_GETALL_MASK & ~CFG_V_INTERP_MODE_GETMASK)
+#define CFG_H_INTERP_MODE_GETMASK     (0x3<<CFG_H_INTERP_MODE_OFFSET)
+  #define CFG_H_INTERP_MODE_RSTMASK     (EXTCFG1_GETALL_MASK & ~CFG_H_INTERP_MODE_GETMASK)
+  #define CFG_H_INTERP_MODE_CLRMASK     (EXTCFG1_GETALL_MASK & ~CFG_H_INTERP_MODE_GETMASK)
 #define CFG_PAL_BOXED_MODE_GETMASK    (1<<CFG_PAL_BOXED_MODE_OFFSET)
   #define CFG_PAL_BOXED_MODE_SETMASK    (1<<CFG_PAL_BOXED_MODE_OFFSET)
   #define CFG_PAL_BOXED_MODE_CLRMASK    (EXTCFG1_GETALL_MASK & ~CFG_PAL_BOXED_MODE_SETMASK)
@@ -481,7 +485,7 @@ typedef struct {
 #define EXTCFG1_DEFAULTS            (CFG_GAMMA_DEFAULT_SETMASK | CFG_TIMING_DEFAULTS_SHIFTED)
 #define EXTCFG1_DEFAULTS_GETMASK    (CFG_LIMITED_RGB_GETMASK | CFG_GAMMA_GETMASK | CFG_DEBLUR_MODE_GETMASK | \
                                      CFG_16BITMODE_GETMASK | CFG_VERTSHIFT_GETMASK | CFG_HORSHIFT_GETMASK | \
-                                     CFG_DEINTER_MODE_GETMASK | CFG_INTERP_MODE_GETMASK | CFG_PAL_BOXED_MODE_GETMASK)
+                                     CFG_DEINTER_MODE_GETMASK | CFG_V_INTERP_MODE_GETMASK | CFG_H_INTERP_MODE_GETMASK | CFG_PAL_BOXED_MODE_GETMASK)
 #define EXTCFG1_NODEFAULTS_GETMASK  (EXTCFG1_GETALL_MASK & ~EXTCFG1_DEFAULTS_GETMASK)
 
 #define EXTCFG2_DEFAULTS            (0x00000000)
@@ -517,7 +521,7 @@ extern config_t show_logo, show_osd, mute_osd_tmp,
                 igr_reset,
                 limited_rgb, gamma_lut, deblur_mode, mode16bit,
                 vert_shift, hor_shift,
-                deinterlace_mode, interpolation_mode, pal_boxed_mode;
+                deinterlace_mode, interpolation_mode_vert, interpolation_mode_hori, pal_boxed_mode;
 extern config_t sl_thickness_vert, sl_profile_vert, slhyb_str_vert, sl_str_vert,
                 sl_thickness_hori, sl_profile_hori, slhyb_str_hori, sl_str_hori,
                 sl_en_vert, sl_en_hori, sl_link_h2v;

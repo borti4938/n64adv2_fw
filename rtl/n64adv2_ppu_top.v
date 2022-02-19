@@ -192,8 +192,8 @@ reg cfg_nvideblur;
 reg [`VID_CFG_W-1:0] sys_videomode;
 
 reg [`VID_CFG_W-1:0] cfg_videomode;
-reg [1:0] cfg_interpolation_mode;
 reg cfg_pal_boxed;
+reg [1:0] cfg_v_interpolation_mode, cfg_h_interpolation_mode;
 
 reg cfg_vSL_en, cfg_hSL_en;
 reg [1:0] cfg_vSL_thickness, cfg_hSL_thickness;
@@ -434,8 +434,9 @@ always @(posedge VCLK_Tx) begin
     else
       cfg_videomode <= videomode_ntsc_w;
   end
-  cfg_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`interpolation_mode_slice];
   cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
+  cfg_v_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`v_interpolation_mode_slice];
+  cfg_h_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`h_interpolation_mode_slice];
   
   cfg_hSL_thickness <= ConfigSet_resynced[`hSL_thickness_slice];
   cfg_hSL_profile   <= ConfigSet_resynced[`hSL_profile_slice];
@@ -560,13 +561,14 @@ scaler scaler_u(
   .vinfo_txsynced_i({palmode_vclk_o_resynced,n64_480i_vclk_o_resynced}),
   .video_config_i(cfg_videomode),
   .video_llm_i(cfg_lowlatencymode_resynced),
-  .video_interpolation_mode_i(cfg_interpolation_mode),
   .video_pal_boxed_i(cfg_pal_boxed),
   .vinfo_llm_slbuf_fb_o(PPUState[`PPU_output_llm_slbuf_slice]),
+  .video_v_interpolation_mode_i(cfg_v_interpolation_mode),
   .video_vlines_in_needed_i(cfg_vlines_in_needed_resynced),
   .video_vlines_in_full_i(cfg_vlines_in_full_resynced),
   .video_vlines_out_i(cfg_vlines_out_resynced),
   .video_v_interpfactor_i(cfg_v_interp_factor_resynced),
+  .video_h_interpolation_mode_i(cfg_h_interpolation_mode),
   .video_hpos_1st_rdpixel_i(cfg_hpos_1st_rdpixel_resynced),
   .video_hpixel_in_needed_i(cfg_hpixel_in_needed_resynced),
   .video_hpixel_in_full_i(cfg_hpixel_in_full_resynced),

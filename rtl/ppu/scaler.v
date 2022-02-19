@@ -63,16 +63,17 @@ module scaler(
   vinfo_txsynced_i,
   video_config_i,
   video_llm_i,
-  video_interpolation_mode_i,
   video_pal_boxed_i,
   
   vinfo_llm_slbuf_fb_o,
   
+  video_v_interpolation_mode_i,
   video_vlines_in_needed_i,
   video_vlines_in_full_i,
   video_vlines_out_i,
   video_v_interpfactor_i,
   
+  video_h_interpolation_mode_i,
   video_hpos_1st_rdpixel_i,
   video_hpixel_in_needed_i,
   video_hpixel_in_full_i,
@@ -124,16 +125,17 @@ input VCLK_o;
 input [1:0] vinfo_txsynced_i;
 input [`VID_CFG_W-1:0] video_config_i;
 input video_llm_i;
-input [1:0] video_interpolation_mode_i;
 input video_pal_boxed_i;
 
 output reg [8:0] vinfo_llm_slbuf_fb_o;
 
+input [1:0] video_v_interpolation_mode_i;
 input [9:0] video_vlines_in_needed_i; // number of lines needed to scale for active lines
 input [9:0] video_vlines_in_full_i;   // number of lines at input (either 240 in NTSC or 288 in PAL or x2 if interlaced processed as weave/fully buffered)
 input [10:0] video_vlines_out_i;      // number of lines after scaling (max. 2047)
 input [17:0] video_v_interpfactor_i;  // factor needed to determine actual position during interpolation
 
+input [1:0] video_h_interpolation_mode_i;
 input [9:0] video_hpos_1st_rdpixel_i; // first horizontal pixel to read (needed if scaling factor is so high such that not all pixels are needed)
 input [9:0] video_hpixel_in_needed_i; // number of horizontal pixel needed to scale for active lines
 input [9:0] video_hpixel_in_full_i;   // number of horizontal pixel at input (should be 640, later 320 or 640)
@@ -362,7 +364,7 @@ reg [10:0] X_VSTOP_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60 
 reg [11:0] X_HSTART_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60;
 reg [11:0] X_HSTOP_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HFRONTPORCH_480p60;
 
-reg [1:0] X_video_interpolation_mode;
+reg [1:0] X_video_v_interpolation_mode, X_video_h_interpolation_mode;
 
 reg [9:0] X_pix_vlines_in_needed = `ACTIVE_LINES_NTSC_LX1;        // number of lines needed to scale for active lines
 reg [10:0] X_pix_vlines_in_full = `ACTIVE_LINES_NTSC_LX1;         // number of lines at input (either 240 in NTSC or 288 in PAL)
@@ -941,19 +943,19 @@ always @(posedge VCLK_o)
       X_HSTART_px <= X_HSTART_OS + X_hpos_px_offset_w;
       X_HSTOP_px <= X_HSTOP_OS - X_hpos_px_offset_w;
       
-      X_video_interpolation_mode <= video_interpolation_mode_i;
-      
+      X_video_v_interpolation_mode <= video_v_interpolation_mode_i;
       X_pix_vlines_in_needed <= video_vlines_in_needed_i;
       X_pix_vlines_in_full <= {1'b0,video_vlines_in_full_i};
       X_pix_vlines_out_max <= video_vlines_out_i;
-      X_pix_init_vline_cnt_phase <= |X_video_interpolation_mode ? video_vlines_out_i/2 : 0;
+      X_pix_init_vline_cnt_phase <= |video_v_interpolation_mode_i ? video_vlines_out_i/2 : 0;
       X_pix_v_interpfactor <= video_v_interpfactor_i;
       
+      X_video_h_interpolation_mode <= video_h_interpolation_mode_i;
       X_pix_hpixel_addr_mult2 <= ~video_hpixel_in_full_i[9];
       X_pix_hpixel_in_needed <= video_hpixel_in_needed_i;
       X_pix_hpixel_in_full <= {2'b00,video_hpixel_in_full_i};
       X_pix_hpixel_out_max <= video_hpixel_out_i;
-      X_init_hpixel_cnt_phase <= |X_video_interpolation_mode ? video_hpixel_out_i/2 : 0;
+      X_init_hpixel_cnt_phase <= |video_h_interpolation_mode_i ? video_hpixel_out_i/2 : 0;
       X_pix_h_interpfactor <= video_h_interpfactor_i;
       
       hpos_1st_rdpixel_decr <= video_hpos_1st_rdpixel_i;
@@ -1008,8 +1010,8 @@ end
 assign pix_v_a0_current_w = Y_pix_v_a0_current[7:0];
 assign pix_v_a1_current_w = ~Y_pix_v_a0_current[7:0] + 8'h01;
 
-assign pix_v_bypass_z1_w = (!X_video_interpolation_mode[1] & (pix_v_a1_current_w > FILT_AX_SHARP_TH)) | ~|Y_pix_v_a0_current  | Y_pix_v_bypass_z1_current;
-assign pix_v_bypass_z0_w = (!X_video_interpolation_mode[1] & (pix_v_a0_current_w > FILT_AX_SHARP_TH)) | Y_pix_v_a0_current[8] | Y_pix_v_bypass_z0_current;
+assign pix_v_bypass_z1_w = (!X_video_v_interpolation_mode[1] & (pix_v_a1_current_w > FILT_AX_SHARP_TH)) | ~|Y_pix_v_a0_current  | Y_pix_v_bypass_z1_current;
+assign pix_v_bypass_z0_w = (!X_video_v_interpolation_mode[1] & (pix_v_a0_current_w > FILT_AX_SHARP_TH)) | Y_pix_v_a0_current[8] | Y_pix_v_bypass_z0_current;
 
 assign fir_v_calcopcode_w[1] = pix_v_bypass_z1_w |  pix_v_bypass_z0_w;
 assign fir_v_calcopcode_w[0] = pix_v_bypass_z1_w & ~pix_v_bypass_z0_w;
@@ -1017,8 +1019,8 @@ assign fir_v_calcopcode_w[0] = pix_v_bypass_z1_w & ~pix_v_bypass_z0_w;
 assign pix_h_a0_current_w = pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1][7:0];
 assign pix_h_a1_current_w = ~pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1][7:0] + 8'h01;
 
-assign pix_h_bypass_z1_w = (!X_video_interpolation_mode[1] & (pix_h_a1_current_w > FILT_AX_SHARP_TH)) | ~|pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1]  | pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1];
-assign pix_h_bypass_z0_w = (!X_video_interpolation_mode[1] & (pix_h_a0_current_w > FILT_AX_SHARP_TH)) | pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1][8] | pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1];
+assign pix_h_bypass_z1_w = (!X_video_h_interpolation_mode[1] & (pix_h_a1_current_w > FILT_AX_SHARP_TH)) | ~|pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1]  | pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1];
+assign pix_h_bypass_z0_w = (!X_video_h_interpolation_mode[1] & (pix_h_a0_current_w > FILT_AX_SHARP_TH)) | pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1][8] | pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1];
 
 assign fir_h_calcopcode_w[1] = pix_h_bypass_z1_w |  pix_h_bypass_z0_w;
 assign fir_h_calcopcode_w[0] = pix_h_bypass_z1_w & ~pix_h_bypass_z0_w;
@@ -1246,7 +1248,7 @@ always @(posedge VCLK_o or negedge nRST_o)
                 Y_pix_v_bypass_z1_current <= Y_vline_cnt_cmb[10:0] == X_pix_vlines_out_max;
               end else begin
                 Y_vline_cnt <= Y_vline_cnt_cmb[10:0];
-                Y_pix_v_bypass_z0_current <= ~|X_video_interpolation_mode;
+                Y_pix_v_bypass_z0_current <= ~|X_video_v_interpolation_mode;
                 Y_pix_v_bypass_z1_current <= 1'b0;
               end
               if (Y_vline_cnt < X_pix_vlines_in_full)
@@ -1259,7 +1261,7 @@ always @(posedge VCLK_o or negedge nRST_o)
                 Y_pix_v_bypass_z1_current <= 1'b0;
               end else begin
                 Y_vline_cnt <= Y_vline_cnt_cmb[10:0];
-                Y_pix_v_bypass_z0_current <= ~|X_video_interpolation_mode;
+                Y_pix_v_bypass_z0_current <= ~|X_video_v_interpolation_mode;
                 Y_pix_v_bypass_z1_current <= 1'b0;
               end
             end
@@ -1303,7 +1305,7 @@ always @(posedge VCLK_o or negedge nRST_o)
                   rdaddr_post_sdram_buf_sub[0] <= ~rdaddr_post_sdram_buf_sub[0];
                 end
               end
-              if (|X_video_interpolation_mode) begin
+              if (|X_video_h_interpolation_mode) begin
                 pix_h_bypass_z0_current[0] <= 1'b0;
                 pix_h_bypass_z1_current[0] <= hpixel_cnt_cmb == X_pix_hpixel_out_max;
               end else begin
@@ -1312,7 +1314,7 @@ always @(posedge VCLK_o or negedge nRST_o)
               end
             end else begin
               hpixel_cnt <= hpixel_cnt_cmb;
-              pix_h_bypass_z0_current[0] <= hpixel_load_cnt == 10'd1 ? 1'b1 : ~|X_video_interpolation_mode;
+              pix_h_bypass_z0_current[0] <= hpixel_load_cnt == 10'd1 ? 1'b1 : ~|X_video_h_interpolation_mode;
               pix_h_bypass_z1_current[0] <= 1'b0;
             end
             if (hpixel_cnt < X_pix_hpixel_in_full)
@@ -1325,7 +1327,7 @@ always @(posedge VCLK_o or negedge nRST_o)
               pix_h_bypass_z1_current[0] <= 1'b0;
             end else begin
               hpixel_cnt <= hpixel_cnt_cmb;
-              pix_h_bypass_z0_current[0] <= ~|X_video_interpolation_mode;
+              pix_h_bypass_z0_current[0] <= ~|X_video_h_interpolation_mode;
               pix_h_bypass_z1_current[0] <= 1'b0;
             end
           end
@@ -1343,19 +1345,19 @@ always @(posedge VCLK_o or negedge nRST_o)
     end
     
     rden_post_sdram_buf <= Y_v_active_px & h_active_px;
-    Y_pix_v_a0_current <= |X_video_interpolation_mode ? {1'b0,Y_pix_v_a0_pre[8:1]} + Y_pix_v_a0_pre[0] : 9'h080;
+    Y_pix_v_a0_current <= |X_video_v_interpolation_mode ? {1'b0,Y_pix_v_a0_pre[8:1]} + Y_pix_v_a0_pre[0] : 9'h080;
     Y_pix_v_a0_pre <= Y_vscale_phase == HVSCALE_PHASE_INIT ? 9'h000 : Y_a0_v_full_cmb[23:15];
     
     pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
     pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
     for (int_idx = GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1; int_idx >= H_A0_CALC_DELAY; int_idx = int_idx - 1)
       pix_h_a0_current[int_idx] <= pix_h_a0_current[int_idx-1];
-    pix_h_a0_current[H_A0_CALC_DELAY-1] <= |X_video_interpolation_mode ? {1'b0,pix_h_a0_pre[8:1]} + pix_h_a0_pre[0] : 9'h080;
+    pix_h_a0_current[H_A0_CALC_DELAY-1] <= |X_video_h_interpolation_mode ? {1'b0,pix_h_a0_pre[8:1]} + pix_h_a0_pre[0] : 9'h080;
     
-    Y_scale_vpos_rel <= |X_video_interpolation_mode ? Y_pix_v_a0_pre[8:1] + Y_pix_v_a0_pre[0] : {~Y_pix_v_a0_pre[8],Y_pix_v_a0_pre[7:1]} + Y_pix_v_a0_pre[0];
+    Y_scale_vpos_rel <= |X_video_v_interpolation_mode ? Y_pix_v_a0_pre[8:1] + Y_pix_v_a0_pre[0] : {~Y_pix_v_a0_pre[8],Y_pix_v_a0_pre[7:1]} + Y_pix_v_a0_pre[0];
     for (int_idx = Videogen_Pipeline_Length-1; int_idx >= H_A0_CALC_DELAY; int_idx = int_idx - 1)
       scale_hpos_rel[int_idx] <= scale_hpos_rel[int_idx-1];
-    scale_hpos_rel[H_A0_CALC_DELAY-1] <= |X_video_interpolation_mode ? pix_h_a0_pre[8:1] + pix_h_a0_pre[0] : {~pix_h_a0_pre[8],pix_h_a0_pre[7:1]} + pix_h_a0_pre[0];
+    scale_hpos_rel[H_A0_CALC_DELAY-1] <= |X_video_h_interpolation_mode ? pix_h_a0_pre[8:1] + pix_h_a0_pre[0] : {~pix_h_a0_pre[8],pix_h_a0_pre[7:1]} + pix_h_a0_pre[0];
     
     DE_virt_vpl_L <= {DE_virt_vpl_L[Videogen_Pipeline_Length-3:0],(Y_v_active_px & h_active_px)};
     HSYNC_vpl_L <= {HSYNC_vpl_L[Videogen_Pipeline_Length-2:0],(hcnt_o_L < X_HSYNCLEN) ~^ X_HSYNC_active};
