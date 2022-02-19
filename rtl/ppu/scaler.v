@@ -1256,7 +1256,6 @@ always @(posedge VCLK_o or negedge nRST_o)
             end
           HVSCALE_PHASE_POST: begin
               if (Y_vline_cnt_cmb >= {1'b0,X_pix_vlines_out_max}) begin
-                Y_vscale_phase <= HVSCALE_PHASE_INVALID;
                 Y_pix_v_bypass_z0_current <= 1'b1;
                 Y_pix_v_bypass_z1_current <= 1'b0;
               end else begin
@@ -1322,7 +1321,6 @@ always @(posedge VCLK_o or negedge nRST_o)
           end
         HVSCALE_PHASE_POST: begin
             if (hpixel_cnt_cmb >= X_pix_hpixel_out_max) begin
-              hscale_phase <= HVSCALE_PHASE_INVALID;
               pix_h_bypass_z0_current[0] <= 1'b1;
               pix_h_bypass_z1_current[0] <= 1'b0;
             end else begin
