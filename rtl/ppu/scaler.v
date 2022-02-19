@@ -1344,7 +1344,7 @@ always @(posedge VCLK_o or negedge nRST_o)
     
     rden_post_sdram_buf <= Y_v_active_px & h_active_px;
     Y_pix_v_a0_current <= |X_video_interpolation_mode ? {1'b0,Y_pix_v_a0_pre[8:1]} + Y_pix_v_a0_pre[0] : 9'h080;
-    Y_pix_v_a0_pre <= Y_a0_v_full_cmb[23:15];
+    Y_pix_v_a0_pre <= Y_vscale_phase == HVSCALE_PHASE_INIT ? 9'h000 : Y_a0_v_full_cmb[23:15];
     
     pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
     pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-1:1] <= pix_h_bypass_z1_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY-2:0];
