@@ -31,6 +31,8 @@ The menu always open in the top level, where you have following options availabl
   Change resolution of the digital output signal
 - **\[Scaler\]**  
   Scaler settings
+- **\[Scanlines\]**  
+  Scanalines settings
 - **\[VI-Processing\]**  
   Some video interface processing stuff other than resolution and scaling
 - **\[Miscellaneous\]**  
@@ -93,7 +95,8 @@ An empty default value means that this value is not affected by loading defaults
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Interpolation type** | Integer | Selection of<br>- **Integer** simple 0-order hold interpolation \[4\]<br>- **Bi-linear (sharp)** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Vertical interpolation** | Integer | Sets the vertical interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[4\]<br>- **Bi-linear (sharp)** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Horizontal interpolation** | Integer | Sets the horizontal interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[4\]<br>- **Bi-linear (sharp)** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
 | **Scaling - Settings for** \[5\] | | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
 | **Scaling - Link v/h factors** | | Links vertical and horizontal to **4:3** or keep it **open**. |
 | **Scaling - V/h scaling steps** | | Changes between **0.25x** steps and **pixelwise** |
@@ -111,40 +114,41 @@ An empty default value means that this value is not affected by loading defaults
 \[5.3\] _Horizontal scale value_ for 240p/288p scaling increments and decrements in steps of two. Default depends on resolution.  
 \[6\] You are allowed to quickly change the _Shift N64 input image - Input Mode_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Shift N64 input image_ related options.
 
+#### Scanlines Config
+
+| Entry | Default | Description |
+|:------|:--------|:------------|
+| **Input mode** \[7\] | | Switches between NTSC/PAL progressive/interlaced input |
+| **Horizontal scanlines** \[8\] | Off | Enables horizontal scanlines for the particular input mode. |
+| **Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
+| **Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
+| **Strength** \[9\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
+| **Bloom effect** \[9\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
+| **Vertical scanlines** \[8\] | Off | Enables vertical scanlines for the particular input mode. |
+| **Link to horizontal** | Off | Links the vertical scanlines settings to the horizontal settings.<br>Following settings will be a copy of the horizontal scanlines settings. |
+| **Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
+| **Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
+| **Strength** \[9\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
+| **Bloom effect** \[9\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
+
+\[7\] _Input mode_ can be changed using **L** or **R** button on the controller.  
+\[8\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Scaling factor must be at least 2x to have scanlines drawn.  
+\[9\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
+
 #### VI-Processing
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
 | **De-Interlacing mode** | Bob | Selects between **Bob** or **Weave** deinterlacing for 480i/576i video input |
-| **Scanline emulation** | | Enters the submenu for the scanline settings |
 | **Gamma Value** | 1.00 | Applies some gamma boost.<br>Gamma curve on output is defined as I = I_{in}^**\gamma**, where I is the intensity. |
 | **Limited RGB** | Off | Limits the 8bit RGB values in a range of 16 to 235. |
-| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[7\] |
+| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[10\] |
 | **LowRes.-DeBlur - power cycle default** | Off | Sets the power cycle default. |
-| **16bit mode** | Off | Selects between \[8\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
+| **16bit mode** | Off | Selects between \[11\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
 | **16bit mode - power cycle default** | Off | Sets the power cycle default. |
 
-\[7\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
-\[8\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
-
-#### Scanlines Config
-
-Most of the configuration here are just a lazy port from the N64Adv project.
-Some settings do not affect anything at all.
-A proper implementation is still on my _To-do_ list.
-
-| Entry | Default | Description |
-|:------|:--------|:------------|
-| **Input mode** \[9\] | | Switches between NTSC/PAL progressive/interlaced input |
-| **Use Scanline** \[10\] | Off | Enables scanline for the particular input mode.<br>Settings for interlaced modes can be linked to the corresponding progressive mode. |
-| **Thickness** | Normal | Switches between **Normal** or **Thick** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
-| **Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
-| **Scanline Strength** \[11\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
-| **Bloom effect** \[11\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
-
-\[9\] _Input mode_ can be changed using **L** or **R** button on the controller.  
-\[10\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Scaling factor must be at least 2x to have scanlines drawn.  
-\[11\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
+\[10\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
+\[11\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
 
 #### Miscellaneous
 
