@@ -526,12 +526,11 @@ always @(posedge VCLK_i or negedge nRST_i)
           hcnt_i_L <= 10'd0;
           Y_vcnt_i_L <= Y_vcnt_i_L + 1'b1;
           if (((Y_vcnt_i_L == pre_lines_ntsc) && !palmode) ||
-              ((Y_vcnt_i_L == pre_lines_pal)  &&  palmode) ) begin
-            Y_in2out_en <= 1'b1;
+              ((Y_vcnt_i_L == pre_lines_pal)  &&  palmode) )
             Y_field_rdy4out <= 1'b1;
-          end else begin
+          else
             Y_field_rdy4out <= 1'b0;
-          end
+          Y_in2out_en <= Y_in2out_en | Y_field_rdy4out;
         end else begin
           hcnt_i_L <= hcnt_i_L + 1'b1;
         end
@@ -583,7 +582,7 @@ always @(posedge VCLK_i or negedge nRST_i)
         end else begin
           hcnt_pre_sdram_buf <= 0;
         end
-        if (hcnt_pre_sdram_buf == `ACTIVE_PIXEL_PER_LINE - 52) begin // write page info early
+        if (hcnt_pre_sdram_buf == `ACTIVE_PIXEL_PER_LINE - 51) begin // write page info early
           datainfo_pre_sdram_buf <= {Y_field_id_i,Y_field_cnt_i,Y_field_rdy4out};
           datainfo_rdy <= 1'b1;
         end
