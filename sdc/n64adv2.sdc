@@ -325,7 +325,8 @@ set_false_path -from [get_registers {n64adv2_ppu_u|cfg_sync4n64clk_u0|reg_synced
                                      n64adv2_ppu_u|cfg_sync4txlogic_u0|reg_synced_1[*] \
                                      n64adv2_ppu_u|cfg_sync4txlogic_u1|reg_synced_1[*] \
                                      n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|X_* \
-                                     n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|Y_*}]
+                                     n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|Y_* \
+                                     n64adv2_ppu_u|cfg_* n64adv2_ppu_u|*|Z_*}]
 
 
 # Video Info

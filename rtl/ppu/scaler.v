@@ -65,7 +65,6 @@ module scaler(
   video_llm_i,
   video_pal_boxed_i,
   
-  vinfo_llm_slbuf_fb_o,
   
   video_v_interpolation_mode_i,
   video_vlines_in_needed_i,
@@ -80,6 +79,7 @@ module scaler(
   video_hpixel_out_i,
   video_h_interpfactor_i,
   
+  vinfo_llm_slbuf_fb_o,
   scale_vpos_rel_o,
   scale_hpos_rel_o,
   HSYNC_o,
@@ -127,7 +127,6 @@ input [`VID_CFG_W-1:0] video_config_i;
 input video_llm_i;
 input video_pal_boxed_i;
 
-output reg [8:0] vinfo_llm_slbuf_fb_o;
 
 input [1:0] video_v_interpolation_mode_i;
 input [9:0] video_vlines_in_needed_i; // number of lines needed to scale for active lines
@@ -142,6 +141,7 @@ input [9:0] video_hpixel_in_full_i;   // number of horizontal pixel at input (sh
 input [11:0] video_hpixel_out_i;      // number of horizontal pixel after scaling (max. 4093)
 input [17:0] video_h_interpfactor_i;  // factor needed to determine actual position during interpolation
 
+output reg [8:0] vinfo_llm_slbuf_fb_o;
 output reg [7:0] scale_vpos_rel_o;
 output reg [7:0] scale_hpos_rel_o;
 output reg HSYNC_o;
@@ -417,6 +417,8 @@ reg [8:0] pix_h_a0_current[GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP
 
 reg [7:0] Y_scale_vpos_rel;
 reg [7:0] scale_hpos_rel [H_A0_CALC_DELAY-1:Videogen_Pipeline_Length-1] /* synthesis ramstyle = "logic" */;
+
+reg [8:0] Z_vinfo_llm_slbuf_fb_L;
 
 reg [Videogen_Pipeline_Length-2:0] DE_virt_vpl_L  /* synthesis ramstyle = "logic" */;
 reg [Videogen_Pipeline_Length-1:0] HSYNC_vpl_L    /* synthesis ramstyle = "logic" */;
@@ -1170,6 +1172,8 @@ always @(posedge VCLK_o or negedge nRST_o)
       pix_h_a0_current[int_idx] <= 9'h080;
     pix_h_a0_pre <= 9'h100;
     
+    Z_vinfo_llm_slbuf_fb_L <= 9'd0;
+    
     Y_scale_vpos_rel <= 8'h00;
     for (int_idx = Videogen_Pipeline_Length-1; int_idx >= H_A0_CALC_DELAY-1; int_idx = int_idx - 1)
       scale_hpos_rel[int_idx] <= 8'h00;
@@ -1179,8 +1183,6 @@ always @(posedge VCLK_o or negedge nRST_o)
     VSYNC_vpl_L <= {Videogen_Pipeline_Length{1'b0}};
     DE_vpl_L <= {Videogen_Pipeline_Length{1'b0}};
     vdata_vpl_end_L <= {(3*color_width_o){1'b0}};
-    
-    vinfo_llm_slbuf_fb_o <= 9'd0;
   end else begin
     output_proc_en <= 1'b1;
     // generate sync
@@ -1203,7 +1205,7 @@ always @(posedge VCLK_o or negedge nRST_o)
         end else begin
           Y_cfg_v_update_window <= 1'b1;
           Y_vcnt_o_L <= 0;
-          vinfo_llm_slbuf_fb_o <= video_llm_i ? vcnt_i_vclk_o_resynced : 9'd0;
+          Z_vinfo_llm_slbuf_fb_L <= video_llm_i ? vcnt_i_vclk_o_resynced : 9'd0;
         end
         if ((Y_vcnt_o_L == X_VSTART-1) || (Y_vcnt_o_L == X_VSTOP-1))        // next clock cycle either Y_vcnt_o_L == X_VSTART or Y_vcnt_o_L == X_VSTOP
           Y_v_active_de <= ~Y_v_active_de;
@@ -1370,6 +1372,7 @@ always @(posedge VCLK_o or negedge nRST_o)
 
 // assign final outputs
 always @(*) begin
+  vinfo_llm_slbuf_fb_o <= Z_vinfo_llm_slbuf_fb_L;
   scale_vpos_rel_o <= Y_scale_vpos_rel;
   scale_hpos_rel_o <= scale_hpos_rel[Videogen_Pipeline_Length-1];
   HSYNC_o <= HSYNC_vpl_L[Videogen_Pipeline_Length-1];
