@@ -1227,8 +1227,13 @@ always @(posedge VCLK_o or negedge nRST_o)
           HVSCALE_PHASE_INIT: begin
               if (Y_vline_cnt_cmb >= {1'b0,X_pix_vlines_out_max} && Y_vline_load_cnt[0]) begin
                 Y_vscale_phase <= HVSCALE_PHASE_MAIN;
-                Y_pix_v_bypass_z0_current <= 1'b0;
-                Y_pix_v_bypass_z1_current <= Y_vline_cnt_cmb[10:0] == X_pix_vlines_out_max;
+                if (|X_video_h_interpolation_mode) begin
+                  Y_pix_v_bypass_z0_current <= 1'b0;
+                  Y_pix_v_bypass_z1_current <= Y_vline_cnt_cmb[10:0] == X_pix_vlines_out_max;
+                end else begin
+                  Y_pix_v_bypass_z0_current <= Y_vline_cnt_cmb[10:0] == X_pix_vlines_out_max;
+                  Y_pix_v_bypass_z1_current <= 1'b0;
+                end
                 Y_vline_cnt <= Y_vline_cnt_cmb - {1'b0,X_pix_vlines_out_max};
               end else begin
                 if (Y_vphase_init_delay) begin
@@ -1245,8 +1250,13 @@ always @(posedge VCLK_o or negedge nRST_o)
                   Y_vscale_phase <= HVSCALE_PHASE_POST;
                 Y_vline_cnt <= Y_vline_cnt_cmb - {1'b0,X_pix_vlines_out_max};
                 rdpage_post_sdram_buf <= rdpage_post_sdram_buf_cmb;
-                Y_pix_v_bypass_z0_current <= 1'b0;
-                Y_pix_v_bypass_z1_current <= Y_vline_cnt_cmb[10:0] == X_pix_vlines_out_max;
+                if (|X_video_h_interpolation_mode) begin
+                  Y_pix_v_bypass_z0_current <= 1'b0;
+                  Y_pix_v_bypass_z1_current <= Y_vline_cnt_cmb[10:0] == X_pix_vlines_out_max;
+                end else begin
+                  Y_pix_v_bypass_z0_current <= Y_vline_cnt_cmb[10:0] == X_pix_vlines_out_max;
+                  Y_pix_v_bypass_z1_current <= 1'b0;
+                end
               end else begin
                 Y_vline_cnt <= Y_vline_cnt_cmb[10:0];
                 Y_pix_v_bypass_z0_current <= ~|X_video_v_interpolation_mode;
@@ -1309,7 +1319,7 @@ always @(posedge VCLK_o or negedge nRST_o)
                 pix_h_bypass_z0_current[0] <= 1'b0;
                 pix_h_bypass_z1_current[0] <= hpixel_cnt_cmb == X_pix_hpixel_out_max;
               end else begin
-                pix_h_bypass_z0_current[0] <= hpixel_cnt_cmb > X_pix_hpixel_out_max ;
+                pix_h_bypass_z0_current[0] <= hpixel_cnt_cmb == X_pix_hpixel_out_max ;
                 pix_h_bypass_z1_current[0] <= 1'b0;
               end
             end else begin
