@@ -173,6 +173,7 @@
 #define MAIN2ABOUT_V_OFFSET     ( 8 + MAIN_OVERLAY_V_OFFSET)
 #define MAIN2THANKS_V_OFFSET    ( 9 + MAIN_OVERLAY_V_OFFSET)
 #define MAIN2LICENSE_V_OFFSET   (10 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2NOTICE_V_OFFSET    (11 + MAIN_OVERLAY_V_OFFSET)
 
 
 static const char *copyright_note __ufmdata_section__ =
@@ -335,6 +336,27 @@ static const char *license_overlay __ufmdata_section__ =
     "party vendors providing the design tools...";
   /* 123456789012345678901234567890123456789012345678 */
 
+#ifdef USE_NOTICE_SECTION
+  static const char *notice_header __ufmdata_section__ =
+      "Example Note";
+  static const char *notice_overlay __ufmdata_section__ =
+      "123456789012345678901234567890123456789012345678\n"
+      "2\n"
+      "3\n"
+      "4\n"
+      "5\n"
+      "6\n"
+      "7\n"
+      "8\n"
+      "9\n"
+      "0\n"
+      "1\n"
+      "2\n"
+      "3\n"
+      "4";
+    /* 123456789012345678901234567890123456789012345678 */
+#endif
+
 static const char *home_header __ufmdata_section__ =
     "Main Menu";
 static const char *home_overlay __ufmdata_section__ =
@@ -347,8 +369,12 @@ static const char *home_overlay __ufmdata_section__ =
     "[Save/Load/Fw.Update]\n\n"
     "About...\n"
     "Acknowledgment...\n"
-    "License...";
-  /* 1234567890123456789012345678901234567890123456789012 */
+    "License...\n"
+#ifdef USE_NOTICE_SECTION
+    "Special Note..."
+#endif
+  ;
+  /* 123456789012345678901234567890123456789012345678 */
 
 const char *EnterSubMenu __ufmdata_section__  = "[Enter ...]";
 const char *RunFunction __ufmdata_section__   = "[Run ...]";

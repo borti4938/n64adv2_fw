@@ -100,7 +100,7 @@ static const arrow_t rwdata_optval_arrow = {
 
 
 menu_t home_menu, vinfo_screen, vires_screen, viscaling_screen, slcfg_opt_subscreen, vicfg_screen,
-       misc_screen, rwdata_screen, about_screen, thanks_screen, license_screen;
+       misc_screen, rwdata_screen, about_screen, thanks_screen, license_screen, notice_screen;
 
 
 menu_t home_menu = {
@@ -111,7 +111,11 @@ menu_t home_menu = {
       .text = &home_overlay
     },
     .current_selection = 1,
+#ifdef USE_NOTICE_SECTION
+    .number_selections = 11,
+#else
     .number_selections = 10,
+#endif
     .leaves = {
         {.id = MAIN2VINFO_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vinfo_screen},
         {.id = MAIN2RES_V_OFFSET     , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vires_screen},
@@ -122,7 +126,10 @@ menu_t home_menu = {
         {.id = MAIN2SAVE_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
         {.id = MAIN2ABOUT_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &about_screen},
         {.id = MAIN2THANKS_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &thanks_screen},
-        {.id = MAIN2LICENSE_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &license_screen}
+        {.id = MAIN2LICENSE_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &license_screen},
+#ifdef USE_NOTICE_SECTION
+        {.id = MAIN2NOTICE_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &notice_screen}
+#endif
     }
 };
 
@@ -328,6 +335,18 @@ menu_t license_screen = {
    },
    .parent = &home_menu
 };
+
+#ifdef USE_NOTICE_SECTION
+  menu_t notice_screen = {
+     .type = TEXT,
+     .header = &notice_header,
+     .body = {
+       .hoffset = 0,
+       .text = &notice_overlay
+     },
+     .parent = &home_menu
+  };
+#endif
 
 
 static inline bool_t is_vires_screen (menu_t *menu)

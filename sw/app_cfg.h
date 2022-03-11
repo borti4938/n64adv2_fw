@@ -43,5 +43,7 @@
   #define __ufmdata_section__
 #endif
 
+// #define USE_NOTICE_SECTION
+
 
 #endif /* APP_CFG_H_ */
