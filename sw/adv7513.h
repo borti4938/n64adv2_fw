@@ -44,6 +44,11 @@
 #define ADV_HPD_STATE()           ((adv7513_readreg(ADV7513_REG_STATUS) & 0x40) == 0x40)
 #define ADV_MONITOR_SENSE_STATE() ((adv7513_readreg(ADV7513_REG_STATUS) & 0x20) == 0x20)
 
+typedef enum {
+  PR_AUTO = 0,
+  PR_MANUAL
+} pr_mode_t;
+
 
 void set_avi_info(void);
 int check_adv7513(void);

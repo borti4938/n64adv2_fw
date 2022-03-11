@@ -49,17 +49,18 @@ void adv7513_reg_bitclear(alt_u8 regaddr, alt_u8 bit) {
   adv7513_writereg(regaddr,(adv7513_readreg(regaddr) & ~(1 << bit)));
 }
 
-void set_pr_manual(alt_u8 pr_send) {
-  switch (pr_send) {
-    case 2:
-      adv7513_writereg(ADV7513_REG_PIXEL_REPETITION,0x12);
-      break;
-    case 4:
-      adv7513_writereg(ADV7513_REG_PIXEL_REPETITION,0x14);
-      break;
-    default:
-      adv7513_writereg(ADV7513_REG_PIXEL_REPETITION,0x10);
-  }
+void set_pr_manual(pr_mode_t pr_mode, alt_u8 pr_set, alt_u8 pr_send2tx) {
+
+  alt_u8 regval = 0x80;
+  if (pr_mode == PR_MANUAL) regval |= (0b11 << 5);
+
+  if (pr_set == 4) regval |= 0b10 << 3;
+  if (pr_set == 2) regval |= 0b01 << 3;
+
+  if (pr_send2tx == 4) regval |= 0b10 << 1;
+  if (pr_send2tx == 2) regval |= 0b01 << 1;
+
+  adv7513_writereg(ADV7513_REG_PIXEL_REPETITION,regval);
 }
 
 void set_vclk_div(alt_u8 divider) {
@@ -86,10 +87,10 @@ void set_avi_info(void) {
                                                         // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
 
   if (linex_val > PASSTHROUGH) {
-    adv7513_writereg(ADV7513_REG_PIXEL_REPETITION, 0x80);
+    set_pr_manual(PR_AUTO,1,1);
     adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
   } else {
-    adv7513_writereg(ADV7513_REG_PIXEL_REPETITION, 0x82);
+    set_pr_manual(PR_MANUAL,1,2-hor_hires);
     if (palmode) adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b010111);
     else adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b001000);
   }
