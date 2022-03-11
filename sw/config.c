@@ -256,7 +256,7 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
       } else {
         scale_max = 2*predef_scaling_vals[2][0];
         scale_min = predef_scaling_vals[2][0];
-        scale_inc++;
+        scale_inc *= 2;
       }
     } else {
       scale_max = use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;
@@ -268,7 +268,7 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
     }
     if (((cmd_t) command) == CMD_MENU_RIGHT) {  // increment
       if (scale_pixelwise) {  // pixelwise
-        current_scale = current_scale < scale_max ? current_scale + scale_inc : scale_min;
+        current_scale = current_scale <= scale_max - scale_inc ? current_scale + scale_inc : scale_min;
       } else {  // by 0.25x steps
         if (predef_scaling_vals[jdx][idx] > current_scale) idx--;
         if (idx >= PREDEFINED_SCALE_STEPS-1) current_scale = scale_min;
@@ -277,7 +277,7 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
       }
     } else {  // decrement
       if (scale_pixelwise) {  // pixelwise
-        current_scale = current_scale > scale_min ? current_scale - scale_inc : scale_max;
+        current_scale = current_scale >= scale_min + scale_inc ? current_scale - scale_inc : scale_max;
       } else {  // by 0.25x steps
         if (idx == 0) current_scale = predef_scaling_vals[jdx][PREDEFINED_SCALE_STEPS-1];
         else current_scale = predef_scaling_vals[jdx][idx-1];
