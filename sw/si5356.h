@@ -67,6 +67,7 @@ typedef enum {
   NTSC_N64_1080p,
   NTSC_N64_1200p,
   NTSC_N64_1440p,
+  NTSC_N64_1440Wp,
   PAL0_N64_288p,
   PAL0_N64_576p,
   PAL0_N64_720p,
@@ -74,6 +75,7 @@ typedef enum {
   PAL0_N64_1080p,
   PAL0_N64_1200p,
   PAL0_N64_1440p,
+  PAL0_N64_1440Wp,
   PAL1_N64_288p,
   PAL1_N64_576p,
   PAL1_N64_720p,
@@ -81,12 +83,13 @@ typedef enum {
   PAL1_N64_1080p,
   PAL1_N64_1200p,
   PAL1_N64_1440p,
+  PAL1_N64_1440Wp,
   FREE_240p_288p, // use only CLK0/1
   FREE_480p_VGA,
   FREE_576p,
   FREE_720p_960p,
   FREE_1080p_1200p,
-  FREE_1440p     // use only CLK0/1
+  FREE_1440p
 } clk_config_t;
 #define NUM_SUPPORTED_CONFIGS (FREE_1440p+1)
 

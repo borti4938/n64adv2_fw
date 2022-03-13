@@ -152,7 +152,7 @@ menu_t vires_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 11,
+    .number_selections = 12,
     .leaves = {
         {.id = RESCFG_INPUT_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &region_selection},
         {.id = RESCFG_240P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
@@ -162,14 +162,16 @@ menu_t vires_screen = {
         {.id = RESCFG_1080P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_1200P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_1440P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
+        {.id = RESCFG_1440WP_V_OFFSET     , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
         {.id = RESCFG_USE_VGA_RES_V_OFFSET, .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &vga_for_480p},
         {.id = RESCFG_USE_SRCSYNC_V_OFFSET, .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &low_latency_mode},
         {.id = RESCFG_FORCE_5060_V_OFFSET , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &linex_force_5060}
     }
 };
 
-#define RES_1440P_SELECTION  7
-#define FORCE5060_SELECTION 10
+#define RES_1440P_SELECTION    7
+#define RES_1440WP_SELECTION   8
+#define FORCE5060_SELECTION   11
 
 menu_t viscaling_screen = {
     .type = CONFIG,
@@ -578,8 +580,8 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   // menu specific modifications
 
   if (is_vires_screen(*current_menu)) {
-    if ((unlock_1440p == FALSE) && (current_sel == RES_1440P_SELECTION))
-      (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440P_SELECTION + 1 : RES_1440P_SELECTION - 1;
+    if ((unlock_1440p == FALSE) && ((current_sel == RES_1440P_SELECTION) || (current_sel == RES_1440WP_SELECTION)))
+      (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440WP_SELECTION + 1 : RES_1440P_SELECTION - 1;
     if (cfg_get_value(&low_latency_mode,0) == ON && (current_sel == FORCE5060_SELECTION))
       (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : FORCE5060_SELECTION - 1;
   }
@@ -857,7 +859,7 @@ int update_cfg_screen(menu_t* current_menu)
         val_is_ref = ((val_select != v_run && ref_val_select != v_run) || val_select == ref_val_select);
         if (is_vires_screen(current_menu)) {
           flag2set_func(val_select == v_run);
-          if ((unlock_1440p == FALSE) && (v_run == RES_1440P_SELECTION))
+          if ((unlock_1440p == FALSE) && ((v_run == RES_1440P_SELECTION) || (v_run == RES_1440WP_SELECTION)))
             font_color = FONTCOLOR_GREY;
           else
             font_color = val_is_ref ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;

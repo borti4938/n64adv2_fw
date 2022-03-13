@@ -80,6 +80,7 @@ typedef enum {
   NTSC_TO_1080,
   NTSC_TO_1200,
   NTSC_TO_1440,
+  NTSC_TO_1440W,
   PAL_TO_288,
   PAL_TO_576,
   PAL_TO_720,
@@ -87,9 +88,10 @@ typedef enum {
   PAL_TO_1080,
   PAL_TO_1200,
   PAL_TO_1440,
+  PAL_TO_1440W,
   PPU_SCALING_CURRENT
 } cfg_scaler_in2out_sel_type_t;
-#define NTSC_LAST_SCALING_MODE  NTSC_TO_1440
+#define NTSC_LAST_SCALING_MODE  NTSC_TO_1440W
 #define NUM_SCALING_MODES       PPU_SCALING_CURRENT
 
 typedef enum {
@@ -99,7 +101,8 @@ typedef enum {
   LineX4,
   LineX4p5,
   LineX5,
-  LineX6
+  LineX6,
+  LineX6W
 } linex_cnt;
 
 typedef enum {
@@ -256,6 +259,7 @@ typedef struct {
   #define CFG_VGAFOR480P_SETMASK        (1<<CFG_VGAFOR480P_OFFSET)
   #define CFG_VGAFOR480P_CLRMASK        (EXTCFG0_GETALL_MASK & ~CFG_VGAFOR480P_GETMASK)
 #define CFG_RESOLUTION_GETMASK        (0x7<<CFG_RESOLUTION_OFFSET)
+  #define CFG_RESOLUTION_1440W_SETMASK  (LineX6W<<CFG_RESOLUTION_OFFSET)
   #define CFG_RESOLUTION_1440_SETMASK   (LineX6<<CFG_RESOLUTION_OFFSET)
   #define CFG_RESOLUTION_1200_SETMASK   (LineX5<<CFG_RESOLUTION_OFFSET)
   #define CFG_RESOLUTION_1080_SETMASK   (LineX4p5<<CFG_RESOLUTION_OFFSET)
@@ -410,10 +414,10 @@ typedef struct {
 #define CFG_VERTSCALE_PAL_MIN   288
 
 // some max values
-#define CFG_VERTSCALE_MAX_VALUE      2016 // equals 7.00x @ PAL
-#define CFG_HORSCALE_MAX_VALUE       (4*CFG_VERTSCALE_MAX_VALUE/3)
-#define CFG_FORCE5060_MAX_VALUE         2
-#define CFG_RESOLUTION_MAX_VALUE   LineX6
+#define CFG_VERTSCALE_MAX_VALUE        2016 // equals 7.00x @ PAL
+#define CFG_HORSCALE_MAX_VALUE      (4*CFG_VERTSCALE_MAX_VALUE/3)
+#define CFG_FORCE5060_MAX_VALUE           2
+#define CFG_RESOLUTION_MAX_VALUE    LineX6W
 
 #define CFG_GAMMA_MAX_VALUE             8
 #define CFG_HORSHIFT_MAX_VALUE         31

@@ -103,7 +103,7 @@ void configure_clk_si5356(clk_config_t target_cfg) {
 
 //  si5356_reg_bitset(SOFT_RST_REG,SOFT_RST_BIT,0xFF);    // soft reset
   si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT),0xFF);   // soft reset
-  if (target_cfg == FREE_240p_288p || target_cfg == FREE_1440p)
+  if (target_cfg == FREE_240p_288p)
     si5356_writereg(OEB_REG,OEB_REG_VAL_SINGLE_ON,0xFF);  // enable outputs
   else
     si5356_writereg(OEB_REG,OEB_REG_VAL_ALL_ON,0xFF);     // enable outputs

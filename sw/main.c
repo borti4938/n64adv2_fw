@@ -106,6 +106,7 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
       case LineX5:
         return FREE_1080p_1200p;
       case LineX6:
+      case LineX6W:
         return FREE_1440p;
     }
   }

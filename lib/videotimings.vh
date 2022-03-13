@@ -34,11 +34,11 @@
 `ifndef _videotimings_vh_
 `define _videotimings_vh_
 
-  `define VID_CFG_W         4
+  `define VID_CFG_W         5
   `define VID_CFG_50HZ_BIT  `VID_CFG_W - 1
   
   // 240p-60, 4:3 (2x/4x pixelrep, mode 2)
-  `define USE_240p60            4'b0000
+  `define USE_240p60            5'b00000
   `define HSYNC_active_240p60   1'b0
   `define HFRONTPORCH_240p60    38
   `define HSYNCLEN_240p60       124
@@ -55,7 +55,7 @@
   `define VTOTAL_240p60         263
 
   // VGA (640x480), 4:3
-  `define USE_VGAp60            4'b0001
+  `define USE_VGAp60            5'b00001
   `define HSYNC_active_VGA      1'b0
   `define HFRONTPORCH_VGA       16
   `define HSYNCLEN_VGA          96
@@ -72,7 +72,7 @@
   `define VTOTAL_VGA            525
   
   // 480p-60, 4:3 / 16:9
-  `define USE_480p60            4'b0010
+  `define USE_480p60            5'b00010
   `define HSYNC_active_480p60   1'b0
   `define HFRONTPORCH_480p60    16
   `define HSYNCLEN_480p60       62
@@ -89,7 +89,7 @@
   `define VTOTAL_480p60         525
   
   // 720p-60, 16:9
-  `define USE_720p60            4'b0011
+  `define USE_720p60            5'b00011
   `define HSYNC_active_720p60   1'b1
   `define HFRONTPORCH_720p60    110
   `define HSYNCLEN_720p60       40
@@ -106,7 +106,7 @@
   `define VTOTAL_720p60         750
   
   // 960p-60, 4:3
-  `define USE_960p60            4'b0100
+  `define USE_960p60            5'b00100
   `define HSYNC_active_960p60   1'b1
   `define HFRONTPORCH_960p60    48
   `define HSYNCLEN_960p60       32
@@ -123,7 +123,7 @@
   `define VTOTAL_960p60         988
   
   // 1080p-60, 16:9
-  `define USE_1080p60           4'b0101
+  `define USE_1080p60           5'b00101
   `define HSYNC_active_1080p60  1'b1
   `define HFRONTPORCH_1080p60   88
   `define HSYNCLEN_1080p60      44
@@ -140,7 +140,7 @@
   `define VTOTAL_1080p60        1125
   
   // 1200p-60, 4:3 (CVT-RB)
-  `define USE_1200p60           4'b0110
+  `define USE_1200p60           5'b00110
   `define HSYNC_active_1200p60  1'b1
   `define HFRONTPORCH_1200p60   48
   `define HSYNCLEN_1200p60      32
@@ -157,7 +157,7 @@
   `define VTOTAL_1200p60        1235
   
   // 1440p-60, 4:3 (compromise between CVT-RB and CVT-RBv2)
-  `define USE_1440p60           4'b0111
+  `define USE_1440p60           5'b00111
   `define HSYNC_active_1440p60  1'b1
   `define HFRONTPORCH_1440p60   30
   `define HSYNCLEN_1440p60      32
@@ -173,8 +173,25 @@
   `define VOVERSCAN_MAX_1440p60 `VFRONTPORCH_1440p60
   `define VTOTAL_1440p60        1475
   
+  // 1440p-60, 16:9 (CVT-RB, 2x pixelrep)
+  `define USE_1440Wp60            5'b01000
+  `define HSYNC_active_1440Wp60   1'b1
+  `define HFRONTPORCH_1440Wp60    24
+  `define HSYNCLEN_1440Wp60       16
+  `define HBACKPORCH_1440Wp60     40
+  `define HACTIVE_1440Wp60        1280
+  `define HOVERSCAN_MAX_1440Wp60  `HFRONTPORCH_1440Wp60
+  `define HTOTAL_1440Wp60         1360
+  `define VSYNC_active_1440Wp60   1'b0
+  `define VFRONTPORCH_1440Wp60    3
+  `define VSYNCLEN_1440Wp60       5
+  `define VBACKPORCH_1440Wp60     33
+  `define VACTIVE_1440Wp60        1440
+  `define VOVERSCAN_MAX_1440Wp60  `VFRONTPORCH_1440Wp60
+  `define VTOTAL_1440Wp60         1481
+  
   // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
-  `define USE_288p50            4'b1000
+  `define USE_288p50            5'b10000
   `define HSYNC_active_288p50   1'b0
   `define HFRONTPORCH_288p50    24
   `define HSYNCLEN_288p50       126
@@ -191,7 +208,7 @@
   `define VTOTAL_288p50         313
   
   // 576p-50, 4:3 / 16:9
-  `define USE_576p50            4'b1010
+  `define USE_576p50            5'b10010
   `define HSYNC_active_576p50   1'b0
   `define HFRONTPORCH_576p50    12
   `define HSYNCLEN_576p50       64
@@ -208,7 +225,7 @@
   `define VTOTAL_576p50         625
   
   // 720p-50, 16:9
-  `define USE_720p50            4'b1011
+  `define USE_720p50            5'b10011
   `define HSYNC_active_720p50   1'b1
   `define HFRONTPORCH_720p50    440
   `define HSYNCLEN_720p50       40
@@ -225,7 +242,7 @@
   `define VTOTAL_720p50         750
   
   // 960p-50, 4:3
-  `define USE_960p50            4'b1100
+  `define USE_960p50            5'b10100
   `define HSYNC_active_960p50   1'b1
   `define HFRONTPORCH_960p50    336
   `define HSYNCLEN_960p50       32
@@ -242,7 +259,7 @@
   `define VTOTAL_960p50         988
   
   // 1080p-50, 16:9
-  `define USE_1080p50           4'b1101
+  `define USE_1080p50           5'b10101
   `define HSYNC_active_1080p50  1'b1
   `define HFRONTPORCH_1080p50   528
   `define HSYNCLEN_1080p50      44
@@ -259,7 +276,7 @@
   `define VTOTAL_1080p50        1125
   
   // 1200p-50, 4:3 (CVT-RB)
-  `define USE_1200p50           4'b1110
+  `define USE_1200p50           5'b10110
   `define HSYNC_active_1200p50  1'b0
   `define HFRONTPORCH_1200p50   400
   `define HSYNCLEN_1200p50      32
@@ -276,7 +293,7 @@
   `define VTOTAL_1200p50        1235
   
   // 1440p-50, 4:3 (compromise between CVT-RB and CVT-RBv2)
-  `define USE_1440p50           4'b1111
+  `define USE_1440p50           5'b10111
   `define HSYNC_active_1440p50  1'b1
   `define HFRONTPORCH_1440p50   438
   `define HSYNCLEN_1440p50      32
@@ -291,5 +308,22 @@
   `define VACTIVE_1440p50       1440
   `define VOVERSCAN_MAX_1440p50 `VFRONTPORCH_1440p50
   `define VTOTAL_1440p50        1475
+  
+  // 1440p-50, 16:9 (CVT-RB, 2x pixelrep)
+  `define USE_1440Wp50            5'b11000
+  `define HSYNC_active_1440Wp50   1'b1
+  `define HFRONTPORCH_1440Wp50    296
+  `define HSYNCLEN_1440Wp50       16
+  `define HBACKPORCH_1440Wp50     40
+  `define HACTIVE_1440Wp50        1280
+  `define HOVERSCAN_MAX_1440Wp50  `HBACKPORCH_1440Wp50
+  `define HTOTAL_1440Wp50         1632
+  `define VSYNC_active_1440Wp50   1'b0
+  `define VFRONTPORCH_1440Wp50    3
+  `define VSYNCLEN_1440Wp50       5
+  `define VBACKPORCH_1440Wp50     33
+  `define VACTIVE_1440Wp50        1440
+  `define VOVERSCAN_MAX_1440Wp50  `VFRONTPORCH_1440Wp50
+  `define VTOTAL_1440Wp50         1481
 
 `endif

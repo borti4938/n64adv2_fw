@@ -135,7 +135,7 @@ always @(*) begin
     if (target_resolution == `HDMI_TARGET_480P)
       HDMI_CLK_sel_cmb <= use_vga_for_480p;
     else
-      HDMI_CLK_sel_cmb <= ((target_resolution == `HDMI_TARGET_960P) || (target_resolution == `HDMI_TARGET_1200P));// in HD modes, main is 720p and 1080p clock and sub is 960p and 1200p
+      HDMI_CLK_sel_cmb <= ((target_resolution == `HDMI_TARGET_960P) || (target_resolution == `HDMI_TARGET_1200P) || (target_resolution == `HDMI_TARGET_1440WP));// in HD modes, main is 720p, 1080p and 1440p (4:3) clock and sub is 960p, 1200p and 1440p (16:9 with pixelrep)
   end
 end
 

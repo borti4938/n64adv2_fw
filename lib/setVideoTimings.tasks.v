@@ -67,6 +67,10 @@ task setVideoSYNCactive;
           VSYNC_active <= `VSYNC_active_1440p60;
           HSYNC_active <= `HSYNC_active_1440p60;
         end
+      `USE_1440Wp60: begin // 1440p-60, 16:9 (2x pixelrep)
+          VSYNC_active <= `VSYNC_active_1440Wp60;
+          HSYNC_active <= `HSYNC_active_1440Wp60;
+        end
       `USE_288p50: begin  // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
           VSYNC_active <= `VSYNC_active_288p50;
           HSYNC_active <= `HSYNC_active_288p50;
@@ -90,6 +94,10 @@ task setVideoSYNCactive;
       `USE_1440p50: begin // 1440p-50, 4:3
           VSYNC_active <= `VSYNC_active_1440p50;
           HSYNC_active <= `HSYNC_active_1440p50;
+        end
+      `USE_1440Wp50: begin // 1440p-50, 16:9 (2x pixelrep)
+          VSYNC_active <= `VSYNC_active_1440Wp50;
+          HSYNC_active <= `HSYNC_active_1440Wp50;
         end
       default: begin
           if (video_config[`VID_CFG_50HZ_BIT]) begin // 576p-50, 4:3 / 16:9
@@ -142,6 +150,10 @@ task setVideoVidACTIVE;
           VACTIVE <= `VACTIVE_1440p60;
           HACTIVE <= `HACTIVE_1440p60;
         end
+      `USE_1440Wp60: begin // 1440p-60, 16:9 (2x pixelrep)
+          VACTIVE <= `VACTIVE_1440Wp60;
+          HACTIVE <= `HACTIVE_1440Wp60;
+        end
       `USE_288p50: begin // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
           VACTIVE <= `VACTIVE_288p50;
           HACTIVE <= `HACTIVE_288p50;
@@ -165,6 +177,10 @@ task setVideoVidACTIVE;
       `USE_1440p50: begin // 1440p-50, 4:3
           VACTIVE <= `VACTIVE_1440p50;
           HACTIVE <= `HACTIVE_1440p50;
+        end
+      `USE_1440Wp50: begin // 1440p-50, 16:9 (2x pixelrep)
+          VACTIVE <= `VACTIVE_1440Wp50;
+          HACTIVE <= `HACTIVE_1440Wp50;
         end
       default: begin
           if (video_config[`VID_CFG_50HZ_BIT]) begin // 576p-50, 4:3 / 16:9
@@ -217,6 +233,10 @@ task setVideoVidACTIVEwOS;
           VACTIVE_OS <= `VACTIVE_1440p60 + 2*`VOVERSCAN_MAX_1440p60;
           HACTIVE_OS <= `HACTIVE_1440p60 + 2*`HOVERSCAN_MAX_1440p60;
         end
+      `USE_1440Wp60: begin // 1440p-60, 16:9 (2x pixelrep)
+          VACTIVE_OS <= `VACTIVE_1440Wp60 + 2*`VOVERSCAN_MAX_1440Wp60;
+          HACTIVE_OS <= `HACTIVE_1440Wp60 + 2*`HOVERSCAN_MAX_1440Wp60;
+        end
       `USE_288p50: begin // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
           VACTIVE_OS <= `VACTIVE_288p50 + 2*`VOVERSCAN_MAX_288p50;
           HACTIVE_OS <= `HACTIVE_288p50 + 2*`HOVERSCAN_MAX_288p50;
@@ -240,6 +260,10 @@ task setVideoVidACTIVEwOS;
       `USE_1440p50: begin // 1440p-50, 4:3
           VACTIVE_OS <= `VACTIVE_1440p50 + 2*`VOVERSCAN_MAX_1440p50;
           HACTIVE_OS <= `HACTIVE_1440p50 + 2*`HOVERSCAN_MAX_1440p50;
+        end
+      `USE_1440Wp50: begin // 1440p-50, 16:9 (2x pixelrep)
+          VACTIVE_OS <= `VACTIVE_1440Wp50 + 2*`VOVERSCAN_MAX_1440Wp50;
+          HACTIVE_OS <= `HACTIVE_1440Wp50 + 2*`HOVERSCAN_MAX_1440Wp50;
         end
       default: begin
           if (video_config[`VID_CFG_50HZ_BIT]) begin // 576p-50, 4:3 / 16:9
@@ -348,6 +372,17 @@ task setVideoVTimings;
           VSTOP_OS <= `VSYNCLEN_1440p60 + `VBACKPORCH_1440p60 + `VACTIVE_1440p60 + `VOVERSCAN_MAX_1440p60;
           VTOTAL <= `VTOTAL_1440p60;
         end
+      `USE_1440Wp60: begin // 1440p-60, 16:9 (2x pixelrep)
+          VSYNC_active <= `VSYNC_active_1440Wp60;
+          VSYNCLEN <= `VSYNCLEN_1440Wp60;
+          VSTART <= `VSYNCLEN_1440Wp60 + `VBACKPORCH_1440Wp60;
+          VACTIVE <= `VACTIVE_1440Wp60;
+          VSTOP <= `VSYNCLEN_1440Wp60 + `VBACKPORCH_1440Wp60 + `VACTIVE_1440Wp60;
+          VSTART_OS <= `VSYNCLEN_1440Wp60 + `VBACKPORCH_1440Wp60 - `VOVERSCAN_MAX_1440Wp60;
+          VACTIVE_OS <= `VACTIVE_1440Wp60 + 2*`VOVERSCAN_MAX_1440Wp60;
+          VSTOP_OS <= `VSYNCLEN_1440Wp60 + `VBACKPORCH_1440Wp60 + `VACTIVE_1440Wp60 + `VOVERSCAN_MAX_1440Wp60;
+          VTOTAL <= `VTOTAL_1440Wp60;
+        end
       `USE_288p50: begin // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
           VSYNC_active <= `VSYNC_active_288p50;
           VSYNCLEN <= `VSYNCLEN_288p50;
@@ -414,6 +449,18 @@ task setVideoVTimings;
           VACTIVE_OS <= `VACTIVE_1440p50 + 2*`VOVERSCAN_MAX_1440p50;
           VSTOP_OS <= `VSYNCLEN_1440p50 + `VBACKPORCH_1440p50 + `VACTIVE_1440p50 + `VOVERSCAN_MAX_1440p50;
           VTOTAL <= `VTOTAL_1440p50;
+        end
+      `USE_1440Wp50: begin // 1440p-50, 16:9 (2x pixelrep)
+          VSYNC_active <= `VSYNC_active_1440Wp50;
+          VSYNCLEN <= `VSYNCLEN_1440Wp50;
+          VSTART_OS <= `VSYNCLEN_1440Wp50;
+          VSTART <= `VSYNCLEN_1440Wp50 + `VBACKPORCH_1440Wp50;
+          VACTIVE <= `VACTIVE_1440Wp50;
+          VSTOP <= `VSYNCLEN_1440Wp50 + `VBACKPORCH_1440Wp50 + `VACTIVE_1440Wp50;
+          VSTART_OS <= `VSYNCLEN_1440Wp50 + `VBACKPORCH_1440Wp50 - `VOVERSCAN_MAX_1440Wp50;
+          VACTIVE_OS <= `VACTIVE_1440Wp50 + 2*`VOVERSCAN_MAX_1440Wp50;
+          VSTOP_OS <= `VSYNCLEN_1440Wp50 + `VBACKPORCH_1440Wp50 + `VACTIVE_1440Wp50 + `VOVERSCAN_MAX_1440Wp50;
+          VTOTAL <= `VTOTAL_1440Wp50;
         end
       default: begin
           if (video_config[`VID_CFG_50HZ_BIT]) begin // 576p-50, 4:3 / 16:9
@@ -536,6 +583,17 @@ task setVideoHTimings;
           HSTOP_OS <= `HSYNCLEN_1440p60 + `HBACKPORCH_1440p60 + `HACTIVE_1440p60 + `HOVERSCAN_MAX_1440p60;
           HTOTAL <= `HTOTAL_1440p60;
         end
+      `USE_1440Wp60: begin // 1440p-60, 16:9 (2x pixelrep)
+          HSYNC_active <= `HSYNC_active_1440Wp60;
+          HSYNCLEN <= `HSYNCLEN_1440Wp60;
+          HSTART <= `HSYNCLEN_1440Wp60 + `HBACKPORCH_1440Wp60;
+          HACTIVE <= `HACTIVE_1440Wp60;
+          HSTOP <= `HSYNCLEN_1440Wp60 + `HBACKPORCH_1440Wp60 + `HACTIVE_1440Wp60;
+          HSTART_OS <= `HSYNCLEN_1440Wp60 + `HBACKPORCH_1440Wp60 - `HOVERSCAN_MAX_1440Wp60;
+          HACTIVE_OS <= `HACTIVE_1440Wp60 + 2*`HOVERSCAN_MAX_1440p60;
+          HSTOP_OS <= `HSYNCLEN_1440Wp60 + `HBACKPORCH_1440Wp60 + `HACTIVE_1440Wp60 + `HOVERSCAN_MAX_1440Wp60;
+          HTOTAL <= `HTOTAL_1440Wp60;
+        end
       `USE_288p50: begin // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
           HSYNC_active <= `HSYNC_active_288p50;
           HSYNCLEN <= `HSYNCLEN_288p50;
@@ -601,6 +659,17 @@ task setVideoHTimings;
           HACTIVE_OS <= `HACTIVE_1440p50 + 2*`HOVERSCAN_MAX_1440p50;
           HSTOP_OS <= `HSYNCLEN_1440p50 + `HBACKPORCH_1440p50 + `HACTIVE_1440p50 + `HOVERSCAN_MAX_1440p50;
           HTOTAL <= `HTOTAL_1440p50;
+        end
+      `USE_1440p50: begin // 1440p-50, 16:9 (2x pixelrep)
+          HSYNC_active <= `HSYNC_active_1440Wp50;
+          HSYNCLEN <= `HSYNCLEN_1440Wp50;
+          HSTART <= `HSYNCLEN_1440Wp50 + `HBACKPORCH_1440Wp50;
+          HACTIVE <= `HACTIVE_1440Wp50;
+          HSTOP <= `HSYNCLEN_1440Wp50 + `HBACKPORCH_1440Wp50 + `HACTIVE_1440Wp50;
+          HSTART_OS <= `HSYNCLEN_1440Wp50 + `HBACKPORCH_1440Wp50 - `HOVERSCAN_MAX_1440Wp50;
+          HACTIVE_OS <= `HACTIVE_1440Wp50 + 2*`HOVERSCAN_MAX_1440Wp50;
+          HSTOP_OS <= `HSYNCLEN_1440Wp50 + `HBACKPORCH_1440Wp50 + `HACTIVE_1440Wp50 + `HOVERSCAN_MAX_1440Wp50;
+          HTOTAL <= `HTOTAL_1440Wp50;
         end
       default: begin
           if (video_config[`VID_CFG_50HZ_BIT]) begin // 576p-50, 4:3 / 16:9

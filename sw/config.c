@@ -83,13 +83,14 @@ config_tray_u16_t timing_words[NUM_TIMING_MODES] = {
 };
 
 const alt_u32 scaling_defaults[NUM_SCALING_MODES] __ufmdata_section__ =
-    {(alt_u32) CFG_SCALING_NTSC_240_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_NTSC_480_DEFAULT_SHIFTED ,
-     (alt_u32) CFG_SCALING_NTSC_720_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_NTSC_960_DEFAULT_SHIFTED ,
-     (alt_u32) CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED,(alt_u32) CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED,
-     (alt_u32) CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,(alt_u32) CFG_SCALING_PAL_288_DEFAULT_SHIFTED  ,
-     (alt_u32) CFG_SCALING_PAL_576_DEFAULT_SHIFTED  ,(alt_u32) CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,
-     (alt_u32) CFG_SCALING_PAL_960_DEFAULT_SHIFTED  ,(alt_u32) CFG_SCALING_PAL_1080_DEFAULT_SHIFTED ,
-     (alt_u32) CFG_SCALING_PAL_1200_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_PAL_1440_DEFAULT_SHIFTED };
+    {(alt_u32) CFG_SCALING_NTSC_240_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_NTSC_480_DEFAULT_SHIFTED  ,
+     (alt_u32) CFG_SCALING_NTSC_720_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_NTSC_960_DEFAULT_SHIFTED  ,
+     (alt_u32) CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED,(alt_u32) CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED ,
+     (alt_u32) CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,(alt_u32) CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,
+     (alt_u32) CFG_SCALING_PAL_288_DEFAULT_SHIFTED  ,(alt_u32) CFG_SCALING_PAL_576_DEFAULT_SHIFTED   ,
+     (alt_u32) CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,(alt_u32) CFG_SCALING_PAL_960_DEFAULT_SHIFTED   ,
+     (alt_u32) CFG_SCALING_PAL_1080_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_PAL_1200_DEFAULT_SHIFTED  ,
+     (alt_u32) CFG_SCALING_PAL_1440_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_PAL_1440_DEFAULT_SHIFTED };
 
 config_tray_t scaling_words[NUM_SCALING_MODES] = {
     { .config_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED},
@@ -99,12 +100,14 @@ config_tray_t scaling_words[NUM_SCALING_MODES] = {
     { .config_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_288_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_288_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1080_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1200_DEFAULT_SHIFTED},
+    { .config_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED}
 };
 
@@ -245,25 +248,30 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
   alt_u16 current_scale = use_vertical ? cfg_get_value(&vert_scale,0) :  cfg_get_value(&hor_scale,0);
   if (set_value) {  // ensure from outside that command is valid (left or right)
     alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
-    alt_u8 idx;
+    alt_u8 idx, idx_min;
     bool_t use_240p_288p = ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288));
+    bool_t use_1440Wp = ((scaling_menu == NTSC_TO_1440W) || (scaling_menu == PAL_TO_1440W));
     alt_u16 scale_max, scale_min;
-    alt_u8 scale_inc = 1;
+    alt_u8 scale_inc;
     if (use_240p_288p) {
       if (use_vertical) {
         scale_max = 2*CFG_VERTSCALE_PAL_MIN;
         scale_min = ((vmode_scaling_menu == PAL) && !((bool_t) cfg_get_value(&pal_boxed_mode,0))) ? (CFG_VERTSCALE_PAL_MIN & 0xFFFE) : (CFG_VERTSCALE_NTSC_MIN & 0xFFFE);
+        scale_inc = 1;
       } else {
         scale_max = 2*predef_scaling_vals[2][0];
         scale_min = predef_scaling_vals[2][0];
-        scale_inc *= 2;
+        scale_inc = 2;
       }
     } else {
       scale_max = use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;
-      scale_min = predef_scaling_vals[jdx][0];
+      scale_min = use_1440Wp ? 2*predef_scaling_vals[jdx][0] : predef_scaling_vals[jdx][0];
+      scale_inc = use_1440Wp ? 2 : 1;
     }
     bool_t scale_pixelwise = cfg_get_value(&scaling_steps,0) > 0 || (use_240p_288p && use_vertical);
+    idx_min = 0;
     for (idx = 0; idx < PREDEFINED_SCALE_STEPS; idx++) {
+      if (predef_scaling_vals[jdx][idx] < scale_min) idx_min = idx+1;
       if (predef_scaling_vals[jdx][idx] >= current_scale) break;
     }
     if (((cmd_t) command) == CMD_MENU_RIGHT) {  // increment
@@ -279,7 +287,7 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
       if (scale_pixelwise) {  // pixelwise
         current_scale = current_scale >= scale_min + scale_inc ? current_scale - scale_inc : scale_max;
       } else {  // by 0.25x steps
-        if (idx == 0) current_scale = predef_scaling_vals[jdx][PREDEFINED_SCALE_STEPS-1];
+        if (idx == idx_min) current_scale = predef_scaling_vals[jdx][PREDEFINED_SCALE_STEPS-1];
         else current_scale = predef_scaling_vals[jdx][idx-1];
         if (current_scale > scale_max) current_scale = scale_max;
       }
@@ -420,8 +428,10 @@ int cfg_load_from_flash(bool_t need_confirm)
   cfg_set_value(&mode16bit_powercycle,cfg_get_value(&mode16bit,0));
   cfg_set_value(&mode16bit,(alt_u8) mode16bit_bak);
 
-  if (((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK) ||
-      ((linex_words[PAL].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK ))
+  if (((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK)  ||
+      ((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440W_SETMASK) ||
+      ((linex_words[PAL].config_val  & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK)  ||
+      ((linex_words[PAL].config_val  & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440W_SETMASK)  )
     unlock_1440p = TRUE;
   else
     unlock_1440p = FALSE;

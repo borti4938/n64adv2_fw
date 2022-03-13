@@ -86,13 +86,26 @@ void set_avi_info(void) {
                                                         // [6] AVI Packet Update: 1 = AVI Packet I2C update active
                                                         // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
 
-  if (linex_val > PASSTHROUGH) {
-    set_pr_manual(PR_AUTO,1,1);
-    adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
-  } else {
-    set_pr_manual(PR_MANUAL,1,2-hor_hires);
-    if (palmode) adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b010111);
-    else adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b001000);
+  switch (linex_val) {
+    case PASSTHROUGH:
+      set_pr_manual(PR_MANUAL,1,2-hor_hires);
+      if (palmode) adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b010111);
+      else adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b001000);
+      break;
+    case LineX6W:
+      set_pr_manual(PR_MANUAL,2,1);
+      adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
+      break;
+//    case LineX2:
+//    case LineX3:
+//    case LineX4:
+//    case LineX4p5:
+//    case LineX5:
+//    case LineX6:
+    default:
+//      set_pr_manual(PR_AUTO,1,1);
+      set_pr_manual(PR_MANUAL,1,1);
+      adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
   }
 
   adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(0), 0x01); // [6:5] Output format: 00 = RGB
@@ -100,6 +113,7 @@ void set_avi_info(void) {
   switch (linex_val) {
     case LineX3:
     case LineX4p5:
+    case LineX6W:
       adv7513_reg_bitset(ADV7513_REG_VIDEO_INPUT_CFG2,1); // set 16:9 aspect ratio of input video
       adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(1), 0x2A); // [5:4] Picture Aspect Ratio: 10 = 16:9
                                                             // [3:0] Active Format Aspect Ratio: 1010 = 16:9 (center)

@@ -86,9 +86,10 @@
 #define RESCFG_1080P_V_OFFSET       ( 6 + RESCFG_VALS_V_OFFSET)
 #define RESCFG_1200P_V_OFFSET       ( 7 + RESCFG_VALS_V_OFFSET)
 #define RESCFG_1440P_V_OFFSET       ( 8 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_USE_VGA_RES_V_OFFSET ( 9 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_USE_SRCSYNC_V_OFFSET (10 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_FORCE_5060_V_OFFSET  (11 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_1440WP_V_OFFSET      ( 9 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_USE_VGA_RES_V_OFFSET (10 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_USE_SRCSYNC_V_OFFSET (11 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_FORCE_5060_V_OFFSET  (12 + RESCFG_VALS_V_OFFSET)
 
 #define SCALERCFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
 #define SCALERCFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
@@ -200,13 +201,14 @@ static const char *resolution_header __ufmdata_section__ =
 static const char *resolution_overlay __ufmdata_section__ =
     "* Input mode:\n"
     "* Output resolution:\n"
-    "  - 240p/288p:\n"
-    "  - 480p/576p:\n"
-    "  -      720p:\n"
-    "  -      960p:\n"
-    "  -     1080p:\n"
-    "  -     1200p:\n"
-    "  -     1440p:\n"
+    "  - 240p/288p ( 4:3):\n"
+    "  - 480p/576p ( 4:3):\n"
+    "  -      720p (16:9):\n"
+    "  -      960p ( 4:3):\n"
+    "  -     1080p (16:9):\n"
+    "  -     1200p ( 4:3):\n"
+    "  -     1440p ( 4:3):\n"
+    "  -     1440p (16:9):\n"
     "* Use VGA instead of 480p:\n"
     "* Frame-Locked:\n"
     "* Force 50/60:";
@@ -384,7 +386,7 @@ const char *Global __ufmdata_section__        = "Global";
 const char *OffOn[]                 = {"Off","On"};
 const char *NTSCPAL_SEL[]           = {"NTSC  ","PAL   ","Current"};
 const char *Force5060[]             = {"Off (N64 Auto)","60Hz","50Hz"};
-const char *Resolutions[]           = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p"};
+const char *Resolutions[]           = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p","1440p w."};
 const char *FallbackRes[]           = {"1080p","480p/576p"};
 const char *DeInterModes[]          = {"Bob","Weave"};
 const char *InterpModes[]           = {"Integer","Bilinear (sharp)","Bilinear (soft)"};

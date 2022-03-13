@@ -118,16 +118,17 @@
   
   // Tables
   
-  `define GAMMA_TABLE_OFF   4'b0101
-  `define HDMI_TARGET_240P  3'b000
-  `define HDMI_TARGET_288P  3'b000
-  `define HDMI_TARGET_480P  3'b001
-  `define HDMI_TARGET_576P  3'b001
-  `define HDMI_TARGET_720P  3'b010
-  `define HDMI_TARGET_960P  3'b011
-  `define HDMI_TARGET_1080P 3'b100
-  `define HDMI_TARGET_1200P 3'b101
-  `define HDMI_TARGET_1440P 3'b110
+  `define GAMMA_TABLE_OFF     4'b0101
+  `define HDMI_TARGET_240P    3'b000
+  `define HDMI_TARGET_288P    3'b000
+  `define HDMI_TARGET_480P    3'b001
+  `define HDMI_TARGET_576P    3'b001
+  `define HDMI_TARGET_720P    3'b010
+  `define HDMI_TARGET_960P    3'b011
+  `define HDMI_TARGET_1080P   3'b100
+  `define HDMI_TARGET_1200P   3'b101
+  `define HDMI_TARGET_1440P   3'b110
+  `define HDMI_TARGET_1440WP  3'b111
   
   // PPU Feedback Channel
   
