@@ -963,7 +963,7 @@ always @(posedge VCLK_o)
       
       hpos_1st_rdpixel_decr <= video_hpos_1st_rdpixel_i;
       hpos_1st_rdpixel_main <= 8'h00;
-      hpos_1st_rdpixel_sub <= ~video_hpixel_in_full_i[9] ? 2'b00 : {1'b0,!palmode_vclk_o_resynced};
+      hpos_1st_rdpixel_sub <= 2'b00;
     end else begin
       if (|hpos_1st_rdpixel_decr) begin
         hpos_1st_rdpixel_decr <= hpos_1st_rdpixel_decr - 1'b1;

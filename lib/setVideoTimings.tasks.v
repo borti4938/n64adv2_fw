@@ -650,7 +650,7 @@ task setVideoHTimings;
           HTOTAL <= `HTOTAL_1200p50;
         end
       `USE_1440p50: begin // 1440p-50, 4:3
-          HSYNC_active <= `HSYNC_active_1200p50;
+          HSYNC_active <= `HSYNC_active_1440p50;
           HSYNCLEN <= `HSYNCLEN_1440p50;
           HSTART <= `HSYNCLEN_1440p50 + `HBACKPORCH_1440p50;
           HACTIVE <= `HACTIVE_1440p50;

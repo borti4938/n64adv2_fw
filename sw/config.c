@@ -221,7 +221,7 @@ alt_u16 cfgfct_linex(alt_u16 value, bool_t set_value, bool_t ret_reference)
   return cfg_get_value(&linex_resolution,ret_reference);
 }
 
-alt_u16 cfgfct_unlock1440p(alt_u16 value, bool_t set_value, bool_t ret_reference)
+alt_u16 cfgfct_unlock1440p(alt_u16 value, bool_t set_value, bool_t get_reference)
 {
   if (set_value) unlock_1440p = TRUE;
   return (alt_u16) unlock_1440p;
