@@ -45,10 +45,10 @@
   //  wire [31:0] SysConfigSet1; (OSD, IGR, VI-Processing)
   //    [31:29] {show_osd_logo,show_osd,mute_osd}
   //    [28   ] {igr for reset}
-  //    [27:24] {(4bits reserve)}
-  //    [23:17] {limited RGB,gamma (4bits),VI-DeBlur,16bit mode}
-  //    [16: 7] {LineX V-Shift (5bits),LineX H-Shift (5bits)}
-  //    [ 6: 0] {(1bit reserve),De-Interlace Mode (1 bit),Vert. Interpolation Mode (2 bits),Horiz. Interpolation Mode (2 bits),PAL boxed mode (1 bit)}
+  //    [27:26] {(2bits reserve)}
+  //    [25:19] {limited RGB,gamma (4bits),VI-DeBlur,16bit mode}
+  //    [18: 9] {LineX V-Shift (5bits),LineX H-Shift (5bits)}
+  //    [ 8: 0] {(1bit reserve),De-Interlace Mode (1 bit),(1bit reserve),Vert. Interpolation Mode (2 bits),(1bit reserve),Horiz. Interpolation Mode (2 bits),PAL boxed mode (1 bit)}
   //  wire [31:0] SysConfigSet0; (Scaler)
   //    [31:21] {LineX V-Scale Target (11bits)}
   //    [20: 9] {LineX H-Scale Target (12bits)}
@@ -68,7 +68,7 @@
   // Separation slices
   `define cfg3_audio_config_slice    6: 0
   `define cfg2_scanline_slice       28: 0
-  `define cfg1_ppu_config_slice     23: 0
+  `define cfg1_ppu_config_slice     25: 0
   
   // Audio config
   `define APUConfig_WordWidth        7
@@ -78,9 +78,9 @@
   
   
   // PPU config
-  `define PPUConfig_WordWidth       85  // 29 + 24 + 32
+  `define PPUConfig_WordWidth       87  // 29 + 26 + 32
   
-  `define SysCfg2_PPUCfg_Offset     56  // 24 + 32
+  `define SysCfg2_PPUCfg_Offset     58  // 26 + 32
   `define SysCfg1_PPUCfg_Offset     32  // 32
   `define SysCfg0_PPUCfg_Offset      0  // 0
   
@@ -96,14 +96,14 @@
   `define hSL_en_bit             1 + `SysCfg2_PPUCfg_Offset
   `define h2v_SL_linked_bit      0 + `SysCfg2_PPUCfg_Offset
   
-  `define limitedRGB_bit              23 + `SysCfg1_PPUCfg_Offset
-  `define gamma_slice                 22 + `SysCfg1_PPUCfg_Offset : 19 + `SysCfg1_PPUCfg_Offset
-  `define videblur_bit                18 + `SysCfg1_PPUCfg_Offset
-  `define n16bit_mode_bit             17 + `SysCfg1_PPUCfg_Offset
-  `define vshift_slice                16 + `SysCfg1_PPUCfg_Offset : 12 + `SysCfg1_PPUCfg_Offset
-  `define hshift_slice                11 + `SysCfg1_PPUCfg_Offset :  7 + `SysCfg1_PPUCfg_Offset
-  `define deinterlacing_mode_bit       5 + `SysCfg1_PPUCfg_Offset
-  `define v_interpolation_mode_slice   4 + `SysCfg1_PPUCfg_Offset :  3 + `SysCfg1_PPUCfg_Offset
+  `define limitedRGB_bit              25 + `SysCfg1_PPUCfg_Offset
+  `define gamma_slice                 24 + `SysCfg1_PPUCfg_Offset : 21 + `SysCfg1_PPUCfg_Offset
+  `define videblur_bit                20 + `SysCfg1_PPUCfg_Offset
+  `define n16bit_mode_bit             19 + `SysCfg1_PPUCfg_Offset
+  `define vshift_slice                18 + `SysCfg1_PPUCfg_Offset : 14 + `SysCfg1_PPUCfg_Offset
+  `define hshift_slice                13 + `SysCfg1_PPUCfg_Offset :  9 + `SysCfg1_PPUCfg_Offset
+  `define deinterlacing_mode_bit       7 + `SysCfg1_PPUCfg_Offset
+  `define v_interpolation_mode_slice   5 + `SysCfg1_PPUCfg_Offset :  4 + `SysCfg1_PPUCfg_Offset
   `define h_interpolation_mode_slice   2 + `SysCfg1_PPUCfg_Offset :  1 + `SysCfg1_PPUCfg_Offset
   `define pal_boxed_scale_bit          0 + `SysCfg1_PPUCfg_Offset
   
