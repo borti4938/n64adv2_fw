@@ -76,64 +76,67 @@ An empty default value means that this value is not affected by loading defaults
 | Entry | Default | Description |
 |:------|:--------|:------------|
 | **Input mode** \[1\] | | Mode where the following settings are applied |
-| **Output resolution - 240p/288p** | Off | Changes to 240p/288p (4:3 with pixel repetition) output resolution<br>Note that scaling options will be limited |
-| **Output resolution - 480p/576p** | On \[2\] | Changes to 480p/576p (4:3) output resolution |
-| **Output resolution - 720p** | Off | Changes to 720p (16:9) output resolution |
-| **Output resolution - 960p** | Off | Changes to 960p (4:3) resolution at output |
-| **Output resolution - 1080p** | On \[2\] | Changes to 1080p (16:9) output resolution |
-| **Output resolution - 1200p** | Off | Changes to 1200p (4:3) resolution with reduced blanking at output |
-| **Output resolution - 1440p** | _not available_ | Changes to 1440p (4:3) resolution with reduced blanking at output \[3\] |
+| **Output resolution - 240p/288p (4:3)** | Off | Changes to 240p/288p (4:3 with pixel repetition) output resolution<br>Note that scaling options will be limited |
+| **Output resolution - 480p/576p (4:3)** | On \[2\] | Changes to 480p/576p (4:3) output resolution |
+| **Output resolution - 720p (16:9)** | Off | Changes to 720p (16:9) output resolution |
+| **Output resolution - 960p (4:3)** | Off | Changes to 960p (4:3) resolution at output |
+| **Output resolution - 1080p (16:9)** | On \[2\] | Changes to 1080p (16:9) output resolution |
+| **Output resolution - 1200p (4:3)** | Off | Changes to 1200p (4:3) resolution with reduced blanking at output |
+| **Output resolution - 1440p (4:3)** | _not available_ | Changes to 1440p (4:3) resolution with reduced blanking at output \[3\] |
+| **Output resolution - 1440p (16:9)** | _not available_ | Changes to 1440p (16:9) resolution with reduced blanking at output \[3,4\] |
 | **Use VGA instead of 480p** | Off | Determines whether you want to use VGA (640x480) instead of standard 480p (720x480).<br>Note that this option has no effect for 576p. |
 | **Frame-Locked** | Off | Varies the pixel clock such that vertical sync matches the N64 generated vertical clock.<br>Vsync in this mode is slightly off spec. To my experience, NTSC runs fine on most TVs other than PAL.|
 | **Force 50/60** | Off (N64 Auto) | Forces 50Hz or 60Hz vertical output frequency. This may introduce additional shudder when running PAL in 60Hz and NTSC in 50Hz.<br>This option becomes inaccessible in frame locked mode. |
 
 \[1\] You are allowed to quickly change the _Input mode_ on this screen by pressing **L** or **R** on the controller.  
 \[2\] Default depends on boot precedure (see section [Default Configuration](https://github.com/borti4938/n64adv2_fw_beta_releases#default-configuration))  
-\[3\] Note that this mode will only be available if you unlock it over the _Miscellaneous_ menu or if it is already configured.
+\[3\] Note that the 1440p modes will only be available if you unlock it over the _Miscellaneous_ menu or if it is already configured.
+\[4\] 1440p (16:9) uses pixel repetition at the HDMI transmitter. So 1440p (4:3) should be preferred if this works in the particular setup.
 
 #### Scaler
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Vertical interpolation** | Integer | Sets the vertical interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[4\]<br>- **Bi-linear (sharp)** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
-| **Horizontal interpolation** | Integer | Sets the horizontal interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[4\]<br>- **Bi-linear (sharp)** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
-| **Scaling - Settings for** \[5\] | | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
+| **Vertical interpolation** | Integer | Sets the vertical interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Horizontal interpolation** | Integer | Sets the horizontal interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Scaling - Settings for** \[6\] | | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
 | **Scaling - Link v/h factors** | | Links vertical and horizontal to **4:3** or keep it **open**. |
 | **Scaling - V/h scaling steps** | | Changes between **0.25x** steps and **pixelwise** |
 | **Scaling - Vertical scale value** | _see notes_| Sets the number of desired output lines |
 | **Scaling - Horizontal scale value** | _see notes_ | Set the number of desired output pixel per line |
 | **Use PAL in 240p box** | Off | Uses 240 lines as input reference instead of 288 lines. |
-| **Shift N64 input image - Input Mode** \[6\] | | Switches between NTSC/PAL progressive/interlaced input |
+| **Shift N64 input image - Input Mode** \[7\] | | Switches between NTSC/PAL progressive/interlaced input |
 | **Shift N64 input image - Vertical shift**| 0 | Shifts the input by a certain number of lines before the buffer |
 | **Shift N64 input image - Horizontal shift** | 0 | Shifts the input by a certain number of pixels before the buffer |
 
-\[4\] Integer interpolation: If an output pixel is _exactly_ between two inputs, the output is the mean between both inputs to reduce uneven pixel and shimmering a bit. Scaling for 240p/288p is always integer scaling no matter what is set as _Interpolation type_.  
-\[5\] You are allowed to quickly change the _Scaling - Settings for_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Scaling_ related options.  
-\[5.1\] Scaling for 240p/288p output resolution is restricted to **open** _Link v/h factors_ and **pixelwise** _v/h scaling steps_.  
-\[5.2\] _Vertical scale value_ can only be set under 480 lines for 240p/288p scaling. Default depends on resolution.  
-\[5.3\] _Horizontal scale value_ for 240p/288p scaling increments and decrements in steps of two. Default depends on resolution.  
-\[6\] You are allowed to quickly change the _Shift N64 input image - Input Mode_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Shift N64 input image_ related options.
+\[5\] Integer interpolation: If an output pixel is _exactly_ between two inputs, the output is the mean between both inputs to reduce uneven pixel and shimmering a bit. Scaling for 240p/288p is always integer scaling no matter what is set as _Interpolation type_.  
+\[6\] You are allowed to quickly change the _Scaling - Settings for_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Scaling_ related options.  
+\[6.1\] Scaling for 240p/288p output resolution is restricted to **open** _Link v/h factors_ and **pixelwise** _v/h scaling steps_.  
+\[6.2\] _Vertical scale value_ can only be set under 480 lines for 240p/288p scaling. Default depends on resolution.  
+\[6.3\] _Horizontal scale value_ for 240p/288p scaling increments and decrements in steps of two. Default depends on resolution.  
+\[7\] You are allowed to quickly change the _Shift N64 input image - Input Mode_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Shift N64 input image_ related options.
 
 #### Scanlines Config
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Input mode** \[7\] | | Switches between NTSC/PAL progressive/interlaced input |
-| **Horizontal scanlines** \[8\] | Off | Enables horizontal scanlines for the particular input mode. |
-| **Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
-| **Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
-| **Strength** \[9\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
-| **Bloom effect** \[9\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
-| **Vertical scanlines** \[8\] | Off | Enables vertical scanlines for the particular input mode. |
-| **Link to horizontal** | Off | Links the vertical scanlines settings to the horizontal settings.<br>Following settings will be a copy of the horizontal scanlines settings. |
-| **Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
-| **Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
-| **Strength** \[9\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
-| **Bloom effect** \[9\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
+| **Input mode** \[8\] | | Switches between NTSC/PAL progressive/interlaced input |
+| **Horizontal scanlines** \[9\] | Off | Enables horizontal scanlines for the particular input mode. |
+| **Horizontal - Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
+| **Horizontal - Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
+| **Horizontal - Strength** \[10\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
+| **Horizontal - Bloom effect** \[10\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
+| **Vertical scanlines** \[9\] | Off | Enables vertical scanlines for the particular input mode. |
+| **Vertical - Link to horizontal** | Off | Links the vertical scanlines settings to the horizontal settings.<br>Following settings will be a copy of the horizontal scanlines settings. |
+| **Vertical - Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
+| **Vertical - Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
+| **Vertical - Strength** \[10\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
+| **Vertical - Bloom effect** \[10\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
+| **Calculation Mode** | Luma based | Determines whether all calculations regarding thickness (adaptive) and strength (bloom effect) are **Luma based** or **per color based** |
 
-\[7\] _Input mode_ can be changed using **L** or **R** button on the controller.  
-\[8\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Scaling factor must be at least 2x to have scanlines drawn.  
-\[9\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
+\[8\] _Input mode_ can be changed using **L** or **R** button on the controller.  
+\[9\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Scaling factor must be at least 2x to have scanlines drawn.  
+\[10\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
 
 #### VI-Processing
 
@@ -142,13 +145,13 @@ An empty default value means that this value is not affected by loading defaults
 | **De-Interlacing mode** | Bob | Selects between **Bob** or **Weave** deinterlacing for 480i/576i video input |
 | **Gamma Value** | 1.00 | Applies some gamma boost.<br>Gamma curve on output is defined as I = I_{in}^**\gamma**, where I is the intensity. |
 | **Limited RGB** | Off | Limits the 8bit RGB values in a range of 16 to 235. |
-| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[10\] |
+| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[11\] |
 | **LowRes.-DeBlur - power cycle default** | Off | Sets the power cycle default. |
-| **16bit mode** | Off | Selects between \[11\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
+| **16bit mode** | Off | Selects between \[12\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
 | **16bit mode - power cycle default** | Off | Sets the power cycle default. |
 
-\[10\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
-\[11\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
+\[11\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
+\[12\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
 
 #### Miscellaneous
 
@@ -211,7 +214,7 @@ In order to update, you need to have:
 - an Altera USB Blaster (or clone) for flashing the firmware
   - external connected to the 10pin JTAG header on the N64Adv2 board, or
   - with the on board add on solution \[1\]
-- _Quartus Prime Programmer_ software installed on you computer  
+- _Quartus Prime Programmer_ software installed on your computer  
 (Programmer software is offered as stand-alone application; so you don't need to have the whole Quartus Prime suite installed.)
 
 \[1\] Using the [FPGA Programmer2 SMD-Module](https://shop.trenz-electronic.de/de/TEI0005-02-FPGA-USB-Programmer2-SMD-Modul-VPE1?c=26) needs you to have [separate drivers](https://shop.trenz-electronic.de/de/Download/?path=Trenz_Electronic/Software/Drivers/Arrow_USB_Programmer) installed.
