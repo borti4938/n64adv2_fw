@@ -41,6 +41,7 @@ module scanline_emu (
   vdata_i,
   
   sl_en_i,
+  sl_per_channel_i,
   sl_thickness_i,
   sl_profile_i,
   sl_rel_pos_i,
@@ -67,6 +68,7 @@ input DE_i;
 input [`VDATA_O_CO_SLICE] vdata_i;
 
 input sl_en_i;
+input sl_per_channel_i;
 input [1:0] sl_thickness_i;
 input [1:0] sl_profile_i;
 input [7:0] sl_rel_pos_i; // used to correct scanline strength value
@@ -98,10 +100,12 @@ integer int_idx;
 // wires
 wire [7:0] red_i_w, green_i_w, blue_i_w;
 
-wire [7:0] sl_adapt_val_w;
-wire [15:0] SL_str_corrected_4L_full_w;
+wire [7:0] sl_adapt_val_R_w, sl_adapt_val_G_w, sl_adapt_val_B_w, sl_adapt_val_Y_w;
+wire [15:0] SL_str_corrected_R_4L_full_w, SL_str_corrected_G_4L_full_w, SL_str_corrected_B_4L_full_w, SL_str_corrected_Y_4L_full_w;
 
+wire [color_width_o+4:0] Rval_ref_pre_full_3L_w, Gval_ref_pre_full_3L_w, Bval_ref_pre_full_3L_w;
 wire [Y_width+4:0] Yval_ref_pre_full_3L_w;
+wire [color_width_o+SL_bloom_calc_width:0] Rval_ref_full_5L_w, Gval_ref_full_5L_w, Bval_ref_full_5L_w;
 wire [Y_width+SL_bloom_calc_width-1:0] Yval_ref_full_5L_w;
 wire [color_width_o+SL_bloom_calc_width-1:0] R_sl_full_w, G_sl_full_w, B_sl_full_w;
 
@@ -115,14 +119,24 @@ reg [color_width_o-1:0] B_L [0:proc_stages-2] /* synthesis ramstyle = "logic" */
 reg [color_width_o:0] RpB_L;
 reg [Y_width-1:0] Yval_L [1:2];
 
-reg [proc_stages-2:2] drawSL;
-reg [3:2] max_SL_str;
-reg [7:0] SL_str_corrected_L [0:5];
+reg [proc_stages-2:2] drawSL_R, drawSL_G, drawSL_B  /* synthesis ramstyle = "logic" */;
+reg [3:2] drawSL_Y;
+reg [3:2] max_SL_str_R, max_SL_str_G, max_SL_str_B, max_SL_str_Y;
+reg [7:0] SL_str_corrected_L [0:1];
+reg [7:0] SL_str_corrected_R_L [2:5];
+reg [7:0] SL_str_corrected_G_L [2:5];
+reg [7:0] SL_str_corrected_B_L [2:5];
+reg [7:0] SL_str_corrected_Y_L [2:5];
 
+reg [color_width_o:0] Rval_ref_pre_L [3:4];
+reg [color_width_o:0] Gval_ref_pre_L [3:4];
+reg [color_width_o:0] Bval_ref_pre_L [3:4];
 reg [Y_width-1:0] Yval_ref_pre_L [3:4];
+reg [color_width_o:0] Rval_ref_5L, Gval_ref_5L, Bval_ref_5L;
 reg [Y_width-1:0] Yval_ref_5L;
 
-reg [SL_bloom_calc_width-1:0] SL_bloom_rval_6L, SL_bloomed_str_7L;
+reg [SL_bloom_calc_width-1:0] SL_bloomed_rval_R_6L, SL_bloomed_rval_G_6L, SL_bloomed_rval_B_6L, SL_bloomed_rval_Y_6L;
+reg [SL_bloom_calc_width-1:0] SL_bloomed_str_R_7L, SL_bloomed_str_G_7L, SL_bloomed_str_B_7L;
 
 reg [color_width_o-1:0] R_sl_8L, G_sl_8L ,B_sl_8L;
 
@@ -171,42 +185,101 @@ always @(posedge VCLK_i or negedge nVRST_i)
 
 // strength correction first depending on profile
 // method also generates drawSL indicator
-assign sl_adapt_val_w = {2'b00,Yval_L[1][Y_width-1:Y_width-6]} + Yval_L[1][Y_width-7]; // values between 0 (min luma) and 0.25 (max luma)
-assign SL_str_corrected_4L_full_w = SL_str_corrected_L[3] * (* multstyle = "dsp" *) sl_strength_i;
+assign sl_adapt_val_R_w = {2'b00,   R_L[1][color_width_o-1:color_width_o-6]} +    R_L[1][color_width_o-7];  // values between 0 (min red)  and 0.25 (max red)
+assign sl_adapt_val_G_w = {2'b00,   G_L[1][color_width_o-1:color_width_o-6]} +    G_L[1][color_width_o-7];  // values between 0 (min green) and 0.25 (max green)
+assign sl_adapt_val_B_w = {2'b00,   B_L[1][color_width_o-1:color_width_o-6]} +    B_L[1][color_width_o-7];  // values between 0 (min blue)  and 0.25 (max blue)
+assign sl_adapt_val_Y_w = {2'b00,Yval_L[1][Y_width-1:Y_width-6]}             + Yval_L[1][Y_width-7];        // values between 0 (min luma)  and 0.25 (max luma)
+assign SL_str_corrected_R_4L_full_w = SL_str_corrected_R_L[3] * (* multstyle = "dsp" *) sl_strength_i;
+assign SL_str_corrected_G_4L_full_w = SL_str_corrected_G_L[3] * (* multstyle = "dsp" *) sl_strength_i;
+assign SL_str_corrected_B_4L_full_w = SL_str_corrected_B_L[3] * (* multstyle = "dsp" *) sl_strength_i;
+assign SL_str_corrected_Y_4L_full_w = SL_str_corrected_Y_L[3] * (* multstyle = "dsp" *) sl_strength_i;
 
 always @(posedge VCLK_i) begin
-  for (int_idx = 5; int_idx < proc_stages-1; int_idx = int_idx + 1)
-    drawSL[int_idx] <= drawSL[int_idx-1];
-  drawSL[4] <= sl_en_i & drawSL[3];
+  for (int_idx = 5; int_idx < proc_stages-1; int_idx = int_idx + 1) begin
+    drawSL_R[int_idx] <= drawSL_R[int_idx-1];
+    drawSL_G[int_idx] <= drawSL_G[int_idx-1];
+    drawSL_B[int_idx] <= drawSL_B[int_idx-1];
+  end
+  drawSL_R[4] <= sl_per_channel_i ? sl_en_i & drawSL_R[3] : sl_en_i & drawSL_Y[3];
+  drawSL_G[4] <= sl_per_channel_i ? sl_en_i & drawSL_G[3] : sl_en_i & drawSL_Y[3];
+  drawSL_B[4] <= sl_per_channel_i ? sl_en_i & drawSL_B[3] : sl_en_i & drawSL_Y[3];
   
   if (sl_profile_i == 2'b11) begin // draw flat top profile
-    drawSL[3] <= |SL_str_corrected_L[2][7:5] & drawSL[2];
-    max_SL_str[3] <= |SL_str_corrected_L[2][7:5];
+    drawSL_R[3] <= |SL_str_corrected_R_L[2][7:5] & drawSL_R[2];
+    drawSL_G[3] <= |SL_str_corrected_G_L[2][7:5] & drawSL_G[2];
+    drawSL_B[3] <= |SL_str_corrected_B_L[2][7:5] & drawSL_B[2];
+    drawSL_Y[3] <= |SL_str_corrected_Y_L[2][7:5] & drawSL_Y[2];
+    max_SL_str_R[3] <= |SL_str_corrected_R_L[2][7:5];
+    max_SL_str_G[3] <= |SL_str_corrected_G_L[2][7:5];
+    max_SL_str_B[3] <= |SL_str_corrected_B_L[2][7:5];
+    max_SL_str_Y[3] <= |SL_str_corrected_Y_L[2][7:5];
   end else begin
-    drawSL[3] <= drawSL[2];
-    max_SL_str[3] <= max_SL_str[2];
+    drawSL_R[3] <= drawSL_R[2];
+    drawSL_G[3] <= drawSL_G[2];
+    drawSL_B[3] <= drawSL_B[2];
+    drawSL_Y[3] <= drawSL_Y[2];
+    max_SL_str_R[3] <= max_SL_str_R[2];
+    max_SL_str_G[3] <= max_SL_str_G[2];
+    max_SL_str_B[3] <= max_SL_str_B[2];
+    max_SL_str_Y[3] <= max_SL_str_Y[2];
   end
   
   case (sl_thickness_i)
     2'b00: begin  // thin
-        drawSL[2] <= SL_str_corrected_L[1] > val_0p1875;
-        max_SL_str[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
-        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - val_0p1875;
+        drawSL_R[2] <= SL_str_corrected_L[1] > val_0p1875;
+        drawSL_G[2] <= SL_str_corrected_L[1] > val_0p1875;
+        drawSL_B[2] <= SL_str_corrected_L[1] > val_0p1875;
+        drawSL_Y[2] <= SL_str_corrected_L[1] > val_0p1875;
+        max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
+        max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
+        max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
+        max_SL_str_Y[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
+        SL_str_corrected_R_L[2] <= SL_str_corrected_L[1] - val_0p1875;
+        SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - val_0p1875;
+        SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - val_0p1875;
+        SL_str_corrected_Y_L[2] <= SL_str_corrected_L[1] - val_0p1875;
       end
     2'b01: begin  // normal
-        drawSL[2] <= SL_str_corrected_L[1] > val_0p125;
-        max_SL_str[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
-        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - val_0p125;
+        drawSL_R[2] <= SL_str_corrected_L[1] > val_0p125;
+        drawSL_G[2] <= SL_str_corrected_L[1] > val_0p125;
+        drawSL_B[2] <= SL_str_corrected_L[1] > val_0p125;
+        drawSL_Y[2] <= SL_str_corrected_L[1] > val_0p125;
+        max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
+        max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
+        max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
+        max_SL_str_Y[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
+        SL_str_corrected_R_L[2] <= SL_str_corrected_L[1] - val_0p125;
+        SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - val_0p125;
+        SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - val_0p125;
+        SL_str_corrected_Y_L[2] <= SL_str_corrected_L[1] - val_0p125;
       end
     2'b10: begin  // thick
-        drawSL[2] <= SL_str_corrected_L[1] > val_0p0625;
-        max_SL_str[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
-        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - val_0p0625;
+        drawSL_R[2] <= SL_str_corrected_L[1] > val_0p0625;
+        drawSL_G[2] <= SL_str_corrected_L[1] > val_0p0625;
+        drawSL_B[2] <= SL_str_corrected_L[1] > val_0p0625;
+        drawSL_Y[2] <= SL_str_corrected_L[1] > val_0p0625;
+        max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
+        max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
+        max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
+        max_SL_str_Y[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
+        SL_str_corrected_R_L[2] <= SL_str_corrected_L[1] - val_0p0625;
+        SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - val_0p0625;
+        SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - val_0p0625;
+        SL_str_corrected_Y_L[2] <= SL_str_corrected_L[1] - val_0p0625;
       end
     default: begin // adaptive
-        drawSL[2] <= SL_str_corrected_L[1] > sl_adapt_val_w;
-        max_SL_str[2] <= SL_str_corrected_L[1] >= sl_adapt_val_w + sl_profile_width;
-        SL_str_corrected_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_w;
+        drawSL_R[2] <= SL_str_corrected_L[1] > sl_adapt_val_R_w;
+        drawSL_G[2] <= SL_str_corrected_L[1] > sl_adapt_val_G_w;
+        drawSL_B[2] <= SL_str_corrected_L[1] > sl_adapt_val_B_w;
+        drawSL_Y[2] <= SL_str_corrected_L[1] > sl_adapt_val_Y_w;
+        max_SL_str_R[2] <= SL_str_corrected_L[1] >= sl_adapt_val_R_w + sl_profile_width;
+        max_SL_str_G[2] <= SL_str_corrected_L[1] >= sl_adapt_val_G_w + sl_profile_width;
+        max_SL_str_B[2] <= SL_str_corrected_L[1] >= sl_adapt_val_B_w + sl_profile_width;
+        max_SL_str_Y[2] <= SL_str_corrected_L[1] >= sl_adapt_val_Y_w + sl_profile_width;
+        SL_str_corrected_R_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_R_w;
+        SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_G_w;
+        SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_B_w;
+        SL_str_corrected_Y_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_Y_w;
       end
   endcase
   
@@ -214,33 +287,71 @@ always @(posedge VCLK_i) begin
   SL_str_corrected_L[1] <= SL_str_corrected_L[0];                                       // wait for luma to be calculated
   // SL_str_corrected_L[2] calculated above depending on sl_thickness_i
   case(sl_profile_i)
-    2'b00:  // hanning
-      getHannProfile(SL_str_corrected_L[2][5:0],SL_str_corrected_L[3]);
-    2'b01:  // gaussian
-      getGaussProfile(SL_str_corrected_L[2][5:0],SL_str_corrected_L[3]);
-    default:  // rectangular and flat top
-      SL_str_corrected_L[3] <= {SL_str_corrected_L[2][5:0],SL_str_corrected_L[2][5:4]};
+    2'b00: begin  // hanning
+        getHannProfile(SL_str_corrected_R_L[2][5:0],SL_str_corrected_R_L[3]);
+        getHannProfile(SL_str_corrected_G_L[2][5:0],SL_str_corrected_G_L[3]);
+        getHannProfile(SL_str_corrected_B_L[2][5:0],SL_str_corrected_B_L[3]);
+        getHannProfile(SL_str_corrected_Y_L[2][5:0],SL_str_corrected_Y_L[3]);
+      end
+    2'b01: begin  // gaussian
+        getGaussProfile(SL_str_corrected_R_L[2][5:0],SL_str_corrected_R_L[3]);
+        getGaussProfile(SL_str_corrected_G_L[2][5:0],SL_str_corrected_G_L[3]);
+        getGaussProfile(SL_str_corrected_B_L[2][5:0],SL_str_corrected_B_L[3]);
+        getGaussProfile(SL_str_corrected_Y_L[2][5:0],SL_str_corrected_Y_L[3]);
+      end
+    default: begin  // rectangular and flat top
+        SL_str_corrected_R_L[3] <= {SL_str_corrected_R_L[2][5:0],SL_str_corrected_R_L[2][5:4]};
+        SL_str_corrected_G_L[3] <= {SL_str_corrected_G_L[2][5:0],SL_str_corrected_G_L[2][5:4]};
+        SL_str_corrected_B_L[3] <= {SL_str_corrected_B_L[2][5:0],SL_str_corrected_B_L[2][5:4]};
+        SL_str_corrected_Y_L[3] <= {SL_str_corrected_Y_L[2][5:0],SL_str_corrected_Y_L[2][5:4]};
+      end
   endcase
-  SL_str_corrected_L[4] <= max_SL_str[3] ? sl_strength_i : SL_str_corrected_4L_full_w[15:8];
-  SL_str_corrected_L[5] <= SL_str_corrected_L[4];
+  SL_str_corrected_R_L[4] <= max_SL_str_R[3] ? sl_strength_i : SL_str_corrected_R_4L_full_w[15:8];
+  SL_str_corrected_G_L[4] <= max_SL_str_G[3] ? sl_strength_i : SL_str_corrected_G_4L_full_w[15:8];
+  SL_str_corrected_B_L[4] <= max_SL_str_B[3] ? sl_strength_i : SL_str_corrected_B_4L_full_w[15:8];
+  SL_str_corrected_Y_L[4] <= max_SL_str_Y[3] ? sl_strength_i : SL_str_corrected_Y_4L_full_w[15:8];
+  SL_str_corrected_R_L[5] <= SL_str_corrected_R_L[4];
+  SL_str_corrected_G_L[5] <= SL_str_corrected_G_L[4];
+  SL_str_corrected_B_L[5] <= SL_str_corrected_B_L[4];
+  SL_str_corrected_Y_L[5] <= SL_str_corrected_Y_L[4];
 end
 
 // calculate output pixel values
+assign Rval_ref_pre_full_3L_w = R_L[2] * (* multstyle = "dsp" *) sl_bloom_i;
+assign Gval_ref_pre_full_3L_w = G_L[2] * (* multstyle = "dsp" *) sl_bloom_i;
+assign Bval_ref_pre_full_3L_w = B_L[2] * (* multstyle = "dsp" *) sl_bloom_i;
 assign Yval_ref_pre_full_3L_w = Yval_L[2] * (* multstyle = "dsp" *) sl_bloom_i;
-assign Yval_ref_full_5L_w = Yval_ref_pre_L[4] * (* multstyle = "dsp" *) SL_str_corrected_L[4];
-assign R_sl_full_w = R_L[proc_stages-3] * (* multstyle = "dsp" *) SL_bloomed_str_7L;
-assign G_sl_full_w = G_L[proc_stages-3] * (* multstyle = "dsp" *) SL_bloomed_str_7L;
-assign B_sl_full_w = B_L[proc_stages-3] * (* multstyle = "dsp" *) SL_bloomed_str_7L;
+assign Rval_ref_full_5L_w = Rval_ref_pre_L[4] * (* multstyle = "dsp" *) SL_str_corrected_R_L[4];
+assign Gval_ref_full_5L_w = Gval_ref_pre_L[4] * (* multstyle = "dsp" *) SL_str_corrected_G_L[4];
+assign Bval_ref_full_5L_w = Bval_ref_pre_L[4] * (* multstyle = "dsp" *) SL_str_corrected_B_L[4];
+assign Yval_ref_full_5L_w = Yval_ref_pre_L[4] * (* multstyle = "dsp" *) SL_str_corrected_Y_L[4];
+assign R_sl_full_w = R_L[proc_stages-3] * (* multstyle = "dsp" *) SL_bloomed_str_R_7L;
+assign G_sl_full_w = G_L[proc_stages-3] * (* multstyle = "dsp" *) SL_bloomed_str_G_7L;
+assign B_sl_full_w = B_L[proc_stages-3] * (* multstyle = "dsp" *) SL_bloomed_str_B_7L;
 
 
 always @(posedge VCLK_i or negedge nVRST_i)
   if (!nVRST_i) begin
+    Rval_ref_pre_L[3] <= {(color_width_o+1){1'b0}};
+    Gval_ref_pre_L[3] <= {(color_width_o+1){1'b0}};
+    Bval_ref_pre_L[3] <= {(color_width_o+1){1'b0}};
     Yval_ref_pre_L[3] <= {Y_width{1'b0}};
+    Rval_ref_pre_L[4] <= {(color_width_o+1){1'b0}};
+    Gval_ref_pre_L[4] <= {(color_width_o+1){1'b0}};
+    Bval_ref_pre_L[4] <= {(color_width_o+1){1'b0}};
     Yval_ref_pre_L[4] <= {Y_width{1'b0}};
+    Rval_ref_5L <= {(color_width_o+1){1'b0}};
+    Gval_ref_5L <= {(color_width_o+1){1'b0}};
+    Bval_ref_5L <= {(color_width_o+1){1'b0}};
     Yval_ref_5L <= {Y_width{1'b0}};
     
-    SL_bloom_rval_6L <= {SL_bloom_calc_width{1'b0}};
-    SL_bloomed_str_7L <= {SL_bloom_calc_width{1'b0}};
+    SL_bloomed_rval_R_6L <= {SL_bloom_calc_width{1'b0}};
+    SL_bloomed_rval_G_6L <= {SL_bloom_calc_width{1'b0}};
+    SL_bloomed_rval_B_6L <= {SL_bloom_calc_width{1'b0}};
+    SL_bloomed_rval_Y_6L <= {SL_bloom_calc_width{1'b0}};
+    SL_bloomed_str_R_7L <= {SL_bloom_calc_width{1'b0}};
+    SL_bloomed_str_G_7L <= {SL_bloom_calc_width{1'b0}};
+    SL_bloomed_str_B_7L <= {SL_bloom_calc_width{1'b0}};
     
     R_sl_8L <= {color_width_o{1'b0}};
     G_sl_8L <= {color_width_o{1'b0}};
@@ -252,13 +363,30 @@ always @(posedge VCLK_i or negedge nVRST_i)
     vdata_o <= {3*color_width_o{1'b0}};
   end else begin
     // bloom strength reference (2 + 1 proc. stages)
-    Yval_ref_pre_L[3] <= Yval_ref_pre_full_3L_w[Y_width+4:5];                                   // to pp-stage [3] (luma is available at stage [1] and [2])
-    Yval_ref_pre_L[4] <= Yval_ref_pre_L[3];                                                     // to pp-stage [4] (wait for sl correction to be finished)
-    Yval_ref_5L       <= Yval_ref_full_5L_w[Y_width+SL_bloom_calc_width-1:SL_bloom_calc_width]; // to pp-stage [5]
+    Rval_ref_pre_L[3] <= Rval_ref_pre_full_3L_w[color_width_o+4:4]; // to pp-stage [3]
+    Gval_ref_pre_L[3] <= Gval_ref_pre_full_3L_w[color_width_o+4:4]; // to pp-stage [3]
+    Bval_ref_pre_L[3] <= Bval_ref_pre_full_3L_w[color_width_o+4:4]; // to pp-stage [3]
+    Yval_ref_pre_L[3] <= Yval_ref_pre_full_3L_w[Y_width+4:5];       // to pp-stage [3] (luma is available after stages [1] and [2])
+    
+    Rval_ref_pre_L[4] <= Rval_ref_pre_L[3]; // to pp-stage [4] (wait for sl correction to be finished)
+    Gval_ref_pre_L[4] <= Gval_ref_pre_L[3]; // to pp-stage [4] (wait for sl correction to be finished)
+    Bval_ref_pre_L[4] <= Bval_ref_pre_L[3]; // to pp-stage [4] (wait for sl correction to be finished)
+    Yval_ref_pre_L[4] <= Yval_ref_pre_L[3]; // to pp-stage [4] (wait for sl correction to be finished)
+    
+    Rval_ref_5L       <= Rval_ref_full_5L_w[color_width_o+SL_bloom_calc_width:SL_bloom_calc_width]; // to pp-stage [5]
+    Gval_ref_5L       <= Gval_ref_full_5L_w[color_width_o+SL_bloom_calc_width:SL_bloom_calc_width]; // to pp-stage [5]
+    Bval_ref_5L       <= Bval_ref_full_5L_w[color_width_o+SL_bloom_calc_width:SL_bloom_calc_width]; // to pp-stage [5]
+    Yval_ref_5L       <= Yval_ref_full_5L_w[Y_width+SL_bloom_calc_width-1:SL_bloom_calc_width];     // to pp-stage [5]
 
     // adaptation of sl_str. (2 proc. stages)
-    SL_bloom_rval_6L <= {1'b0,SL_str_corrected_L[5]} < Yval_ref_5L ? 8'h0 : SL_str_corrected_L[5] - Yval_ref_5L[7:0]; // to pp-stage [6]
-    SL_bloomed_str_7L  <= 8'hff - SL_bloom_rval_6L;                                                                   // to pp-stage [7]
+    SL_bloomed_rval_R_6L <= {1'b0,SL_str_corrected_R_L[5]} < Rval_ref_5L ? 8'h0 : SL_str_corrected_R_L[5] - Rval_ref_5L[7:0]; // to pp-stage [6]
+    SL_bloomed_rval_G_6L <= {1'b0,SL_str_corrected_G_L[5]} < Gval_ref_5L ? 8'h0 : SL_str_corrected_G_L[5] - Gval_ref_5L[7:0]; // to pp-stage [6]
+    SL_bloomed_rval_B_6L <= {1'b0,SL_str_corrected_B_L[5]} < Bval_ref_5L ? 8'h0 : SL_str_corrected_B_L[5] - Bval_ref_5L[7:0]; // to pp-stage [6]
+    SL_bloomed_rval_Y_6L <= {1'b0,SL_str_corrected_Y_L[5]} < Yval_ref_5L ? 8'h0 : SL_str_corrected_Y_L[5] - Yval_ref_5L[7:0]; // to pp-stage [6]
+    
+    SL_bloomed_str_R_7L  <= sl_per_channel_i ? 8'hff - SL_bloomed_rval_R_6L : 8'hff - SL_bloomed_rval_Y_6L;           // to pp-stage [7]
+    SL_bloomed_str_G_7L  <= sl_per_channel_i ? 8'hff - SL_bloomed_rval_G_6L : 8'hff - SL_bloomed_rval_Y_6L;           // to pp-stage [7]
+    SL_bloomed_str_B_7L  <= sl_per_channel_i ? 8'hff - SL_bloomed_rval_B_6L : 8'hff - SL_bloomed_rval_Y_6L;           // to pp-stage [7]
     
     // calculate SL (1 proc. stage)
     R_sl_8L <= R_sl_full_w[color_width_o+SL_bloom_calc_width-1:SL_bloom_calc_width];  // to pp-stage [8]
@@ -270,10 +398,22 @@ always @(posedge VCLK_i or negedge nVRST_i)
     VSYNC_o <= VSYNC_L[proc_stages-2];
     DE_o <= DE_L[proc_stages-2];
     
-    if (DE_L[proc_stages-2] && drawSL[proc_stages-2])
-      vdata_o <= {R_sl_8L,G_sl_8L,B_sl_8L};
+    if (DE_L[proc_stages-2] && drawSL_R[proc_stages-2])
+      vdata_o[`VDATA_O_RE_SLICE] <= R_sl_8L;
     else
-      vdata_o <= {R_L[proc_stages-2],G_L[proc_stages-2],B_L[proc_stages-2]};
+      vdata_o[`VDATA_O_RE_SLICE] <= R_L[proc_stages-2];
+      
+    
+    if (DE_L[proc_stages-2] && drawSL_G[proc_stages-2])
+      vdata_o[`VDATA_O_GR_SLICE] <= G_sl_8L;
+    else
+      vdata_o[`VDATA_O_GR_SLICE] <= G_L[proc_stages-2];
+      
+    
+    if (DE_L[proc_stages-2] && drawSL_B[proc_stages-2])
+      vdata_o[`VDATA_O_BL_SLICE] <= B_sl_8L;
+    else
+      vdata_o[`VDATA_O_BL_SLICE] <= B_L[proc_stages-2];
   end
 
 

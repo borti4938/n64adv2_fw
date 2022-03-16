@@ -41,7 +41,8 @@
 extern char szText[VD_WIDTH];
 
 extern const char *OffOn[], *Force5060[], *Resolutions[], *DeInterModes[], *InterpModes[],
-                  *ScanlinesThickness[], *ScanlinesScaleProfile[], *QuickChange[];
+                  *ScanlinesThickness[], *ScanlinesScaleProfile[], *ScanlinesCalcBase[],
+                  *QuickChange[];
 
 
 // scaler
@@ -401,6 +402,17 @@ config_t sl_link_h2v = {
         .clrflag_mask = CFG_H2V_SL_LINK_CLRMASK
     },
     .val2char_func = &flag2set_func
+};
+
+config_t sl_calc_base = {
+    .cfg_word        = &extcfg2_word,
+    .cfg_word_offset = CFG_SL_CALC_BASE_OFFSET,
+    .cfg_type        = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_SL_CALC_BASE_SETMASK,
+        .clrflag_mask = CFG_SL_CALC_BASE_CLRMASK
+    },
+    .value_string = &ScanlinesCalcBase
 };
 
 // audio

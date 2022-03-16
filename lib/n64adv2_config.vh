@@ -38,10 +38,10 @@
   //  wire [ 7:0] SysConfigSet3; (Audio)
   //    [ 7: 0] {(1bit reserve),audio_amp (5bits),audio_swap_lr,audio_spdif_en}
   //  wire [31:0] SysConfigSet2; (Scanlines)
-  //    [31:29] {(3bits reserved)}
-  //    [28:16] vertical:   {Sl_thickness (2bit),Sl_profile (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits)}
-  //    [15: 3] horizontal: {Sl_thickness (2bit),Sl_profile (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits)}
-  //    [ 2: 0] control:    {Sl_V_En,Sl_H_En,Sl_link}
+  //    [31:30] {(2bits reserved)}
+  //    [29:17] vertical:   {Sl_thickness (2bit),Sl_profile (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits)}
+  //    [16: 4] horizontal: {Sl_thickness (2bit),Sl_profile (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits)}
+  //    [ 3: 0] control:    {Sl_V_En,Sl_H_En,Sl_link,SL_per_Channel}
   //  wire [31:0] SysConfigSet1; (OSD, IGR, VI-Processing)
   //    [31:29] {show_osd_logo,show_osd,mute_osd}
   //    [28   ] {igr for reset}
@@ -78,23 +78,24 @@
   
   
   // PPU config
-  `define PPUConfig_WordWidth       87  // 29 + 26 + 32
+  `define PPUConfig_WordWidth       88  // 30 + 26 + 32
   
   `define SysCfg2_PPUCfg_Offset     58  // 26 + 32
   `define SysCfg1_PPUCfg_Offset     32  // 32
   `define SysCfg0_PPUCfg_Offset      0  // 0
   
-  `define vSL_thickness_slice   28 + `SysCfg2_PPUCfg_Offset : 27 + `SysCfg2_PPUCfg_Offset
-  `define vSL_profile_slice     26 + `SysCfg2_PPUCfg_Offset : 25 + `SysCfg2_PPUCfg_Offset
-  `define vSL_hybrid_slice      24 + `SysCfg2_PPUCfg_Offset : 20 + `SysCfg2_PPUCfg_Offset
-  `define vSL_str_slice         19 + `SysCfg2_PPUCfg_Offset : 16 + `SysCfg2_PPUCfg_Offset
-  `define hSL_thickness_slice   15 + `SysCfg2_PPUCfg_Offset : 14 + `SysCfg2_PPUCfg_Offset
-  `define hSL_profile_slice     13 + `SysCfg2_PPUCfg_Offset : 12 + `SysCfg2_PPUCfg_Offset
-  `define hSL_hybrid_slice      11 + `SysCfg2_PPUCfg_Offset :  7 + `SysCfg2_PPUCfg_Offset
-  `define hSL_str_slice          6 + `SysCfg2_PPUCfg_Offset :  3 + `SysCfg2_PPUCfg_Offset
-  `define vSL_en_bit             2 + `SysCfg2_PPUCfg_Offset
-  `define hSL_en_bit             1 + `SysCfg2_PPUCfg_Offset
-  `define h2v_SL_linked_bit      0 + `SysCfg2_PPUCfg_Offset
+  `define vSL_thickness_slice   29 + `SysCfg2_PPUCfg_Offset : 28 + `SysCfg2_PPUCfg_Offset
+  `define vSL_profile_slice     27 + `SysCfg2_PPUCfg_Offset : 26 + `SysCfg2_PPUCfg_Offset
+  `define vSL_hybrid_slice      25 + `SysCfg2_PPUCfg_Offset : 21 + `SysCfg2_PPUCfg_Offset
+  `define vSL_str_slice         20 + `SysCfg2_PPUCfg_Offset : 17 + `SysCfg2_PPUCfg_Offset
+  `define hSL_thickness_slice   16 + `SysCfg2_PPUCfg_Offset : 15 + `SysCfg2_PPUCfg_Offset
+  `define hSL_profile_slice     14 + `SysCfg2_PPUCfg_Offset : 13 + `SysCfg2_PPUCfg_Offset
+  `define hSL_hybrid_slice      12 + `SysCfg2_PPUCfg_Offset :  8 + `SysCfg2_PPUCfg_Offset
+  `define hSL_str_slice          7 + `SysCfg2_PPUCfg_Offset :  4 + `SysCfg2_PPUCfg_Offset
+  `define vSL_en_bit             3 + `SysCfg2_PPUCfg_Offset
+  `define hSL_en_bit             2 + `SysCfg2_PPUCfg_Offset
+  `define h2v_SL_linked_bit      1 + `SysCfg2_PPUCfg_Offset
+  `define SL_per_Channel_bit     0 + `SysCfg2_PPUCfg_Offset
   
   `define limitedRGB_bit              25 + `SysCfg1_PPUCfg_Offset
   `define gamma_slice                 24 + `SysCfg1_PPUCfg_Offset : 21 + `SysCfg1_PPUCfg_Offset

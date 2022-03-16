@@ -123,6 +123,7 @@
 #define SLCFG_VPROFILE_V_OFFSET   ( 9 + SLCFG_VALS_V_OFFSET)
 #define SLCFG_VSTR_V_OFFSET       (10 + SLCFG_VALS_V_OFFSET)
 #define SLCFG_VHYB_STR_V_OFFSET   (11 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_CALC_BASE_V_OFFSET  (12 + SLCFG_VALS_V_OFFSET)
 
 #define VICFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
 #define VICFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
@@ -244,7 +245,8 @@ static const char *slcfg_opt_overlay __ufmdata_section__ =
     "  - Thickness:\n"
     "  - Profile:\n"
     "  - Strength:\n"
-    "  - Blooming effect:";
+    "  - Blooming effect:\n"
+    "* Calculation Mode:";
 
 static const char *vicfg_header __ufmdata_section__ =
     "VI-Processing";
@@ -393,6 +395,7 @@ const char *InterpModes[]           = {"Integer","Integer+Bilinear","Bilinear"};
 const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};
 const char *ScanlinesThickness[]    = {"Thin","Normal","Thick","Adaptive"};
 const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular","Flat top"};
+const char *ScanlinesCalcBase[]     = {"Luma based","per Channel based"};
 
 const char *VideoMode[] __ufmdata_section__   = {"240p","480i","288p","576i"};
 const char *VRefresh[] __ufmdata_section__    = {"@ 60Hz","@ 50Hz"};

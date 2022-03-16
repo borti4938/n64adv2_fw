@@ -196,7 +196,7 @@ typedef struct {
 #define INTCFG0_GETALL_MASK   0x0000003F
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
 #define EXTCFG1_GETALL_MASK   0xF3FFFEB7
-#define EXTCFG2_GETALL_MASK   0x1FFFFFFF
+#define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x0000007F
 
 // internal cfg set 0
@@ -333,17 +333,18 @@ typedef struct {
 // external cfg set 2
 #define EXTCFG2_OUT_BASE  CFG_SET2_OUT_BASE
 
-#define CFG_VSL_THICKNESS_OFFSET  27
-#define CFG_VSL_PROFILE_OFFSET    25
-#define CFG_VSLHYBDEP_OFFSET      20
-#define CFG_VSLSTR_OFFSET         16
-#define CFG_HSL_THICKNESS_OFFSET  14
-#define CFG_HSL_PROFILE_OFFSET    12
-#define CFG_HSLHYBDEP_OFFSET       7
-#define CFG_HSLSTR_OFFSET          3
-#define CFG_VSL_EN_OFFSET          2
-#define CFG_HSL_EN_OFFSET          1
-#define CFG_H2V_SL_LINK_OFFSET     0
+#define CFG_VSL_THICKNESS_OFFSET  28
+#define CFG_VSL_PROFILE_OFFSET    26
+#define CFG_VSLHYBDEP_OFFSET      21
+#define CFG_VSLSTR_OFFSET         17
+#define CFG_HSL_THICKNESS_OFFSET  15
+#define CFG_HSL_PROFILE_OFFSET    13
+#define CFG_HSLHYBDEP_OFFSET       8
+#define CFG_HSLSTR_OFFSET          4
+#define CFG_VSL_EN_OFFSET          3
+#define CFG_HSL_EN_OFFSET          2
+#define CFG_H2V_SL_LINK_OFFSET     1
+#define CFG_SL_CALC_BASE_OFFSET    0
 
 #define CFG_VSL_THICKNESS_GETMASK   (0x3<<CFG_VSL_THICKNESS_OFFSET)
   #define CFG_VSL_THICKNESS_RSTMASK   (EXTCFG2_GETALL_MASK & ~CFG_VSL_THICKNESS_GETMASK)
@@ -378,6 +379,9 @@ typedef struct {
 #define CFG_H2V_SL_LINK_GETMASK     (1<<CFG_H2V_SL_LINK_OFFSET)
   #define CFG_H2V_SL_LINK_SETMASK     (1<<CFG_H2V_SL_LINK_OFFSET)
   #define CFG_H2V_SL_LINK_CLRMASK     (EXTCFG2_GETALL_MASK & ~CFG_H2V_SL_LINK_GETMASK)
+#define CFG_SL_CALC_BASE_GETMASK    (1<<CFG_SL_CALC_BASE_OFFSET)
+  #define CFG_SL_CALC_BASE_SETMASK    (1<<CFG_SL_CALC_BASE_OFFSET)
+  #define CFG_SL_CALC_BASE_CLRMASK    (EXTCFG2_GETALL_MASK & ~CFG_SL_CALC_BASE_GETMASK)
 
 // external cfg set 3
 #define EXTCFG3_OUT_BASE  CFG_SET3_OUT_BASE
@@ -528,7 +532,7 @@ extern config_t show_logo, show_osd, mute_osd_tmp,
                 deinterlace_mode, interpolation_mode_vert, interpolation_mode_hori, pal_boxed_mode;
 extern config_t sl_thickness_vert, sl_profile_vert, slhyb_str_vert, sl_str_vert,
                 sl_thickness_hori, sl_profile_hori, slhyb_str_hori, sl_str_hori,
-                sl_en_vert, sl_en_hori, sl_link_h2v;
+                sl_en_vert, sl_en_hori, sl_link_h2v, sl_calc_base;
 extern config_t audio_amp, audio_swap_lr, audio_spdif_en;
 
 extern bool_t unlock_1440p;
