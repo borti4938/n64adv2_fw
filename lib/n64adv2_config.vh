@@ -67,7 +67,7 @@
   
   // Separation slices
   `define cfg3_audio_config_slice    6: 0
-  `define cfg2_scanline_slice       28: 0
+  `define cfg2_scanline_slice       29: 0
   `define cfg1_ppu_config_slice     25: 0
   
   // Audio config
