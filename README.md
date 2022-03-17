@@ -443,7 +443,7 @@ With the shortcut _Ctrl + F9_ (or just _F9_) you can create initialization files
 
 If the build fails with an error in elf2dat line 2 under Windows (_cannot find /bin/sh_pl.sh_), you have to create an environment variable with following properties.
 - name: `WSLENV`
-- value: `SOPC\_KIT\_NIOS2/p`
+- value: `SOPC_KIT_NIOS2/p`
 After logging out and logging in into your account, the build should work.
 
 By default, certain constants are placed in the user flash memory.
