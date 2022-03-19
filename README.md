@@ -99,13 +99,13 @@ An empty default value means that this value is not affected by loading defaults
 |:------|:--------|:------------|
 | **Vertical interpolation** | Integer | Sets the vertical interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
 | **Horizontal interpolation** | Integer | Sets the horizontal interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
-| **Scaling - Settings for** \[6\] | | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
-| **Scaling - Link v/h factors** | | Links vertical and horizontal to **4:3** or keep it **open**. |
-| **Scaling - V/h scaling steps** | | Changes between **0.25x** steps and **pixelwise** |
+| **Scaling - Settings for** \[6\] | _Current_ | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
+| **Scaling - Link v/h factors** | 4:3 | Links vertical and horizontal to **4:3** or keep it **open**. |
+| **Scaling - V/h scaling steps** | 0.25x | Changes between **0.25x** steps and **pixelwise** |
 | **Scaling - Vertical scale value** | _see notes_| Sets the number of desired output lines |
 | **Scaling - Horizontal scale value** | _see notes_ | Set the number of desired output pixel per line |
 | **Use PAL in 240p box** | Off | Uses 240 lines as input reference instead of 288 lines. |
-| **Shift N64 input image - Input Mode** \[7\] | | Switches between NTSC/PAL progressive/interlaced input |
+| **Shift N64 input image - Input Mode** \[7\] | _Current_ | Switches between NTSC/PAL progressive/interlaced input |
 | **Shift N64 input image - Vertical shift**| 0 | Shifts the input by a certain number of lines before the buffer |
 | **Shift N64 input image - Horizontal shift** | 0 | Shifts the input by a certain number of pixels before the buffer |
 
@@ -120,7 +120,7 @@ An empty default value means that this value is not affected by loading defaults
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Input mode** \[8\] | | Switches between NTSC/PAL progressive/interlaced input |
+| **Input mode** \[8\] | _Current_ | Switches between NTSC/PAL progressive/interlaced input |
 | **Horizontal scanlines** \[9\] | Off | Enables horizontal scanlines for the particular input mode. |
 | **Horizontal - Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
 | **Horizontal - Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
@@ -157,14 +157,14 @@ An empty default value means that this value is not affected by loading defaults
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Audio Settings - Swap L/R** | | Swaps left and right audio channel |
+| **Audio Settings - Swap L/R** | Off | Swaps left and right audio channel |
 | **Audio Settings - Filter function** | | _currently not implemented_ |
 | **Audio Settings - Post filter gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
-| **Audio Settings - S/PDIF enabled** | | Enables the S/PDIF audio output. |
-| **Controller Routines - Reset** | | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
-| **Controller Routines - VI-DeBlur** | | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
-| **Controller Routines - 16bit Mode** | | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
-| **Unlock lucky 1440p** \[12\] | Off | Unlocks 1440p resolution in the _resolution_ configuration screen |
+| **Audio Settings - S/PDIF enabled** | Off | Enables the S/PDIF audio output. |
+| **Controller Routines - Reset** | On | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
+| **Controller Routines - VI-DeBlur** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
+| **Controller Routines - 16bit Mode** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
+| **Unlock lucky 1440p** \[12\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
 \[12\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
 
