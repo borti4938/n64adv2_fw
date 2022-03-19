@@ -35,7 +35,7 @@
 `define _n64adv2_hw_cfg_vh_
 
   parameter [3:0] hdl_fw_main = 4'd2;
-  parameter [7:0] hdl_fw_sub  = 8'd08;
+  parameter [7:0] hdl_fw_sub  = 8'd09;
   
   `define USE_INTERPOLATION_PIXEL_AT_INTEGER
   

@@ -257,13 +257,13 @@ set_global_assignment -name QIP_FILE ../ip/system_pll.qip
 set_global_assignment -name QIP_FILE ../ip/chip_id.qip
 
 #qsys-ip
-#set_global_assignment -name QIP_FILE ../ip/altclkctrl/synthesis/altclkctrl.qip
-#set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
-#set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio.qip
+set_global_assignment -name QIP_FILE ../ip/altclkctrl/synthesis/altclkctrl.qip
+set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
+set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio.qip
 
-set_global_assignment -name QSYS_FILE ../ip/altclkctrl.qsys
-set_global_assignment -name QSYS_FILE ../ip/fir_2ch_audio.qsys
-set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
+#set_global_assignment -name QSYS_FILE ../ip/altclkctrl.qsys
+#set_global_assignment -name QSYS_FILE ../ip/fir_2ch_audio.qsys
+#set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
 
 #rtl
 set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_top.v
@@ -315,7 +315,7 @@ set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name SYNTH_PROTECT_SDC_CONSTRAINT ON
 set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 
-set_global_assignment -name SEED 91
+set_global_assignment -name SEED 27
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
@@ -335,5 +335,4 @@ set_global_assignment -name VCCA_USER_VOLTAGE 3.3V
 set_global_assignment -name DEVICE_FILTER_PACKAGE "ANY QFP"
 set_global_assignment -name DEVICE_FILTER_PIN_COUNT 144
 set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
-set_global_assignment -name FLOW_ENABLE_IO_ASSIGNMENT_ANALYSIS ON
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
