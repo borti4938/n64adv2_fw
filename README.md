@@ -97,8 +97,8 @@ An empty default value means that this value is not affected by loading defaults
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Vertical interpolation** | Integer | Sets the vertical interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
-| **Horizontal interpolation** | Integer | Sets the horizontal interpolation type. Selection of<br>- **Integer** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Vertical interpolation** | Integer | Sets the vertical interpolation type. Selection of<br>- **Integer**/**Integer (soft)** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Horizontal interpolation** | Integer | Sets the horizontal interpolation type. Selection of<br>- **Integer**/**Integer (soft)** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
 | **Scaling - Settings for** \[6\] | _Current_ | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
 | **Scaling - Link v/h factors** | 4:3 | Links vertical and horizontal to **4:3** or keep it **open**. |
 | **Scaling - V/h scaling steps** | 0.25x | Changes between **0.25x** steps and **pixelwise** |
@@ -109,7 +109,7 @@ An empty default value means that this value is not affected by loading defaults
 | **Shift N64 input image - Vertical shift**| 0 | Shifts the input by a certain number of lines before the buffer |
 | **Shift N64 input image - Horizontal shift** | 0 | Shifts the input by a certain number of pixels before the buffer |
 
-\[5\] Integer interpolation: If an output pixel is _exactly_ between two inputs, the output is the mean between both inputs to reduce uneven pixel and shimmering a bit. Scaling for 240p/288p is always integer scaling no matter what is set as _Interpolation type_.  
+\[5\] Integer (soft) interpolation: If an output pixel is _exactly_ between two inputs, the output is the mean between both inputs to reduce uneven pixel and shimmering a bit. Scaling for 240p/288p is always integer scaling no matter what is set as _Interpolation type_.  
 \[6\] You are allowed to quickly change the _Scaling - Settings for_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Scaling_ related options.  
 \[6.1\] Scaling for 240p/288p output resolution is restricted to **open** _Link v/h factors_ and **pixelwise** _v/h scaling steps_.  
 \[6.2\] _Vertical scale value_ can only be set under 480 lines for 240p/288p scaling. Default depends on resolution.  
