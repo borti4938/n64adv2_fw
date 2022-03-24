@@ -438,11 +438,11 @@ void print_fw_version()
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 
   ext_fw = get_hdl_version();
-  sprintf(szText,"%1d.%02d",((ext_fw & HDL_FW_GETMAIN_MASK) >> HDL_FW_MAIN_OFFSET),
+  sprintf(szText,"%1d.%02da",((ext_fw & HDL_FW_GETMAIN_MASK) >> HDL_FW_MAIN_OFFSET),
                             ((ext_fw & HDL_FW_GETSUB_MASK) >> HDL_FW_SUB_OFFSET));
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+2,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 
-  sprintf(szText,"%1d.%02d",SW_FW_MAIN,SW_FW_SUB);
+  sprintf(szText,"%1d.%02da",SW_FW_MAIN,SW_FW_SUB);
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+3,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
 }
 
