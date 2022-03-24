@@ -121,6 +121,7 @@ An empty default value means that this value is not affected by loading defaults
 | Entry | Default | Description |
 |:------|:--------|:------------|
 | **Input mode** \[8\] | _Current_ | Switches between NTSC/PAL progressive/interlaced input |
+| **Calculation Mode** | Luma based | Determines whether all calculations regarding thickness (adaptive) and strength (bloom effect) are **Luma based** or **per color based** |
 | **Horizontal scanlines** \[9\] | Off | Enables horizontal scanlines for the particular input mode. |
 | **Horizontal - Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
 | **Horizontal - Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
@@ -132,7 +133,6 @@ An empty default value means that this value is not affected by loading defaults
 | **Vertical - Profile** | Hanning | Set up the transision area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributred over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian**, **Rectangular** and **Flat top**. |
 | **Vertical - Strength** \[10\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
 | **Vertical - Bloom effect** \[10\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
-| **Calculation Mode** | Luma based | Determines whether all calculations regarding thickness (adaptive) and strength (bloom effect) are **Luma based** or **per color based** |
 
 \[8\] _Input mode_ can be changed using **L** or **R** button on the controller.  
 \[9\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Scaling factor must be at least 2x to have scanlines drawn.  

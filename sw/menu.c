@@ -220,6 +220,7 @@ menu_t slcfg_opt_subscreen = {
     .number_selections = 13,
     .leaves = {
         {.id = SLCFG_INPUT_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &region_selection},
+        {.id = SLCFG_CALC_BASE_V_OFFSET , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_calc_base},
         {.id = SLCFG_HEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_en_hori},
         {.id = SLCFG_HTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_thickness_hori},
         {.id = SLCFG_HPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_profile_hori},
@@ -230,12 +231,11 @@ menu_t slcfg_opt_subscreen = {
         {.id = SLCFG_VTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_thickness_vert},
         {.id = SLCFG_VPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_profile_vert},
         {.id = SLCFG_VSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_str_vert},
-        {.id = SLCFG_VHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &slhyb_str_vert},
-        {.id = SLCFG_CALC_BASE_V_OFFSET , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_calc_base}
+        {.id = SLCFG_VHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &slhyb_str_vert}
     }
 };
 
-#define SL_VLINK_SELECTION           7
+#define SL_VLINK_SELECTION           8
 #define SL_HORI_TO_VERT_OFFSET       6
 
 menu_t vicfg_screen = {

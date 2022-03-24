@@ -112,18 +112,18 @@
 #define SLCFG_VALS_H_OFFSET       (26 + SLCFG_OVERLAY_H_OFFSET)
 #define SLCFG_VALS_V_OFFSET       SLCFG_OVERLAY_V_OFFSET
 #define SLCFG_INPUT_OFFSET        ( 0 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HEN_V_OFFSET        ( 1 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HTHICKNESS_V_OFFSET ( 2 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HPROFILE_V_OFFSET   ( 3 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HSTR_V_OFFSET       ( 4 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_HHYB_STR_V_OFFSET   ( 5 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_VEN_V_OFFSET        ( 6 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_VLINK_OFFSET        ( 7 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_VTHICKNESS_V_OFFSET ( 8 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_VPROFILE_V_OFFSET   ( 9 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_VSTR_V_OFFSET       (10 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_VHYB_STR_V_OFFSET   (11 + SLCFG_VALS_V_OFFSET)
-#define SLCFG_CALC_BASE_V_OFFSET  (12 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_CALC_BASE_V_OFFSET  ( 1 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HEN_V_OFFSET        ( 2 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HTHICKNESS_V_OFFSET ( 3 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HPROFILE_V_OFFSET   ( 4 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HSTR_V_OFFSET       ( 5 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_HHYB_STR_V_OFFSET   ( 6 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VEN_V_OFFSET        ( 7 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VLINK_OFFSET        ( 8 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VTHICKNESS_V_OFFSET ( 9 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VPROFILE_V_OFFSET   (10 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VSTR_V_OFFSET       (11 + SLCFG_VALS_V_OFFSET)
+#define SLCFG_VHYB_STR_V_OFFSET   (12 + SLCFG_VALS_V_OFFSET)
 
 #define VICFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
 #define VICFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
@@ -235,6 +235,7 @@ static const char *slcfg_opt_header __ufmdata_section__ =
     "Scanlines Config";
 static const char *slcfg_opt_overlay __ufmdata_section__ =
     "* Input mode:\n"
+    "* Calculation Mode:\n"
     "* Horizontal scanlines:\n"
     "  - Thickness:\n"
     "  - Profile:\n"
@@ -245,8 +246,7 @@ static const char *slcfg_opt_overlay __ufmdata_section__ =
     "  - Thickness:\n"
     "  - Profile:\n"
     "  - Strength:\n"
-    "  - Blooming effect:\n"
-    "* Calculation Mode:";
+    "  - Blooming effect:";
 
 static const char *vicfg_header __ufmdata_section__ =
     "VI-Processing";
@@ -393,9 +393,9 @@ const char *FallbackRes[]           = {"1080p","480p/576p"};
 const char *DeInterModes[]          = {"Bob","Weave"};
 const char *InterpModes[]           = {"Integer","Integer+Bilinear","Bilinear"};
 const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};
+const char *ScanlinesCalcBase[]     = {"Luma based","per color based"};
 const char *ScanlinesThickness[]    = {"Thin","Normal","Thick","Adaptive"};
 const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular","Flat top"};
-const char *ScanlinesCalcBase[]     = {"Luma based","per color based"};
 
 const char *VideoMode[] __ufmdata_section__   = {"240p","480i","288p","576i"};
 const char *VRefresh[] __ufmdata_section__    = {"@ 60Hz","@ 50Hz"};
