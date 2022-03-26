@@ -265,21 +265,20 @@ Please note that subfolders are not necessarily outlined.
 |:-------|:------------|
 | **doc** | Documentation related files (e.g. certain pictures) |
 | **ip** | IP cores used by the hardware design |
+| **lib** | Verilog header files and task files (out-sourced verilog tasks and functions used in verilog hardware design) |
 | **nios** | Basis NIOS II core design<br>also includes IP cores used for the NIOS II system design<br>Default path to the NIOS II software project |
 | **quartus** | Relevant project and revision files for the hardware design |
 | **rtl** | Verilog hardware description files |
 | **scripts** | Location of all scripts and other things I used throughout the development to generate certain sources |
 | **sdc** | SDC (Standard Design Constraints or Synopsys Design Constraints) files |
 | **sw** | Software sources for the NIOS II soft core |
-| **tasks** | Out-sourced verilog tasks and functions used in verilog hardware design |
-| **vh** | Verilog header files |
 
 
 ### Setup Toolchain
 
 The following instruction does not explain how to use the certain tools and/or to manage your personal design flow.
 It is meant as a first instruction how to setup the N64Adv2 development.
-For serious development I recommend using the 10M25SAE144 FPGA as it offers more resources for debugging cores then the 10M16SAE144.
+For serious development I recommend using the 10M25SAE144 FPGA as it offers more resources for debugging cores than the 10M16SAE144.
 
 
 #### Software Requirements
@@ -352,6 +351,7 @@ set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio
 ~~~~
 By the time this guide was written these lines were found around 260.
 Now you are using the pre-builded QSYS-IPs during synthesis.
+This speeds up compalition time a lot.
 
 
 #### Software Core
@@ -412,9 +412,10 @@ Note that the created section name has a leading dot!
 
 ![](./doc/img/bsp_linker.jpg)
 
-Once they are settled, there is only need to _Generate BSP_ (Right-click on controller\_bsp project -> _Nios II_ -> _Generate BSP_) if the BSP timestamp is outdated.
+If everything is correct, there is only a need to _Generate BSP_ (Right-click on controller\_bsp project -> _Nios II_ -> _Generate BSP_) if the BSP timestamp is outdated.
+The software build will let you know about that with an error.
 
-##### Software Setting
+##### Software Settings
 
 First, we add the software sources to the project.
 The you have to set the build properties.
