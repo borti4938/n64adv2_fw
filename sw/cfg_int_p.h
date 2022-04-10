@@ -49,10 +49,10 @@ cfg_b32word_t intcfg0_word =
 config_t link_hv_scale = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_LINK_HV_SCALE_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_LINK_HV_SCALE_SETMASK,
-        .clrflag_mask = CFG_LINK_HV_SCALE_CLRMASK
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_LINK_HV_SCALE_MAX_VALUE,
+        .getvalue_mask = CFG_LINK_HV_SCALE_GETMASK
     },
     .value_string = &ScaleVHLink
 };

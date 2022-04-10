@@ -237,9 +237,22 @@ alt_u8 cfg_scale_is_predefined(alt_u16 value, bool_t use_vertical) {
 }
 
 void cfg_scale_v2h_update() {
-  if ((cfg_get_value(&link_hv_scale,0) != 0) || (cfg_get_value(&linex_resolution,0) == PASSTHROUGH)) return;
-  alt_u16 hscale = cfg_get_value(&vert_scale,0);
-  hscale = 4*hscale/3;
+  if (cfg_get_value(&linex_resolution,0) == PASSTHROUGH) return;
+  alt_u8 hv_scale_link = cfg_get_value(&link_hv_scale,0);
+  alt_u32 hscale = cfg_get_value(&vert_scale,0);
+  switch (hv_scale_link) {
+    case 0: // 4:3
+      hscale = 4*hscale/3;
+      break;
+    case 1: // CRT (160:119)
+      hscale = 160*hscale/119;
+      break;
+    case 2: // 16:9
+      hscale = 16*hscale/9;
+      break;
+    default:
+      return;
+  }
   cfg_set_value(&hor_scale,hscale);
 }
 

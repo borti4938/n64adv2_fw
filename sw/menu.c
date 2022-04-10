@@ -592,7 +592,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       if (current_sel == VHLINK_SELECTION)
         (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? VHLINK_SELECTION + 1 : VHLINK_SELECTION - 1;
     } else {
-      if((current_sel == HORISCALE_SELECTION) && (cfg_get_value(&link_hv_scale,0) == 0))
+      if((current_sel == HORISCALE_SELECTION) && (cfg_get_value(&link_hv_scale,0) != CFG_LINK_HV_SCALE_MAX_VALUE))
         (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? HORISCALE_SELECTION + 1 : HORISCALE_SELECTION - 1;
     }
   }
@@ -837,7 +837,7 @@ int update_cfg_screen(menu_t* current_menu)
         // check scaling menu
         if (is_viscaling_screen(current_menu) && use_240p_288p) {
           if (v_run == VHLINK_SELECTION) {
-            val_select = 1;
+            val_select = CFG_LINK_HV_SCALE_MAX_VALUE;
             font_color = FONTCOLOR_GREY;
           }
         }
@@ -872,7 +872,7 @@ int update_cfg_screen(menu_t* current_menu)
         vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
         break;
       case ICFGCMDFUNC3:  // at the moment just for horizontal and vertical scale
-        if (!use_240p_288p && v_run == HORISCALE_SELECTION && cfg_get_value(&link_hv_scale,0) == 0) {
+        if (!use_240p_288p && v_run == HORISCALE_SELECTION && cfg_get_value(&link_hv_scale,0) != CFG_LINK_HV_SCALE_MAX_VALUE) {
           cfg_scale_v2h_update();
           val_select = current_menu->leaves[v_run].cfgfct_call_3(0,0,0,0);
           ref_val_select = current_menu->leaves[v_run].cfgfct_call_3(0,0,0,1);

@@ -416,7 +416,7 @@ const char *PredefScaleSteps[] __ufmdata_section__ = {"(2.00x)","(2.25x)","(2.50
 const char *PredefScaleStepsHalf[] __ufmdata_section__ = {"(1.00x)","(1.25x)","(1.50x)","(1.75x)",
                                                           "(2.00x)","(2.25x)","(2.50x)","(2.75x)",
                                                           "(3.00x)","(3.25x)","(3.50x)"};
-const char *ScaleVHLink[] = {"4:3","Open"};
+const char *ScaleVHLink[] = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open"};
 
 const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521"};
 
