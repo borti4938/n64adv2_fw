@@ -223,7 +223,7 @@ always @(posedge VCLK_i) begin
   end
   
   case (sl_thickness_i)
-    2'b00: begin  // thin
+    2'b01: begin  // thin
         drawSL_R[2] <= SL_str_corrected_L[1] > val_0p1875;
         drawSL_G[2] <= SL_str_corrected_L[1] > val_0p1875;
         drawSL_B[2] <= SL_str_corrected_L[1] > val_0p1875;
@@ -234,7 +234,7 @@ always @(posedge VCLK_i) begin
         SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - val_0p1875;
         SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - val_0p1875;
       end
-    2'b01: begin  // normal
+    2'b10: begin  // normal
         drawSL_R[2] <= SL_str_corrected_L[1] > val_0p125;
         drawSL_G[2] <= SL_str_corrected_L[1] > val_0p125;
         drawSL_B[2] <= SL_str_corrected_L[1] > val_0p125;
@@ -245,7 +245,7 @@ always @(posedge VCLK_i) begin
         SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - val_0p125;
         SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - val_0p125;
       end
-    2'b10: begin  // thick
+    2'b11: begin  // thick
         drawSL_R[2] <= SL_str_corrected_L[1] > val_0p0625;
         drawSL_G[2] <= SL_str_corrected_L[1] > val_0p0625;
         drawSL_B[2] <= SL_str_corrected_L[1] > val_0p0625;

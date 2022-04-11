@@ -394,7 +394,7 @@ const char *DeInterModes[]          = {"Bob","Weave"};
 const char *InterpModes[]           = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};
 const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};
 const char *ScanlinesCalcBase[]     = {"Luma based","per color based"};
-const char *ScanlinesThickness[]    = {"Thin","Normal","Thick","Adaptive"};
+const char *ScanlinesThickness[]    = {"Adaptive","Thin","Normal","Thick"};
 const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular","Flat top"};
 
 const char *VideoMode[] __ufmdata_section__   = {"240p","480i","288p","576i"};
