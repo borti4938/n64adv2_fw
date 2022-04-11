@@ -399,7 +399,7 @@ const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular","Flat 
 
 const char *VideoMode[] __ufmdata_section__   = {"240p","480i","288p","576i"};
 const char *VRefresh[] __ufmdata_section__    = {"@ 60Hz","@ 50Hz"};
-const char *VideoColor[] __ufmdata_section__  = {"21bit","16bit"};
+const char *VideoColor[] __ufmdata_section__  = {"21bit (7/7/7)","16bit (5/6/5)"};
 
 const char *ResolutionVGA        = "VGA (640x480)";
 const char *Resolution240p480p[] = {"240p","480p"};
