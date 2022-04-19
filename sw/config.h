@@ -195,7 +195,7 @@ typedef struct {
 // the overall masks
 #define INTCFG0_GETALL_MASK   0x0000007F
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
-#define EXTCFG1_GETALL_MASK   0xF3FFFEB7
+#define EXTCFG1_GETALL_MASK   0xFFFFFEB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x0000007F
 
@@ -276,6 +276,7 @@ typedef struct {
 #define CFG_SHOWOSD_OFFSET        30
 #define CFG_MUTEOSDTMP_OFFSET     29
 #define CFG_IGRRST_OFFSET         28
+#define CFG_RSTMASKS_OFFSET       26
 #define CFG_LIMITED_RGB_OFFSET    25
 #define CFG_GAMMA_OFFSET          21
 #define CFG_DEBLUR_MODE_OFFSET    20
@@ -299,6 +300,9 @@ typedef struct {
 #define CFG_IGRRST_GETMASK          (1<<CFG_IGRRST_OFFSET)
   #define CFG_IGRRST_SETMASK          (1<<CFG_IGRRST_OFFSET)
   #define CFG_IGRRST_CLRMASK          (EXTCFG1_GETALL_MASK & ~CFG_IGRRST_SETMASK)
+#define CFG_RST_MASKS_GETMASK       (3<<CFG_LIMITED_RGB_OFFSET)
+  #define CFG_RST_MASKS_RSTMASK       (EXTCFG1_GETALL_MASK & ~CFG_RST_MASKS_GETMASK)
+  #define CFG_RST_MASKS_CLRMASK       (EXTCFG1_GETALL_MASK & ~CFG_RST_MASKS_GETMASK)
 #define CFG_LIMITED_RGB_GETMASK     (1<<CFG_LIMITED_RGB_OFFSET)
   #define CFG_LIMITED_RGB_SETMASK     (1<<CFG_LIMITED_RGB_OFFSET)
   #define CFG_LIMITED_RGB_CLRMASK     (EXTCFG1_GETALL_MASK & ~CFG_LIMITED_RGB_SETMASK)
@@ -418,6 +422,8 @@ typedef struct {
 #define CFG_VERTSCALE_PAL_MIN   288
 
 // some max values
+#define CFG_RST_MASKS_MAX_VALUE     3
+
 #define CFG_LINK_HV_SCALE_MAX_VALUE 3
 
 #define CFG_VERTSCALE_MAX_VALUE        2016 // equals 7.00x @ PAL
@@ -528,7 +534,7 @@ extern config_t vert_scale, hor_scale,
                 linex_force_5060, low_latency_mode,
                 vga_for_480p, linex_resolution;
 extern config_t show_logo, show_osd, mute_osd_tmp,
-                igr_reset,
+                igr_reset, rst_masking,
                 limited_rgb, gamma_lut, deblur_mode, mode16bit,
                 vert_shift, hor_shift,
                 deinterlace_mode, interpolation_mode_vert, interpolation_mode_hori, pal_boxed_mode;

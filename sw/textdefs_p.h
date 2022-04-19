@@ -147,7 +147,8 @@
 #define MISC_IGR_RESET_V_OFFSET       ( 5 + MISC_VALS_V_OFFSET)
 #define MISC_IGR_DEBLUR_V_OFFSET      ( 6 + MISC_VALS_V_OFFSET)
 #define MISC_IGR_16BITMODE_V_OFFSET   ( 7 + MISC_VALS_V_OFFSET)
-#define MISC_LUCKY_1440P_V_OFFSET     ( 9 + MISC_VALS_V_OFFSET)
+#define MISC_RST_MASKING_V_OFFSET     ( 8 + MISC_VALS_V_OFFSET)
+#define MISC_LUCKY_1440P_V_OFFSET     (10 + MISC_VALS_V_OFFSET)
 
 #define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
 #define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
@@ -268,7 +269,8 @@ static const char *misc_overlay __ufmdata_section__ =
     "* Controller Routines:\n"
     "  - Reset:\n"
     "  - VI-DeBlur:\n"
-    "  - 16bit Mode:\n\n"
+    "  - 16bit Mode:\n"
+    "* Reset masking:\n"
     "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =
@@ -394,6 +396,8 @@ const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr."
 const char *ScanlinesCalcBase[]     = {"Luma based","per color based"};
 const char *ScanlinesThickness[]    = {"Thin","Normal","Thick","Adaptive"};
 const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular","Flat top"};
+
+const char *RstMasking[] = {"None","VI pipeline","Audio","VI + Audio"};
 
 const char *VideoMode[] __ufmdata_section__   = {"240p","480i","288p","576i"};
 const char *VRefresh[] __ufmdata_section__    = {"@ 60Hz","@ 50Hz"};

@@ -155,6 +155,7 @@ input [1:0] PCB_ID_i;
 
 
 // connection wires
+wire nRST_Masking_w;
 
 wire N64_nRST_w;
 wire HDMI_CLK_w;
@@ -209,6 +210,7 @@ register_sync #(
 n64adv2_clk_n_rst_hk clk_n_rst_hk_u(
   .N64_CLK_i(N64_CLK_w),
   .N64_nRST_i(N64_nRST_io),
+  .nRST_Masking_i(nRST_Masking_w),
   .SYS_CLK_i(SYS_CLK_i),
   .N64_nRST_o(N64_nRST_w),
   .N64_palmode(PPUState_w[`PPU_input_pal_bit]),
@@ -233,6 +235,7 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u(
 
 n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u(
   .N64_nRST_io(N64_nRST_io),
+  .nRST_Masking_o(nRST_Masking_w),
   .SCLKs(CLKs_controller_w),
   .nSRSTs(nSRST_w),
   .CTRL_i(CTRL_i),

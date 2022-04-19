@@ -42,7 +42,7 @@ extern char szText[VD_WIDTH];
 
 extern const char *OffOn[], *Force5060[], *Resolutions[], *DeInterModes[], *InterpModes[],
                   *ScanlinesThickness[], *ScanlinesScaleProfile[], *ScanlinesCalcBase[],
-                  *QuickChange[];
+                  *RstMasking[];
 
 
 // scaler
@@ -164,6 +164,17 @@ config_t igr_reset = {
         .clrflag_mask = CFG_IGRRST_CLRMASK
     },
     .val2char_func = &flag2set_func
+};
+
+config_t rst_masking = {
+    .cfg_word        = &extcfg1_word,
+    .cfg_word_offset = CFG_RSTMASKS_OFFSET,
+    .cfg_type        = NUMVALUE,
+    .value_details   = {
+        .max_value     = CFG_RST_MASKS_MAX_VALUE,
+        .getvalue_mask = CFG_RST_MASKS_GETMASK
+    },
+    .value_string = &RstMasking
 };
 
 config_t limited_rgb = {
