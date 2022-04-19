@@ -88,6 +88,11 @@ static const arrow_t misc_opt_arrow = {
     .hpos = (MISC_VALS_H_OFFSET - 2)
 };
 
+static const arrow_t misc_sel_arrow = {
+    .shape = &selection_arrow,
+    .hpos = (MISC_VALS_H_OFFSET - 2)
+};
+
 static const arrow_t rwdata_sel_arrow = {
     .shape = &selection_arrow,
     .hpos = (RWDATA_VALS_H_OFFSET - 2)
@@ -273,15 +278,16 @@ menu_t misc_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 7,
+    .number_selections = 9,
     .leaves = {
         {.id = MISC_AUDIO_SWAP_LR_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_swap_lr},
-//        {.id = MISC_AUDIO_FILTER_V_OFFSET  , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_filter},
         {.id = MISC_AUDIO_AMP_V_OFFSET     , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_amp},
         {.id = MISC_AUDIO_SPDIF_EN_V_OFFSET, .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_spdif_en},
         {.id = MISC_IGR_RESET_V_OFFSET     , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_reset},
         {.id = MISC_IGR_DEBLUR_V_OFFSET    , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_deblur},
         {.id = MISC_IGR_16BITMODE_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_16bitmode},
+        {.id = MISC_RST_MASKING_V_OFFSET   , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &rst_masking},
+        {.id = MISC_RESYNC_VI_PL_V_OFFSET  , .arrow_desc = &misc_sel_arrow, .leavetype = IFUNC0     , .sys_fun_0 = &resync_vi_pipeline},
         {.id = MISC_LUCKY_1440P_V_OFFSET   , .arrow_desc = &misc_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_unlock1440p}
     }
 };
@@ -583,7 +589,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   if (is_vires_screen(*current_menu)) {
     if ((unlock_1440p == FALSE) && ((current_sel == RES_1440P_SELECTION) || (current_sel == RES_1440WP_SELECTION)))
       (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440WP_SELECTION + 1 : RES_1440P_SELECTION - 1;
-    if (cfg_get_value(&low_latency_mode,0) == ON && (current_sel == FORCE5060_SELECTION))
+    if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == PASSTHROUGH) && (current_sel == FORCE5060_SELECTION))
       (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : FORCE5060_SELECTION - 1;
   }
 
@@ -820,7 +826,7 @@ int update_cfg_screen(menu_t* current_menu)
 
         // check res screen
         if (is_vires_screen(current_menu)) {
-          if (cfg_get_value(&low_latency_mode,0) == ON && v_run == FORCE5060_SELECTION) {
+          if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == PASSTHROUGH) && v_run == FORCE5060_SELECTION) {
             val_select = 0;
             font_color = FONTCOLOR_GREY;
           }

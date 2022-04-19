@@ -34,6 +34,7 @@
 module n64adv2_clk_n_rst_hk(
   N64_CLK_i,
   N64_nRST_i,
+  nRST_Masking_i,
   
   SYS_CLK_i,
   
@@ -67,6 +68,7 @@ module n64adv2_clk_n_rst_hk(
 
 input N64_CLK_i;
 input N64_nRST_i;
+input [1:0] nRST_Masking_i;
 
 input SYS_CLK_i;
 
@@ -99,6 +101,7 @@ output nARST_o;
 
 // PPU Input Reset
 // ===============
+wire nRST_video_masked_w = nRST_Masking_i[0] | N64_nRST_i;
 
 reg n64_en = 1'b0;
 reg [7:0] n64boot_delay = 8'hff;
@@ -115,7 +118,7 @@ reset_generator #(
   .clk(N64_CLK_i),
 //  .clk_en(1'b1),
   .clk_en(n64_en),
-  .async_nrst_i(N64_nRST_i),
+  .async_nrst_i(nRST_video_masked_w),
   .rst_o(N64_nRST_o)
 );
 
@@ -124,8 +127,8 @@ reset_generator #(
 // ====
 
 reg HDMI_CLK_sel_cmb;
-wire HDMI_clk_en_w = Si_cfg_done_i;
-wire HDMI_async_nRST_w = n64_en & N64_nRST_i & Si_cfg_done_i;
+wire HDMI_clk_en_w = n64_en & Si_cfg_done_i;
+wire HDMI_async_nRST_w = nRST_video_masked_w & Si_cfg_done_i;
 wire HDMI_CLK_w;
 
 always @(*) begin
@@ -181,8 +184,6 @@ system_pll sys_pll_u(
 // DRAM
 // ----
 
-//wire DRAM_async_nRST_w = n64_en & N64_nRST_i & Si_cfg_done_i;
-//wire DRAM_async_nRST_w = n64_en & N64_nRST_i;
 wire DRAM_async_nRST_w = n64_en;
 
 assign DRAM_CLKs_o = {DRAM_CLK_w,DRAM_CLK_int_w};
@@ -230,10 +231,12 @@ assign CLKs_controller_o = {SYS_CLK_1_w,SYS_CLK_0_w};
 // Audio
 // =====
 
+wire nRST_audio_masked_w = nRST_Masking_i[1] | N64_nRST_i;
+
 reset_generator reset_aclk_u(
   .clk(AMCLK_i),
-  .clk_en(1'b1),
-  .async_nrst_i(n64_en & N64_nRST_i),
+  .clk_en(n64_en),
+  .async_nrst_i(nRST_audio_masked_w),
   .rst_o(nARST_o)
 );
 

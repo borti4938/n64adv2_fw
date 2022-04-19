@@ -45,7 +45,7 @@
   //  wire [31:0] SysConfigSet1; (OSD, IGR, VI-Processing)
   //    [31:29] {show_osd_logo,show_osd,mute_osd}
   //    [28   ] {igr for reset}
-  //    [27:26] {(2bits reserve)}
+  //    [27:26] {reset masks (2bit)}
   //    [25:19] {limited RGB,gamma (4bits),VI-DeBlur,16bit mode}
   //    [18: 9] {LineX V-Shift (5bits),LineX H-Shift (5bits)}
   //    [ 8: 0] {(1bit reserve),De-Interlace Mode (1 bit),(1bit reserve),Vert. Interpolation Mode (2 bits),(1bit reserve),Horiz. Interpolation Mode (2 bits),PAL boxed mode (1 bit)}
@@ -64,6 +64,11 @@
   
   // IGR
   `define igr_reset_enable_bit  28
+  
+  // Reset Masks
+  `define rst_masks_slice           27:26
+  `define rst_audio_mask_bit        27
+  `define rst_vi_pipeline_mask_bit  26
   
   // Separation slices
   `define cfg3_audio_config_slice    6: 0

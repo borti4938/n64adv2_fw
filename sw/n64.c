@@ -36,6 +36,7 @@
 #include "config.h"
 #include "n64.h"
 #include "vd_driver.h"
+#include "si5356.h"
 
 #define ANALOG_TH     50
 
@@ -185,6 +186,16 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
   }
 
   return CMD_NON;
+}
+
+int resync_vi_pipeline()
+{
+  bool_t abort = confirmation_routine();
+  if (abort) return -1;
+  si5356_clr_ready_bit();
+  usleep(100);
+  si5356_set_ready_bit();
+  return 0;
 }
 
 bool_t get_osdvsync()

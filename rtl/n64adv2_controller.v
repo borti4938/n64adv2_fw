@@ -40,6 +40,7 @@ module n64adv2_controller #(
   parameter [11:0] hdl_fw = 12'h000 // number is a dummy; defined in and passed from top module
 )(
   N64_nRST_io,
+  nRST_Masking_o,
   
   SCLKs,
   nSRSTs,
@@ -74,6 +75,7 @@ module n64adv2_controller #(
 `include "../lib/n64adv2_config.vh"
 
 inout N64_nRST_io;
+output reg [1:0] nRST_Masking_o;
 
 input [1:0] SCLKs;
 input [1:0] nSRSTs;
@@ -290,6 +292,7 @@ always @(*) begin
   OSDWrVector    <= {vd_wrctrl_w,vd_wrdata_w};
   APUConfigSet   <= SysConfigSet3[`cfg3_audio_config_slice];
   use_igr        <= SysConfigSet1[`igr_reset_enable_bit];
+  nRST_Masking_o <= SysConfigSet1[`rst_masks_slice];
 end
 
 

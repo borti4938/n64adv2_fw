@@ -660,7 +660,7 @@ task setVideoHTimings;
           HSTOP_OS <= `HSYNCLEN_1440p50 + `HBACKPORCH_1440p50 + `HACTIVE_1440p50 + `HOVERSCAN_MAX_1440p50;
           HTOTAL <= `HTOTAL_1440p50;
         end
-      `USE_1440p50: begin // 1440p-50, 16:9 (2x pixelrep)
+      `USE_1440Wp50: begin // 1440p-50, 16:9 (2x pixelrep)
           HSYNC_active <= `HSYNC_active_1440Wp50;
           HSYNCLEN <= `HSYNCLEN_1440Wp50;
           HSTART <= `HSYNCLEN_1440Wp50 + `HBACKPORCH_1440Wp50;
