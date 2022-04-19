@@ -583,7 +583,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   if (is_vires_screen(*current_menu)) {
     if ((unlock_1440p == FALSE) && ((current_sel == RES_1440P_SELECTION) || (current_sel == RES_1440WP_SELECTION)))
       (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440WP_SELECTION + 1 : RES_1440P_SELECTION - 1;
-    if (cfg_get_value(&low_latency_mode,0) == ON && (current_sel == FORCE5060_SELECTION))
+    if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == PASSTHROUGH) && (current_sel == FORCE5060_SELECTION))
       (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : FORCE5060_SELECTION - 1;
   }
 
@@ -820,7 +820,7 @@ int update_cfg_screen(menu_t* current_menu)
 
         // check res screen
         if (is_vires_screen(current_menu)) {
-          if (cfg_get_value(&low_latency_mode,0) == ON && v_run == FORCE5060_SELECTION) {
+          if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == PASSTHROUGH) && v_run == FORCE5060_SELECTION) {
             val_select = 0;
             font_color = FONTCOLOR_GREY;
           }
