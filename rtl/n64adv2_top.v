@@ -51,6 +51,9 @@ module n64adv2_top (
   // Feedback to Si5356
   N64_CLK_o,
   
+  // nViDeblur for N64RGB
+  nViDeblur_o,
+  
   // N64 audio in
   ASCLK_i,
   ASDATA_i,
@@ -106,12 +109,13 @@ input N64_CLK_i;
 input nVDSYNC_i;
 input [color_width_i-1:0] VD_i;
 
+output N64_CLK_o;
+output nViDeblur_o;
+
 input ASCLK_i;
 input ASDATA_i;
 input ALRCLK_i;
 input AMCLK_i;
-
-output N64_CLK_o;
 
 input  HDMI_CLKsub_i;
 input  HDMI_CLKmain_i;
@@ -185,6 +189,7 @@ wire [3:0] DRAM_DQ_dummy;
 // feedback
 
 assign N64_CLK_o = N64_CLK_i;
+assign nViDeblur_o = ~PPUConfigSet_w[`videblur_bit];
 
 // input registering
 

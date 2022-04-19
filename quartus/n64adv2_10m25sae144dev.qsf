@@ -88,6 +88,7 @@ set_instance_assignment -name IO_STANDARD "2.5 V" -to AMCLK_i
 set_location_assignment PIN_27 -to SYS_CLK_i
 set_location_assignment PIN_120 -to CTRL_i
 set_location_assignment PIN_17 -to N64_CLK_o
+set_location_assignment PIN_138 -to nViDeblur_o
 set_location_assignment PIN_29 -to HDMI_CLKsub_i
 set_location_assignment PIN_28 -to HDMI_CLKmain_i
 
