@@ -88,6 +88,11 @@ static const arrow_t misc_opt_arrow = {
     .hpos = (MISC_VALS_H_OFFSET - 2)
 };
 
+static const arrow_t misc_sel_arrow = {
+    .shape = &selection_arrow,
+    .hpos = (MISC_VALS_H_OFFSET - 2)
+};
+
 static const arrow_t rwdata_sel_arrow = {
     .shape = &selection_arrow,
     .hpos = (RWDATA_VALS_H_OFFSET - 2)
@@ -273,7 +278,7 @@ menu_t misc_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 7,
+    .number_selections = 9,
     .leaves = {
         {.id = MISC_AUDIO_SWAP_LR_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_swap_lr},
         {.id = MISC_AUDIO_AMP_V_OFFSET     , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_amp},
@@ -282,6 +287,7 @@ menu_t misc_screen = {
         {.id = MISC_IGR_DEBLUR_V_OFFSET    , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_deblur},
         {.id = MISC_IGR_16BITMODE_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_16bitmode},
         {.id = MISC_RST_MASKING_V_OFFSET   , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &rst_masking},
+        {.id = MISC_RESYNC_VI_PL_V_OFFSET  , .arrow_desc = &misc_sel_arrow, .leavetype = IFUNC0     , .sys_fun_0 = &resync_vi_pipeline},
         {.id = MISC_LUCKY_1440P_V_OFFSET   , .arrow_desc = &misc_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_unlock1440p}
     }
 };

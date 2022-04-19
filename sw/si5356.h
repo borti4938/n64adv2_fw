@@ -95,6 +95,8 @@ typedef enum {
 
 #define SI5356_PLL_LOCKSTATUS() ((si5356_readreg(PLL_LOSSLOCK_REG) & (1<<PLL_LOSSLOCK_BIT)) == 0x00)
 
+void si5356_clr_ready_bit(void);
+void si5356_set_ready_bit(void);
 int check_si5356(void);
 void init_si5356(clk_config_t target_cfg);
 void configure_clk_si5356(clk_config_t target_cfg);

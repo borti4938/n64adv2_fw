@@ -184,6 +184,7 @@ extern bool_t hor_hires;
 void update_ppu_state(void);
 void update_ctrl_data(void);
 cmd_t ctrl_data_to_cmd(bool_t no_fast_skip);
+int resync_vi_pipeline(void);
 bool_t get_osdvsync(void);
 bool_t new_ctrl_available(void);
 bool_t get_fallback_mode(void);
