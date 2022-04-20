@@ -265,16 +265,14 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
     bool_t use_240p_288p = ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288));
     bool_t use_1440Wp = ((scaling_menu == NTSC_TO_1440W) || (scaling_menu == PAL_TO_1440W));
     alt_u16 scale_max, scale_min;
-    alt_u8 scale_inc;
+    alt_u8 scale_inc = 1;
     if (use_240p_288p) {
       if (use_vertical) {
         scale_max = 2*CFG_VERTSCALE_PAL_MIN;
         scale_min = ((vmode_scaling_menu == PAL) && !((bool_t) cfg_get_value(&pal_boxed_mode,0))) ? (CFG_VERTSCALE_PAL_MIN & 0xFFFE) : (CFG_VERTSCALE_NTSC_MIN & 0xFFFE);
-        scale_inc = 1;
       } else {
         scale_max = 2*predef_scaling_vals[2][0];
         scale_min = predef_scaling_vals[2][0];
-        scale_inc = 2;
       }
     } else {
       scale_max = use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;

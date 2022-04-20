@@ -88,7 +88,8 @@ void set_avi_info(void) {
 
   switch (linex_val) {
     case PASSTHROUGH:
-      set_pr_manual(PR_MANUAL,1,2-hor_hires);
+//      set_pr_manual(PR_MANUAL,2,2*(2-hor_hires));
+      set_pr_manual(PR_MANUAL,2,2);
       if (palmode) adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b010111);
       else adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b001000);
       break;

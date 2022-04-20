@@ -40,12 +40,12 @@
   // 240p-60, 4:3 (2x/4x pixelrep, mode 2)
   `define USE_240p60            5'b00000
   `define HSYNC_active_240p60   1'b0
-  `define HFRONTPORCH_240p60    38
-  `define HSYNCLEN_240p60       124
-  `define HBACKPORCH_240p60     114
-  `define HACTIVE_240p60        1440
+  `define HFRONTPORCH_240p60    19
+  `define HSYNCLEN_240p60       62
+  `define HBACKPORCH_240p60     57
+  `define HACTIVE_240p60        720
   `define HOVERSCAN_MAX_240p60  `HFRONTPORCH_240p60
-  `define HTOTAL_240p60         1716
+  `define HTOTAL_240p60         858
   `define VSYNC_active_240p60   1'b0
   `define VFRONTPORCH_240p60    5
   `define VSYNCLEN_240p60       3
@@ -173,7 +173,7 @@
   `define VOVERSCAN_MAX_1440p60 `VFRONTPORCH_1440p60
   `define VTOTAL_1440p60        1475
   
-  // 1440p-60, 16:9 (CVT-RB, 2x pixelrep)
+  // 1440p-60, 16:9 (CVT-RB, 2x pixelrep to achieve horizontal resolution)
   `define USE_1440Wp60            5'b01000
   `define HSYNC_active_1440Wp60   1'b1
   `define HFRONTPORCH_1440Wp60    24
@@ -193,12 +193,12 @@
   // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
   `define USE_288p50            5'b10000
   `define HSYNC_active_288p50   1'b0
-  `define HFRONTPORCH_288p50    24
-  `define HSYNCLEN_288p50       126
-  `define HBACKPORCH_288p50     138
-  `define HACTIVE_288p50        1440
+  `define HFRONTPORCH_288p50    12
+  `define HSYNCLEN_288p50       63
+  `define HBACKPORCH_288p50     69
+  `define HACTIVE_288p50        720
   `define HOVERSCAN_MAX_288p50 `HFRONTPORCH_288p50
-  `define HTOTAL_288p50         1728
+  `define HTOTAL_288p50         864
   `define VSYNC_active_288p50   1'b0
   `define VFRONTPORCH_288p50    3
   `define VSYNCLEN_288p50       3
@@ -309,7 +309,7 @@
   `define VOVERSCAN_MAX_1440p50 `VFRONTPORCH_1440p50
   `define VTOTAL_1440p50        1475
   
-  // 1440p-50, 16:9 (CVT-RB, 2x pixelrep)
+  // 1440p-50, 16:9 (CVT-RB, 2x pixelrep to achieve horizontal resolution)
   `define USE_1440Wp50            5'b11000
   `define HSYNC_active_1440Wp50   1'b1
   `define HFRONTPORCH_1440Wp50    296

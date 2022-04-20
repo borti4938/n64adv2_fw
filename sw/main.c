@@ -336,7 +336,7 @@ int main()
 
     if ((palmode_pre != palmode)                     ||
         (target_resolution_pre != target_resolution) ||
-        (hor_hires_pre != hor_hires)                 ||
+//        (hor_hires_pre != hor_hires)                 ||
         (todo == NEW_CONF_VALUE))
       set_avi_info();
 

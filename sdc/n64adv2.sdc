@@ -48,6 +48,8 @@ set n64_vclk_per 20.000
 set n64_vclk_waveform [list 0.000 [expr $n64_vclk_per*3/5]]
 set sys_clk_per 20.000
 set sys_clk_waveform [list 0.000 [expr $sys_clk_per/2]]
+set hdmi_clk_240p_per 73.448
+set hdmi_clk_240p_waveform [list 0.000 [expr $hdmi_clk_240p_per/2]]
 set hdmi_clk_vga_per 39.464
 set hdmi_clk_vga_waveform [list 0.000 [expr $hdmi_clk_vga_per/2]]
 set hdmi_clk_480p_per 36.724
@@ -72,7 +74,8 @@ create_clock -name {VCLK_N64_VIRT} -period $n64_vclk_per -waveform $n64_vclk_wav
 create_clock -name {VCLK_N64} -period $n64_vclk_per -waveform $n64_vclk_waveform $n64_vclk_input
 
 # HDMI video clock (for simplicity just use the standard clocks)
-create_clock -name {HDMI_VGA_CLK0} -period $hdmi_clk_vga_per -waveform $hdmi_clk_vga_waveform $hdmi_vclk0_input
+create_clock -name {HDMI_240P_CLK0} -period $hdmi_clk_240p_per -waveform $hdmi_clk_240p_waveform $hdmi_vclk0_input
+create_clock -name {HDMI_VGA_CLK0} -period $hdmi_clk_vga_per -waveform $hdmi_clk_vga_waveform $hdmi_vclk0_input -add
 create_clock -name {HDMI_480P_CLK0} -period $hdmi_clk_480p_per -waveform $hdmi_clk_480p_waveform $hdmi_vclk0_input -add
 create_clock -name {HDMI_720P_CLK0} -period $hdmi_clk_720p_per -waveform $hdmi_clk_720p_waveform $hdmi_vclk0_input -add
 create_clock -name {HDMI_960P_CLK0} -period $hdmi_clk_960p_per -waveform $hdmi_clk_960p_waveform $hdmi_vclk0_input -add
@@ -80,7 +83,8 @@ create_clock -name {HDMI_1080P_CLK0} -period $hdmi_clk_1080p_per -waveform $hdmi
 create_clock -name {HDMI_1200P_CLK0} -period $hdmi_clk_1200p_per -waveform $hdmi_clk_1200p_waveform $hdmi_vclk0_input -add
 create_clock -name {HDMI_1440P_CLK0} -period $hdmi_clk_1440p_per -waveform $hdmi_clk_1440p_waveform $hdmi_vclk0_input -add
 create_clock -name {HDMI_1440WP_CLK0} -period $hdmi_clk_1440Wp_per -waveform $hdmi_clk_1440Wp_waveform $hdmi_vclk0_input -add
-create_clock -name {HDMI_VGA_CLK1} -period $hdmi_clk_vga_per -waveform $hdmi_clk_vga_waveform $hdmi_vclk1_input
+create_clock -name {HDMI_240P_CLK1} -period $hdmi_clk_240p_per -waveform $hdmi_clk_240p_waveform $hdmi_vclk1_input
+create_clock -name {HDMI_VGA_CLK1} -period $hdmi_clk_vga_per -waveform $hdmi_clk_vga_waveform $hdmi_vclk1_input -add
 create_clock -name {HDMI_480P_CLK1} -period $hdmi_clk_480p_per -waveform $hdmi_clk_480p_waveform $hdmi_vclk1_input -add
 create_clock -name {HDMI_720P_CLK1} -period $hdmi_clk_720p_per -waveform $hdmi_clk_720p_waveform $hdmi_vclk1_input -add
 create_clock -name {HDMI_960P_CLK1} -period $hdmi_clk_960p_per -waveform $hdmi_clk_960p_waveform $hdmi_vclk1_input -add
@@ -122,7 +126,8 @@ create_generated_clock -name {CTRL_CLK} -source $sys_pll_in -divide_by 25 -multi
 set vclk_mux_out [get_pins {clk_n_rst_hk_u|altclkctrl_u|altclkctrl_0|altclkctrl_altclkctrl_0_sub_component|clkctrl1|outclk}]
 set vclk_out [get_ports {HDMI_CLK_o}]
 
-create_generated_clock -name {HDMI_VGA_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_VGA_CLK0} $vclk_mux_out
+create_generated_clock -name {HDMI_240P_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_240P_CLK0} $vclk_mux_out
+create_generated_clock -name {HDMI_VGA_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_VGA_CLK0} $vclk_mux_out -add
 create_generated_clock -name {HDMI_480P_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_480P_CLK0} $vclk_mux_out -add
 create_generated_clock -name {HDMI_720P_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_720P_CLK0} $vclk_mux_out -add
 create_generated_clock -name {HDMI_960P_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_960P_CLK0} $vclk_mux_out -add
@@ -130,6 +135,7 @@ create_generated_clock -name {HDMI_1080P_CLK0_o_int} -source $hdmi_vclk0_input -
 create_generated_clock -name {HDMI_1200P_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_1200P_CLK0} $vclk_mux_out -add
 create_generated_clock -name {HDMI_1440P_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_1440P_CLK0} $vclk_mux_out -add
 create_generated_clock -name {HDMI_1440WP_CLK0_o_int} -source $hdmi_vclk0_input -master_clock {HDMI_1440WP_CLK0} $vclk_mux_out -add
+create_generated_clock -name {HDMI_240P_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_240P_CLK1} $vclk_mux_out -add
 create_generated_clock -name {HDMI_VGA_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_VGA_CLK1} $vclk_mux_out -add
 create_generated_clock -name {HDMI_480P_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_480P_CLK1} $vclk_mux_out -add
 create_generated_clock -name {HDMI_720P_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_720P_CLK1} $vclk_mux_out -add
@@ -139,7 +145,8 @@ create_generated_clock -name {HDMI_1200P_CLK1_o_int} -source $hdmi_vclk1_input -
 create_generated_clock -name {HDMI_1440P_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_1440P_CLK1} $vclk_mux_out -add
 create_generated_clock -name {HDMI_1440WP_CLK1_o_int} -source $hdmi_vclk1_input -master_clock {HDMI_1440WP_CLK1} $vclk_mux_out -add
 
-create_generated_clock -name {HDMI_VGA_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_VGA_CLK0_o_int} $vclk_out
+create_generated_clock -name {HDMI_240P_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_240P_CLK0_o_int} $vclk_out
+create_generated_clock -name {HDMI_VGA_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_VGA_CLK0_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_480P_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_480P_CLK0_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_720P_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_720P_CLK0_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_960P_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_960P_CLK0_o_int} $vclk_out -add
@@ -147,6 +154,7 @@ create_generated_clock -name {HDMI_1080P_CLK0_out} -source $vclk_mux_out -master
 create_generated_clock -name {HDMI_1200P_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_1200P_CLK0_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_1440P_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_1440P_CLK0_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_1440WP_CLK0_out} -source $vclk_mux_out -master_clock {HDMI_1440WP_CLK0_o_int} $vclk_out -add
+create_generated_clock -name {HDMI_240P_CLK1_out} -source $vclk_mux_out -master_clock {HDMI_240P_CLK1_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_VGA_CLK1_out} -source $vclk_mux_out -master_clock {HDMI_VGA_CLK1_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_480P_CLK1_out} -source $vclk_mux_out -master_clock {HDMI_480P_CLK1_o_int} $vclk_out -add
 create_generated_clock -name {HDMI_720P_CLK1_out} -source $vclk_mux_out -master_clock {HDMI_720P_CLK1_o_int} $vclk_out -add
@@ -206,8 +214,10 @@ set adv_out_dly_min [expr -$adv_vth - $adv_pcb_data2clk_skew_max]
 
 set adv_vid_ports [get_ports {VD_o* VSYNC_o HSYNC_o DE_o}]
 
-set_output_delay -clock {HDMI_VGA_CLK0_out} -max $adv_out_dly_max $adv_vid_ports
-set_output_delay -clock {HDMI_VGA_CLK0_out} -min $adv_out_dly_min $adv_vid_ports
+set_output_delay -clock {HDMI_240P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports
+set_output_delay -clock {HDMI_240P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports
+set_output_delay -clock {HDMI_VGA_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
+set_output_delay -clock {HDMI_VGA_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
 set_output_delay -clock {HDMI_480P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
 set_output_delay -clock {HDMI_480P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
 set_output_delay -clock {HDMI_720P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
@@ -222,6 +232,8 @@ set_output_delay -clock {HDMI_1440P_CLK0_out} -max $adv_out_dly_max $adv_vid_por
 set_output_delay -clock {HDMI_1440P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
 set_output_delay -clock {HDMI_1440WP_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
 set_output_delay -clock {HDMI_1440WP_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
+set_output_delay -clock {HDMI_240P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
+set_output_delay -clock {HDMI_240P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
 set_output_delay -clock {HDMI_VGA_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
 set_output_delay -clock {HDMI_VGA_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
 set_output_delay -clock {HDMI_480P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
@@ -289,6 +301,7 @@ set_multicycle_path -from [get_clocks {DRAM_CLK_int}] -to [get_clocks {DRAM_CLK_
 
 set_clock_groups -logically_exclusive \
                     -group {VCLK_N64_VIRT VCLK_N64 VCLK_N64_fb} \
+                    -group {HDMI_240P_CLK0 HDMI_240P_CLK0_o_int HDMI_240P_CLK0_out} \
                     -group {HDMI_VGA_CLK0 HDMI_VGA_CLK0_o_int HDMI_VGA_CLK0_out} \
                     -group {HDMI_480P_CLK0 HDMI_480P_CLK0_o_int HDMI_480P_CLK0_out} \
                     -group {HDMI_720P_CLK0 HDMI_720P_CLK0_o_int HDMI_720P_CLK0_out} \
@@ -297,6 +310,7 @@ set_clock_groups -logically_exclusive \
                     -group {HDMI_1200P_CLK0 HDMI_1200P_CLK0_o_int HDMI_1200P_CLK0_out} \
                     -group {HDMI_1440P_CLK0 HDMI_1440P_CLK0_o_int HDMI_1440P_CLK0_out} \
                     -group {HDMI_1440WP_CLK0 HDMI_1440WP_CLK0_o_int HDMI_1440WP_CLK0_out} \
+                    -group {HDMI_240P_CLK1 HDMI_240P_CLK1_o_int HDMI_240P_CLK1_out} \
                     -group {HDMI_VGA_CLK1 HDMI_VGA_CLK1_o_int HDMI_VGA_CLK1_out} \
                     -group {HDMI_480P_CLK1 HDMI_480P_CLK1_o_int HDMI_480P_CLK1_out} \
                     -group {HDMI_720P_CLK1 HDMI_720P_CLK1_o_int HDMI_720P_CLK1_out} \
