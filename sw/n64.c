@@ -191,7 +191,7 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
 int resync_vi_pipeline()
 {
   bool_t abort = confirmation_routine();
-  if (abort) return -1;
+  if (abort) return -CFG_RESYNC_ABORT;
   si5356_clr_ready_bit();
   usleep(100);
   si5356_set_ready_bit();

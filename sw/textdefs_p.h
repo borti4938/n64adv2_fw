@@ -129,13 +129,13 @@
 #define VICFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
 #define VICFG_VALS_H_OFFSET         (28 + OVERLAY_H_OFFSET)
 #define VICFG_VALS_V_OFFSET         OVERLAY_V_OFFSET
-#define VICFG_DEINTERL_V_OFFSET     ( 0 + VICFG_VALS_V_OFFSET)
-#define VICFG_GAMMA_V_OFFSET        ( 1 + VICFG_VALS_V_OFFSET)
-#define VICFG_LIMITEDRGB_V_OFFSET   ( 2 + VICFG_VALS_V_OFFSET)
-#define VICFG_DEBLUR_V_OFFSET       ( 3 + VICFG_VALS_V_OFFSET)
-#define VICFG_PCDEBLUR_V_OFFSET     ( 4 + VICFG_VALS_V_OFFSET)
-#define VICFG_16BITMODE_V_OFFSET    ( 5 + VICFG_VALS_V_OFFSET)
-#define VICFG_PC16BITMODE_V_OFFSET  ( 6 + VICFG_VALS_V_OFFSET)
+#define VICFG_DEINTERL_V_OFFSET     ( 1 + VICFG_VALS_V_OFFSET)
+#define VICFG_GAMMA_V_OFFSET        ( 2 + VICFG_VALS_V_OFFSET)
+#define VICFG_LIMITEDRGB_V_OFFSET   ( 3 + VICFG_VALS_V_OFFSET)
+#define VICFG_DEBLUR_V_OFFSET       ( 4 + VICFG_VALS_V_OFFSET)
+#define VICFG_PCDEBLUR_V_OFFSET     ( 5 + VICFG_VALS_V_OFFSET)
+#define VICFG_16BITMODE_V_OFFSET    ( 6 + VICFG_VALS_V_OFFSET)
+#define VICFG_PC16BITMODE_V_OFFSET  ( 7 + VICFG_VALS_V_OFFSET)
 
 #define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET
@@ -155,14 +155,11 @@
 #define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
 #define RWDATA_VALS_H_OFFSET              (26 + RWDATA_OVERLAY_H_OFFSET)
 #define RWDATA_VALS_V_OFFSET              VICFG_OVERLAY_V_OFFSET
-#define RWDATA_SAVE_FL_V_OFFSET           ( 1 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_FL_V_OFFSET           ( 3 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_DEFAULT480P_V_OFFSET  ( 4 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_DEFAULT1080P_V_OFFSET ( 5 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_FALLBACK_V_OFFSET          ( 6 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_FWCURRENT_V_OFFSET         ( 7 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_FWROM_V_OFFSET             ( 8 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_UPDATE_V_OFFSET            ( 9 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_SAVE_FL_V_OFFSET           ( 2 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_FL_V_OFFSET           ( 4 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_DEFAULT480P_V_OFFSET  ( 5 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_DEFAULT1080P_V_OFFSET ( 6 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FALLBACK_V_OFFSET          ( 7 + RWDATA_OVERLAY_V_OFFSET)
 
 #define MAIN_OVERLAY_H_OFFSET   ( 3 + OVERLAY_H_OFFSET)
 #define MAIN_OVERLAY_V_OFFSET   OVERLAY_V_OFFSET
@@ -193,7 +190,7 @@ static const char *vinfo_overlay __ufmdata_section__ =
     "  - Input resolution:\n"
     "  - Output resolution:\n"
     "  - Scaled image size:\n"
-    "  - Low latency mode:\n"
+    "  - Frame-Locked mode:\n"
     "* Filter Options\n"
     "  - LowRes. VI-DeBlur:\n"
     "  - Gamma boost exponent:";
@@ -252,6 +249,7 @@ static const char *slcfg_opt_overlay __ufmdata_section__ =
 static const char *vicfg_header __ufmdata_section__ =
     "VI-Processing";
 static const char *vicfg_overlay __ufmdata_section__ =
+    "\n"
     "* De-Interlacing mode:\n"
     "* Gamma Value:\n"
     "* Limited RGB:\n"
@@ -278,17 +276,14 @@ static const char *misc_overlay __ufmdata_section__ =
 static const char *rwdata_header __ufmdata_section__ =
     "Save/Load/Fw";
 static const char *rwdata_overlay __ufmdata_section__ =
+    "\n"
     "* Save\n"
     "  - Configuration:\n"
     "* Load\n"
     "  - Last Configuration:\n"
     "  - 480p Defaults:\n"
     "  - 1080p Defaults:\n"
-    "* Fallback Config:\n"
-    "* Firmware Update\n"
-    "  - Current:\n"
-    "  - Found:\n"
-    "  - Run Update:";
+    "* Fallback Config:";
 
 static const char *thanks_header __ufmdata_section__ =
     "Acknowledgment";
