@@ -203,6 +203,8 @@ menu_t viscaling_screen = {
     }
 };
 
+#define V_INTERP_SELECTION      0
+#define H_INTERP_SELECTION      1
 #define SCALING_PAGE_SELECTION  2
 #define VHLINK_SELECTION        3
 #define SCALING_STEPS_SELECTION 4
@@ -595,8 +597,11 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
 
   if (is_viscaling_screen(*current_menu)) {
     if ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288)) {
-      if (current_sel == VHLINK_SELECTION)
-        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? VHLINK_SELECTION + 1 : VHLINK_SELECTION - 1;
+//      if (current_sel == V_INTERP_SELECTION || v_run == H_INTERP_SELECTION)
+      if (current_sel < SCALING_PAGE_SELECTION)
+        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? H_INTERP_SELECTION + 1 : (*current_menu)->number_selections - 1;
+      if (current_sel == VHLINK_SELECTION || current_sel == SCALING_STEPS_SELECTION)
+        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? SCALING_STEPS_SELECTION + 1 : VHLINK_SELECTION - 1;
     } else {
       if((current_sel == HORISCALE_SELECTION) && (cfg_get_value(&link_hv_scale,0) != CFG_LINK_HV_SCALE_MAX_VALUE))
         (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? HORISCALE_SELECTION + 1 : HORISCALE_SELECTION - 1;
@@ -842,8 +847,17 @@ int update_cfg_screen(menu_t* current_menu)
 
         // check scaling menu
         if (is_viscaling_screen(current_menu) && use_240p_288p) {
+//          if (v_run == V_INTERP_SELECTION || v_run == H_INTERP_SELECTION) {
+          if (v_run < SCALING_PAGE_SELECTION) {
+            val_select = 0;
+            font_color = FONTCOLOR_GREY;
+          }
           if (v_run == VHLINK_SELECTION) {
             val_select = CFG_LINK_HV_SCALE_MAX_VALUE;
+            font_color = FONTCOLOR_GREY;
+          }
+          if (v_run == SCALING_STEPS_SELECTION) {
+            val_select = 1;
             font_color = FONTCOLOR_GREY;
           }
         }
