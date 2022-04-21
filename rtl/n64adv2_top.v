@@ -159,7 +159,7 @@ input [1:0] PCB_ID_i;
 
 
 // connection wires
-wire nRST_Masking_w;
+wire [1:0] nRST_Masking_w;
 
 wire N64_nRST_w;
 wire HDMI_CLK_w;
