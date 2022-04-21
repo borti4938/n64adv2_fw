@@ -177,17 +177,6 @@ config_t rst_masking = {
     .value_string = &RstMasking
 };
 
-config_t limited_rgb = {
-    .cfg_word        = &extcfg1_word,
-    .cfg_word_offset = CFG_LIMITED_RGB_OFFSET,
-    .cfg_type        = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_LIMITED_RGB_SETMASK,
-        .clrflag_mask = CFG_LIMITED_RGB_CLRMASK
-    },
-    .val2char_func = &flag2set_func
-};
-
 config_t gamma_lut = {
     .cfg_word        = &extcfg1_word,
     .cfg_word_offset = CFG_GAMMA_OFFSET,

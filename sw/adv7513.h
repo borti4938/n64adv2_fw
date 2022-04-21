@@ -45,6 +45,13 @@
 #define ADV_MONITOR_SENSE_STATE() ((adv7513_readreg(ADV7513_REG_STATUS) & 0x20) == 0x20)
 
 typedef enum {
+  RGB_full = 0,
+  RGB_limited
+} color_format_t;
+
+#define MAX_COLOR_FORMATS  RGB_limited+1
+
+typedef enum {
   PR_AUTO = 0,
   PR_MANUAL
 } pr_mode_t;

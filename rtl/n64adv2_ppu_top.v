@@ -129,10 +129,6 @@ output        DRAM_nWE;
 
 // start of rtl
 
-// params
-localparam limitRGB_coeff = 8'd220;
-localparam limitRGB_offset = 8'd16;
-
 // wires
 wire [1:0] vinfo_pass;  // [1:0] {vmode,n64_480i}
 wire palmode, n64_480i;
@@ -184,8 +180,6 @@ wire [7:0] sl_vpos_rel_w, sl_hpos_rel_w;
 
 wire [1:0] OSDInfo_resynced;
 
-wire [15:0] limited_Re_pre, limited_Gr_pre, limited_Bl_pre;
-
 //regs
 reg cfg_nvideblur;
 
@@ -210,15 +204,9 @@ reg [11:0] cfg_osd_hoffset;
 reg cfg_active_vsync;
 reg cfg_active_hsync;
 
-reg cfg_limitedRGB;
-
 reg [3:0] palmode_buf;
 reg palmode_change;
 
-reg [color_width_o-1:0] limited_Re_pre_LL, limited_Gr_pre_LL, limited_Bl_pre_LL;
-reg [color_width_o  :0] limited_Re_pre_L, limited_Gr_pre_L, limited_Bl_pre_L;
-reg [`VDATA_O_CO_SLICE] full_RGB_pre_LL, full_RGB_pre_L;
-reg VSYNC_pre_LL, VSYNC_pre_L, HSYNC_pre_LL, HSYNC_pre_L, DE_pre_LL, DE_pre_L;
 
 
 // apply some assignments
@@ -465,8 +453,6 @@ always @(posedge VCLK_Tx) begin
   
   setVideoSYNCactive(cfg_videomode,cfg_active_vsync,cfg_active_hsync);
   setOSDConfig(cfg_videomode,cfg_osd_vscale,cfg_osd_hscale,cfg_osd_voffset,cfg_osd_hoffset);
-  
-  cfg_limitedRGB <= ConfigSet_resynced[`limitedRGB_bit];
 end
 
 register_sync #(
@@ -662,65 +648,14 @@ osd_injection #(
 );
 
 
-// limit RGB range and
-// register final outputs
-// ======================
+// set final outputs
+// =================
 
-assign limited_Re_pre = vdata24_pp_w[5][`VDATA_O_RE_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
-assign limited_Gr_pre = vdata24_pp_w[5][`VDATA_O_GR_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
-assign limited_Bl_pre = vdata24_pp_w[5][`VDATA_O_BL_SLICE] * (* multstyle = "dsp" *) limitRGB_coeff;
-
-always @(posedge VCLK_Tx or negedge nVRST_Tx)
-  if (!nVRST_Tx) begin
-    limited_Re_pre_LL <= {color_width_o{1'b0}};
-    limited_Gr_pre_LL <= {color_width_o{1'b0}};
-    limited_Bl_pre_LL <= {color_width_o{1'b0}};
-    limited_Re_pre_L <= {(color_width_o+1){1'b0}};
-    limited_Gr_pre_L <= {(color_width_o+1){1'b0}};
-    limited_Bl_pre_L <= {(color_width_o+1){1'b0}};
-    
-    full_RGB_pre_LL <= {3*color_width_o{1'b0}};
-    full_RGB_pre_L <= {3*color_width_o{1'b0}};
-    
-    VSYNC_pre_LL <= 1'b0;
-    HSYNC_pre_LL <= 1'b0;
-       DE_pre_LL <= 1'b0;
-    VSYNC_pre_L <= 1'b0;
-    HSYNC_pre_L <= 1'b0;
-       DE_pre_L <= 1'b0;
-    
-    VSYNC_o <= 1'b0;
-    HSYNC_o <= 1'b0;
-       DE_o <= 1'b0;
-       VD_o <= {3*color_width_o{1'b0}};
-  end else begin
-    limited_Re_pre_LL <= limited_Re_pre_L[color_width_o:1] + limited_Re_pre_L[0];
-    limited_Gr_pre_LL <= limited_Gr_pre_L[color_width_o:1] + limited_Gr_pre_L[0];
-    limited_Bl_pre_LL <= limited_Bl_pre_L[color_width_o:1] + limited_Bl_pre_L[0];
-    limited_Re_pre_L <= limited_Re_pre[2*color_width_o-1:2*color_width_o-9];
-    limited_Gr_pre_L <= limited_Gr_pre[2*color_width_o-1:2*color_width_o-9];
-    limited_Bl_pre_L <= limited_Bl_pre[2*color_width_o-1:2*color_width_o-9];
-    
-    full_RGB_pre_LL <= full_RGB_pre_L;
-    full_RGB_pre_L <= vdata24_pp_w[5][`VDATA_O_CO_SLICE];
-    
-    VSYNC_pre_LL <= VSYNC_pre_L;
-    HSYNC_pre_LL <= HSYNC_pre_L;
-       DE_pre_LL <= DE_pre_L;
-    VSYNC_pre_L <= vdata24_pp_w[5][3*color_width_o+3];
-    HSYNC_pre_L <= vdata24_pp_w[5][3*color_width_o+1];
-       DE_pre_L <= vdata24_pp_w[5][3*color_width_o+2];
-    
-    VSYNC_o <= VSYNC_pre_LL;
-    HSYNC_o <= HSYNC_pre_LL;
-       DE_o <= DE_pre_LL;
-    if (cfg_limitedRGB) begin
-      VD_o[`VDATA_O_RE_SLICE] <= {limited_Re_pre_LL[color_width_o-1:4] + 1'b1,limited_Re_pre_LL[3:0]};
-      VD_o[`VDATA_O_GR_SLICE] <= {limited_Gr_pre_LL[color_width_o-1:4] + 1'b1,limited_Gr_pre_LL[3:0]};
-      VD_o[`VDATA_O_BL_SLICE] <= {limited_Bl_pre_LL[color_width_o-1:4] + 1'b1,limited_Bl_pre_LL[3:0]};
-    end else begin
-      VD_o <= full_RGB_pre_LL;
-    end
-  end
+always @(*) begin
+  VSYNC_o <= vdata24_pp_w[5][3*color_width_o+3];
+  HSYNC_o <= vdata24_pp_w[5][3*color_width_o+1];
+     DE_o <= vdata24_pp_w[5][3*color_width_o+2];
+     VD_o <= vdata24_pp_w[5][`VDATA_O_CO_SLICE];
+end
 
 endmodule

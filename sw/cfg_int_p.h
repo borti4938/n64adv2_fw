@@ -46,6 +46,18 @@ cfg_b32word_t intcfg0_word =
     .cfg_ref_word_val = 0x00000000
   };
 
+
+config_t limited_rgb = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_LIMITED_RGB_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_LIMITED_RGB_SETMASK,
+        .clrflag_mask = CFG_LIMITED_RGB_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
+
 config_t link_hv_scale = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_LINK_HV_SCALE_OFFSET,

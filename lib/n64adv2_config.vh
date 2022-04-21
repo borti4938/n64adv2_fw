@@ -46,7 +46,8 @@
   //    [31:29] {show_osd_logo,show_osd,mute_osd}
   //    [28   ] {igr for reset}
   //    [27:26] {reset masks (2bit)}
-  //    [25:19] {limited RGB,gamma (4bits),VI-DeBlur,16bit mode}
+  //    [25]    {(1bit reserved)}
+  //    [24:19] {gamma (4bits),VI-DeBlur,16bit mode}
   //    [18: 9] {LineX V-Shift (5bits),LineX H-Shift (5bits)}
   //    [ 8: 0] {(1bit reserve),De-Interlace Mode (1 bit),(1bit reserve),Vert. Interpolation Mode (2 bits),(1bit reserve),Horiz. Interpolation Mode (2 bits),PAL boxed mode (1 bit)}
   //  wire [31:0] SysConfigSet0; (Scaler)
@@ -73,7 +74,7 @@
   // Separation slices
   `define cfg3_audio_config_slice    6: 0
   `define cfg2_scanline_slice       29: 0
-  `define cfg1_ppu_config_slice     25: 0
+  `define cfg1_ppu_config_slice     24: 0
   
   // Audio config
   `define APUConfig_WordWidth        7
@@ -83,9 +84,9 @@
   
   
   // PPU config
-  `define PPUConfig_WordWidth       88  // 30 + 26 + 32
+  `define PPUConfig_WordWidth       87  // 30 + 25 + 32
   
-  `define SysCfg2_PPUCfg_Offset     58  // 26 + 32
+  `define SysCfg2_PPUCfg_Offset     57  // 25 + 32
   `define SysCfg1_PPUCfg_Offset     32  // 32
   `define SysCfg0_PPUCfg_Offset      0  // 0
   
@@ -102,7 +103,6 @@
   `define h2v_SL_linked_bit      1 + `SysCfg2_PPUCfg_Offset
   `define SL_per_Channel_bit     0 + `SysCfg2_PPUCfg_Offset
   
-  `define limitedRGB_bit              25 + `SysCfg1_PPUCfg_Offset
   `define gamma_slice                 24 + `SysCfg1_PPUCfg_Offset : 21 + `SysCfg1_PPUCfg_Offset
   `define videblur_bit                20 + `SysCfg1_PPUCfg_Offset
   `define n16bit_mode_bit             19 + `SysCfg1_PPUCfg_Offset

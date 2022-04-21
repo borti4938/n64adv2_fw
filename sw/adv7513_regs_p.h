@@ -28,6 +28,7 @@
 
 #include "alt_types.h"
 #include "app_cfg.h"
+#include "adv7513.h"
 
 #ifndef ADV7513_REGS_P_H_
 #define ADV7513_REGS_P_H_
@@ -59,7 +60,9 @@
 #define ADV7513_REG_I2C_FREQ_ID_CFG           0x15
 #define ADV7513_REG_VIDEO_INPUT_CFG1          0x16
 #define ADV7513_REG_VIDEO_INPUT_CFG2          0x17
-#define ADV7513_REG_CSC_UPPER(x)              0x18 + (x) * 2)
+#define ADV7513_REG_CSC_ENABLE                0x18
+#define ADV7513_REG_CSC_UPDATE                0x1A
+#define ADV7513_REG_CSC_UPPER(x)              (0x18 + (x) * 2)
 #define ADV7513_REG_CSC_LOWER(x)              (0x19 + (x) * 2)
 #define ADV7513_REG_SYNC_DECODER(x)           (0x30 + (x))
 #define ADV7513_REG_DE_GENERATOR(x)           (0x35 + (x))
@@ -118,5 +121,21 @@
 #define ADV7513_STATUS_HPD                    BIT(6)
 #define ADV7513_STATUS_MONITOR_SENSE          BIT(5)
 
+#define ADV7513_CSC_ENABLE_BIT                7
+#define ADV7513_CSC_UPDATE_BIT                5
+
+#define CSC_COEFFICIENTS 4*3
+
+alt_u8 const csc_reg_vals[MAX_COLOR_FORMATS][2*CSC_COEFFICIENTS] __ufmdata_section__ = {
+// coeff: --- A1 ---, --- A2 ---, --- A3 ---, --- A4 ---, --- B1 ---, --- B2 ---, --- B3 ---, --- B4 ---, --- C1 ---, --- C2 ---, --- C3 ---, --- C4 ---
+// reg:   0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F
+  {       0x28, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00},  // RGB full to RGB full (CSC inactive)
+//  {       0xA8, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00},  // RGB full to RGB full (CSC active)
+  {       0x8D, 0xC0, 0x20, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x0D, 0xC0, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D, 0x00, 0x01, 0x00}
+};
+// Notes:
+// Reg 0x18 bit 7 is enable/disable and considered in register definition
+// Reg 0x18 bit 6:5 is CSC mode and considered in register definition
+// Reg 0x1A bit 5 is update method -> coefficients consider buffer mode (bit must set before and cleared after register writes
 
 #endif /* ADV7513_REGS_P_H_ */

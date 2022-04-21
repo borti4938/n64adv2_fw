@@ -49,6 +49,15 @@ void adv7513_reg_bitclear(alt_u8 regaddr, alt_u8 bit) {
   adv7513_writereg(regaddr,(adv7513_readreg(regaddr) & ~(1 << bit)));
 }
 
+void set_color_format(color_format_t format) {
+  adv7513_reg_bitset(ADV7513_REG_CSC_UPDATE,ADV7513_CSC_UPDATE_BIT);
+  for (int idx = 0; idx < CSC_COEFFICIENTS; idx++) {
+    adv7513_writereg(ADV7513_REG_CSC_UPPER(idx),csc_reg_vals[format][2*idx    ]);
+    adv7513_writereg(ADV7513_REG_CSC_LOWER(idx),csc_reg_vals[format][2*idx + 1]);
+  }
+  adv7513_reg_bitclear(ADV7513_REG_CSC_UPDATE,ADV7513_CSC_UPDATE_BIT);
+}
+
 void set_pr_manual(pr_mode_t pr_mode, alt_u8 pr_set, alt_u8 pr_send2tx) {
 
   alt_u8 regval = 0x80;
@@ -131,7 +140,9 @@ void set_avi_info(void) {
       break;
   }
 
-  if (cfg_get_value(&limited_rgb,0)) adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x04); // [3:2] RGB Quantization range: 01 = full range
+  color_format_t use_limited_rgb = cfg_get_value(&limited_rgb,0);
+  set_color_format(use_limited_rgb);
+  if (use_limited_rgb) adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x04); // [3:2] RGB Quantization range: 01 = limited range
   else adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08); // [3:2] RGB Quantization range: 10 = full range
 
   adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0x80); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum

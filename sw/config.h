@@ -194,13 +194,14 @@ typedef struct {
 #define PREDEFINED_SCALE_STEPS  21
 
 // the overall masks
-#define INTCFG0_GETALL_MASK   0x0000007F
+#define INTCFG0_GETALL_MASK   0x000000FF
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
-#define EXTCFG1_GETALL_MASK   0xFFFFFEB7
+#define EXTCFG1_GETALL_MASK   0xFDFFFEB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x0000007F
 
 // internal cfg set 0
+#define CFG_LIMITED_RGB_OFFSET            7
 #define CFG_LINK_HV_SCALE_OFFSET          5
 #define CFG_DEBLUR_PC_DEFAULT_OFFSET      4
 #define CFG_MODE16BIT_PC_DEFAULT_OFFSET   3
@@ -208,9 +209,12 @@ typedef struct {
 #define CFG_MODE16BIT_IGR_OFFSET          1
 #define CFG_FALLBACK_OFFSET               0
 
+#define CFG_LIMITED_RGB_GETMASK             (1<<CFG_LIMITED_RGB_OFFSET)
+  #define CFG_LIMITED_RGB_SETMASK             (1<<CFG_LIMITED_RGB_OFFSET)
+  #define CFG_LIMITED_RGB_CLRMASK             (INTCFG0_GETALL_MASK & ~CFG_LIMITED_RGB_SETMASK)
 #define CFG_LINK_HV_SCALE_GETMASK           (3<<CFG_LINK_HV_SCALE_OFFSET)
-  #define CFG_LINK_HV_SCALE_RSTMASK       (INTCFG0_GETALL_MASK & ~CFG_LINK_HV_SCALE_GETMASK)
-  #define CFG_LINK_HV_SCALE_CLRMASK       (INTCFG0_GETALL_MASK & ~CFG_LINK_HV_SCALE_GETMASK)
+  #define CFG_LINK_HV_SCALE_RSTMASK           (INTCFG0_GETALL_MASK & ~CFG_LINK_HV_SCALE_GETMASK)
+  #define CFG_LINK_HV_SCALE_CLRMASK           (INTCFG0_GETALL_MASK & ~CFG_LINK_HV_SCALE_GETMASK)
 #define CFG_DEBLUR_PC_DEFAULT_GETMASK       (1<<CFG_DEBLUR_PC_DEFAULT_OFFSET)
   #define CFG_DEBLUR_PC_DEFAULT_SETMASK       (1<<CFG_DEBLUR_PC_DEFAULT_OFFSET)
   #define CFG_DEBLUR_PC_DEFAULT_CLRMASK       (INTCFG0_GETALL_MASK & ~CFG_DEBLUR_PC_DEFAULT_SETMASK)
@@ -278,7 +282,6 @@ typedef struct {
 #define CFG_MUTEOSDTMP_OFFSET     29
 #define CFG_IGRRST_OFFSET         28
 #define CFG_RSTMASKS_OFFSET       26
-#define CFG_LIMITED_RGB_OFFSET    25
 #define CFG_GAMMA_OFFSET          21
 #define CFG_DEBLUR_MODE_OFFSET    20
 #define CFG_16BITMODE_OFFSET      19
@@ -304,9 +307,6 @@ typedef struct {
 #define CFG_RST_MASKS_GETMASK       (3<<CFG_RSTMASKS_OFFSET)
   #define CFG_RST_MASKS_RSTMASK       (EXTCFG1_GETALL_MASK & ~CFG_RST_MASKS_GETMASK)
   #define CFG_RST_MASKS_CLRMASK       (EXTCFG1_GETALL_MASK & ~CFG_RST_MASKS_GETMASK)
-#define CFG_LIMITED_RGB_GETMASK     (1<<CFG_LIMITED_RGB_OFFSET)
-  #define CFG_LIMITED_RGB_SETMASK     (1<<CFG_LIMITED_RGB_OFFSET)
-  #define CFG_LIMITED_RGB_CLRMASK     (EXTCFG1_GETALL_MASK & ~CFG_LIMITED_RGB_SETMASK)
 #define CFG_GAMMA_GETMASK             (0xF<<CFG_GAMMA_OFFSET)
   #define CFG_GAMMASEL_RSTMASK          (EXTCFG1_GETALL_MASK & ~CFG_GAMMA_GETMASK)
   #define CFG_GAMMA_CLRMASK             (EXTCFG1_GETALL_MASK & ~CFG_GAMMA_GETMASK)
@@ -524,7 +524,7 @@ typedef struct {
 
 extern configuration_t sysconfig;
 
-extern config_t link_hv_scale,
+extern config_t limited_rgb, link_hv_scale,
                 deblur_mode_powercycle, mode16bit_powercycle,
                 igr_deblur, igr_16bitmode,
                 fallbackmode;
@@ -536,7 +536,7 @@ extern config_t vert_scale, hor_scale,
                 vga_for_480p, linex_resolution;
 extern config_t show_logo, show_osd, mute_osd_tmp,
                 igr_reset, rst_masking,
-                limited_rgb, gamma_lut, deblur_mode, mode16bit,
+                gamma_lut, deblur_mode, mode16bit,
                 vert_shift, hor_shift,
                 deinterlace_mode, interpolation_mode_vert, interpolation_mode_hori, pal_boxed_mode;
 extern config_t sl_thickness_vert, sl_profile_vert, slhyb_str_vert, sl_str_vert,
