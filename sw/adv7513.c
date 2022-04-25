@@ -49,11 +49,19 @@ void adv7513_reg_bitclear(alt_u8 regaddr, alt_u8 bit) {
   adv7513_writereg(regaddr,(adv7513_readreg(regaddr) & ~(1 << bit)));
 }
 
-void set_color_format(color_format_t format) {
+void set_color_format(color_format_t color_format) {
   adv7513_reg_bitset(ADV7513_REG_CSC_UPDATE,ADV7513_CSC_UPDATE_BIT);
+
+//  if (color_format > RGB_limited) {
+//    adv7513_writereg(ADV7513_REG_VIDEO_INPUT_CFG1,0x01);
+//  } else {
+//    adv7513_writereg(ADV7513_REG_VIDEO_INPUT_CFG1,0x00);
+//  }
+  adv7513_writereg(ADV7513_REG_VIDEO_INPUT_CFG1,color_format > RGB_limited);
+
   for (int idx = 0; idx < CSC_COEFFICIENTS; idx++) {
-    adv7513_writereg(ADV7513_REG_CSC_UPPER(idx),csc_reg_vals[format][2*idx    ]);
-    adv7513_writereg(ADV7513_REG_CSC_LOWER(idx),csc_reg_vals[format][2*idx + 1]);
+    adv7513_writereg(ADV7513_REG_CSC_UPPER(idx),csc_reg_vals[color_format][2*idx    ]);
+    adv7513_writereg(ADV7513_REG_CSC_LOWER(idx),csc_reg_vals[color_format][2*idx + 1]);
   }
   adv7513_reg_bitclear(ADV7513_REG_CSC_UPDATE,ADV7513_CSC_UPDATE_BIT);
 }
@@ -72,7 +80,7 @@ void set_pr_manual(pr_mode_t pr_mode, alt_u8 pr_set, alt_u8 pr_send2tx) {
   adv7513_writereg(ADV7513_REG_PIXEL_REPETITION,regval);
 }
 
-void set_vclk_div(alt_u8 divider) {
+inline void set_vclk_div(alt_u8 divider) {
   switch (divider) {
     case 2:
       adv7513_writereg(ADV7513_REG_INPUT_CLK_DIV, 0x65);
@@ -118,15 +126,20 @@ void set_avi_info(void) {
       adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
   }
 
-  adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(0), 0x01); // [6:5] Output format: 00 = RGB
-                                                        // [1:0] Scan Information: 01 = TV, 10 = PC
+  alt_u8 color_format = cfg_get_value(&color_space,0);
+  boolean_t use_limited_colorspace = cfg_get_value(&limited_colorspace,0);
+  set_color_format((color_format << 1) | use_limited_colorspace);
+
+  adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(0), ((color_format > 0) << 6 ) | 0x01);  // [6:5] Output format: 00 = RGB, 01 = YCbCr 4:2:2, 10 = YCbCr 4:4:4
+                                                                                      // [1:0] Scan Information: 01 = TV, 10 = PC
   switch (linex_val) {
     case LineX3:
     case LineX4p5:
     case LineX6W:
       adv7513_reg_bitset(ADV7513_REG_VIDEO_INPUT_CFG2,1); // set 16:9 aspect ratio of input video
-      adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(1), 0x2A); // [5:4] Picture Aspect Ratio: 10 = 16:9
-                                                            // [3:0] Active Format Aspect Ratio: 1010 = 16:9 (center)
+      adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(1), (color_format << 6) | 0x2A); // [7:6] Colorimetry: 00 = no data, 01 = ITU601, 10 = ITU709
+                                                                                  // [5:4] Picture Aspect Ratio: 10 = 16:9
+                                                                                  // [3:0] Active Format Aspect Ratio: 1010 = 16:9 (center)
       break;
 //    case PASSTHROUGH:
 //    case LineX2:
@@ -135,15 +148,15 @@ void set_avi_info(void) {
 //    case LineX6:
     default:
       adv7513_reg_bitclear(ADV7513_REG_VIDEO_INPUT_CFG2,1); // set 4:3 aspect ratio of input video
-      adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(1), 0x19); // [5:4] Picture Aspect Ratio: 01 = 4:3
-                                                            // [3:0] Active Format Aspect Ratio: 1001 = 4:3 (center)
+      adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(1), (color_format << 6) | 0x19); // [7:6] Colorimetry: 00 = no data, 01 = ITU601, 10 = ITU709
+                                                                                  // [5:4] Picture Aspect Ratio: 01 = 4:3
+                                                                                  // [3:0] Active Format Aspect Ratio: 1001 = 4:3 (center)
       break;
   }
 
-  color_format_t use_limited_rgb = cfg_get_value(&limited_rgb,0);
-  set_color_format(use_limited_rgb);
-  if (use_limited_rgb) adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x04); // [3:2] RGB Quantization range: 01 = limited range
-  else adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08); // [3:2] RGB Quantization range: 10 = full range
+//  if (use_limited_colorspace) adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x04); // [3:2] Quantization range: 01 = limited range
+//  else adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08); // [3:2] Quantization range: 10 = full range
+  adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08 >> use_limited_colorspace); // [3:2] Quantization range: 10 = full range, 01 = limited range
 
   adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0x80); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
                                                         // [6] AVI Packet Update: 0 = AVI Packet I2C update inactive

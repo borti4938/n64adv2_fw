@@ -46,10 +46,14 @@
 
 typedef enum {
   RGB_full = 0,
-  RGB_limited
+  RGB_limited,
+  YCbCr_601_full,
+  YCbCr_601_limited,
+  YCbCr_709_full,
+  YCbCr_709_limited
 } color_format_t;
 
-#define MAX_COLOR_FORMATS  RGB_limited+1
+#define MAX_COLOR_FORMATS  YCbCr_709_limited
 
 typedef enum {
   PR_AUTO = 0,

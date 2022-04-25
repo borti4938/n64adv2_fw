@@ -194,14 +194,15 @@ typedef struct {
 #define PREDEFINED_SCALE_STEPS  21
 
 // the overall masks
-#define INTCFG0_GETALL_MASK   0x000000FF
+#define INTCFG0_GETALL_MASK   0x000003FF
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
 #define EXTCFG1_GETALL_MASK   0xFDFFFEB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x0000007F
 
 // internal cfg set 0
-#define CFG_LIMITED_RGB_OFFSET            7
+#define CFG_COLORSPACE_OFFSET             8
+#define CFG_LIMITED_COLORSPACE_OFFSET     7
 #define CFG_LINK_HV_SCALE_OFFSET          5
 #define CFG_DEBLUR_PC_DEFAULT_OFFSET      4
 #define CFG_MODE16BIT_PC_DEFAULT_OFFSET   3
@@ -209,9 +210,12 @@ typedef struct {
 #define CFG_MODE16BIT_IGR_OFFSET          1
 #define CFG_FALLBACK_OFFSET               0
 
-#define CFG_LIMITED_RGB_GETMASK             (1<<CFG_LIMITED_RGB_OFFSET)
-  #define CFG_LIMITED_RGB_SETMASK             (1<<CFG_LIMITED_RGB_OFFSET)
-  #define CFG_LIMITED_RGB_CLRMASK             (INTCFG0_GETALL_MASK & ~CFG_LIMITED_RGB_SETMASK)
+#define CFG_COLORSPACE_GETMASK              (3<<CFG_COLORSPACE_OFFSET)
+  #define CFG_COLORSPACE_RSTMASK              (INTCFG0_GETALL_MASK & ~CFG_COLORSPACE_GETMASK)
+  #define CFG_COLORSPACE_CLRMASK              (INTCFG0_GETALL_MASK & ~CFG_COLORSPACE_GETMASK)
+#define CFG_LIMITED_COLORSPACE_GETMASK      (1<<CFG_LIMITED_COLORSPACE_OFFSET)
+  #define CFG_LIMITED_COLORSPACE_SETMASK      (1<<CFG_LIMITED_COLORSPACE_OFFSET)
+  #define CFG_LIMITED_COLORSPACE_CLRMASK      (INTCFG0_GETALL_MASK & ~CFG_LIMITED_COLORSPACE_SETMASK)
 #define CFG_LINK_HV_SCALE_GETMASK           (3<<CFG_LINK_HV_SCALE_OFFSET)
   #define CFG_LINK_HV_SCALE_RSTMASK           (INTCFG0_GETALL_MASK & ~CFG_LINK_HV_SCALE_GETMASK)
   #define CFG_LINK_HV_SCALE_CLRMASK           (INTCFG0_GETALL_MASK & ~CFG_LINK_HV_SCALE_GETMASK)
@@ -425,6 +429,7 @@ typedef struct {
 // some max values
 #define CFG_RST_MASKS_MAX_VALUE     3
 
+#define CFG_COLORSPACE_MAX_VALUE    2
 #define CFG_LINK_HV_SCALE_MAX_VALUE 3
 
 #define CFG_VERTSCALE_MAX_VALUE        2016 // equals 7.00x @ PAL
@@ -524,7 +529,7 @@ typedef struct {
 
 extern configuration_t sysconfig;
 
-extern config_t limited_rgb, link_hv_scale,
+extern config_t color_space, limited_colorspace, link_hv_scale,
                 deblur_mode_powercycle, mode16bit_powercycle,
                 igr_deblur, igr_16bitmode,
                 fallbackmode;

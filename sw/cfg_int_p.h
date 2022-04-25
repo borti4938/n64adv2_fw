@@ -38,7 +38,7 @@
 #ifndef CFG_INT_P_H_
 #define CFG_INT_P_H_
 
-extern const char  *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[];
+extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[];
 
 cfg_b32word_t intcfg0_word =
   { .cfg_word_mask    = INTCFG0_GETALL_MASK,
@@ -46,14 +46,24 @@ cfg_b32word_t intcfg0_word =
     .cfg_ref_word_val = 0x00000000
   };
 
-
-config_t limited_rgb = {
+config_t color_space = {
     .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_LIMITED_RGB_OFFSET,
+    .cfg_word_offset = CFG_COLORSPACE_OFFSET,
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_COLORSPACE_MAX_VALUE,
+        .getvalue_mask = CFG_COLORSPACE_GETMASK
+    },
+    .value_string = &ColorSpace
+};
+
+config_t limited_colorspace = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_LIMITED_COLORSPACE_OFFSET,
     .cfg_type        = FLAGTXT,
     .flag_masks      = {
-        .setflag_mask = CFG_LIMITED_RGB_SETMASK,
-        .clrflag_mask = CFG_LIMITED_RGB_CLRMASK
+        .setflag_mask = CFG_LIMITED_COLORSPACE_SETMASK,
+        .clrflag_mask = CFG_LIMITED_COLORSPACE_CLRMASK
     },
     .val2char_func = &flag2set_func
 };

@@ -254,22 +254,23 @@ menu_t vicfg_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 7,
+    .number_selections = 8,
     .leaves = {
-        {.id = VICFG_DEINTERL_V_OFFSET   , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deinterlace_mode},
-        {.id = VICFG_GAMMA_V_OFFSET      , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &gamma_lut},
-        {.id = VICFG_LIMITEDRGB_V_OFFSET , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &limited_rgb},
-        {.id = VICFG_DEBLUR_V_OFFSET     , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode},
-        {.id = VICFG_PCDEBLUR_V_OFFSET   , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode_powercycle},
-        {.id = VICFG_16BITMODE_V_OFFSET  , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &mode16bit},
-        {.id = VICFG_PC16BITMODE_V_OFFSET, .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &mode16bit_powercycle}
+        {.id = VICFG_DEINTERL_V_OFFSET    , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deinterlace_mode},
+        {.id = VICFG_GAMMA_V_OFFSET       , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &gamma_lut},
+        {.id = VICFG_COLORSPACE_V_OFFSET  , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &color_space},
+        {.id = VICFG_LIMITEDRANGE_V_OFFSET, .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &limited_colorspace},
+        {.id = VICFG_DEBLUR_V_OFFSET      , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode},
+        {.id = VICFG_PCDEBLUR_V_OFFSET    , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode_powercycle},
+        {.id = VICFG_16BITMODE_V_OFFSET   , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &mode16bit},
+        {.id = VICFG_PC16BITMODE_V_OFFSET , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &mode16bit_powercycle}
     }
 };
 
-#define DEBLUR_CURRENT_SELECTION    3
-#define DEBLUR_POWERCYCLE_SELECTION 4
-#define M16BIT_CURRENT_SELECTION    5
-#define M16BIT_POWERCYCLE_SELECTION 6
+#define DEBLUR_CURRENT_SELECTION    4
+#define DEBLUR_POWERCYCLE_SELECTION 5
+#define M16BIT_CURRENT_SELECTION    6
+#define M16BIT_POWERCYCLE_SELECTION 7
 
 menu_t misc_screen = {
     .type = CONFIG,
