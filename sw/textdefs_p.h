@@ -277,7 +277,7 @@ static const char *misc_overlay __ufmdata_section__ =
     "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =
-    "Save/Load/Fw";
+    "Save/Load";
 static const char *rwdata_overlay __ufmdata_section__ =
     "\n"
     "* Save\n"
@@ -370,7 +370,7 @@ static const char *home_overlay __ufmdata_section__ =
     "[Scanlines]\n"
     "[VI-Processing]\n"
     "[Miscellaneous]\n"
-    "[Save/Load/Fw.Update]\n\n"
+    "[Save/Load/Fallback]\n\n"
     "About...\n"
     "Acknowledgment...\n"
     "License...\n"
