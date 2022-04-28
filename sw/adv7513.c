@@ -116,6 +116,8 @@ inline void set_vclk_div(alt_u8 divider) {
 
 void set_cfg_adv7513(void) {
   linex_cnt linex_val = cfg_get_value(&linex_resolution,0);
+  alt_u8 color_format = cfg_get_value(&color_space,0);
+  boolean_t use_limited_colorspace = cfg_get_value(&limited_colorspace,0);
 
   adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0xE0); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
                                                         // [6] AVI Packet Update: 1 = AVI Packet I2C update active
@@ -144,12 +146,11 @@ void set_cfg_adv7513(void) {
       adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
   }
 
-  alt_u8 color_format = cfg_get_value(&color_space,0);
-  boolean_t use_limited_colorspace = cfg_get_value(&limited_colorspace,0);
   set_color_format((color_format << 1) | use_limited_colorspace);
 
   adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(0), ((color_format > 0) << 6 ) | 0x01);  // [6:5] Output format: 00 = RGB, 01 = YCbCr 4:2:2, 10 = YCbCr 4:4:4
                                                                                       // [1:0] Scan Information: 01 = TV, 10 = PC
+
   switch (linex_val) {
     case LineX3:
     case LineX4p5:
