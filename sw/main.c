@@ -133,10 +133,9 @@ int main()
   bool_t ctrl_update = 1;
   bool_t ctrl_ignore = 0;
 
-  cfg_pal_pattern_t pal_pattern_pre;
   vmode_t palmode_pre;
   clk_config_t target_resolution, target_resolution_pre;
-  bool_t hor_hires_pre;
+//  bool_t hor_hires_pre;
   bool_t unlock_1440p_pre;
 
   alt_u8 message_cnt = 0;
@@ -189,14 +188,10 @@ int main()
   while (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {};
   init_adv7513(); // assume that hpd and monitor sense are up
 
-  usleep(INITIAL_WAIT_US);
   update_ppu_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
-  set_avi_info();
-
-  pal_pattern_pre = PAL_PAT0;
-  palmode_pre = NTSC;
+  palmode_pre = !palmode;
   target_resolution_pre = target_resolution;
-  hor_hires_pre = hor_hires;
+//  hor_hires_pre = !hor_hires;
   unlock_1440p_pre = unlock_1440p;
 
   /* Event loop never exits. */
@@ -323,22 +318,21 @@ int main()
     cfg_apply_to_logic();
 
     target_resolution = get_target_resolution(pal_pattern,palmode);
-    if (((pal_pattern_pre != pal_pattern) & (palmode == NTSC)) ||
-        (palmode_pre != palmode)                               ||
-        (target_resolution_pre != target_resolution)            )
+    if (target_resolution_pre != target_resolution)
       configure_clk_si5356(target_resolution);
+
+    if ((palmode_pre != palmode)                     ||
+        (target_resolution_pre != target_resolution) ||
+//        (hor_hires_pre != hor_hires)                 ||
+        (todo == NEW_CONF_VALUE))
+      set_cfg_adv7513();
+
     if (!SI5356_PLL_LOCKSTATUS())
       init_si5356(target_resolution);
 
     if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
       init_adv7513();
     }
-
-    if ((palmode_pre != palmode)                     ||
-        (target_resolution_pre != target_resolution) ||
-//        (hor_hires_pre != hor_hires)                 ||
-        (todo == NEW_CONF_VALUE))
-      set_avi_info();
 
     if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
       vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
@@ -348,10 +342,9 @@ int main()
     while(!get_osdvsync()){};  /* wait for OSD_VSYNC goes high (OSD vert. active area) */
     while( get_osdvsync()){};  /* wait for OSD_VSYNC goes low  */
 
-    pal_pattern_pre = pal_pattern;
     palmode_pre = palmode;
     target_resolution_pre = target_resolution;
-    hor_hires_pre = hor_hires;
+ //   hor_hires_pre = hor_hires;
     unlock_1440p_pre = unlock_1440p;
     update_ppu_state();
   }
