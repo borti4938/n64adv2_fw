@@ -49,6 +49,24 @@ void adv7513_reg_bitclear(alt_u8 regaddr, alt_u8 bit) {
   adv7513_writereg(regaddr,(adv7513_readreg(regaddr) & ~(1 << bit)));
 }
 
+alt_u8 adv7513_readreg(alt_u8 regaddr)
+{
+    //Phase 1
+    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 0);
+    I2C_write(I2C_MASTER_BASE, regaddr, 0);
+
+    //Phase 2
+    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 1);
+    return (alt_u8) I2C_read(I2C_MASTER_BASE,1);
+}
+
+void adv7513_writereg(alt_u8 regaddr, alt_u8 data)
+{
+    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 0);
+    I2C_write(I2C_MASTER_BASE, regaddr, 0);
+    I2C_write(I2C_MASTER_BASE, data, 1);
+}
+
 void set_color_format(color_format_t color_format) {
   adv7513_reg_bitset(ADV7513_REG_CSC_UPDATE,ADV7513_CSC_UPDATE_BIT);
 
@@ -220,25 +238,6 @@ void init_adv7513() {
                                                         // [1:0] I2S Format: 10 = left justified mode, 00 = standard
   adv7513_writereg(ADV7513_REG_AUDIO_CFG3, 0x0B);       // [3:0] I2S Word length per channel: 1011 = 24bit
   led_drive(LED_2, LED_OFF);
-}
-
-
-alt_u8 adv7513_readreg(alt_u8 regaddr)
-{
-    //Phase 1
-    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 0);
-    I2C_write(I2C_MASTER_BASE, regaddr, 0);
-
-    //Phase 2
-    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 1);
-    return (alt_u8) I2C_read(I2C_MASTER_BASE,1);
-}
-
-void adv7513_writereg(alt_u8 regaddr, alt_u8 data)
-{
-    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 0);
-    I2C_write(I2C_MASTER_BASE, regaddr, 0);
-    I2C_write(I2C_MASTER_BASE, data, 1);
 }
 
 
