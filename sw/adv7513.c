@@ -114,7 +114,7 @@ inline void set_vclk_div(alt_u8 divider) {
   }
 }
 
-void set_avi_info(void) {
+void set_cfg_adv7513(void) {
   linex_cnt linex_val = cfg_get_value(&linex_resolution,0);
 
   adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0xE0); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
