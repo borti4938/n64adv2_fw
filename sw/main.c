@@ -44,7 +44,6 @@
 
 
 #define CTRL_IGNORE_FRAMES 10
-#define INITIAL_WAIT_US 2500
 
 
 const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
@@ -187,6 +186,9 @@ int main()
   while (check_adv7513() != 0) {};
   while (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {};
   init_adv7513(); // assume that hpd and monitor sense are up
+
+  while(!get_osdvsync()){};  /* wait for OSD_VSYNC goes high (OSD vert. active area) */
+  while( get_osdvsync()){};  /* wait for OSD_VSYNC goes low  */
 
   update_ppu_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
   palmode_pre = !palmode;
