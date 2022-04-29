@@ -38,7 +38,7 @@
 #ifndef CFG_INT_P_H_
 #define CFG_INT_P_H_
 
-extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[];
+extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[], *CopyCfg[];
 
 cfg_b32word_t intcfg0_word =
   { .cfg_word_mask    = INTCFG0_GETALL_MASK,
@@ -172,6 +172,16 @@ config_t scaling_selection = {
       .max_value = NUM_SCALING_MODES,
     },
     .val2char_func = &val2txt_scale_sel_func
+};
+
+config_t copy_direction = {
+    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
+    .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
+    .cfg_value    = 0,
+    .value_details = {
+      .max_value = 1,
+    },
+    .value_string = &CopyCfg
 };
 
 #endif /* CFG_INT_P_H_ */

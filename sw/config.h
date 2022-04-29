@@ -190,6 +190,7 @@ typedef struct {
 #define CFG_N64DEF_LOAD_ABORT CFG_FLASH_SAVE_ABORT
 #define CFG_DEF_LOAD_ABORT    CFG_FLASH_SAVE_ABORT
 #define CFG_RESYNC_ABORT      CFG_FLASH_SAVE_ABORT
+#define CFG_CFG_COPY_ABORT    CFG_FLASH_SAVE_ABORT
 
 #define PREDEFINED_SCALE_STEPS  21
 
@@ -534,7 +535,8 @@ extern config_t color_space, limited_colorspace, link_hv_scale,
                 igr_deblur, igr_16bitmode,
                 fallbackmode;
 extern config_t scaling_steps, region_selection,
-                timing_selection, scaling_selection;
+                timing_selection, scaling_selection,
+                copy_direction;
 
 extern config_t vert_scale, hor_scale,
                 linex_force_5060, low_latency_mode,
@@ -582,5 +584,6 @@ void cfg_apply_to_logic(void);
 void cfg_read_from_logic(void);
 void cfg_clear_words(void);
 void cfg_update_reference(void);
+int cfg_copy_ntsc2pal(void);
 
 #endif /* CONFIG_H_ */

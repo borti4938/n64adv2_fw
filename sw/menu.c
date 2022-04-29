@@ -313,12 +313,14 @@ menu_t rwdata_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 5,
+    .number_selections = 7,
     .leaves = {
         {.id = RWDATA_SAVE_FL_V_OFFSET          , .arrow_desc = &rwdata_sel_arrow   , .leavetype = IFUNC1,  .sys_fun_bool_1 = &cfg_save_to_flash},
         {.id = RWDATA_LOAD_FL_V_OFFSET          , .arrow_desc = &rwdata_sel_arrow   , .leavetype = IFUNC1,  .sys_fun_bool_1 = &cfg_load_from_flash},
         {.id = RWDATA_LOAD_DEFAULT480P_V_OFFSET , .arrow_desc = &rwdata_sel_arrow   , .leavetype = IFUNC2,  .sys_fun_bool_2 = &cfg_load_defaults},
         {.id = RWDATA_LOAD_DEFAULT1080P_V_OFFSET, .arrow_desc = &rwdata_sel_arrow   , .leavetype = IFUNC2,  .sys_fun_bool_2 = &cfg_load_defaults},
+        {.id = RWDATA_CPYCFG_DIRECTION_V_OFFSET , .arrow_desc = &rwdata_optval_arrow, .leavetype = ICONFIG, .config_value = &copy_direction},
+        {.id = RWDATA_CPYCFG_FUNCTION_V_OFFSET  , .arrow_desc = &rwdata_sel_arrow   , .leavetype = IFUNC0,  .sys_fun_0 = &cfg_copy_ntsc2pal},
         {.id = RWDATA_FALLBACK_V_OFFSET         , .arrow_desc = &rwdata_optval_arrow, .leavetype = ICONFIG, .config_value = &fallbackmode},
 //        {.id = RWDATA_UPDATE_V_OFFSET           , .arrow_desc = &rwdata_optsel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &fw_update}
     }

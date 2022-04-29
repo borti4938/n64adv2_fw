@@ -156,11 +156,13 @@
 #define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
 #define RWDATA_VALS_H_OFFSET              (26 + RWDATA_OVERLAY_H_OFFSET)
 #define RWDATA_VALS_V_OFFSET              VICFG_OVERLAY_V_OFFSET
-#define RWDATA_SAVE_FL_V_OFFSET           ( 2 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_FL_V_OFFSET           ( 4 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_DEFAULT480P_V_OFFSET  ( 5 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_DEFAULT1080P_V_OFFSET ( 6 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_FALLBACK_V_OFFSET          ( 7 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_SAVE_FL_V_OFFSET           ( 1 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_FL_V_OFFSET           ( 3 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_DEFAULT480P_V_OFFSET  ( 4 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_DEFAULT1080P_V_OFFSET ( 5 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_CPYCFG_DIRECTION_V_OFFSET  ( 7 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_CPYCFG_FUNCTION_V_OFFSET   ( 8 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FALLBACK_V_OFFSET          ( 9 + RWDATA_OVERLAY_V_OFFSET)
 
 #define MAIN_OVERLAY_H_OFFSET   ( 3 + OVERLAY_H_OFFSET)
 #define MAIN_OVERLAY_V_OFFSET   OVERLAY_V_OFFSET
@@ -279,13 +281,15 @@ static const char *misc_overlay __ufmdata_section__ =
 static const char *rwdata_header __ufmdata_section__ =
     "Save/Load";
 static const char *rwdata_overlay __ufmdata_section__ =
-    "\n"
     "* Save\n"
     "  - Configuration:\n"
     "* Load\n"
     "  - Last Configuration:\n"
     "  - 480p Defaults:\n"
     "  - 1080p Defaults:\n"
+    "* Copy Config:\n"
+    "  - Direction:\n"
+    "  - Copy now:\n"
     "* Fallback Config:";
 
 
@@ -429,6 +433,7 @@ const char *ScaleVHLink[] = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)
 
 const char *ColorSpace[] = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
 
+const char *CopyCfg[] = {"NTSC->PAL","PAL->NTSC"};
 const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521"};
 
 #endif /* MENU_TEXT_TEXTDEFS_P_H_ */

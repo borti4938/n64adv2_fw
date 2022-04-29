@@ -609,3 +609,24 @@ void cfg_update_reference()
   for (idx = 0; idx < NUM_TIMING_MODES; idx++) timing_words[idx].config_ref_val = timing_words[idx].config_val;
   for (idx = 0; idx < NUM_SCALING_MODES; idx++) scaling_words[idx].config_ref_val = scaling_words[idx].config_val;
 }
+
+int cfg_copy_ntsc2pal()
+{
+  alt_u8 abort = confirmation_routine();
+  if (abort) return -CFG_CFG_COPY_ABORT;
+
+  alt_u8 idx;
+  if (cfg_get_value(&copy_direction,0)) { // PAL to NTSC
+    linex_words[NTSC].config_val = linex_words[PAL].config_val;
+    linex_scanlines_words[NTSC].config_val = linex_scanlines_words[PAL].config_val;
+    for (idx = 1; idx <= NTSC_LAST_SCALING_MODE; idx++)
+      scaling_words[idx] = scaling_words[idx + NTSC_LAST_SCALING_MODE + 1];
+  } else {  // NTSC to PAL
+    linex_words[PAL].config_val = linex_words[NTSC].config_val;
+    linex_scanlines_words[PAL].config_val = linex_scanlines_words[NTSC].config_val;
+    for (idx = 1; idx <= NTSC_LAST_SCALING_MODE; idx++)
+      scaling_words[idx + NTSC_LAST_SCALING_MODE + 1] = scaling_words[idx];
+    cfg_set_flag(&pal_boxed_mode);
+  }
+  return 0;
+}
