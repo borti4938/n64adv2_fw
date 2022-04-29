@@ -105,7 +105,10 @@ static const arrow_t rwdata_optval_arrow = {
 
 
 menu_t home_menu, vinfo_screen, vires_screen, viscaling_screen, slcfg_opt_subscreen, vicfg_screen,
-       misc_screen, rwdata_screen, about_screen, thanks_screen, license_screen, notice_screen;
+       misc_screen, rwdata_screen;
+#ifndef DEBUG
+  menu_t about_screen, thanks_screen, license_screen, notice_screen;
+#endif
 
 
 menu_t home_menu = {
@@ -116,10 +119,14 @@ menu_t home_menu = {
       .text = &home_overlay
     },
     .current_selection = 1,
-#ifdef USE_NOTICE_SECTION
+#ifndef DEBUG
+  #ifdef USE_NOTICE_SECTION
     .number_selections = 11,
-#else
+  #else
     .number_selections = 10,
+  #endif
+#else
+    .number_selections = 7,
 #endif
     .leaves = {
         {.id = MAIN2VINFO_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vinfo_screen},
@@ -129,11 +136,13 @@ menu_t home_menu = {
         {.id = MAIN2VIPROC_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_screen},
         {.id = MAIN2MISC_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &misc_screen},
         {.id = MAIN2SAVE_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
+  #ifndef DEBUG
         {.id = MAIN2ABOUT_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &about_screen},
         {.id = MAIN2THANKS_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &thanks_screen},
         {.id = MAIN2LICENSE_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &license_screen},
-#ifdef USE_NOTICE_SECTION
+  #ifdef USE_NOTICE_SECTION
         {.id = MAIN2NOTICE_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &notice_screen}
+  #endif
 #endif
     }
 };
@@ -318,46 +327,48 @@ menu_t rwdata_screen = {
 #define RW_LOAD_DEFAULT480P_SELECTION   2
 #define RW_LOAD_DEFAULT1080P_SELECTION  3
 
-menu_t about_screen = {
-   .type = TEXT,
-   .header = &about_header,
-   .body = {
-     .hoffset = 0,
-     .text = &about_overlay
-   },
-   .parent = &home_menu
-};
-
-menu_t thanks_screen = {
-   .type = TEXT,
-   .header = &thanks_header,
-   .body = {
-     .hoffset = 0,
-     .text = &thanks_overlay
-   },
-   .parent = &home_menu
-};
-
-menu_t license_screen = {
-   .type = TEXT,
-   .header = &license_header,
-   .body = {
-     .hoffset = 0,
-     .text = &license_overlay
-   },
-   .parent = &home_menu
-};
-
-#ifdef USE_NOTICE_SECTION
-  menu_t notice_screen = {
+#ifndef DEBUG
+  menu_t about_screen = {
      .type = TEXT,
-     .header = &notice_header,
+     .header = &about_header,
      .body = {
        .hoffset = 0,
-       .text = &notice_overlay
+       .text = &about_overlay
      },
      .parent = &home_menu
   };
+
+  menu_t thanks_screen = {
+     .type = TEXT,
+     .header = &thanks_header,
+     .body = {
+       .hoffset = 0,
+       .text = &thanks_overlay
+     },
+     .parent = &home_menu
+  };
+
+  menu_t license_screen = {
+     .type = TEXT,
+     .header = &license_header,
+     .body = {
+       .hoffset = 0,
+       .text = &license_overlay
+     },
+     .parent = &home_menu
+  };
+
+  #ifdef USE_NOTICE_SECTION
+    menu_t notice_screen = {
+       .type = TEXT,
+       .header = &notice_header,
+       .body = {
+         .hoffset = 0,
+         .text = &notice_overlay
+       },
+       .parent = &home_menu
+    };
+  #endif
 #endif
 
 
@@ -371,10 +382,12 @@ static inline bool_t is_vicfg_h2v_sl_are_linked ()
   {  return (bool_t) cfg_get_value(&sl_link_h2v,0); }
 static inline bool_t is_vicfg_screen (menu_t *menu)
   {  return (menu == &vicfg_screen); }
-static inline bool_t is_about_screen (menu_t *menu)
-  {  return (menu == &about_screen); }
-static inline bool_t is_license_screen (menu_t *menu)
-  {  return (menu == &license_screen); }
+#ifndef DEBUG
+  static inline bool_t is_about_screen (menu_t *menu)
+    {  return (menu == &about_screen); }
+  static inline bool_t is_license_screen (menu_t *menu)
+    {  return (menu == &license_screen); }
+#endif
 
 
 void val2txt_func(alt_u16 v) { sprintf(szText,"%u", v); };
@@ -684,8 +697,10 @@ void print_overlay(menu_t* current_menu)
   if (current_menu->header) vd_wr_hdr(BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,*current_menu->header);
   vd_print_string(VD_TEXT,current_menu->body.hoffset,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,*current_menu->body.text);
 
-  if (is_about_screen(current_menu)) print_fw_version();
-  if (is_license_screen(current_menu)) vd_print_char(VD_TEXT,CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
+  #ifndef DEBUG
+    if (is_about_screen(current_menu)) print_fw_version();
+    if (is_license_screen(current_menu)) vd_print_char(VD_TEXT,CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
+  #endif
 }
 
 void print_selection_arrow(menu_t* current_menu)

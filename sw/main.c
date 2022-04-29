@@ -172,6 +172,10 @@ int main()
     cfg_set_value(&mode16bit,cfg_get_value(&mode16bit_powercycle,0));
   }
 
+#ifdef DEBUG
+  open_osd_main(&menu);
+#endif
+
   cfg_load_linex_word(NTSC);
   cfg_load_timing_word(NTSC_PROGRESSIVE);
   cfg_load_scaling_word(get_target_scaler(NTSC));

@@ -288,77 +288,80 @@ static const char *rwdata_overlay __ufmdata_section__ =
     "  - 1080p Defaults:\n"
     "* Fallback Config:";
 
-static const char *thanks_header __ufmdata_section__ =
-    "Acknowledgment";
-static const char *thanks_overlay __ufmdata_section__ =
-    "The N64 RGB project would not be what it is\n"
-    "without the contributions of many other people.\n"
-    "Here, I want to point out especially:\n"
-    " - viletim  : First public DIY N64RGB project\n"
-    " - Ikari_01 : Initial implementation of PAL/NTSC\n"
-    "              as well as 480i/576i detection\n"
-    " - marqs85:   Feedback and final concept for low\n"
-    "              latency mode PLL configuration\n"
-    " - ArcadeTV:  Logo design\n"
-    "Visit the GitHub project:\n"
-    "   <https://github.com/borti4938/\n"
-    "                      n64rgb_project_overview>\n"
-    "Any contribution in any kind is highly welcomed!";
-  /* 123456789012345678901234567890123456789012345678 */
 
-static const char *about_header __ufmdata_section__ =
-    "About";
-static const char *about_overlay __ufmdata_section__ =
-    "The N64 RGB project is open source, i.e. PCB\n"
-    "files, HDL and SW sources are provided to you\n"
-    "FOR FREE!\n"
-    "Your version\n"
-    " - PCB version:\n"
-    " - FPGA Chip ID:\n"
-    " - firmware (HDL):\n"
-    " - firmware (SW) :\n"
-    "Questions / (limited) Support:\n"
-    " - GitHub:\n"
-    "      <https://github.com/borti4938/n64adv2_pcb>\n"
-    "      <https://github.com/borti4938/n64adv2_fw>\n"
-    " - Email:  <borti4938@gmail.com>";
-  /* 123456789012345678901234567890123456789012345678 */
-
-static const char *license_header __ufmdata_section__ =
-    "License";
-static const char *license_overlay __ufmdata_section__ =
-    "\n"
-    "The N64Advanced v2 is part of the\n"
-    "N64 RGB/YPbPr Digital2Digital and DAC project\n"
-    "    Copyright   2015 - 2022 Peter Bartmann\n"
-    "This project is published under GNU GPL v3.0 or\n"
-    "later. You should have received a copy of the\n"
-    "GNU General Public License along with this\n"
-    "project. If not, see\n"
-    "        <http://www.gnu.org/licenses/>.\n\n"
-    "What ever you do, also respect licenses of third\n"
-    "party vendors providing the design tools...";
-  /* 123456789012345678901234567890123456789012345678 */
-
-#ifdef USE_NOTICE_SECTION
-  static const char *notice_header __ufmdata_section__ =
-      "Example Note";
-  static const char *notice_overlay __ufmdata_section__ =
-      "123456789012345678901234567890123456789012345678\n"
-      "2\n"
-      "3\n"
-      "4\n"
-      "5\n"
-      "6\n"
-      "7\n"
-      "8\n"
-      "9\n"
-      "0\n"
-      "1\n"
-      "2\n"
-      "3\n"
-      "4";
+#ifndef DEBUG
+  static const char *thanks_header __ufmdata_section__ =
+      "Acknowledgment";
+  static const char *thanks_overlay __ufmdata_section__ =
+      "The N64 RGB project would not be what it is\n"
+      "without the contributions of many other people.\n"
+      "Here, I want to point out especially:\n"
+      " - viletim  : First public DIY N64RGB project\n"
+      " - Ikari_01 : Initial implementation of PAL/NTSC\n"
+      "              as well as 480i/576i detection\n"
+      " - marqs85:   Feedback and final concept for low\n"
+      "              latency mode PLL configuration\n"
+      " - ArcadeTV:  Logo design\n"
+      "Visit the GitHub project:\n"
+      "   <https://github.com/borti4938/\n"
+      "                      n64rgb_project_overview>\n"
+      "Any contribution in any kind is highly welcomed!";
     /* 123456789012345678901234567890123456789012345678 */
+
+  static const char *about_header __ufmdata_section__ =
+      "About";
+  static const char *about_overlay __ufmdata_section__ =
+      "The N64 RGB project is open source, i.e. PCB\n"
+      "files, HDL and SW sources are provided to you\n"
+      "FOR FREE!\n"
+      "Your version\n"
+      " - PCB version:\n"
+      " - FPGA Chip ID:\n"
+      " - firmware (HDL):\n"
+      " - firmware (SW) :\n"
+      "Questions / (limited) Support:\n"
+      " - GitHub:\n"
+      "      <https://github.com/borti4938/n64adv2_pcb>\n"
+      "      <https://github.com/borti4938/n64adv2_fw>\n"
+      " - Email:  <borti4938@gmail.com>";
+    /* 123456789012345678901234567890123456789012345678 */
+
+  static const char *license_header __ufmdata_section__ =
+      "License";
+  static const char *license_overlay __ufmdata_section__ =
+      "\n"
+      "The N64Advanced v2 is part of the\n"
+      "N64 RGB/YPbPr Digital2Digital and DAC project\n"
+      "    Copyright   2015 - 2022 Peter Bartmann\n"
+      "This project is published under GNU GPL v3.0 or\n"
+      "later. You should have received a copy of the\n"
+      "GNU General Public License along with this\n"
+      "project. If not, see\n"
+      "        <http://www.gnu.org/licenses/>.\n\n"
+      "What ever you do, also respect licenses of third\n"
+      "party vendors providing the design tools...";
+    /* 123456789012345678901234567890123456789012345678 */
+
+  #ifdef USE_NOTICE_SECTION
+    static const char *notice_header __ufmdata_section__ =
+        "Example Note";
+    static const char *notice_overlay __ufmdata_section__ =
+        "123456789012345678901234567890123456789012345678\n"
+        "2\n"
+        "3\n"
+        "4\n"
+        "5\n"
+        "6\n"
+        "7\n"
+        "8\n"
+        "9\n"
+        "0\n"
+        "1\n"
+        "2\n"
+        "3\n"
+        "4";
+      /* 123456789012345678901234567890123456789012345678 */
+  #endif
 #endif
 
 static const char *home_header __ufmdata_section__ =
@@ -371,11 +374,15 @@ static const char *home_overlay __ufmdata_section__ =
     "[VI-Processing]\n"
     "[Miscellaneous]\n"
     "[Save/Load/Fallback]\n\n"
+#ifndef DEBUG
     "About...\n"
     "Acknowledgment...\n"
     "License...\n"
-#ifdef USE_NOTICE_SECTION
+  #ifdef USE_NOTICE_SECTION
     "Special Note..."
+  #endif
+#else
+    "*** DEBUG BUILD ***"
 #endif
   ;
   /* 123456789012345678901234567890123456789012345678 */
