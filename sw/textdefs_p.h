@@ -212,7 +212,7 @@ static const char *resolution_overlay __ufmdata_section__ =
     "  -     1440p ( 4:3):\n"
     "  -     1440p (16:9):\n"
     "* Use VGA instead of 480p:\n"
-    "* Frame-Locked:\n"
+    "* Frame-Locked mode:\n"
     "* Force 50/60:";
 
 static const char *scaler_header __ufmdata_section__ =
@@ -236,7 +236,7 @@ static const char *slcfg_opt_header __ufmdata_section__ =
     "Scanlines Config";
 static const char *slcfg_opt_overlay __ufmdata_section__ =
     "* Input mode:\n"
-    "* Calculation Mode:\n"
+    "* Calculation mode:\n"
     "* Horizontal scanlines:\n"
     "  - Thickness:\n"
     "  - Profile:\n"
@@ -254,26 +254,26 @@ static const char *vicfg_header __ufmdata_section__ =
 static const char *vicfg_overlay __ufmdata_section__ =
     "\n"
     "* De-Interlacing mode:\n"
-    "* Gamma Value:\n"
-    "* Color Space:\n"
+    "* Gamma value:\n"
+    "* Color space:\n"
     "  - Format:\n"
-    "  - Limited Range:\n"
+    "  - Limited range:\n"
     "* LowRes.-DeBlur:\n"
-    "  - power-cycle default:\n"
+    "  - Power-cycle default:\n"
     "* 16bit mode:\n"
-    "  - power-cycle default:";
+    "  - Power-cycle default:";
 
 static const char *misc_header __ufmdata_section__ =
     "Miscellaneous";
 static const char *misc_overlay __ufmdata_section__ =
-    "* Audio Settings:\n"
+    "* Audio settings:\n"
     "  - Swap L/R:\n"
     "  - Post filter gain:\n"
     "  - S/PDIF enabled:\n"
-    "* Controller Routines:\n"
+    "* Controller routines:\n"
     "  - Reset:\n"
     "  - VI-DeBlur:\n"
-    "  - 16bit Mode:\n"
+    "  - 16bit mode:\n"
     "* Reset masking:\n"
     "* Re-sync VI pipeline:\n"
     "* Unlock lucky 1440p:";
@@ -284,13 +284,13 @@ static const char *rwdata_overlay __ufmdata_section__ =
     "* Save\n"
     "  - Configuration:\n"
     "* Load\n"
-    "  - Last Configuration:\n"
-    "  - 480p Defaults:\n"
-    "  - 1080p Defaults:\n"
-    "* Copy Config:\n"
+    "  - Last configuration:\n"
+    "  - 480p defaults:\n"
+    "  - 1080p defaults:\n"
+    "* Copy:\n"
     "  - Direction:\n"
-    "  - Copy now:\n"
-    "* Fallback Config:";
+    "  - Copy config now:\n"
+    "* Fallback config:";
 
 
 #ifndef DEBUG
@@ -401,6 +401,7 @@ const char *NTSCPAL_SEL[]           = {"NTSC  ","PAL   ","Current"};
 const char *Force5060[]             = {"Off (N64 Auto)","60Hz","50Hz"};
 const char *Resolutions[]           = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p","1440p w."};
 const char *FallbackRes[]           = {"1080p","480p/576p"};
+//const char *DeInterModes[]          = {"Bob","Weave","Motion Adaptive"};
 const char *DeInterModes[]          = {"Bob","Weave"};
 const char *InterpModes[]           = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};
 const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};

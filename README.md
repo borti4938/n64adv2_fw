@@ -37,8 +37,8 @@ The menu always open in the top level, where you have following options availabl
   Some video interface processing stuff other than resolution and scaling
 - **\[Miscellaneous\]**  
   Audio settings, in-game routines settings
-- **\[Save/Load/Fw.Update\]**  
-  Save your current settings, load from settings or defaults, update the firmware
+- **\[Save/Load/Fallback\]**  
+  Save your current settings, load from settings or defaults
 - **About...**  
   Some information on the project
 - **Acknowledgment...**  
@@ -85,7 +85,7 @@ An empty default value means that this value is not affected by loading defaults
 | **Output resolution - 1440p (4:3)** | _not available_ | Changes to 1440p (4:3) resolution with reduced blanking at output \[3\] |
 | **Output resolution - 1440p (16:9)** | _not available_ | Changes to 1440p (16:9) resolution with reduced blanking at output \[3,4\] |
 | **Use VGA instead of 480p** | Off | Determines whether you want to use VGA (640x480) instead of standard 480p (720x480).<br>Note that this option has no effect for 576p. |
-| **Frame-Locked** | Off | Varies the pixel clock such that vertical sync matches the N64 generated vertical clock.<br>Vsync in this mode is slightly off spec. To my experience, NTSC runs fine on most TVs other than PAL.|
+| **Frame-Locked mode** | Off | Varies the pixel clock such that vertical sync matches the N64 generated vertical clock.<br>Vsync in this mode is slightly off spec. To my experience, NTSC runs fine on most TVs other than PAL.|
 | **Force 50/60** | Off (N64 Auto) | Forces 50Hz or 60Hz vertical output frequency. This may introduce additional shudder when running PAL in 60Hz and NTSC in 50Hz.<br>This option becomes inaccessible in frame locked mode. |
 
 \[1\] You are allowed to quickly change the _Input mode_ on this screen by pressing **L** or **R** on the controller.  
@@ -143,12 +143,13 @@ An empty default value means that this value is not affected by loading defaults
 | Entry | Default | Description |
 |:------|:--------|:------------|
 | **De-Interlacing mode** | Bob | Selects between **Bob** or **Weave** deinterlacing for 480i/576i video input |
-| **Gamma Value** | 1.00 | Applies some gamma boost.<br>Gamma curve on output is defined as I = I_{in}^**\gamma**, where I is the intensity. |
-| **Limited RGB** | Off | Limits the 8bit RGB values in a range of 16 to 235. |
+| **Gamma value** | 1.00 | Applies some gamma boost.<br>Gamma curve on output is defined as I = I_{in}^**\gamma**, where I is the intensity. |
+| **Color space - Format** | RGB | Choose between **RGB**, **YCbCr (ITU601/SD)** or **YCbCr (ITU709/HD)** color space |
+| **Color space - Limited range** | Off | Sets color space to use just a limited range (not full 8bit (0 to 255)) leaving some headroom<br>- RGB values in a range of 16 to 235<br>YCbCr values between 16 and 235 (Y) or between 16 and 239 (Cb/Cr) |
 | **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[11\] |
-| **LowRes.-DeBlur - power cycle default** | Off | Sets the power cycle default. |
+| **LowRes.-DeBlur - Power cycle default** | Off | Sets the power cycle default. |
 | **16bit mode** | Off | Selects between \[12\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
-| **16bit mode - power cycle default** | Off | Sets the power cycle default. |
+| **16bit mode - Power cycle default** | Off | Sets the power cycle default. |
 
 \[11\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
 \[12\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
@@ -157,18 +158,19 @@ An empty default value means that this value is not affected by loading defaults
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Audio Settings - Swap L/R** | Off | Swaps left and right audio channel |
-| **Audio Settings - Filter function** | | _currently not implemented_ |
-| **Audio Settings - Post filter gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
-| **Audio Settings - S/PDIF enabled** | Off | Enables the S/PDIF audio output. |
-| **Controller Routines - Reset** | On | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
-| **Controller Routines - VI-DeBlur** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
-| **Controller Routines - 16bit Mode** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
+| **Audio settings - Swap L/R** | Off | Swaps left and right audio channel |
+| **Audio settings - Post filter gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
+| **Audio settings - S/PDIF enabled** | Off | Enables the S/PDIF audio output. |
+| **Controller routines - Reset** | On | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
+| **Controller routines - VI-DeBlur** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
+| **Controller routines - 16bit mode** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
+| **Reset masking** | Off | User can opt to not reset video interface pipeline (**VI pipeline**) and/or **Audio** processing if the console is being reset |
+| **Re-sync VI pipeline**| | Resets the video pipeline and resyncs input (i.e. video from N64) and output video<br>Might be usefull in _frame-locked mode_ and if resets are masked from video interface pipeline |
 | **Unlock lucky 1440p** \[12\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
 \[12\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
 
-#### Save/Load/Fw.Update
+#### Save/Load/Fallback
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
@@ -176,11 +178,15 @@ An empty default value means that this value is not affected by loading defaults
 | **Load - Last Configuration** | | Loads your last saved configuration |
 | **Load - 480p Defaults** | | Loads 480p/576p defaulted configuration |
 | **Load - 1080p Defaults** | | Loads 1080p defaulted configuration |
-| **Fallback Config** | | Determines the fallback defaults |
-| **Firmware Update** | | _currently not implemented_ |
+| **Copy - Direction** | NTSC->PAL | Determines which config is copied _from_->_to_ |
+| **Copy - Copy config now** | | Copies the actual config. \[13\] | 
+| **Fallback config** | 1080p | Determines the fallback defaults |
+
+\[13\] A copy from _NTSC->PAL_ also enables **Use PAL in 240p box** option. 240p/288p configurations stay uneffected.
 
 Note that all unsaved configuration entries in the menu are shown in yellow color.
 As soon as the configuration is saved, every entry should appear in white or grey if unavailable.
+
 
 ### Default Configuration
 

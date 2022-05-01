@@ -30,7 +30,7 @@
 #define APP_CFG_H_
 
 #define SW_FW_MAIN  2
-#define SW_FW_SUB   9
+#define SW_FW_SUB   10
 
 #define CFG_FW_MAIN SW_FW_MAIN
 #define CFG_FW_SUB  03
@@ -43,7 +43,7 @@
   #define __ufmdata_section__
 #endif
 
-// #define USE_NOTICE_SECTION
+//#define USE_NOTICE_SECTION
 
 
 #endif /* APP_CFG_H_ */
