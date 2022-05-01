@@ -207,7 +207,7 @@ VD_i[5]                      : 134       : input  : 3.3-V LVTTL       :         
 VD_i[4]                      : 135       : input  : 3.3-V LVTTL       :         : 8         : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : 136       :        :                   :         : 8         :                
 GND                          : 137       : gnd    :                   :         :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : 138       :        :                   :         : 8         :                
+nViDeblur_o                  : 138       : output : 3.3-V LVTTL       :         : 8         : Y              
 VCCIO8                       : 139       : power  :                   : 3.3V    : 8         :                
 VD_i[3]                      : 140       : input  : 3.3-V LVTTL       :         : 8         : Y              
 VD_i[2]                      : 141       : input  : 3.3-V LVTTL       :         : 8         : Y              
