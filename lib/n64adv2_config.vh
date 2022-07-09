@@ -36,7 +36,7 @@
 
   // configuration as defined in n64adv_controller.v (must match software)
   //  wire [ 7:0] SysConfigSet3; (Audio)
-  //    [ 7: 0] {(1bit reserve),audio_amp (5bits),audio_swap_lr,audio_spdif_en}
+  //    [ 7: 0] {audio_filter_bypass,audio_amp (5bits),audio_swap_lr,audio_spdif_en}
   //  wire [31:0] SysConfigSet2; (Scanlines)
   //    [31:30] {(2bits reserved)}
   //    [29:17] vertical:   {Sl_thickness (2bit),Sl_profile (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits)}
@@ -72,12 +72,13 @@
   `define rst_vi_pipeline_mask_bit  26
   
   // Separation slices
-  `define cfg3_audio_config_slice    6: 0
+  `define cfg3_audio_config_slice    7: 0
   `define cfg2_scanline_slice       29: 0
   `define cfg1_ppu_config_slice     24: 0
   
   // Audio config
-  `define APUConfig_WordWidth        7
+  `define APUConfig_WordWidth        8
+  `define audio_filter_bypass_bit    7
   `define audio_amp_slice            6: 2
   `define audio_swap_lr_bit          1
   `define audio_spdif_en_bit         0

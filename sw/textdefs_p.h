@@ -138,19 +138,20 @@
 #define VICFG_16BITMODE_V_OFFSET    ( 8 + VICFG_VALS_V_OFFSET)
 #define VICFG_PC16BITMODE_V_OFFSET  ( 9 + VICFG_VALS_V_OFFSET)
 
-#define MISC_OVERLAY_H_OFFSET         OVERLAY_H_OFFSET
-#define MISC_OVERLAY_V_OFFSET         OVERLAY_V_OFFSET
-#define MISC_VALS_H_OFFSET            (26 + MISC_OVERLAY_H_OFFSET)
-#define MISC_VALS_V_OFFSET            VICFG_OVERLAY_V_OFFSET
-#define MISC_AUDIO_SWAP_LR_V_OFFSET   ( 1 + MISC_VALS_V_OFFSET)
-#define MISC_AUDIO_AMP_V_OFFSET       ( 2 + MISC_VALS_V_OFFSET)
-#define MISC_AUDIO_SPDIF_EN_V_OFFSET  ( 3 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_RESET_V_OFFSET       ( 5 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_DEBLUR_V_OFFSET      ( 6 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_16BITMODE_V_OFFSET   ( 7 + MISC_VALS_V_OFFSET)
-#define MISC_RST_MASKING_V_OFFSET     ( 8 + MISC_VALS_V_OFFSET)
-#define MISC_RESYNC_VI_PL_V_OFFSET    ( 9 + MISC_VALS_V_OFFSET)
-#define MISC_LUCKY_1440P_V_OFFSET     (10 + MISC_VALS_V_OFFSET)
+#define MISC_OVERLAY_H_OFFSET             OVERLAY_H_OFFSET
+#define MISC_OVERLAY_V_OFFSET             OVERLAY_V_OFFSET
+#define MISC_VALS_H_OFFSET                (26 + MISC_OVERLAY_H_OFFSET)
+#define MISC_VALS_V_OFFSET                VICFG_OVERLAY_V_OFFSET
+#define MISC_AUDIO_SWAP_LR_V_OFFSET       ( 1 + MISC_VALS_V_OFFSET)
+#define MISC_AUDIO_FILTER_BYPASS_V_OFFSET ( 2 + MISC_VALS_V_OFFSET)
+#define MISC_AUDIO_AMP_V_OFFSET           ( 3 + MISC_VALS_V_OFFSET)
+#define MISC_AUDIO_SPDIF_EN_V_OFFSET      ( 4 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_RESET_V_OFFSET           ( 6 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_DEBLUR_V_OFFSET          ( 7 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_16BITMODE_V_OFFSET       ( 8 + MISC_VALS_V_OFFSET)
+#define MISC_RST_MASKING_V_OFFSET         ( 9 + MISC_VALS_V_OFFSET)
+#define MISC_RESYNC_VI_PL_V_OFFSET        (10 + MISC_VALS_V_OFFSET)
+#define MISC_LUCKY_1440P_V_OFFSET         (11 + MISC_VALS_V_OFFSET)
 
 #define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
 #define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
@@ -268,6 +269,7 @@ static const char *misc_header __ufmdata_section__ =
 static const char *misc_overlay __ufmdata_section__ =
     "* Audio settings:\n"
     "  - Swap L/R:\n"
+    "  - Bypass filter:\n"
     "  - Post filter gain:\n"
     "  - S/PDIF enabled:\n"
     "* Controller routines:\n"

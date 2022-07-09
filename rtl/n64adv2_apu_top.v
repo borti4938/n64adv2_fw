@@ -74,11 +74,12 @@ output SPDIF_o;
 
 
 // wires
+wire audio_filter_bypass;
 wire [4:0] audio_level_amp;
 wire audio_swap_lr;
 wire audio_spdif_en;
 
-wire [15:0] PDATA [0:1];
+wire signed [15:0] PDATA [0:1];
 wire PDATA_VALID;
 
 wire [23:0] source_data;
@@ -89,7 +90,7 @@ wire signed [23:0] PDATA_OUT_right_w;
 
 // regs
 reg [1:0] tdm = 2'b11;
-reg [15:0] sink_data_buf_0, sink_data_buf_1, sink_data;
+reg signed [15:0] sink_data_buf_0, sink_data_buf_1, sink_data;
 reg sink_valid, sink_sop, sink_eop;
 
 reg signed [23:0] PDATA_INT_pre [0:1];
@@ -113,7 +114,7 @@ register_sync #(
   .clk_en(1'b1),
   .nrst(1'b1),
   .reg_i(APUConfigSet),
-  .reg_o({audio_level_amp,audio_swap_lr,audio_spdif_en})
+  .reg_o({audio_filter_bypass,audio_level_amp,audio_swap_lr,audio_spdif_en})
 );
 
 // parallization
@@ -210,9 +211,9 @@ always @(posedge MCLK_i or negedge nRST_i)
     PDATA_INT_VALID <= 1'b0;
     if (!DATA_SUBSAMPL_DROP) begin
       if (PDATA_INT_pre_VALID[1])
-        PDATA_INT[1] <= PDATA_INT_pre[1]; // left comes first, so do not set valid flag here
+        PDATA_INT[1] <= audio_filter_bypass ? {sink_data_buf_1,8'b0} : PDATA_INT_pre[1]; // left comes first, so do not set valid flag here
       if (PDATA_INT_pre_VALID[0]) begin
-        PDATA_INT[0] <= PDATA_INT_pre[0]; // second is right, so set valid flag here
+        PDATA_INT[0] <= audio_filter_bypass ? {sink_data_buf_0,8'b0} : PDATA_INT_pre[0]; // second is right, so set valid flag here
         PDATA_INT_VALID <= 1'b1;
       end
     end

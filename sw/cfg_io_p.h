@@ -422,6 +422,17 @@ cfg_b32word_t extcfg3_word =
     .cfg_ref_word_val = 0x00000000
   };
 
+config_t audio_fliter_bypass = {
+    .cfg_word        = &extcfg3_word,
+    .cfg_word_offset = CFG_AUDIO_FILTER_BYPASS_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_AUDIO_FILTER_BYPASS_SETMASK,
+        .clrflag_mask = CFG_AUDIO_FILTER_BYPASS_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
+
 config_t audio_amp = {
     .cfg_word        = &extcfg3_word,
     .cfg_word_offset = CFG_AUDIO_AMP_OFFSET,
