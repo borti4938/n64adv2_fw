@@ -87,7 +87,7 @@
   <parameter name="coeffFracBitWidth" value="0" />
   <parameter name="coeffReload" value="false" />
   <parameter name="coeffScaling" value="auto" />
-  <parameter name="coeffSetRealValue">0.0087890625,0.021484375,0.0078125,-0.0390625,-0.0625,0.017578125,0.19921875,0.357421875,0.357421875,0.19921875,0.017578125,-0.0625,-0.0390625,0.0078125,0.021484375,0.0087890625</parameter>
+  <parameter name="coeffSetRealValue">-0.005859375,0.0029296875,0.021484375,0.015625,-0.033203125,-0.068359375,0.0068359375,0.1962890625,0.3662109375,0.3662109375,0.1962890625,0.0068359375,-0.068359375,-0.033203125,0.015625,0.021484375,0.0029296875,-0.005859375</parameter>
   <parameter name="coeffSetRealValueImag">0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0530093, -0.04498, 0.0, 0.0749693, 0.159034, 0.224907, 0.249809, 0.224907, 0.159034, 0.0749693, 0.0, -0.04498, -0.0530093, -0.0321283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0</parameter>
   <parameter name="coeffType" value="int" />
   <parameter name="decimFactor" value="1" />
@@ -105,10 +105,10 @@
   <parameter name="karatsuba" value="false" />
   <parameter name="mRAMThreshold" value="1000000" />
   <parameter name="num_modes" value="2" />
-  <parameter name="outLSBRound" value="trunc" />
-  <parameter name="outLsbBitRem" value="6" />
-  <parameter name="outMSBRound" value="trunc" />
-  <parameter name="outMsbBitRem" value="0" />
+  <parameter name="outLSBRound" value="round" />
+  <parameter name="outLsbBitRem" value="3" />
+  <parameter name="outMSBRound" value="sat" />
+  <parameter name="outMsbBitRem" value="4" />
   <parameter name="outType" value="int" />
   <parameter name="readWriteMode" value="read_write" />
   <parameter name="reconfigurable" value="false" />

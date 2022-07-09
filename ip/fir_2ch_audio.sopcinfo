@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="fir_2ch_audio" kind="fir_2ch_audio" version="1.0" fabric="QSYS">
  <!-- Format version 21.1 842 (Future versions may contain additional information.) -->
- <!-- 2022.02.06.19:03:54 -->
+ <!-- 2022.07.09.11:39:07 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1644170634</value>
+  <value>1657359547</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -361,7 +361,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="coeffSetRealValue">
    <type>java.lang.String</type>
-   <value>0.0087890625,0.021484375,0.0078125,-0.0390625,-0.0625,0.017578125,0.19921875,0.357421875,0.357421875,0.19921875,0.017578125,-0.0625,-0.0390625,0.0078125,0.021484375,0.0087890625</value>
+   <value>-0.005859375,0.0029296875,0.021484375,0.015625,-0.033203125,-0.068359375,0.0068359375,0.1962890625,0.3662109375,0.3662109375,0.1962890625,0.0068359375,-0.068359375,-0.033203125,0.015625,0.021484375,0.0029296875,-0.005859375</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -369,7 +369,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="coeffNum">
    <type>int</type>
-   <value>16</value>
+   <value>18</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -385,7 +385,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="coeffSetScaleValue">
    <type>java.lang.String</type>
-   <value>0.0083934686888454,0.0209836717221135,0.00769401296477495,-0.03847006482387475,-0.06225155944227005,0.01748639310176125,0.19864542563600782,0.357421875,0.357421875,0.19864542563600782,0.01748639310176125,-0.06225155944227005,-0.03847006482387475,0.00769401296477495,0.0209836717221135,0.0083934686888454</value>
+   <value>-0.005733243639921722,0.002866621819960861,0.020783008194716242,0.01504976455479452,-0.0329661509295499,-0.06808226822407044,0.006449899094911937,0.19564693921232876,0.3662109375,0.3662109375,0.19564693921232876,0.006449899094911937,-0.06808226822407044,-0.0329661509295499,0.01504976455479452,0.020783008194716242,0.002866621819960861,-0.005733243639921722</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -401,7 +401,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="coeffSetFixedValue">
    <type>java.lang.String</type>
-   <value>12,30,11,-55,-89,25,284,511,511,284,25,-89,-55,11,30,12</value>
+   <value>-8,4,29,21,-46,-95,9,273,511,511,273,9,-95,-46,21,29,4,-8</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -497,7 +497,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="outMSBRound">
    <type>java.lang.String</type>
-   <value>trunc</value>
+   <value>sat</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -505,7 +505,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="outMsbBitRem">
    <type>int</type>
-   <value>0</value>
+   <value>4</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -513,7 +513,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="outLSBRound">
    <type>java.lang.String</type>
-   <value>trunc</value>
+   <value>round</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -521,7 +521,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="outLsbBitRem">
    <type>int</type>
-   <value>6</value>
+   <value>3</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -529,7 +529,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="outWidth">
    <type>int</type>
-   <value>30</value>
+   <value>31</value>
    <derived>true</derived>
    <enabled>false</enabled>
    <visible>true</visible>
@@ -537,7 +537,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="outWidth_realOnly">
    <type>int</type>
-   <value>30</value>
+   <value>31</value>
    <derived>true</derived>
    <enabled>false</enabled>
    <visible>false</visible>
@@ -625,8 +625,8 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="funcResult">
    <type>java.lang.String</type>
-   <value><![CDATA[-interp=1 -decim=1 -incycles=256 -len=16 -bankcount=1 -sym -nband=1 -chans=2 -family="MAX 10" 
-|{}|1|1|2|2|30|0|17|6|noCode|LUTS: 224 DSPs: 1 RAM Bits: 512|]]></value>
+   <value><![CDATA[-interp=1 -decim=1 -incycles=256 -len=18 -bankcount=1 -sym -nband=1 -chans=2 -family="MAX 10" 
+|{}|1|1|2|2|31|0|17|6|noCode|LUTS: 263 DSPs: 1 RAM Bits: 1024|]]></value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -634,7 +634,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="busAddressWidth">
    <type>int</type>
-   <value>3</value>
+   <value>4</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -666,7 +666,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="lutCount">
    <type>int</type>
-   <value>224</value>
+   <value>263</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -682,7 +682,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="memBitCount">
    <type>int</type>
-   <value>512</value>
+   <value>1024</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>true</visible>
