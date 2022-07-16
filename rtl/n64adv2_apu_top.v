@@ -255,7 +255,7 @@ always @(posedge MCLK_i) begin
     5'd16: cfg_amp_factor <= 9'b000010111;
     5'd17: cfg_amp_factor <= 9'b000011001;
     5'd18: cfg_amp_factor <= 9'b000011101;
-    5'd19: cfg_amp_factor <= 9'b000100000;
+    5'd19: cfg_amp_factor <= 9'b000100000;  // this is 0dB
     5'd20: cfg_amp_factor <= 9'b000100100;
     5'd21: cfg_amp_factor <= 9'b000101000;
     5'd22: cfg_amp_factor <= 9'b000101101;
