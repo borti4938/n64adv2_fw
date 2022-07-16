@@ -311,6 +311,7 @@ i2s_leftjustified_tx i2s_tx_u(
   .PDATA_LEFT_i(PDATA_OUT_left_w),
   .PDATA_RIGHT_i(PDATA_OUT_right_w),
   .PDATA_VALID_i(PDATA_MULT_VALID),
+  .I2S_Audio_en(audio_hdmi_en),
   .SCLK_o(SCLK_o),
   .SDATA_o(SDATA_o),
   .LRCLK_o(LRCLK_o)

@@ -48,6 +48,7 @@ module i2s_leftjustified_tx (
   PDATA_VALID_i,
 
   // Seriell Audio Output
+  I2S_Audio_en,
   SCLK_o,
   SDATA_o,
   LRCLK_o
@@ -60,6 +61,7 @@ input [23:0] PDATA_LEFT_i;
 input [23:0] PDATA_RIGHT_i;
 input PDATA_VALID_i;
 
+input I2S_Audio_en;
 output reg SCLK_o;
 output reg SDATA_o;
 output reg LRCLK_o;
@@ -89,7 +91,7 @@ always @(posedge MCLK_i or negedge nRST_i)
     if (PDATA_VALID_i) begin
       audio_lr_i[1] <= PDATA_LEFT_i;
       audio_lr_i[0] <= PDATA_RIGHT_i;
-      trigger_tx <= 1'b1;
+      trigger_tx <= I2S_Audio_en;
     end
   end
 
