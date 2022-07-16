@@ -163,7 +163,7 @@ An empty default value means that this value is not affected by loading defaults
 | **Audio settings - S/PDIF enabled** | Off | Enables the S/PDIF audio output. |
 | **Controller routines - Reset** | On | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
 | **Controller routines - VI-DeBlur** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
-| **Controller routines - 16bit mode** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
+| **Controller routines - 16bit mode** | Off | Allows switching _low. 16bit mode (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
 | **Reset masking** | Off | User can opt to not reset video interface pipeline (**VI pipeline**) and/or **Audio** processing if the console is being reset |
 | **Re-sync VI pipeline**| | Resets the video pipeline and resyncs input (i.e. video from N64) and output video<br>Might be usefull in _frame-locked mode_ and if resets are masked from video interface pipeline |
 | **Unlock lucky 1440p** \[12\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
