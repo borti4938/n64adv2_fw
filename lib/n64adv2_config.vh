@@ -76,12 +76,13 @@
   `define cfg2_scanline_slice       29: 0
   `define cfg1_ppu_config_slice     24: 0
   
-  // Audio config
-  `define APUConfig_WordWidth        8
-  `define audio_filter_bypass_bit    7
-  `define audio_amp_slice            6: 2
-  `define audio_swap_lr_bit          1
-  `define audio_spdif_en_bit         0
+  // Audio config (note the 1 bit shift compared to software)
+  `define APUConfig_WordWidth        9
+  `define audio_filter_bypass_bit    8
+  `define audio_amp_slice            7: 3
+  `define audio_swap_lr_bit          2
+  `define audio_spdif_en_bit         1
+  `define audio_hdmi_en_bit          0
   
   
   // PPU config

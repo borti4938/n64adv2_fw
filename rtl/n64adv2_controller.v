@@ -282,7 +282,7 @@ end
 
 always @(*) begin
   OSDWrVector    <= {vd_wrctrl_w,vd_wrdata_w};
-  APUConfigSet   <= SysConfigSet3[`cfg3_audio_config_slice];
+  APUConfigSet   <= {SysConfigSet3[`cfg3_audio_config_slice],HDMI_cfg_done_o};
   use_igr        <= SysConfigSet1[`igr_reset_enable_bit];
   nRST_Masking_o <= SysConfigSet1[`rst_masks_slice];
 end

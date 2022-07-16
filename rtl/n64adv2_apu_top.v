@@ -78,6 +78,9 @@ wire audio_filter_bypass;
 wire [4:0] audio_level_amp;
 wire audio_swap_lr;
 wire audio_spdif_en;
+wire audio_hdmi_en;
+
+wire nRst_int_w;
 
 wire signed [15:0] PDATA [0:1];
 wire PDATA_VALID;
@@ -114,14 +117,16 @@ register_sync #(
   .clk_en(1'b1),
   .nrst(1'b1),
   .reg_i(APUConfigSet),
-  .reg_o({audio_filter_bypass,audio_level_amp,audio_swap_lr,audio_spdif_en})
+  .reg_o({audio_filter_bypass,audio_level_amp,audio_swap_lr,audio_spdif_en,audio_hdmi_en})
 );
+
+assign nRst_int_w = nRST_i & (audio_spdif_en | audio_hdmi_en);
 
 // parallization
 
 n64_sample_i2s i2s_rx_u(
   .MCLK_i(MCLK_i),
-  .nRST_i(nRST_i),
+  .nRST_i(nRst_int_w),
   .SCLK_i(SCLK_i),
   .SDATA_i(SDATA_i),
   .LRCLK_i(LRCLK_i),
@@ -134,8 +139,8 @@ n64_sample_i2s i2s_rx_u(
 // interpolation
 // implementation used a multiplexed fir filter for left and right channel
 
-always @(posedge MCLK_i or negedge nRST_i)
-  if (!nRST_i) begin
+always @(posedge MCLK_i or negedge nRst_int_w)
+  if (!nRst_int_w) begin
     sink_valid <= 1'b0;
     sink_sop <= 1'b0;
     sink_eop <= 1'b0;
@@ -173,7 +178,7 @@ always @(posedge MCLK_i or negedge nRST_i)
 
 fir_2ch_audio fir_2ch_audio_u(
   .clk(MCLK_i),
-  .reset_n(nRST_i),
+  .reset_n(nRst_int_w),
   .ast_sink_data(sink_data),
   .ast_sink_valid(sink_valid),
   .ast_sink_error(2'b00),
@@ -186,8 +191,8 @@ fir_2ch_audio fir_2ch_audio_u(
   .ast_source_channel(source_channel)
 );
 
-always @(posedge MCLK_i or negedge nRST_i)
-  if (!nRST_i) begin
+always @(posedge MCLK_i or negedge nRst_int_w)
+  if (!nRst_int_w) begin
     PDATA_INT_pre[0] <= {24{1'b0}};
     PDATA_INT_pre[1] <= {24{1'b0}};
     PDATA_INT_pre_VALID <= 2'b00;
@@ -201,8 +206,8 @@ always @(posedge MCLK_i or negedge nRST_i)
     end
   end
 
-always @(posedge MCLK_i or negedge nRST_i)
-  if (!nRST_i) begin
+always @(posedge MCLK_i or negedge nRst_int_w)
+  if (!nRst_int_w) begin
     PDATA_INT[0] <= {24{1'b0}};
     PDATA_INT[1] <= {24{1'b0}};
     PDATA_INT_VALID <= 1'b0;
@@ -266,8 +271,8 @@ always @(posedge MCLK_i) begin
   endcase
 end
 
-always @(posedge MCLK_i or negedge nRST_i)
-  if (!nRST_i) begin
+always @(posedge MCLK_i or negedge nRst_int_w)
+  if (!nRst_int_w) begin
     PDATA_MULT_pre_VALID <= 1'b0;
     PDATA_MULT_pre[1] <= 32'd0;
     PDATA_MULT_pre[0] <= 32'd0;
@@ -302,7 +307,7 @@ assign PDATA_OUT_right_w = PDATA_MULT[ audio_swap_lr]; // is 1 if swapped, i.e. 
 // generate I2S and SPDIF output
 i2s_leftjustified_tx i2s_tx_u(
   .MCLK_i(MCLK_i),
-  .nRST_i(nRST_i),
+  .nRST_i(nRst_int_w),
   .PDATA_LEFT_i(PDATA_OUT_left_w),
   .PDATA_RIGHT_i(PDATA_OUT_right_w),
   .PDATA_VALID_i(PDATA_MULT_VALID),
@@ -313,7 +318,7 @@ i2s_leftjustified_tx i2s_tx_u(
 
 spdif_tx spdif_tx_u(
   .MCLK_i(MCLK_i),
-  .nRST_i(nRST_i),
+  .nRST_i(nRst_int_w),
   .PDATA_LEFT_i(PDATA_OUT_left_w),
   .PDATA_RIGHT_i(PDATA_OUT_right_w),
   .PDATA_VALID_i(PDATA_MULT_VALID),
