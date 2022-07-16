@@ -50,7 +50,7 @@ module n64adv2_controller #(
   I2C_SCL,
   I2C_SDA,
   Interrupt_i,
-  Si_cfg_done_o,
+  HDMI_cfg_done_o,
 
   APUConfigSet,
 
@@ -85,7 +85,7 @@ input CTRL_i;
 inout       I2C_SCL;
 inout       I2C_SDA;
 input [1:0] Interrupt_i;
-output      Si_cfg_done_o;
+output      HDMI_cfg_done_o;
 
 output reg [`APUConfig_WordWidth-1:0] APUConfigSet;
 input      [`PPU_State_Width-1:0] PPUState;
@@ -132,6 +132,8 @@ wire OSD_VSync_resynced;
 wire nVSYNC_buf_resynced;
 wire new_ctrl_data_resynced;
 wire ctrl_data_tack, ctrl_data_tack_resynced;
+
+wire nVSYNC_CPU_w;
 
 wire CHIP_ID_valid_w;
 wire [63:0] CHIP_ID_pre_w, CHIP_ID_w;
@@ -222,14 +224,14 @@ always @(posedge N64_CLK_i)
 
 
 register_sync #(
-  .reg_width(`PPU_State_Width + 5), // 1 + PPU_State_Width + 1 + 1 + 1 + 1
-  .reg_preset({5+`PPU_State_Width{1'b0}})
+  .reg_width(`PPU_State_Width + 6), // 1 + PPU_State_Width + 1 + 1 + 1 + 1 + 1
+  .reg_preset({(`PPU_State_Width + 6){1'b0}})
 ) sync4cpu_u0(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({pal_pattern,PPUState,FallbackMode,FallbackMode_valid,new_ctrl_data[1],OSD_VSync}),
-  .reg_o({PPUState_resynced,FallbackMode_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
+  .reg_i({pal_pattern,PPUState,FallbackMode,FallbackMode_valid,new_ctrl_data[1],OSD_VSync,nVSYNC_buf}),
+  .reg_o({PPUState_resynced,FallbackMode_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced,nVSYNC_buf_resynced})
 );
 
 chip_id chip_id_u(
@@ -239,6 +241,7 @@ chip_id chip_id_u(
   .chip_id(CHIP_ID_pre_w)
 );
 
+assign nVSYNC_CPU_w = HDMI_cfg_done_o ? OSD_VSync_resynced : nVSYNC_buf_resynced;
 assign CHIP_ID_w = CHIP_ID_valid_w ? CHIP_ID_pre_w : 64'h0;
 assign hw_info = hw_info_sel == 3'b011 ? CHIP_ID_w[63:48] :
                  hw_info_sel == 3'b010 ? CHIP_ID_w[47:32] :
@@ -252,7 +255,7 @@ system_n64adv2 system_u(
   .i2c_scl_pad_io(I2C_SCL),
   .i2c_sda_pad_io(I2C_SDA),
   .interrupts_n_export(~Interrupt_i),
-  .sync_in_export({new_ctrl_data_resynced,OSD_VSync_resynced}),
+  .sync_in_export({new_ctrl_data_resynced,nVSYNC_CPU_w}),
   .vd_wrctrl_export(vd_wrctrl_w),
   .vd_wrdata_export(vd_wrdata_w),
   .ctrl_data_in_export(serial_data[2]),
@@ -262,20 +265,9 @@ system_n64adv2 system_u(
   .cfg_set2_out_export(SysConfigSet2),
   .cfg_set1_out_export(SysConfigSet1),
   .cfg_set0_out_export(SysConfigSet0),
-  .info_sync_out_export({Si_cfg_done_o,hw_info_sel,ctrl_data_tack}),
+  .info_sync_out_export({HDMI_cfg_done_o,hw_info_sel,ctrl_data_tack}),
   .led_out_export(LED_o),
   .hw_info_in_export(hw_info)
-);
-
-register_sync #(
-  .reg_width(1),
-  .reg_preset(1'b0)
-) vsync2sysclk_u(
-  .clk(SYS_CLK),
-  .clk_en(1'b1),
-  .nrst(1'b1),
-  .reg_i(nVSYNC_buf),
-  .reg_o(nVSYNC_buf_resynced)
 );
 
 

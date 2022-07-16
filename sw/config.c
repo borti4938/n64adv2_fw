@@ -319,8 +319,8 @@ bool_t confirmation_routine()
   vd_print_string(VD_TEXT,CONFIRM_BNT_FCT_H_OFFSET,CONFIRM_BNT_FCT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_fct_confirm_overlay);
 
   while(1) {
-    while(!get_osdvsync()){};                         // wait for OSD_VSYNC goes high
-    while( get_osdvsync() && new_ctrl_available()){}; // wait for OSD_VSYNC goes low and
+    while(!get_vsync_cpu()){};                         // wait for OSD_VSYNC goes high
+    while( get_vsync_cpu() && new_ctrl_available()){}; // wait for OSD_VSYNC goes low and
                                                       // wait for new controller available
     update_ctrl_data();
     command = ctrl_data_to_cmd(1);

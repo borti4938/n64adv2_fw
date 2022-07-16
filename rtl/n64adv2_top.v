@@ -169,7 +169,7 @@ wire DRAM_nRST_w;
 wire [1:0] CLKs_controller_w, nSRST_w;
 wire nARST_w;
 
-wire Si_cfg_done_w;
+wire HDMI_cfg_done_w;
 
 wire [`APUConfig_WordWidth-1:0] APUConfigSet;
 
@@ -223,9 +223,9 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u(
   .lowlatencymode(PPUConfigSet_w[`lowlatencymode_bit]),
   .use_vga_for_480p(PPUConfigSet_w[`use_vga_for_480p_bit]),
   .target_resolution(PPUConfigSet_w[`target_resolution_slice]),
+  .HDMI_cfg_done_i(HDMI_cfg_done_w),
   .HDMI_CLKsub_i(HDMI_CLKsub_i),
   .HDMI_CLKmain_i(HDMI_CLKmain_i),
-  .Si_cfg_done_i(Si_cfg_done_w),
   .HDMI_CLK_o(HDMI_CLK_w),
   .HDMI_nRST_o(HDMI_nRST_w),
   .DRAM_CLKs_o(DRAM_CLKs_w),
@@ -247,7 +247,7 @@ n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u(
   .I2C_SCL(I2C_SCL),
   .I2C_SDA(I2C_SDA),
   .Interrupt_i({INT_ADV7513,INT_SI5356}),
-  .Si_cfg_done_o(Si_cfg_done_w),
+  .HDMI_cfg_done_o(HDMI_cfg_done_w),
   .APUConfigSet(APUConfigSet),
   .PPUState(PPUState_w),
   .PPUConfigSet(PPUConfigSet_w),
@@ -277,7 +277,7 @@ n64adv2_ppu_top n64adv2_ppu_u(
   .OSD_VSync(OSD_VSync_w),
   .OSDWrVector(OSDWrVector_w),
   .OSDInfo(OSDInfo_w),
-  .scaler_nresync_i(Si_cfg_done_w),
+  .scaler_nresync_i(HDMI_cfg_done_w),
   .VCLK_Tx(HDMI_CLK_w),
   .nVRST_Tx(HDMI_nRST_w),
   .VSYNC_o(VSYNC_o_w),

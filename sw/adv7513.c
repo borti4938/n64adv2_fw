@@ -189,9 +189,10 @@ int check_adv7513()
   return 0;
 }
 
-void init_adv7513() {
+bool_t init_adv7513() {
   led_drive(LED_2, LED_ON);
-  while (!ADV_POWER_RDY()) {}
+  periphals_clr_ready_bit();  // must be set again from external
+  if (!ADV_POWER_RDY()) return FALSE;
 
   adv7513_writereg(ADV7513_REG_POWER, 0x10);
   //adv7513_writereg(ADV7513_REG_POWER2, 0xc0);
@@ -238,7 +239,10 @@ void init_adv7513() {
                                                         // [2] I2S0 enable for the 4 I2S pins: 1 = Enabled
                                                         // [1:0] I2S Format: 10 = left justified mode, 00 = standard
   adv7513_writereg(ADV7513_REG_AUDIO_CFG3, 0x0B);       // [3:0] I2S Word length per channel: 1011 = 24bit
+
+  set_cfg_adv7513();
   led_drive(LED_2, LED_OFF);
+  return TRUE;
 }
 
 

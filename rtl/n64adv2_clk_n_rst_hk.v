@@ -46,9 +46,9 @@ module n64adv2_clk_n_rst_hk(
   use_vga_for_480p,
   target_resolution,
   
+  HDMI_cfg_done_i,
   HDMI_CLKsub_i,
   HDMI_CLKmain_i,
-  Si_cfg_done_i,
   HDMI_CLK_o,
   HDMI_nRST_o,
   
@@ -80,9 +80,9 @@ input lowlatencymode;
 input use_vga_for_480p;
 input [2:0] target_resolution;
 
+input HDMI_cfg_done_i;
 input HDMI_CLKsub_i;
 input HDMI_CLKmain_i;
-input Si_cfg_done_i;
 
 output HDMI_CLK_o;
 output HDMI_nRST_o;
@@ -127,8 +127,8 @@ reset_generator #(
 // ====
 
 reg HDMI_CLK_sel_cmb;
-wire HDMI_clk_en_w = n64_en & Si_cfg_done_i;
-wire HDMI_async_nRST_w = nRST_video_masked_w & Si_cfg_done_i;
+wire HDMI_clk_en_w = n64_en & HDMI_cfg_done_i;
+wire HDMI_async_nRST_w = nRST_video_masked_w & HDMI_cfg_done_i;
 wire HDMI_CLK_w;
 
 always @(*) begin

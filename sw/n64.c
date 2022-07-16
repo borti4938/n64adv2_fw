@@ -71,6 +71,15 @@ scanmode_t scanmode;
 bool_t hor_hires;
 
 
+void periphals_clr_ready_bit() {
+  info_sync_val = info_sync_val & PERIPHALS_CFG_RDY_CLR_MASK;
+  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+}
+
+void periphals_set_ready_bit() {
+  info_sync_val = (info_sync_val & SYNC_INFO_OUT_ALL_MASK) | PERIPHALS_CFG_RDY_SET_MASK;
+  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+}
 
 void update_ppu_state()
 {
@@ -192,13 +201,13 @@ int resync_vi_pipeline()
 {
   bool_t abort = confirmation_routine();
   if (abort) return -CFG_RESYNC_ABORT;
-  si5356_clr_ready_bit();
+  periphals_clr_ready_bit();
   usleep(100);
-  si5356_set_ready_bit();
+  periphals_set_ready_bit();
   return 0;
 }
 
-bool_t get_osdvsync()
+bool_t get_vsync_cpu()
 {
   return (IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NVSYNC_IN_MASK);
 };

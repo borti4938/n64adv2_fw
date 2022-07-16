@@ -132,20 +132,20 @@
 #define FALLBACKMODE_GETMASK        (1<<FALLBACKMODE_OFFSET)
 #define FALLBACKMODE_VALID_GETMASK  (1<<FALLBACKMODE_VALID_OFFSET)
 
-#define NVSYNC_IN_MASK        0x01
-#define NEW_CTRL_DATA_IN_MASK 0x02
+#define NVSYNC_IN_MASK              0x01
+#define NEW_CTRL_DATA_IN_MASK       0x02
 
-#define SI_CFG_RDY_OFFSET     4
-#define HW_INFO_SEL_OFFSET    1
-#define CTRL_TACK_BIT_OFFSET  0
+#define PERIPHALS_CFG_RDY_OFFSET     4
+#define HW_INFO_SEL_OFFSET           1
+#define CTRL_TACK_BIT_OFFSET         0
 
-#define SYNC_INFO_OUT_ALL_MASK  0x1F
-#define SI_CFG_RDY_SET_MASK     (1 << SI_CFG_RDY_OFFSET)
-#define SI_CFG_RDY_CLR_MASK     (~SI_CFG_RDY_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
-#define HW_INFO_GET_MASK        (0x7 << HW_INFO_SEL_OFFSET)
-#define HW_INFO_CLR_MASK        (~HW_INFO_GET_MASK & SYNC_INFO_OUT_ALL_MASK)
-#define CTRL_TACK_BIT_SET_MASK  (1 << CTRL_TACK_BIT_OFFSET)
-#define CTRL_TACK_BIT_CLR_MASK  (~CTRL_TACK_BIT_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
+#define SYNC_INFO_OUT_ALL_MASK      0x1F
+#define PERIPHALS_CFG_RDY_SET_MASK  (1 << PERIPHALS_CFG_RDY_OFFSET)
+#define PERIPHALS_CFG_RDY_CLR_MASK  (~PERIPHALS_CFG_RDY_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
+#define HW_INFO_GET_MASK            (0x7 << HW_INFO_SEL_OFFSET)
+#define HW_INFO_CLR_MASK            (~HW_INFO_GET_MASK & SYNC_INFO_OUT_ALL_MASK)
+#define CTRL_TACK_BIT_SET_MASK      (1 << CTRL_TACK_BIT_OFFSET)
+#define CTRL_TACK_BIT_CLR_MASK      (~CTRL_TACK_BIT_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
 
 #define HDL_FW_MAIN_OFFSET  8
 #define HDL_FW_SUB_OFFSET   0
@@ -181,11 +181,13 @@ extern vmode_t palmode;
 extern scanmode_t scanmode;
 extern bool_t hor_hires;
 
+void periphals_clr_ready_bit(void);
+void periphals_set_ready_bit(void);
 void update_ppu_state(void);
 void update_ctrl_data(void);
 cmd_t ctrl_data_to_cmd(bool_t no_fast_skip);
 int resync_vi_pipeline(void);
-bool_t get_osdvsync(void);
+bool_t get_vsync_cpu(void);
 bool_t new_ctrl_available(void);
 bool_t get_fallback_mode(void);
 bool_t is_fallback_mode_valid(void);

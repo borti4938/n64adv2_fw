@@ -40,18 +40,9 @@
 #include "n64.h"
 #include "led.h"
 
+#define PLL_LOCK_MAXWAIT_US         1000
 #define PLL_LOCK_2_FPGA_TIMEOUT_US  150
 
-
-void si5356_clr_ready_bit() {
-  info_sync_val = info_sync_val & SI_CFG_RDY_CLR_MASK;
-  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-}
-
-void si5356_set_ready_bit() {
-  info_sync_val = (info_sync_val & SYNC_INFO_OUT_ALL_MASK) | SI_CFG_RDY_SET_MASK;
-  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-}
 
 void si5356_reg_bitset(alt_u8 regaddr, alt_u8 bit, alt_u8 regmask) {
   if (bit > 7) return;
@@ -72,24 +63,9 @@ int check_si5356()
   return 0;
 }
 
-void init_si5356(clk_config_t target_cfg) {
-
+bool_t configure_clk_si5356(clk_config_t target_cfg) {
   led_drive(LED_1, LED_ON);
-  si5356_clr_ready_bit();
-  int i;
-  
-  si5356_writereg(OEB_REG,OEB_REG_VAL_OFF,0xFF);      // disable outputs
-  si5356_writereg(DIS_LOL_REG,DIS_LOL_REG_VAL,0xFF);  // write needed for proper operation
-
-  for (i=0; i<NUM_INIT_REGS; i++)
-    si5356_writereg(init_regs[i].reg_addr,init_regs[i].reg_val,init_regs[i].reg_mask);
-
-  configure_clk_si5356(target_cfg);
-}
-
-void configure_clk_si5356(clk_config_t target_cfg) {
-  led_drive(LED_1, LED_ON);
-	si5356_clr_ready_bit();
+  periphals_clr_ready_bit();  // must be set again from external
   
   int i;
   si5356_writereg(OEB_REG,OEB_REG_VAL_OFF,0xFF);      // disable outputs
@@ -108,10 +84,28 @@ void configure_clk_si5356(clk_config_t target_cfg) {
   else
     si5356_writereg(OEB_REG,OEB_REG_VAL_ALL_ON,0xFF);     // enable outputs
   
-  while (!SI5356_PLL_LOCKSTATUS()) {};  // wait for PLL lock
+  i = PLL_LOCK_MAXWAIT_US;
+  while (!SI5356_PLL_LOCKSTATUS()) {  // wait for PLL lock
+    if (i == 0) return FALSE;
+    usleep(1);
+    i--;
+  };
   usleep(PLL_LOCK_2_FPGA_TIMEOUT_US);
-  si5356_set_ready_bit();
   led_drive(LED_1, LED_OFF);
+  return TRUE;
+}
+
+bool_t init_si5356(clk_config_t target_cfg) {
+  periphals_clr_ready_bit();  // must be set again from external
+  int i;
+
+  si5356_writereg(OEB_REG,OEB_REG_VAL_OFF,0xFF);      // disable outputs
+  si5356_writereg(DIS_LOL_REG,DIS_LOL_REG_VAL,0xFF);  // write needed for proper operation
+
+  for (i=0; i<NUM_INIT_REGS; i++)
+    si5356_writereg(init_regs[i].reg_addr,init_regs[i].reg_val,init_regs[i].reg_mask);
+
+  return configure_clk_si5356(target_cfg);
 }
 
 

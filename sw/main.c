@@ -41,6 +41,7 @@
 #include "menu.h"
 #include "vd_driver.h"
 #include "flash.h"
+#include "led.h"
 
 
 #define CTRL_IGNORE_FRAMES 10
@@ -50,6 +51,13 @@ const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_M
 const char *RW_Message[] __ufmdata_section__ = {"< Success >","< Failed >","< Aborted >"};
 const char *Unlock_1440p_Message __ufmdata_section__ = "On your own risk, so\n"
                                                        "Good Luck I guess :)";
+
+typedef struct {
+  bool_t si5356_i2c_up;
+  bool_t si5356_locked;
+  bool_t adv7513_i2c_up;
+  bool_t adv7513_hdmi_up;
+} periphal_state_t;
 
 //bool_t use_flash;
 cfg_region_sel_type_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
@@ -125,9 +133,12 @@ int main()
   cmd_t command;
   updateaction_t todo = NON;
   menu_t *menu = &home_menu;
+  bool_t keep_vout_rst = TRUE;
 
   bool_t load_n64_defaults, use_fallback;
   print_cr_info();
+
+  periphal_state_t periphal_state = {FALSE,FALSE,FALSE,FALSE};
 
   bool_t ctrl_update = 1;
   bool_t ctrl_ignore = 0;
@@ -185,19 +196,15 @@ int main()
   cfg_apply_to_logic();
 
   I2C_init(I2C_MASTER_BASE,ALT_CPU_FREQ,200000);
-  while (check_si5356() != 0) {};
-  init_si5356(target_resolution);
-  while (check_adv7513() != 0) {};
-  while (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {};
-  init_adv7513(); // assume that hpd and monitor sense are up
 
-  while(!get_osdvsync()){};  /* wait for OSD_VSYNC goes high (OSD vert. active area) */
-  while( get_osdvsync()){};  /* wait for OSD_VSYNC goes low  */
+  led_drive(LED_1, LED_ON);
+  led_drive(LED_2, LED_ON);
+  periphals_clr_ready_bit();
 
   update_ppu_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
-  palmode_pre = !palmode;
+  palmode_pre = palmode;
   target_resolution_pre = target_resolution;
-//  hor_hires_pre = !hor_hires;
+//  hor_hires_pre = hor_hires;
   unlock_1440p_pre = unlock_1440p;
 
   /* Event loop never exits. */
@@ -224,7 +231,7 @@ int main()
     if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
     else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
 
-    if(cfg_get_value(&show_osd,0)) {
+    if(cfg_get_value(&show_osd,0) && !keep_vout_rst) {
       cfg_load_linex_word(vmode_menu);
       cfg_load_timing_word(timing_menu);
       cfg_load_scaling_word(scaling_menu);
@@ -280,10 +287,10 @@ int main()
         print_ctrl_data();
       }
       
-    } else { /* END OF if(cfg_get_value(&show_osd)) */
+    } else { /* ELSE OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
       todo = NON;
 
-      if (command == CMD_OPEN_MENU) {
+      if (command == CMD_OPEN_MENU && !keep_vout_rst) {
         open_osd_main(&menu);
         ctrl_ignore = CTRL_IGNORE_FRAMES;
       }
@@ -316,37 +323,50 @@ int main()
               break;
           }
 
-    } /* END OF if(!cfg_get_value(&show_osd)) */
+    } /* END OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
 
     cfg_load_linex_word(vmode_n64adv);
     cfg_load_timing_word(timing_n64adv);
     cfg_load_scaling_word(scaling_n64adv);
     cfg_apply_to_logic();
 
+    if (!periphal_state.si5356_i2c_up)
+      periphal_state.si5356_i2c_up = check_si5356() == 0;
+    else
+      periphal_state.si5356_locked = SI5356_PLL_LOCKSTATUS();
+
     target_resolution = get_target_resolution(pal_pattern,palmode);
-    if (target_resolution_pre != target_resolution)
+
+    if (!periphal_state.si5356_locked)
+      periphal_state.si5356_locked = init_si5356(target_resolution);
+    else if (target_resolution_pre != target_resolution)
       configure_clk_si5356(target_resolution);
 
-    if ((palmode_pre != palmode)                     ||
-        (target_resolution_pre != target_resolution) ||
-//        (hor_hires_pre != hor_hires)                 ||
-        (todo == NEW_CONF_VALUE))
+
+    if (!periphal_state.adv7513_i2c_up)
+      periphal_state.adv7513_i2c_up = check_adv7513() == 0;
+    else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE())
+      periphal_state.adv7513_hdmi_up = FALSE;
+
+    if (!periphal_state.adv7513_hdmi_up)
+        periphal_state.adv7513_hdmi_up = init_adv7513();
+    else if ((palmode_pre != palmode)                     ||
+             (target_resolution_pre != target_resolution) ||
+//             (hor_hires_pre != hor_hires)                 ||
+             (todo == NEW_CONF_VALUE))
       set_cfg_adv7513();
-
-    if (!SI5356_PLL_LOCKSTATUS())
-      init_si5356(target_resolution);
-
-    if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
-      init_adv7513();
-    }
 
     if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
       vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
       message_cnt = RWM_SHOW_CNT;
     }
 
-    while(!get_osdvsync()){};  /* wait for OSD_VSYNC goes high (OSD vert. active area) */
-    while( get_osdvsync()){};  /* wait for OSD_VSYNC goes low  */
+    keep_vout_rst = !periphal_state.si5356_locked || !periphal_state.adv7513_hdmi_up;
+    if (!keep_vout_rst)
+      periphals_set_ready_bit();
+
+    while(!get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes high */
+    while( get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes low  */
 
     palmode_pre = palmode;
     target_resolution_pre = target_resolution;
