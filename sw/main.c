@@ -275,15 +275,17 @@ int main()
           break;
       }
 
-      if (menu->type == VINFO) update_vinfo_screen(menu);
+      update_cfg_screen(menu);
+
+      if (menu->type == VINFO)
+        update_vinfo_screen(menu);
+
       if (menu->type == CONFIG) {
-        update_cfg_screen(menu);
         cfg_store_linex_word(vmode_menu);
         cfg_store_timing_word(timing_menu);
         cfg_store_scaling_word(scaling_menu);
         print_current_timing_mode();
       } else {
-        if (menu->type == RWDATA) update_cfg_screen(menu);
         print_ctrl_data();
       }
       

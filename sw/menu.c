@@ -154,7 +154,12 @@ menu_t vinfo_screen = {
       .hoffset = INFO_OVERLAY_H_OFFSET,
       .text = &vinfo_overlay
     },
-    .parent = &home_menu
+    .parent = &home_menu,
+    .current_selection = 0,
+    .number_selections = 1,
+    .leaves = {
+        {.id = INFO_RESYNC_VI_PL_V_OFFSET, .arrow_desc = &misc_sel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &resync_vi_pipeline}
+    }
 };
 
 menu_t vires_screen = {
@@ -290,7 +295,7 @@ menu_t misc_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 10,
+    .number_selections = 9,
     .leaves = {
         {.id = MISC_AUDIO_SWAP_LR_V_OFFSET       , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_swap_lr},
         {.id = MISC_AUDIO_FILTER_BYPASS_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_fliter_bypass},
@@ -300,7 +305,6 @@ menu_t misc_screen = {
         {.id = MISC_IGR_DEBLUR_V_OFFSET          , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_deblur},
         {.id = MISC_IGR_16BITMODE_V_OFFSET       , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_16bitmode},
         {.id = MISC_RST_MASKING_V_OFFSET         , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &rst_masking},
-        {.id = MISC_RESYNC_VI_PL_V_OFFSET        , .arrow_desc = &misc_sel_arrow, .leavetype = IFUNC0     , .sys_fun_0 = &resync_vi_pipeline},
         {.id = MISC_LUCKY_1440P_V_OFFSET         , .arrow_desc = &misc_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_unlock1440p}
     }
 };
@@ -579,8 +583,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       break;
   }
 
-  if (((*current_menu)->type == TEXT) ||
-      ((*current_menu)->type == VINFO)  )
+  if ((*current_menu)->type == TEXT)
     return NON;
 
   switch (command) {
@@ -604,6 +607,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   alt_u8 current_sel = (*current_menu)->current_selection;
 
   // menu specific modifications
+  if ((*current_menu)->type == VINFO) todo = NON;
 
   if (is_vires_screen(*current_menu)) {
     if ((unlock_1440p == FALSE) && ((current_sel == RES_1440P_SELECTION) || (current_sel == RES_1440WP_SELECTION)))
@@ -801,7 +805,7 @@ int update_vinfo_screen(menu_t* current_menu)
 
 int update_cfg_screen(menu_t* current_menu)
 {
-  if (current_menu->type != CONFIG && current_menu->type != RWDATA) return -1;
+  if (current_menu->type == HOME || current_menu->type == TEXT) return -1;
 
   alt_u8 h_l_offset;
   alt_u8 v_run, v_offset;

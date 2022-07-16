@@ -62,17 +62,18 @@
 #define  BNT_FCT_H_OFFSET 27
 #define  BNT_FCT_V_OFFSET (VD_TXT_WIDTH - 1)
 
-#define INFO_OVERLAY_H_OFFSET   OVERLAY_H_OFFSET
-#define INFO_OVERLAY_V_OFFSET   OVERLAY_V_OFFSET
-#define INFO_VALS_H_OFFSET      (27 + INFO_OVERLAY_H_OFFSET)
-#define INFO_VALS_V_OFFSET      INFO_OVERLAY_V_OFFSET
-#define INFO_PPU_STATE_V_OFFSET ( 0 + INFO_VALS_V_OFFSET)
-#define INFO_VIN_V_OFFSET       ( 2 + INFO_VALS_V_OFFSET)
-#define INFO_VOUT_V_OFFSET      ( 3 + INFO_VALS_V_OFFSET)
-#define INFO_VRES_V_OFFSET      ( 4 + INFO_VALS_V_OFFSET)
-#define INFO_LLM_V_OFFSET       ( 5 + INFO_VALS_V_OFFSET)
-#define INFO_DEBLUR_V_OFFSET    ( 7 + INFO_VALS_V_OFFSET)
-#define INFO_GAMMA_V_OFFSET     ( 8 + INFO_VALS_V_OFFSET)
+#define INFO_OVERLAY_H_OFFSET       OVERLAY_H_OFFSET
+#define INFO_OVERLAY_V_OFFSET       OVERLAY_V_OFFSET
+#define INFO_VALS_H_OFFSET          (27 + INFO_OVERLAY_H_OFFSET)
+#define INFO_VALS_V_OFFSET          INFO_OVERLAY_V_OFFSET
+#define INFO_PPU_STATE_V_OFFSET     ( 0 + INFO_VALS_V_OFFSET)
+#define INFO_VIN_V_OFFSET           ( 2 + INFO_VALS_V_OFFSET)
+#define INFO_VOUT_V_OFFSET          ( 3 + INFO_VALS_V_OFFSET)
+#define INFO_VRES_V_OFFSET          ( 4 + INFO_VALS_V_OFFSET)
+#define INFO_LLM_V_OFFSET           ( 5 + INFO_VALS_V_OFFSET)
+#define INFO_DEBLUR_V_OFFSET        ( 7 + INFO_VALS_V_OFFSET)
+#define INFO_GAMMA_V_OFFSET         ( 8 + INFO_VALS_V_OFFSET)
+#define INFO_RESYNC_VI_PL_V_OFFSET  (10 + INFO_VALS_V_OFFSET)
 
 #define RESCFG_OVERLAY_H_OFFSET     OVERLAY_H_OFFSET
 #define RESCFG_OVERLAY_V_OFFSET     OVERLAY_V_OFFSET
@@ -150,8 +151,7 @@
 #define MISC_IGR_DEBLUR_V_OFFSET          ( 7 + MISC_VALS_V_OFFSET)
 #define MISC_IGR_16BITMODE_V_OFFSET       ( 8 + MISC_VALS_V_OFFSET)
 #define MISC_RST_MASKING_V_OFFSET         ( 9 + MISC_VALS_V_OFFSET)
-#define MISC_RESYNC_VI_PL_V_OFFSET        (10 + MISC_VALS_V_OFFSET)
-#define MISC_LUCKY_1440P_V_OFFSET         (11 + MISC_VALS_V_OFFSET)
+#define MISC_LUCKY_1440P_V_OFFSET         (10 + MISC_VALS_V_OFFSET)
 
 #define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
 #define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
@@ -197,7 +197,8 @@ static const char *vinfo_overlay __ufmdata_section__ =
     "  - Frame-Locked mode:\n"
     "* Filter Options\n"
     "  - LowRes. VI-DeBlur:\n"
-    "  - Gamma boost exponent:";
+    "  - Gamma boost exponent:\n\n"
+    "* Re-sync VI pipeline:";
 
 static const char *resolution_header __ufmdata_section__ =
     "Resolution";
@@ -277,7 +278,6 @@ static const char *misc_overlay __ufmdata_section__ =
     "  - VI-DeBlur:\n"
     "  - 16bit mode:\n"
     "* Reset masking:\n"
-    "* Re-sync VI pipeline:\n"
     "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =

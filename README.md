@@ -70,6 +70,7 @@ An empty default value means that this value is not affected by loading defaults
 | **Video mode - Low latency mode** | Shows whether frame locked mode is enabled or not.<br>In frame locked mode it will provide the actual number of scanlines pre-buffered for the output |
 | **Filter Options - LowRes. VI-DeBlur** | Shows whether low resolution deblur is enabled or not.<br>- **off** = 640 horizontal pixel<br>- **on** = 320 horizontal pixel |
 | **Filter Options - Gamma boost exponent** | Exponent of gamma correction (lower value means higher brightness) |
+| **Re-sync VI pipeline**| Resets the video pipeline and resyncs input (i.e. video from N64) and output video<br>Might be usefull in _frame-locked mode_ and if resets are masked from video interface pipeline |
 
 #### Resolution
 
@@ -165,7 +166,6 @@ An empty default value means that this value is not affected by loading defaults
 | **Controller routines - VI-DeBlur** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
 | **Controller routines - 16bit mode** | Off | Allows switching _low. 16bit mode (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
 | **Reset masking** | Off | User can opt to not reset video interface pipeline (**VI pipeline**) and/or **Audio** processing if the console is being reset |
-| **Re-sync VI pipeline**| | Resets the video pipeline and resyncs input (i.e. video from N64) and output video<br>Might be usefull in _frame-locked mode_ and if resets are masked from video interface pipeline |
 | **Unlock lucky 1440p** \[12\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
 \[12\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
