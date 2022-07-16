@@ -160,6 +160,7 @@ An empty default value means that this value is not affected by loading defaults
 | Entry | Default | Description |
 |:------|:--------|:------------|
 | **Audio settings - Swap L/R** | Off | Swaps left and right audio channel |
+| **Audio settings - Bypass filter** | Off | Bypasses the reconstruction audio filter. Only use this option if you are facing any issues with the fillter enabled. |
 | **Audio settings - Post filter gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
 | **Audio settings - S/PDIF enabled** | Off | Enables the S/PDIF audio output. |
 | **Controller routines - Reset** | On | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
