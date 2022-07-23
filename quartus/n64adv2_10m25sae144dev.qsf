@@ -284,7 +284,7 @@ set_global_assignment -name VERILOG_FILE ../rtl/misc/font_rom_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/gamma_table_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/serial_divide.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/sdram_ctrl.v
-set_global_assignment -name VERILOG_FILE ../rtl/misc/polyphase_2step_fir.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/mult_add_2.v
 
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64_vinfo_ext.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64a_vdemux.v
