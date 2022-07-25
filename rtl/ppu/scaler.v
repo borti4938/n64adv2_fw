@@ -768,8 +768,7 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
     case (sdram_ctrl_state)
       ST_SDRAM_WAIT: begin
           sdram_proc_en <= 1'b1;
-          if (sdram_wr_lineid ^ lineid_pre_sdram_buf_sdr_clk_resynced) begin
-            // - Buffer hat umgeschaltet -> Elemente im SDRAM sichern
+          if (sdram_wr_lineid ^ lineid_pre_sdram_buf_sdr_clk_resynced) begin  // new input line -> store elements in SDRAM
             if (datainfo_pre_sdram_buf_field_id_w) begin
               if (datainfo_pre_sdram_buf_bank_sel_w  != sdram_wr_bank_sel_odd) begin
                 sdram_wr_bank_sel_odd  <= datainfo_pre_sdram_buf_bank_sel_w;  // set new bank for frame
@@ -799,14 +798,14 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             sdram_addr_i[ 9: 0] <= {hpos_width{1'b0}};  // horizontal position
             sdram_wr_hcnt <= {hpos_width{1'b0}};
             sdram_ctrl_state <= ST_SDRAM_FIFO2RAM0;
-          end else if (vcnt_o_sdr_clk_resynced == 1) begin // fetch first line
+          end else if (vcnt_o_sdr_clk_resynced == 1) begin // fetch first line to read
             sdram_use_interlaced_out <= interlaced_dramclk_resynced & video_deinterlacing_mode_i; // handle bob deinterlacing as non-deinterlacing
             if (interlaced_dramclk_resynced & video_deinterlacing_mode_i) begin
               sdram_rd_bank_sel_current <= X_vpos_1st_rdline[0] ? sdram_bank_rdy4out_even : sdram_bank_rdy4out_odd;
               sdram_rd_vcnt <= X_vpos_1st_rdline;
             end else begin
               sdram_rd_bank_sel_current <= sdram_bank_rdy4out_odd;
-              sdram_rd_vcnt <= {X_vpos_1st_rdline,1'b1};  // X_vpos_1st_rdline is in this case maxed out due to progressive mode, so consider 2x
+              sdram_rd_vcnt <= {X_vpos_1st_rdline[vcnt_width-1:0],1'b1};  // in bob deinterlacing and progressive in we only use every odd sdram_rd_vcnt value, so shift X_vpos_1st_rdline
             end
             sdram_rd_bank_sel_odd  <= sdram_bank_rdy4out_odd;
             sdram_rd_bank_sel_even <= sdram_bank_rdy4out_even;
