@@ -138,7 +138,7 @@ always @(posedge CLK_i or negedge nRST_i)
 //    mult_result_1 <= data_a1_L * data_b1_L;
     mult_result_0 <= data_a0_L * (* multstyle = "dsp" *) data_b0_L;
     mult_result_1 <= data_a1_L * (* multstyle = "dsp" *) data_b1_L;
-    overall_result[0] <= |calcopcode_LL ? {1'b0,bypass_mult_result,{(INPUT_DATA_B_W){1'b0}}} : mult_result_0 + mult_result_1;
+    overall_result[0] <= ^calcopcode_LL ? {1'b0,bypass_mult_result,{(INPUT_DATA_B_W){1'b0}}} : mult_result_0 + mult_result_1;
     for (int_idx = 0; int_idx < POST_REGS; int_idx = int_idx+1) begin
       overall_result[int_idx+1] <= overall_result[int_idx];
     end
