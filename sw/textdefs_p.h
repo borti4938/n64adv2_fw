@@ -437,6 +437,6 @@ const char *ScaleVHLink[] = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)
 const char *ColorSpace[] = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
 
 const char *CopyCfg[] = {"NTSC->PAL","PAL->NTSC"};
-const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521"};
+const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521","N64Adv2_20220729"};
 
 #endif /* MENU_TEXT_TEXTDEFS_P_H_ */
