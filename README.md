@@ -227,7 +227,7 @@ In order to update, you need to have:
 \[1\] Using the [FPGA Programmer2 SMD-Module](https://shop.trenz-electronic.de/de/TEI0005-02-FPGA-USB-Programmer2-SMD-Modul-VPE1?c=26) needs you to have [separate drivers](https://shop.trenz-electronic.de/de/Download/?path=Trenz_Electronic/Software/Drivers/Arrow_USB_Programmer) installed.
 
 The update procedure is as follows:
-- Download the latest firmware from the [Github Repository](https://github.com/borti4938/n64adv2_fw_beta_releases)
+- Download the latest firmware from the [Github Repository Release Page](https://github.com/borti4938/n64adv2_fw/releases)
 - Start the _Quartus Prime Programmer_ software
 - Select the programmer adapter under _Hardware Setup..._ if not automatically selected
 - Add the programming file with _Add File..._  
@@ -249,7 +249,7 @@ This workaround works if and only if the configuration signature of the running 
 If this is not the case, you do not have to continue.
 The workaround is as follows:
 - Power the N64 with a game running
-- Go into _\[Save/Load/Fw.Update\]_ menu
+- Go into _\[Save/Load/Fallback\]_ menu
 - On you computer:
   - Follow the steps above with just a minor difference
   - Make sure that also **Enable real-time ISP to allow background programming when available** is checked
