@@ -1,0 +1,75 @@
+Changelog
+
+Last update: August 8th, 2022
+(Hardwareversion / Softwareversion)
+
+v2.11 / v2.11b
+===============
+- add new PCB revision to menu
+- no additional changes, just the first release for the public repo
+
+v2.11 / v2.11
+==============
+- fixes:
+  - audio volume
+  - button combinations for 16bit mode on/off (they were exchanged in fw.)
+- add an option to bypass the audio filter
+- move re-sync video pipeline function to video-info screen
+- do not soft lock soft-CPU while waiting for PLL or HDMI  
+  (needed to control VI-DeBlur on N64RGB_Flex)
+- hold complete video and audio processing on reset if not used 
+
+v2.10 / v2.10
+==============
+- add YCbCr
+- reset masking (e.g. mask reset from VI pipeline for speedrunners)
+- copy function NTSC->PAL / PAL->NTSC settings
+- introduce selection of Integer and Integer (soft) scaling. Integer (soft) was previous implementation
+- remove unused menu entries
+- bugfixes, among some others
+  - PAL 1440p (16:9)
+  - 240p/288p AVI settings
+
+v2.09 / v2.09
+==============
+- bugfix in scaler engine for integer scaling (interpalation pixel was inserted for integer scaling)
+- add 1440p in 16:9 mode (using HDMI Tx ICs 2x scaling, which effectively mean that only even integer scaling remains an integer scale)  
+  (1440p in 4:3 should be preferred if this works for you!!!)
+- add scanline calculation on color based as an option
+- bug fix in 240p/288p output mode setup
+
+v2.08 / v2.08
+==============
+- some adaptations on the scanlines algorithm(s) incl. new adaptive scanlines settings
+- set different interpolation type for horizontal and vertical scaling
+- different minor bug fixes and improvements
+
+v2.07 / v2.07
+=============
+- v2.07a: Quick bugfix release: weave deinterlacing now reading from correct SDRAM bank for each field
+- IT IS GETTING CLOSE TO A PUBLIC RELEASE
+- Scanline emulation now related to scaling process
+- Profiles for scanlines implemented to have a uniquer feel for non-integer scaling factors
+- Weave deinterlacing (might be buggy, not sure. Especially PAL does not look good)
+- Some serious and minor bugfixes in scaler engine (hopefully not intruduced new ones :P)
+- Reset via controller is now enabled by default
+
+v2.06a / v2.06a (bugfix release)
+================================
+- switch to Quartus Prime v21.1
+- menu bugfixes (thanks to TzorriMahm)
+- Restructure scaler and use BRAM much more efficiently
+
+v2.06 / v2.06
+=============
+- menu appearence change
+- 240p and 1440p available
+- scaling in pixelwise precision available
+- boot sequence changes
+- add avi for HDMI output
+
+
+v2.05 / v2.05 and before
+========================
+- closed alpha/beta releases
+- no documentation other than commit messages available
