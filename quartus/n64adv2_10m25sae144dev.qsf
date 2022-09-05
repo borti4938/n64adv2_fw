@@ -41,7 +41,7 @@ set_global_assignment -name FAMILY "MAX 10"
 set_global_assignment -name DEVICE 10M25SAE144C8G
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:39:13  MARCH 01, 2021"
-set_global_assignment -name LAST_QUARTUS_VERSION "21.1.0 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "21.1.1 Lite Edition"
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ENABLE_OCT_DONE OFF
@@ -284,6 +284,7 @@ set_global_assignment -name VERILOG_FILE ../rtl/misc/font_rom_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/gamma_table_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/serial_divide.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/sdram_ctrl.v
+#set_global_assignment -name VERILOG_FILE ../rtl/misc/polyphase_6step_fir.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/mult_add_2.v
 
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64_vinfo_ext.v
