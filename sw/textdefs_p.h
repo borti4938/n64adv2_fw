@@ -52,7 +52,7 @@
 #define COPYRIGHT_SIGN_H_OFFSET (COPYRIGHT_H_OFFSET - 2)
 
 #define CR_SIGN_LICENSE_H_OFFSET  14
-#define CR_SIGN_LICENSE_V_OFFSET   3
+#define CR_SIGN_LICENSE_V_OFFSET   2
 
 #define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 19)
 #define VERSION_V_OFFSET (OVERLAY_V_OFFSET +  4)
@@ -302,12 +302,12 @@ static const char *rwdata_overlay __ufmdata_section__ =
       "The N64 RGB project would not be what it is\n"
       "without the contributions of many other people.\n"
       "Here, I want to point out especially:\n"
-      " - viletim  : First public DIY N64RGB project\n"
-      " - Ikari_01 : Initial implementation of PAL/NTSC\n"
-      "              as well as 480i/576i detection\n"
-      " - marqs85:   Feedback and final concept for low\n"
-      "              latency mode PLL configuration\n"
-      " - ArcadeTV:  Logo design\n"
+      " - Ikari_01: DIY USB Blaster module;\n"
+      "     initial PAL/NTSC and 480i/576i detection\n"
+      " - marqs85: Concept for low latency mode PLL\n"
+      "     config.; very useful feedback in general\n"
+      " - ArcadeTV: Logo design\n"
+      " - ManCloud, donking2000: 3D prints for N64Adv2\n"
       "Visit the GitHub project:\n"
       "   <https://github.com/borti4938/\n"
       "                      n64rgb_project_overview>\n"
@@ -335,15 +335,17 @@ static const char *rwdata_overlay __ufmdata_section__ =
   static const char *license_header __ufmdata_section__ =
       "License";
   static const char *license_overlay __ufmdata_section__ =
-      "\n"
       "The N64Advanced v2 is part of the\n"
       "N64 RGB/YPbPr Digital2Digital and DAC project\n"
       "    Copyright   2015 - 2022 Peter Bartmann\n"
-      "This project is published under GNU GPL v3.0 or\n"
-      "later. You should have received a copy of the\n"
-      "GNU General Public License along with this\n"
-      "project. If not, see\n"
-      "        <http://www.gnu.org/licenses/>.\n\n"
+      "This project is published under the following\n"
+      "licenses:\n"
+      " - Hardware: CERN-OHL-W v2\n"
+      " - Software: GNU GPL v3.0\n"
+      "or later. You should have received a copy of the\n"
+      "licenses along with this project. If not, you\n"
+      "will find license files / text in the GitHub\n"
+      "repositories (URLs see About page).\n"
       "What ever you do, also respect licenses of third\n"
       "party vendors providing the design tools...";
     /* 123456789012345678901234567890123456789012345678 */
