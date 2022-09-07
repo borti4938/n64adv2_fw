@@ -347,16 +347,18 @@ int main()
 
     if (!periphal_state.adv7513_i2c_up)
       periphal_state.adv7513_i2c_up = check_adv7513() == 0;
-    else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE())
-      periphal_state.adv7513_hdmi_up = FALSE;
 
-    if (!periphal_state.adv7513_hdmi_up)
-        periphal_state.adv7513_hdmi_up = init_adv7513();
-    else if ((palmode_pre != palmode)                     ||
-             (target_resolution_pre != target_resolution) ||
-//             (hor_hires_pre != hor_hires)                 ||
-             (todo == NEW_CONF_VALUE))
-      set_cfg_adv7513();
+    if (periphal_state.adv7513_i2c_up) {
+      if (!periphal_state.adv7513_hdmi_up)
+          periphal_state.adv7513_hdmi_up = init_adv7513();
+      else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE())
+        periphal_state.adv7513_hdmi_up = FALSE;
+      else if ((palmode_pre != palmode)                     ||
+               (target_resolution_pre != target_resolution) ||
+//               (hor_hires_pre != hor_hires)                 ||
+               (todo == NEW_CONF_VALUE))
+        set_cfg_adv7513();
+    }
 
     if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
       vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
