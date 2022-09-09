@@ -498,6 +498,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
 
   updateaction_t todo = NON;
 
+  // check for some overlay modifying commands first
   switch (command) {
     case CMD_MUTE_MENU:
       return MENU_MUTE;
@@ -516,38 +517,39 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       if ((*current_menu)->parent) {
         (*current_menu)->current_selection = 0;
         *current_menu = (*current_menu)->parent;
-        return NEW_OVERLAY;
+        todo = NEW_OVERLAY;
       } else {
         (*current_menu)->current_selection = 1;
         return MENU_CLOSE;
       }
+      break;
     case CMD_MENU_PAGE_RIGHT:
       if (is_vires_screen(*current_menu)) {
         cfg_inc_value(&region_selection);
         update_vmode_menu();
         cfg_load_linex_word(vmode_menu);
-        return NEW_OVERLAY;
+        todo = NEW_OVERLAY;
       }
       if (is_viscaling_screen(*current_menu)){
         if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < PAL_BOXED_SELECTION) {
           cfg_inc_value(&scaling_selection);
           update_scaling_menu();
           cfg_load_scaling_word(scaling_menu);
-          return NEW_OVERLAY;
+          todo = NEW_OVERLAY;
         }
 //        if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION && (*current_menu)->current_selection <= HORSHIFT_SELECTION) {
         if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION) {
           cfg_inc_value(&timing_selection);
           update_timing_menu();
           cfg_load_timing_word(timing_menu);
-          return NEW_OVERLAY;
+          todo = NEW_OVERLAY;
         }
       }
       if (is_slcfg_screen(*current_menu)) {
         cfg_inc_value(&region_selection);
         update_vmode_menu();
         cfg_load_linex_word(vmode_menu);
-        return NEW_OVERLAY;
+        todo = NEW_OVERLAY;
       }
       break;
     case CMD_MENU_PAGE_LEFT:
@@ -555,37 +557,39 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         cfg_dec_value(&region_selection);
         update_vmode_menu();
         cfg_load_linex_word(vmode_menu);
-        return NEW_OVERLAY;
+        todo = NEW_OVERLAY;
       }
       if (is_viscaling_screen(*current_menu)){
         if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < PAL_BOXED_SELECTION) {
           cfg_dec_value(&scaling_selection);
           update_scaling_menu();
           cfg_load_scaling_word(scaling_menu);
-          return NEW_OVERLAY;
+          todo = NEW_OVERLAY;
         }
 //        if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION && (*current_menu)->current_selection <= HORSHIFT_SELECTION) {
         if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION) {
           cfg_dec_value(&timing_selection);
           update_timing_menu();
           cfg_load_timing_word(timing_menu);
-          return NEW_OVERLAY;
+          todo = NEW_OVERLAY;
         }
       }
       if (is_slcfg_screen(*current_menu)) {
         cfg_dec_value(&region_selection);
         update_vmode_menu();
         cfg_load_linex_word(vmode_menu);
-        return NEW_OVERLAY;
+        todo = NEW_OVERLAY;
       }
       break;
     default:
       break;
   }
 
+  // if current menu is text, nothing else but modifying commands are relevant
   if ((*current_menu)->type == TEXT)
     return NON;
 
+  // check for up and down
   switch (command) {
     case CMD_MENU_DOWN:
       (*current_menu)->current_selection++;
@@ -606,47 +610,44 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
 
   alt_u8 current_sel = (*current_menu)->current_selection;
 
+  // check for entering a new submenu if possible
+  if (((*current_menu)->leaves[current_sel].leavetype == ISUBMENU) &&
+      ((command == CMD_MENU_RIGHT) || (command == CMD_MENU_ENTER))) {
+    if ((*current_menu)->leaves[current_sel].submenu) { // check for existing submenu
+      *current_menu = (*current_menu)->leaves[current_sel].submenu;
+      todo = NEW_OVERLAY;
+    }
+  }
+
+  current_sel = (*current_menu)->current_selection;
+
   // menu specific modifications
-  if ((*current_menu)->type == VINFO) todo = NON;
-
-  if (is_vires_screen(*current_menu)) {
-    if ((unlock_1440p == FALSE) && ((current_sel == RES_1440P_SELECTION) || (current_sel == RES_1440WP_SELECTION)))
-      (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440WP_SELECTION + 1 : RES_1440P_SELECTION - 1;
-    if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == PASSTHROUGH) && (current_sel == FORCE5060_SELECTION))
-      (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : FORCE5060_SELECTION - 1;
-  }
-
-  if (is_viscaling_screen(*current_menu)) {
-    if ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288)) {
-//      if (current_sel == V_INTERP_SELECTION || v_run == H_INTERP_SELECTION)
-      if (current_sel < SCALING_PAGE_SELECTION)
-        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? H_INTERP_SELECTION + 1 : (*current_menu)->number_selections - 1;
-      if (current_sel == VHLINK_SELECTION || current_sel == SCALING_STEPS_SELECTION)
-        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? SCALING_STEPS_SELECTION + 1 : VHLINK_SELECTION - 1;
-    } else {
-      if((current_sel == HORISCALE_SELECTION) && (cfg_get_value(&link_hv_scale,0) != CFG_LINK_HV_SCALE_MAX_VALUE))
-        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? HORISCALE_SELECTION + 1 : HORISCALE_SELECTION - 1;
+  if (todo == NEW_OVERLAY || todo == NEW_SELECTION) {
+    if (is_vires_screen(*current_menu)) {
+      if ((unlock_1440p == FALSE) && ((current_sel == RES_1440P_SELECTION) || (current_sel == RES_1440WP_SELECTION)))
+        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440WP_SELECTION + 1 : RES_1440P_SELECTION - 1;
+      if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == PASSTHROUGH) && (current_sel == FORCE5060_SELECTION))
+        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : FORCE5060_SELECTION - 1;
     }
-  }
 
-  if (apply_sl_vert_negoffset(*current_menu) && current_sel > SL_VLINK_SELECTION) current_sel -= SL_HORI_TO_VERT_OFFSET;
-
-  if (todo == NEW_OVERLAY || todo == NEW_SELECTION) return todo;
-
-  if ((*current_menu)->leaves[current_sel].leavetype == ISUBMENU) {
-    switch (command) {
-      case CMD_MENU_RIGHT:
-      case CMD_MENU_ENTER:
-        if ((*current_menu)->leaves[current_sel].submenu) { // check for existing submenu
-          *current_menu = (*current_menu)->leaves[current_sel].submenu;
-          return NEW_OVERLAY;
-        }
-        break;
-      default:
-        break;
+    if (is_viscaling_screen(*current_menu)) {
+      if ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288)) {
+        if (current_sel < SCALING_PAGE_SELECTION)
+          (*current_menu)->current_selection = ((todo == NEW_OVERLAY) ||(command == CMD_MENU_DOWN)) ? H_INTERP_SELECTION + 1 : (*current_menu)->number_selections - 1;
+        if (current_sel == VHLINK_SELECTION || current_sel == SCALING_STEPS_SELECTION)
+          (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? SCALING_STEPS_SELECTION + 1 : VHLINK_SELECTION - 1;
+      } else {
+        if((current_sel == HORISCALE_SELECTION) && (cfg_get_value(&link_hv_scale,0) != CFG_LINK_HV_SCALE_MAX_VALUE))
+          (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? HORISCALE_SELECTION + 1 : HORISCALE_SELECTION - 1;
+      }
     }
+
+    if (apply_sl_vert_negoffset(*current_menu) && current_sel > SL_VLINK_SELECTION) current_sel -= SL_HORI_TO_VERT_OFFSET;
+
+    return todo;
   }
 
+  // check for configuration change
   if ((*current_menu)->leaves[current_sel].leavetype == ICONFIG) {
     switch (command) {
       case CMD_MENU_RIGHT:
@@ -671,6 +672,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     return todo;
   }
 
+  // check for functions embedded in menu
   if ((*current_menu)->leaves[current_sel].leavetype == ICFGVALFUNC) {
     if (command == CMD_MENU_RIGHT) {
       (*current_menu)->leaves[current_sel].cfgfct_call_2(current_sel-1,1,0);  // at the moment only used in resolution menu, so this is correct
