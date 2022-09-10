@@ -32,7 +32,7 @@ The menu always open in the top level, where you have following options availabl
 - **\[Scaler\]**  
   Scaler settings
 - **\[Scanlines\]**  
-  Scanalines settings
+  Scanlines settings (not available in 240p/288p mode)
 - **\[VI-Processing\]**  
   Some video interface processing stuff other than resolution and scaling
 - **\[Miscellaneous\]**  
@@ -77,7 +77,7 @@ An empty default value means that this value is not affected by loading defaults
 | Entry | Default | Description |
 |:------|:--------|:------------|
 | **Input mode** \[1\] | | Mode where the following settings are applied |
-| **Output resolution - 240p/288p (4:3)** | Off | Changes to 240p/288p (4:3 with pixel repetition) output resolution<br>Note that scaling options will be limited |
+| **Output resolution - 240p/288p (4:3)** | Off | Changes to 240p/288p (4:3 with pixel repetition) output resolution<br>Note that scaling options will be limited and output becomes corrupted if N64 is running in 480i/576i |
 | **Output resolution - 480p/576p (4:3)** | On \[2\] | Changes to 480p/576p (4:3) output resolution |
 | **Output resolution - 720p (16:9)** | Off | Changes to 720p (16:9) output resolution |
 | **Output resolution - 960p (4:3)** | Off | Changes to 960p (4:3) resolution at output |
@@ -136,7 +136,7 @@ An empty default value means that this value is not affected by loading defaults
 | **Vertical - Bloom effect** \[10\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
 
 \[8\] _Input mode_ can be changed using **L** or **R** button on the controller.  
-\[9\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Scaling factor must be at least 2x to have scanlines drawn.  
+\[9\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Another rule is, the larger the scaling factor the better the look.  
 \[10\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
 
 #### VI-Processing
