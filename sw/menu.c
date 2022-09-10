@@ -147,6 +147,8 @@ menu_t home_menu = {
     }
 };
 
+#define SCANLINE_SUB_SELECTION  3
+
 menu_t vinfo_screen = {
     .type = VINFO,
     .header = &vinfo_header,
@@ -378,7 +380,8 @@ menu_t rwdata_screen = {
   #endif
 #endif
 
-
+static inline bool_t is_home_menu (menu_t *menu)
+{  return (menu == &home_menu); }
 static inline bool_t is_vires_screen (menu_t *menu)
   {  return (menu == &vires_screen); }
 static inline bool_t is_viscaling_screen (menu_t *menu)
@@ -623,6 +626,10 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
 
   // menu specific modifications
   if (todo == NEW_OVERLAY || todo == NEW_SELECTION) {
+    if (is_home_menu(*current_menu)) {
+      if ((cfg_get_value(&linex_resolution,0) == PASSTHROUGH) && (current_sel == SCANLINE_SUB_SELECTION))
+        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? SCANLINE_SUB_SELECTION + 1 : SCANLINE_SUB_SELECTION - 1;
+    }
     if (is_vires_screen(*current_menu)) {
       if ((unlock_1440p == FALSE) && ((current_sel == RES_1440P_SELECTION) || (current_sel == RES_1440WP_SELECTION)))
         (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440WP_SELECTION + 1 : RES_1440P_SELECTION - 1;
@@ -705,6 +712,11 @@ void print_overlay(menu_t* current_menu)
 
   if (current_menu->header) vd_wr_hdr(BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,*current_menu->header);
   vd_print_string(VD_TEXT,current_menu->body.hoffset,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,*current_menu->body.text);
+
+  if (is_home_menu(current_menu)) {
+    if (cfg_get_value(&linex_resolution,0) == PASSTHROUGH) vd_print_string(VD_TEXT,current_menu->body.hoffset,SCANLINE_SUB_SELECTION,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,Scanlines_Submenu_text);
+    else vd_print_string(VD_TEXT,current_menu->body.hoffset,SCANLINE_SUB_SELECTION,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Scanlines_Submenu_text);
+  }
 
   #ifndef DEBUG
     if (is_about_screen(current_menu)) print_fw_version();

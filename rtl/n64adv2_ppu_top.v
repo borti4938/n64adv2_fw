@@ -165,7 +165,7 @@ wire [9:0] cfg_hpixel_in_full_w, cfg_hpixel_in_full_resynced;
 wire palmode_vclk_o_resynced, n64_480i_vclk_o_resynced;
 wire [`VID_CFG_W-1:0] videomode_ntsc_w, videomode_pal_w;
 
-wire [`PPUConfig_WordWidth-1:0] ConfigSet_resynced;
+wire [`PPUConfig_WordWidth-1:0] ConfigSet_w, ConfigSet_resynced;
 
 wire vdata_valid_bwd_w, vdata_valid_fwd_w;
 wire [`VDATA_I_SY_SLICE] vdata_bwd_sy_w;
@@ -215,6 +215,11 @@ reg palmode_change;
 assign palmode = vinfo_pass[1];
 assign n64_480i = vinfo_pass[0];
 
+assign ConfigSet_w[`PPUConfig_WordWidth-1:`vSL_en_bit+1] = ConfigSet[`PPUConfig_WordWidth-1:`vSL_en_bit+1];
+assign ConfigSet_w[`vSL_en_bit] = ConfigSet[`vSL_en_bit] & (ConfigSet[`target_resolution_slice] != `HDMI_TARGET_240P);  // do not allow scanlines for 240p/288p
+assign ConfigSet_w[`hSL_en_bit] = ConfigSet[`hSL_en_bit] & (ConfigSet[`target_resolution_slice] != `HDMI_TARGET_240P);  // do not allow scanlines for 240p/288p
+assign ConfigSet_w[`hSL_en_bit-1:0] = ConfigSet[`hSL_en_bit-1:0];
+
 assign PPUState[`PPU_input_pal_bit]             = palmode;
 assign PPUState[`PPU_input_interlaced_bit]      = n64_480i;
 assign PPUState[`PPU_output_f5060_slice]        = {ConfigSet_resynced[`force50hz_bit],ConfigSet_resynced[`force60hz_bit]};
@@ -243,29 +248,29 @@ register_sync #(
 );
 
 
-assign sys_vmode_ntsc_w = ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1440WP ? `USE_1440Wp60 :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1440P  ? `USE_1440p60  :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1200P  ? `USE_1200p60  :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1080P  ? `USE_1080p60  :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_960P   ? `USE_960p60   :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_720P   ? `USE_720p60   :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_240P   ? `USE_240p60   :
-                          ConfigSet[`use_vga_for_480p_bit]                           ? `USE_VGAp60   :
-                                                                                       `USE_480p60   ;
+assign sys_vmode_ntsc_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP ? `USE_1440Wp60 :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440P  ? `USE_1440p60  :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1200P  ? `USE_1200p60  :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1080P  ? `USE_1080p60  :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_960P   ? `USE_960p60   :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_720P   ? `USE_720p60   :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P   ? `USE_240p60   :
+                          ConfigSet_w[`use_vga_for_480p_bit]                           ? `USE_VGAp60   :
+                                                                                         `USE_480p60   ;
 
-assign sys_vmode_pal_w =  ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1440WP ? `USE_1440Wp50 :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1440P  ? `USE_1440p50  :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1200P  ? `USE_1200p50  :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1080P  ? `USE_1080p50  :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_960P   ? `USE_960p50   :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_720P   ? `USE_720p50   :
-                          ConfigSet[`target_resolution_slice] == `HDMI_TARGET_576P   ? `USE_576p50   :
-                                                                                       `USE_288p50   ;
+assign sys_vmode_pal_w =  ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP ? `USE_1440Wp50 :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440P  ? `USE_1440p50  :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1200P  ? `USE_1200p50  :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1080P  ? `USE_1080p50  :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_960P   ? `USE_960p50   :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_720P   ? `USE_720p50   :
+                          ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_576P   ? `USE_576p50   :
+                                                                                         `USE_288p50   ;
 
 always @(posedge SYS_CLK) begin
-  if (ConfigSet[`force60hz_bit] & !ConfigSet[`lowlatencymode_bit] & (ConfigSet[`target_resolution_slice] != `HDMI_TARGET_288P)) // do not allow forcing 60Hz mode in llm and in 288p mode
+  if (ConfigSet_w[`force60hz_bit] & !ConfigSet_w[`lowlatencymode_bit] & (ConfigSet_w[`target_resolution_slice] != `HDMI_TARGET_288P)) // do not allow forcing 60Hz mode in llm and in 288p mode
     sys_videomode <= sys_vmode_ntsc_w;
-  else if (ConfigSet[`force50hz_bit] & !ConfigSet[`lowlatencymode_bit] & (ConfigSet[`target_resolution_slice] != `HDMI_TARGET_240P)) // do not allow forcing 50Hz mode in llm and in 240p mode
+  else if (ConfigSet_w[`force50hz_bit] & !ConfigSet_w[`lowlatencymode_bit] & (ConfigSet_w[`target_resolution_slice] != `HDMI_TARGET_240P)) // do not allow forcing 50Hz mode in llm and in 240p mode
     sys_videomode <= sys_vmode_pal_w;
   else begin
     if (palmode)
@@ -275,15 +280,15 @@ always @(posedge SYS_CLK) begin
   end
 end
 
-assign vlines_set_w = ConfigSet[`target_vlines_slice];
-assign hpixels_set_w = (ConfigSet[`target_resolution_slice] == `HDMI_TARGET_1440WP) ? ConfigSet[`target_hpixels_slice] >> 1 :
-                                                                                      ConfigSet[`target_hpixels_slice];
-assign use_interlaced_full_w = n64_480i_sysclk_resynced & ConfigSet[`deinterlacing_mode_bit];
+assign vlines_set_w = ConfigSet_w[`target_vlines_slice];
+assign hpixels_set_w = (ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP) ? ConfigSet_w[`target_hpixels_slice] >> 1 :
+                                                                                        ConfigSet_w[`target_hpixels_slice];
+assign use_interlaced_full_w = n64_480i_sysclk_resynced & ConfigSet_w[`deinterlacing_mode_bit];
 
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
   .palmode_i(palmode_sysclk_resynced),
-  .palmode_boxed_i(ConfigSet[`pal_boxed_scale_bit]),
+  .palmode_boxed_i(ConfigSet_w[`pal_boxed_scale_bit]),
   .use_interlaced_full_i(use_interlaced_full_w),
   .nvideblur_i(cfg_nvideblur_sysclk_resynced),
   .video_config_i(sys_videomode),
@@ -311,8 +316,8 @@ register_sync #(
   .clk(N64_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ConfigSet[`gamma_slice],~ConfigSet[`n16bit_mode_bit],ConfigSet[`hshift_slice],ConfigSet[`vshift_slice],~ConfigSet[`deinterlacing_mode_bit],~ConfigSet[`videblur_bit]}),
-  .reg_o({cfg_gamma              ,cfg_n16bit_mode             ,cfg_hvshift                                      ,cfg_bob_deinterlacing_mode            ,cfg_nvideblur_pre})
+  .reg_i({ConfigSet_w[`gamma_slice],~ConfigSet_w[`n16bit_mode_bit],ConfigSet_w[`hshift_slice],ConfigSet_w[`vshift_slice],~ConfigSet_w[`deinterlacing_mode_bit],~ConfigSet_w[`videblur_bit]}),
+  .reg_o({cfg_gamma                ,cfg_n16bit_mode               ,cfg_hvshift                                          ,cfg_bob_deinterlacing_mode           ,cfg_nvideblur_pre})
 ); // Note: add output reg as false path in sdc (cfg_sync4n64clk_u0|reg_synced_1[*])
 
 always @(*)
@@ -330,7 +335,7 @@ register_sync #(
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({cfg_vpos_1st_rdline_w       ,ConfigSet[`deinterlacing_mode_bit]}),
+  .reg_i({cfg_vpos_1st_rdline_w       ,ConfigSet_w[`deinterlacing_mode_bit]}),
   .reg_o({cfg_vpos_1st_rdline_resynced,cfg_deinterlacing_mode_dramclk_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
@@ -357,8 +362,8 @@ register_sync #(
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ConfigSet[`lowlatencymode_bit],cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
-  .reg_o({cfg_lowlatencymode_resynced   ,cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
+  .reg_i({ConfigSet_w[`lowlatencymode_bit],cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
+  .reg_o({cfg_lowlatencymode_resynced     ,cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
 
 register_sync #(
@@ -393,7 +398,7 @@ register_sync #(
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i(ConfigSet),
+  .reg_i(ConfigSet_w),
   .reg_o(ConfigSet_resynced)
 );
 
