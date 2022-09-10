@@ -81,7 +81,7 @@ output reg [17:0] v_interp_factor_o;  // factor needed to determine actual posit
 
 output reg [9:0] hpos_1st_rdpixel_o;  // first horizontal pixel to read (needed if scaling factor is so high such that not all pixels are needed)
 output reg [9:0] hpixels_in_needed_o; // number of horizontal pixel needed to scale for active lines
-output reg [9:0] hpixels_in_full_o;   // number of horizontal pixel at input (should be 640, later 320 or 640)
+output reg [9:0] hpixels_in_full_o;   // number of horizontal pixel at input (should be 320 or 640)
 output reg [11:0] hpixels_out_o;      // number of horizontal pixel after scaling (max. 4093)
 output reg [17:0] h_interp_factor_o;  // factor needed to determine actual position during interpolation
 
@@ -210,7 +210,7 @@ always @(posedge SYS_CLK) begin
         if (~|v_cfggen_phase_wait_cnt) 
           v_cfggen_phase <= ST_CFGGEN_OUT;
         else
-          v_cfggen_phase_wait_cnt <= v_cfggen_phase_wait_cnt - 1;
+          v_cfggen_phase_wait_cnt <= v_cfggen_phase_wait_cnt - 3'b001;
       end
     ST_CFGGEN_OUT: begin
       v_cfggen_phase <= ST_CFGGEN_RDY;
@@ -253,7 +253,7 @@ always @(posedge SYS_CLK) begin
         if (~|h_cfggen_phase_wait_cnt) 
           h_cfggen_phase <= ST_CFGGEN_OUT;
         else
-          h_cfggen_phase_wait_cnt <= h_cfggen_phase_wait_cnt - 1;
+          h_cfggen_phase_wait_cnt <= h_cfggen_phase_wait_cnt - 3'b001;
       end
     ST_CFGGEN_OUT: begin
       h_cfggen_phase <= ST_CFGGEN_RDY;
