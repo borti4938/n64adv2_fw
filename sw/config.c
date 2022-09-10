@@ -581,14 +581,6 @@ void cfg_apply_to_logic()
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG3_OUT_BASE,sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val);
 }
 
-void cfg_read_from_logic()
-{
-  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG0]->cfg_word_mask);
-  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG1_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG1]->cfg_word_mask);
-  sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG2_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG2]->cfg_word_mask);
-  sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val = (IORD_ALTERA_AVALON_PIO_DATA(EXTCFG3_OUT_BASE) & sysconfig.cfg_word_def[EXTCFG3]->cfg_word_mask);
-}
-
 void cfg_clear_words()
 {
   int idx;

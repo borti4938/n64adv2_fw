@@ -585,7 +585,6 @@ void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
 void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
 int cfg_load_defaults(bool_t video1080p,bool_t need_confirm);
 void cfg_apply_to_logic(void);
-void cfg_read_from_logic(void);
 void cfg_clear_words(void);
 void cfg_update_reference(void);
 int cfg_copy_ntsc2pal(void);
