@@ -40,10 +40,9 @@
 
 #define ANALOG_TH     50
 
-#define HOLD_CNT_LOW	5
-#define HOLD_CNT_MID0	8
-#define HOLD_CNT_MID1	12
-#define HOLD_CNT_HIGH	17
+#define HOLD_CNT_LOW	3
+#define HOLD_CNT_MID	7
+#define HOLD_CNT_HIGH	13
 
 #define HOLD_CNT_REP	2
 
@@ -170,6 +169,15 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
 		if (y_axis_val  < -ANALOG_TH) cmd_new = CMD_MENU_DOWN;
   }
 
+  if (cmd_new == CMD_MUTE_MENU) {
+    cmd_pre = cmd_new;
+    cmd_pre_int = CMD_NON;
+    return cmd_new;
+  } else if (cmd_pre == CMD_MUTE_MENU) {
+    cmd_pre = CMD_NON;
+    return CMD_UNMUTE_MENU;
+  }
+
   if (cmd_pre_int != cmd_new) {
     cmd_pre_int = cmd_new;
     rep_cnt = 0;
@@ -177,10 +185,9 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
   } else {
     if (hold_cnt == 0) {
       if (rep_cnt < 255) rep_cnt++;
-      hold_cnt = HOLD_CNT_LOW;
-      if (rep_cnt < 3*HOLD_CNT_REP) hold_cnt = HOLD_CNT_MID1;
-      if (rep_cnt < 2*HOLD_CNT_REP) hold_cnt = HOLD_CNT_MID0;
-      if (rep_cnt <   HOLD_CNT_REP) hold_cnt = HOLD_CNT_HIGH;
+      if      (rep_cnt <   HOLD_CNT_REP) hold_cnt = HOLD_CNT_HIGH;
+      else if (rep_cnt < 2*HOLD_CNT_REP) hold_cnt = HOLD_CNT_MID;
+      else                               hold_cnt = HOLD_CNT_LOW;
       if (!no_fast_skip) cmd_pre = CMD_NON;
     } else {
       hold_cnt--;
@@ -188,8 +195,6 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
   }
 
   if (cmd_pre != cmd_new) {
-    if (cmd_pre == CMD_MUTE_MENU && cmd_new == CMD_NON)
-      cmd_new = CMD_UNMUTE_MENU;
     cmd_pre = cmd_new;
     return cmd_new;
   }
