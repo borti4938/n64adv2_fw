@@ -649,10 +649,10 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       }
     }
 
-    if (apply_sl_vert_negoffset(*current_menu) && current_sel > SL_VLINK_SELECTION) current_sel -= SL_HORI_TO_VERT_OFFSET;
-
     return todo;
   }
+
+  if (apply_sl_vert_negoffset(*current_menu) && current_sel > SL_VLINK_SELECTION) current_sel -= SL_HORI_TO_VERT_OFFSET;
 
   // check for configuration change
   if ((*current_menu)->leaves[current_sel].leavetype == ICONFIG) {
