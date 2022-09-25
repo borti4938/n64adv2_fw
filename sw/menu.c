@@ -283,6 +283,7 @@ menu_t vicfg_screen = {
     }
 };
 
+#define DEINTERLACE_SELECTION       0
 #define DEBLUR_CURRENT_SELECTION    4
 #define DEBLUR_POWERCYCLE_SELECTION 5
 #define M16BIT_CURRENT_SELECTION    6
@@ -649,6 +650,11 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       }
     }
 
+    if (is_vicfg_screen(current_menu)) {
+      if ((cfg_get_value(&linex_resolution,0) == PASSTHROUGH) && (current_sel == DEINTERLACE_SELECTION))
+        (*current_menu)->current_selection = (command == CMD_MENU_UP) ? DEINTERLACE_SELECTION - 1 : SCANLINE_SUB_SELECTION + 1;
+    }
+
     return todo;
   }
 
@@ -897,6 +903,10 @@ int update_cfg_screen(menu_t* current_menu)
             val_select = 1;
             font_color = FONTCOLOR_GREY;
           }
+        }
+        if (is_vicfg_screen(current_menu) && v_run == DEINTERLACE_SELECTION && use_240p_288p) {
+          val_select = 0;
+          font_color = FONTCOLOR_GREY;
         }
 
 //        if (v_run == current_menu->current_selection)
