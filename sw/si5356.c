@@ -36,6 +36,7 @@
 
 #include "si5356.h"
 #include "si5356_regs_p.h"
+#include "i2c.h"
 #include "config.h"
 #include "n64.h"
 #include "led.h"
@@ -44,15 +45,11 @@
 #define PLL_LOCK_2_FPGA_TIMEOUT_US  150
 
 
-void si5356_reg_bitset(alt_u8 regaddr, alt_u8 bit, alt_u8 regmask) {
-  if (bit > 7) return;
-  if ((1 << bit) & regmask) si5356_writereg(regaddr,(si5356_readreg(regaddr) | (1 << bit)),regmask);
-}
+#define si5356_reg_bitset(regaddr,bit,regmask)   i2c_reg_bitset(SI5356_I2C_BASE,regaddr,bit,regmask)
+#define si5356_reg_bitclear(regaddr,bit,regmask) i2c_reg_bitclear(SI5356_I2C_BASE,regaddr,bit,regmask)
+#define si5356_readreg(regaddr)                  i2c_readreg(SI5356_I2C_BASE,regaddr)
+#define si5356_writereg(regaddr,data,regmask)    i2c_writereg(SI5356_I2C_BASE,regaddr,data,regmask)
 
-void si5351a_reg_bitclear(alt_u8 regaddr, alt_u8 bit, alt_u8 regmask) {
-  if (bit > 7) return;
-  if ((1 << bit) & regmask) si5356_writereg(regaddr,(si5356_readreg(regaddr) & ~(1 << bit)),regmask);
-}
 
 int check_si5356()
 {
@@ -107,26 +104,3 @@ bool_t init_si5356(clk_config_t target_cfg) {
 
   return configure_clk_si5356(target_cfg);
 }
-
-
-alt_u8 si5356_readreg(alt_u8 regaddr)
-{
-  //Phase 1
-  I2C_start(I2C_MASTER_BASE, SI5356_I2C_BASE, 0);
-  I2C_write(I2C_MASTER_BASE, regaddr, 0);
-
-  //Phase 2
-  I2C_start(I2C_MASTER_BASE, SI5356_I2C_BASE, 1);
-  return (alt_u8) I2C_read(I2C_MASTER_BASE,1);
-}
-
-void si5356_writereg(alt_u8 regaddr, alt_u8 data, alt_u8 regmask)
-{
-  alt_u8 wr_data;
-  if (regmask == 0xFF) wr_data = data;
-  else wr_data = (data & regmask) | (si5356_readreg(regaddr) & ~regmask);  // do not touch bits outside of regmask
-  I2C_start(I2C_MASTER_BASE, SI5356_I2C_BASE, 0);
-  I2C_write(I2C_MASTER_BASE, regaddr, 0);
-  I2C_write(I2C_MASTER_BASE, wr_data, 1);
-}
-

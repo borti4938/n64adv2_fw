@@ -33,12 +33,11 @@
 #include "system.h"
 #include "alt_types.h"
 #include "config.h"
+#include "i2c.h"
 
-#define SI5356_I2C_BASE 0x70
 
 #define SI5356_INIT_FAILED_0 140 // ToDo: move codes into separate header file?
 #define SI5356_INIT_FAILED_1 141
-
 
 #define PLL_LOSSLOCK_REG      218
   #define PLL_LOSSLOCK_BIT      4
@@ -93,13 +92,11 @@ typedef enum {
 } clk_config_t;
 #define NUM_SUPPORTED_CONFIGS (FREE_1440p+1)
 
-#define SI5356_PLL_LOCKSTATUS() ((si5356_readreg(PLL_LOSSLOCK_REG) & (1<<PLL_LOSSLOCK_BIT)) == 0x00)
+#define SI5356_PLL_LOCKSTATUS() ((i2c_readreg(SI5356_I2C_BASE,PLL_LOSSLOCK_REG) & (1<<PLL_LOSSLOCK_BIT)) == 0x00)
 
 int check_si5356(void);
 bool_t init_si5356(clk_config_t target_cfg);
 bool_t configure_clk_si5356(clk_config_t target_cfg);
-alt_u8 si5356_readreg(alt_u8 regaddr);
-void si5356_writereg(alt_u8 regaddr, alt_u8 data, alt_u8 regmask);
 
 
 #endif /* SI5356_H_ */

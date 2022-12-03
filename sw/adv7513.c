@@ -34,38 +34,17 @@
 
 #include "adv7513.h"
 #include "adv7513_regs_p.h"
+#include "i2c.h"
 #include "n64.h"
 #include "config.h"
 #include "led.h"
 
 
-void adv7513_reg_bitset(alt_u8 regaddr, alt_u8 bit) {
-  if (bit > 7) return;
-  adv7513_writereg(regaddr,(adv7513_readreg(regaddr) | (1 << bit)));
-}
+#define adv7513_reg_bitset(regaddr,bit)   i2c_reg_bitset(ADV7513_I2C_BASE,regaddr,bit,0xFF)
+#define adv7513_reg_bitclear(regaddr,bit) i2c_reg_bitclear(ADV7513_I2C_BASE,regaddr,bit,0xFF)
+#define adv7513_readreg(regaddr)          i2c_readreg(ADV7513_I2C_BASE,regaddr)
+#define adv7513_writereg(regaddr,data)    i2c_writereg(ADV7513_I2C_BASE,regaddr,data,0xFF)
 
-void adv7513_reg_bitclear(alt_u8 regaddr, alt_u8 bit) {
-  if (bit > 7) return;
-  adv7513_writereg(regaddr,(adv7513_readreg(regaddr) & ~(1 << bit)));
-}
-
-alt_u8 adv7513_readreg(alt_u8 regaddr)
-{
-    //Phase 1
-    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 0);
-    I2C_write(I2C_MASTER_BASE, regaddr, 0);
-
-    //Phase 2
-    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 1);
-    return (alt_u8) I2C_read(I2C_MASTER_BASE,1);
-}
-
-void adv7513_writereg(alt_u8 regaddr, alt_u8 data)
-{
-    I2C_start(I2C_MASTER_BASE, ADV7513_I2C_BASE, 0);
-    I2C_write(I2C_MASTER_BASE, regaddr, 0);
-    I2C_write(I2C_MASTER_BASE, data, 1);
-}
 
 void set_color_format(color_format_t color_format) {
   adv7513_reg_bitset(ADV7513_REG_CSC_UPDATE,ADV7513_CSC_UPDATE_BIT);

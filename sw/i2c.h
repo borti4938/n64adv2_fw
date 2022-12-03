@@ -19,51 +19,27 @@
  *
  *********************************************************************************
  *
- * adv7513.h
+ * i2c.h
  *
- *  Created on: 11.09.2018
+ *  Created on: 02.12.2022
  *      Author: Peter Bartmann
  *
  ********************************************************************************/
 
+#ifndef I2C_H_
+#define I2C_H_
 
-#ifndef ADV7513_H_
-#define ADV7513_H_
 
 #include "system.h"
 #include "alt_types.h"
-#include "config.h"
-#include "i2c.h"
 
-#define ADV7513_CHIP_ID     0x13
-#define ADV7513_REG_STATUS  0x42
+#define ADV7513_I2C_BASE    (0x72>>1)
+#define SI5356_I2C_BASE     0x70
 
-#define ADV_INIT_FAILED 150 // ToDo: move codes into separate header file?
-
-#define ADV_POWER_RDY()           ((i2c_readreg(ADV7513_I2C_BASE,ADV7513_REG_STATUS) & 0x70) == 0x70)
-#define ADV_HPD_STATE()           ((i2c_readreg(ADV7513_I2C_BASE,ADV7513_REG_STATUS) & 0x40) == 0x40)
-#define ADV_MONITOR_SENSE_STATE() ((i2c_readreg(ADV7513_I2C_BASE,ADV7513_REG_STATUS) & 0x20) == 0x20)
-
-typedef enum {
-  RGB_full = 0,
-  RGB_limited,
-  YCbCr_601_full,
-  YCbCr_601_limited,
-  YCbCr_709_full,
-  YCbCr_709_limited
-} color_format_t;
-
-#define MAX_COLOR_FORMATS  YCbCr_709_limited
-
-typedef enum {
-  PR_AUTO = 0,
-  PR_MANUAL
-} pr_mode_t;
+void i2c_reg_bitset(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit, alt_u8 regmask);
+void i2c_reg_bitclear(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit, alt_u8 regmask);
+alt_u8 i2c_readreg(alt_u8 i2c_dev, alt_u8 regaddr);
+void i2c_writereg(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 data, alt_u8 regmask);
 
 
-void set_cfg_adv7513(void);
-int check_adv7513(void);
-bool_t init_adv7513(void);
-
-
-#endif /* ADV7513_H_ */
+#endif /* I2C_H_ */
