@@ -213,81 +213,45 @@ always @(posedge VCLK_i) begin
   
   case (sl_thickness_i)
     2'b01: begin  // thin
-        if (sl_profile_i == 2'b11) begin // special case: flat top profile
-          drawSL_R[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_half_profile_width;
-          drawSL_G[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_half_profile_width;
-          drawSL_B[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_half_profile_width;
-          max_SL_str_R[2] <= SL_str_corrected_L[1] > val_0p1875 + sl_half_profile_width;
-          max_SL_str_G[2] <= SL_str_corrected_L[1] > val_0p1875 + sl_half_profile_width;
-          max_SL_str_B[2] <= SL_str_corrected_L[1] > val_0p1875 + sl_half_profile_width;
-        end else begin
-          drawSL_R[2] <= SL_str_corrected_L[1] > val_0p1875;
-          drawSL_G[2] <= SL_str_corrected_L[1] > val_0p1875;
-          drawSL_B[2] <= SL_str_corrected_L[1] > val_0p1875;
-          max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
-          max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
-          max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
-        end
+        drawSL_R[2] <= SL_str_corrected_L[1] > val_0p1875;
+        drawSL_G[2] <= SL_str_corrected_L[1] > val_0p1875;
+        drawSL_B[2] <= SL_str_corrected_L[1] > val_0p1875;
+        max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
+        max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
+        max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p1875 + sl_profile_width;
         SL_str_corrected_R_L[2] <= SL_str_corrected_L[1] - val_0p1875;
         SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - val_0p1875;
         SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - val_0p1875;
       end
     2'b10: begin  // normal
-        if (sl_profile_i == 2'b11) begin // special case: flat top profile
-          drawSL_R[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_half_profile_width;
-          drawSL_G[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_half_profile_width;
-          drawSL_B[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_half_profile_width;
-          max_SL_str_R[2] <= SL_str_corrected_L[1] > val_0p125 + sl_half_profile_width;
-          max_SL_str_G[2] <= SL_str_corrected_L[1] > val_0p125 + sl_half_profile_width;
-          max_SL_str_B[2] <= SL_str_corrected_L[1] > val_0p125 + sl_half_profile_width;
-        end else begin
-          drawSL_R[2] <= SL_str_corrected_L[1] > val_0p125;
-          drawSL_G[2] <= SL_str_corrected_L[1] > val_0p125;
-          drawSL_B[2] <= SL_str_corrected_L[1] > val_0p125;
-          max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
-          max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
-          max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
-        end
+        drawSL_R[2] <= SL_str_corrected_L[1] > val_0p125;
+        drawSL_G[2] <= SL_str_corrected_L[1] > val_0p125;
+        drawSL_B[2] <= SL_str_corrected_L[1] > val_0p125;
+        max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
+        max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
+        max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p125 + sl_profile_width;
         SL_str_corrected_R_L[2] <= SL_str_corrected_L[1] - val_0p125;
         SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - val_0p125;
         SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - val_0p125;
       end
     2'b11: begin  // thick
-        if (sl_profile_i == 2'b11) begin // special case: flat top profile
-          drawSL_R[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_half_profile_width;
-          drawSL_G[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_half_profile_width;
-          drawSL_B[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_half_profile_width;
-          max_SL_str_R[2] <= SL_str_corrected_L[1] > val_0p0625 + sl_half_profile_width;
-          max_SL_str_G[2] <= SL_str_corrected_L[1] > val_0p0625 + sl_half_profile_width;
-          max_SL_str_B[2] <= SL_str_corrected_L[1] > val_0p0625 + sl_half_profile_width;
-        end else begin
-          drawSL_R[2] <= SL_str_corrected_L[1] > val_0p0625;
-          drawSL_G[2] <= SL_str_corrected_L[1] > val_0p0625;
-          drawSL_B[2] <= SL_str_corrected_L[1] > val_0p0625;
-          max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
-          max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
-          max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
-        end
+        drawSL_R[2] <= SL_str_corrected_L[1] > val_0p0625;
+        drawSL_G[2] <= SL_str_corrected_L[1] > val_0p0625;
+        drawSL_B[2] <= SL_str_corrected_L[1] > val_0p0625;
+        max_SL_str_R[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
+        max_SL_str_G[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
+        max_SL_str_B[2] <= SL_str_corrected_L[1] >= val_0p0625 + sl_profile_width;
         SL_str_corrected_R_L[2] <= SL_str_corrected_L[1] - val_0p0625;
         SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - val_0p0625;
         SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - val_0p0625;
       end
     default: begin // adaptive
-        if (sl_profile_i == 2'b11) begin // special case: flat top profile
-          drawSL_R[2] <= SL_str_corrected_L[1] >= sl_adapt_val_R_w + sl_half_profile_width;
-          drawSL_G[2] <= SL_str_corrected_L[1] >= sl_adapt_val_G_w + sl_half_profile_width;
-          drawSL_B[2] <= SL_str_corrected_L[1] >= sl_adapt_val_B_w + sl_half_profile_width;
-          max_SL_str_R[2] <= SL_str_corrected_L[1] > sl_adapt_val_R_w + sl_half_profile_width;
-          max_SL_str_G[2] <= SL_str_corrected_L[1] > sl_adapt_val_G_w + sl_half_profile_width;
-          max_SL_str_B[2] <= SL_str_corrected_L[1] > sl_adapt_val_B_w + sl_half_profile_width;
-        end else begin
-          drawSL_R[2] <= SL_str_corrected_L[1] > sl_adapt_val_R_w;
-          drawSL_G[2] <= SL_str_corrected_L[1] > sl_adapt_val_G_w;
-          drawSL_B[2] <= SL_str_corrected_L[1] > sl_adapt_val_B_w;
-          max_SL_str_R[2] <= SL_str_corrected_L[1] >= sl_adapt_val_R_w + sl_profile_width;
-          max_SL_str_G[2] <= SL_str_corrected_L[1] >= sl_adapt_val_G_w + sl_profile_width;
-          max_SL_str_B[2] <= SL_str_corrected_L[1] >= sl_adapt_val_B_w + sl_profile_width;
-        end
+        drawSL_R[2] <= SL_str_corrected_L[1] > sl_adapt_val_R_w;
+        drawSL_G[2] <= SL_str_corrected_L[1] > sl_adapt_val_G_w;
+        drawSL_B[2] <= SL_str_corrected_L[1] > sl_adapt_val_B_w;
+        max_SL_str_R[2] <= SL_str_corrected_L[1] >= sl_adapt_val_R_w + sl_profile_width;
+        max_SL_str_G[2] <= SL_str_corrected_L[1] >= sl_adapt_val_G_w + sl_profile_width;
+        max_SL_str_B[2] <= SL_str_corrected_L[1] >= sl_adapt_val_B_w + sl_profile_width;
         SL_str_corrected_R_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_R_w;
         SL_str_corrected_G_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_G_w;
         SL_str_corrected_B_L[2] <= SL_str_corrected_L[1] - sl_adapt_val_B_w;
@@ -298,11 +262,6 @@ always @(posedge VCLK_i) begin
   SL_str_corrected_L[1] <= SL_str_corrected_L[0];                                       // wait for luma to be calculated
   // SL_str_corrected_L[2] calculated above depending on sl_thickness_i
   case(sl_profile_i)
-    2'b00: begin  // hanning
-        getHannProfile(SL_str_corrected_R_L[2][5:0],SL_str_corrected_R_L[3]);
-        getHannProfile(SL_str_corrected_G_L[2][5:0],SL_str_corrected_G_L[3]);
-        getHannProfile(SL_str_corrected_B_L[2][5:0],SL_str_corrected_B_L[3]);
-      end
     2'b01: begin  // gaussian
         getGaussProfile(SL_str_corrected_R_L[2][5:0],SL_str_corrected_R_L[3]);
         getGaussProfile(SL_str_corrected_G_L[2][5:0],SL_str_corrected_G_L[3]);
@@ -313,10 +272,10 @@ always @(posedge VCLK_i) begin
         SL_str_corrected_G_L[3] <= {SL_str_corrected_G_L[2][5:0],SL_str_corrected_G_L[2][5:4]};
         SL_str_corrected_B_L[3] <= {SL_str_corrected_B_L[2][5:0],SL_str_corrected_B_L[2][5:4]};
       end
-    default: begin  // flat top
-        SL_str_corrected_R_L[3] <= val_0p5;
-        SL_str_corrected_G_L[3] <= val_0p5;
-        SL_str_corrected_B_L[3] <= val_0p5;
+    default: begin  // hanning
+        getHannProfile(SL_str_corrected_R_L[2][5:0],SL_str_corrected_R_L[3]);
+        getHannProfile(SL_str_corrected_G_L[2][5:0],SL_str_corrected_G_L[3]);
+        getHannProfile(SL_str_corrected_B_L[2][5:0],SL_str_corrected_B_L[3]);
       end
   endcase
   SL_str_corrected_R_L[4] <= max_SL_str_R[3] ? sl_strength_i : SL_str_corrected_R_4L_full_w[15:8];

@@ -450,7 +450,7 @@ typedef struct {
 
 #define CFG_AUDIO_AMP_MAX_VALUE        31
 #define CFG_SL_THICKNESS_MAX_VALUE      3
-#define CFG_SL_PROFILE_MAX_VALUE        3
+#define CFG_SL_PROFILE_MAX_VALUE        2
 #define CFG_SLSTR_MAX_VALUE            15
 #define CFG_SLHYBDEP_MAX_VALUE         24
 
