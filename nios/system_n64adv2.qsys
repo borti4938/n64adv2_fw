@@ -486,7 +486,7 @@
  <module
    name="cfg_set0_out"
    kind="altera_avalon_pio"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -504,7 +504,7 @@
  <module
    name="cfg_set1_out"
    kind="altera_avalon_pio"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -522,7 +522,7 @@
  <module
    name="cfg_set2_out"
    kind="altera_avalon_pio"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -540,7 +540,7 @@
  <module
    name="cfg_set3_out"
    kind="altera_avalon_pio"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -555,7 +555,7 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="8" />
  </module>
- <module name="clk_0" kind="clock_source" version="21.1" enabled="1">
+ <module name="clk_0" kind="clock_source" version="22.1" enabled="1">
   <parameter name="clockFrequency" value="62500000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
@@ -564,7 +564,7 @@
  <module
    name="ctrl_data_in"
    kind="altera_avalon_pio"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -579,7 +579,7 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="32" />
  </module>
- <module name="ext_int_n" kind="altera_avalon_pio" version="21.1" enabled="1">
+ <module name="ext_int_n" kind="altera_avalon_pio" version="22.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
@@ -596,7 +596,7 @@
  <module
    name="fallback_in"
    kind="altera_avalon_pio"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -611,7 +611,7 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="2" />
  </module>
- <module name="hw_info_in" kind="altera_avalon_pio" version="21.1" enabled="1">
+ <module name="hw_info_in" kind="altera_avalon_pio" version="22.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
@@ -629,7 +629,7 @@
  <module
    name="info_sync_out"
    kind="altera_avalon_pio"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -647,7 +647,7 @@
  <module
    name="jtag_uart_0"
    kind="altera_avalon_jtag_uart"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="allowMultipleConnections" value="false" />
   <parameter name="avalonSpec" value="2.0" />
@@ -663,7 +663,7 @@
   <parameter name="writeBufferDepth" value="64" />
   <parameter name="writeIRQThreshold" value="8" />
  </module>
- <module name="led_out" kind="altera_avalon_pio" version="21.1" enabled="1">
+ <module name="led_out" kind="altera_avalon_pio" version="22.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
@@ -680,7 +680,7 @@
  <module
    name="nios2_gen2_0"
    kind="altera_nios2_gen2"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="AUTO_CLK_CLOCK_DOMAIN" value="1" />
   <parameter name="AUTO_CLK_RESET_DOMAIN" value="1" />
@@ -862,12 +862,12 @@
  <module
    name="nios_custom_instr_bitswap_0"
    kind="altera_nios_custom_instr_bitswap"
-   version="21.1"
+   version="22.1"
    enabled="1" />
  <module
    name="onchip_flash_0"
    kind="altera_onchip_flash"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="AUTO_CLOCK_RATE" value="62500000" />
   <parameter name="CLOCK_FREQUENCY" value="25.0" />
@@ -888,7 +888,7 @@
  <module
    name="onchip_memory2_0"
    kind="altera_avalon_onchip_memory2"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="allowInSystemMemoryContentEditor" value="false" />
   <parameter name="autoInitializationFileName">$${FILENAME}_onchip_memory2_0</parameter>
@@ -920,7 +920,7 @@
  <module
    name="ppu_state_in"
    kind="altera_avalon_pio"
-   version="21.1"
+   version="22.1"
    enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -935,7 +935,7 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="25" />
  </module>
- <module name="sync_in" kind="altera_avalon_pio" version="21.1" enabled="1">
+ <module name="sync_in" kind="altera_avalon_pio" version="22.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="true" />
@@ -949,7 +949,7 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="2" />
  </module>
- <module name="vd_wrctrl" kind="altera_avalon_pio" version="21.1" enabled="1">
+ <module name="vd_wrctrl" kind="altera_avalon_pio" version="22.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
@@ -963,7 +963,7 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="2" />
  </module>
- <module name="vd_wrdata" kind="altera_avalon_pio" version="21.1" enabled="1">
+ <module name="vd_wrdata" kind="altera_avalon_pio" version="22.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
@@ -979,7 +979,7 @@
  </module>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="jtag_uart_0.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
@@ -988,7 +988,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="i2c_master.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
@@ -997,7 +997,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="onchip_flash_0.csr">
   <parameter name="arbitrationPriority" value="1" />
@@ -1006,7 +1006,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="onchip_flash_0.data">
   <parameter name="arbitrationPriority" value="1" />
@@ -1015,7 +1015,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="nios2_gen2_0.debug_mem_slave">
   <parameter name="arbitrationPriority" value="1" />
@@ -1024,7 +1024,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="onchip_memory2_0.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1033,7 +1033,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="vd_wrdata.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1042,7 +1042,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="vd_wrctrl.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1051,7 +1051,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="ctrl_data_in.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1060,7 +1060,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="cfg_set0_out.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1069,7 +1069,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="ppu_state_in.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1078,7 +1078,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="sync_in.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1087,7 +1087,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="hw_info_in.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1096,7 +1096,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="cfg_set1_out.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1105,7 +1105,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="ext_int_n.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1114,7 +1114,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="led_out.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1123,7 +1123,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="fallback_in.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1132,7 +1132,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="cfg_set2_out.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1141,7 +1141,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="info_sync_out.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1150,7 +1150,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.data_master"
    end="cfg_set3_out.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -1159,7 +1159,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.instruction_master"
    end="onchip_flash_0.csr">
   <parameter name="arbitrationPriority" value="1" />
@@ -1168,7 +1168,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.instruction_master"
    end="onchip_flash_0.data">
   <parameter name="arbitrationPriority" value="1" />
@@ -1177,7 +1177,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.instruction_master"
    end="nios2_gen2_0.debug_mem_slave">
   <parameter name="arbitrationPriority" value="1" />
@@ -1186,64 +1186,64 @@
  </connection>
  <connection
    kind="avalon"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.instruction_master"
    end="onchip_memory2_0.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00010000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection kind="clock" version="21.1" start="clk_0.clk" end="nios2_gen2_0.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="vd_wrdata.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="vd_wrctrl.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="jtag_uart_0.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="ctrl_data_in.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="cfg_set0_out.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="ppu_state_in.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="sync_in.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="hw_info_in.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="cfg_set1_out.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="ext_int_n.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="nios2_gen2_0.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="vd_wrdata.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="vd_wrctrl.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="jtag_uart_0.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="ctrl_data_in.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="cfg_set0_out.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="ppu_state_in.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="sync_in.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="hw_info_in.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="cfg_set1_out.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="ext_int_n.clk" />
  <connection
    kind="clock"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk"
    end="onchip_flash_0.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="led_out.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="fallback_in.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="cfg_set2_out.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="info_sync_out.clk" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="cfg_set3_out.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="led_out.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="fallback_in.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="cfg_set2_out.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="info_sync_out.clk" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="cfg_set3_out.clk" />
  <connection
    kind="clock"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk"
    end="onchip_memory2_0.clk1" />
- <connection kind="clock" version="21.1" start="clk_0.clk" end="i2c_master.clock" />
+ <connection kind="clock" version="22.1" start="clk_0.clk" end="i2c_master.clock" />
  <connection
    kind="interrupt"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.irq"
    end="i2c_master.interrupt_sender">
   <parameter name="irqNumber" value="0" />
  </connection>
  <connection
    kind="interrupt"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.irq"
    end="jtag_uart_0.irq">
   <parameter name="irqNumber" value="1" />
  </connection>
  <connection
    kind="interrupt"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.irq"
    end="sync_in.irq">
   <parameter name="irqNumber" value="2" />
  </connection>
  <connection
    kind="nios_custom_instruction"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.custom_instruction_master"
    end="nios_custom_instr_bitswap_0.s1">
   <parameter name="CIName">nios_custom_instr_bitswap_0</parameter>
@@ -1252,177 +1252,177 @@
  </connection>
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="i2c_master.clock_reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="onchip_flash_0.nreset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="nios2_gen2_0.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="vd_wrdata.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="vd_wrctrl.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="jtag_uart_0.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="ctrl_data_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="cfg_set0_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="ppu_state_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="sync_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="hw_info_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="cfg_set1_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="ext_int_n.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="led_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="fallback_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="cfg_set2_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="info_sync_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="cfg_set3_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="clk_0.clk_reset"
    end="onchip_memory2_0.reset1" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="cfg_set0_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="ctrl_data_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="hw_info_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="ppu_state_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="jtag_uart_0.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="nios2_gen2_0.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="sync_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="vd_wrctrl.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="vd_wrdata.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="cfg_set1_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="ext_int_n.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="led_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="fallback_in.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="cfg_set2_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="cfg_set3_out.reset" />
  <connection
    kind="reset"
-   version="21.1"
+   version="22.1"
    start="nios2_gen2_0.debug_reset_request"
    end="onchip_memory2_0.reset1" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />

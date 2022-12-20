@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="fir_2ch_audio" kind="fir_2ch_audio" version="1.0" fabric="QSYS">
- <!-- Format version 21.1 842 (Future versions may contain additional information.) -->
- <!-- 2022.07.09.11:39:07 -->
+ <!-- Format version 22.1 915 (Future versions may contain additional information.) -->
+ <!-- 2022.11.28.18:46:08 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1657359547</value>
+  <value>1669657568</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -98,7 +98,7 @@
  <module
    name="fir_compiler_ii_0"
    kind="altera_fir_compiler_ii"
-   version="21.1"
+   version="22.1"
    path="fir_compiler_ii_0">
   <!-- Describes a single module. Module parameters are
 the requested settings for a module instance. -->
@@ -704,7 +704,7 @@ the requested settings for a module instance. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <interface name="clk" kind="clock_sink" version="21.1">
+  <interface name="clk" kind="clock_sink" version="22.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
@@ -749,7 +749,7 @@ parameters are a RESULT of the module parameters. -->
     <role>clk</role>
    </port>
   </interface>
-  <interface name="rst" kind="reset_sink" version="21.1">
+  <interface name="rst" kind="reset_sink" version="22.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
@@ -797,7 +797,7 @@ parameters are a RESULT of the module parameters. -->
   <interface
      name="avalon_streaming_sink"
      kind="avalon_streaming_sink"
-     version="21.1">
+     version="22.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
@@ -949,7 +949,7 @@ parameters are a RESULT of the module parameters. -->
   <interface
      name="avalon_streaming_source"
      kind="avalon_streaming_source"
-     version="21.1">
+     version="22.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
@@ -1111,7 +1111,7 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
   <displayName>FIR II</displayName>
-  <version>21.1</version>
+  <version>22.1</version>
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
@@ -1119,7 +1119,7 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
   <displayName>Clock Input</displayName>
-  <version>21.1</version>
+  <version>22.1</version>
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
@@ -1127,7 +1127,7 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
   <displayName>Reset Input</displayName>
-  <version>21.1</version>
+  <version>22.1</version>
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
@@ -1135,7 +1135,7 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
   <displayName>Avalon Streaming Sink</displayName>
-  <version>21.1</version>
+  <version>22.1</version>
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
@@ -1143,8 +1143,8 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
   <displayName>Avalon Streaming Source</displayName>
-  <version>21.1</version>
+  <version>22.1</version>
  </plugin>
- <reportVersion>21.1 842</reportVersion>
+ <reportVersion>22.1 915</reportVersion>
  <uniqueIdentifier></uniqueIdentifier>
 </EnsembleReport>

@@ -57,7 +57,7 @@
  <module
    name="altclkctrl_0"
    kind="altclkctrl"
-   version="21.1"
+   version="22.1"
    enabled="1"
    autoexport="1">
   <parameter name="CLOCK_TYPE" value="1" />

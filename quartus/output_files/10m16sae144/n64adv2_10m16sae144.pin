@@ -65,7 +65,7 @@
  -- Pin directions (input, output or bidir) are based on device operating in user mode.
  ---------------------------------------------------------------------------------
 
-Quartus Prime Version 21.1.1 Build 850 06/23/2022 SJ Lite Edition
+Quartus Prime Version 22.1std.0 Build 915 10/25/2022 SC Lite Edition
 CHIP  "n64adv2_10m16sae144"  ASSIGNED TO AN: 10M16SAE144C8G
 
 Pin Name/Usage               : Location  : Dir.   : I/O Standard      : Voltage : I/O Bank  : User Assignment

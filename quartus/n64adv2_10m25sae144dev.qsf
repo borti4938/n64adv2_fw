@@ -41,7 +41,7 @@ set_global_assignment -name FAMILY "MAX 10"
 set_global_assignment -name DEVICE 10M25SAE144C8G
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:39:13  MARCH 01, 2021"
-set_global_assignment -name LAST_QUARTUS_VERSION "21.1.1 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "22.1std.0 Lite Edition"
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ENABLE_OCT_DONE OFF
@@ -284,8 +284,8 @@ set_global_assignment -name VERILOG_FILE ../rtl/misc/font_rom_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/gamma_table_v2.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/serial_divide.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/sdram_ctrl.v
-#set_global_assignment -name VERILOG_FILE ../rtl/misc/polyphase_6step_fir.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/mult_add_2.v
+#set_global_assignment -name VERILOG_FILE ../rtl/misc/polyphase_6step_fir.v
 
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64_vinfo_ext.v
 set_global_assignment -name VERILOG_FILE ../rtl/ppu/n64a_vdemux.v
@@ -307,12 +307,11 @@ set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files/10m25sae144dev
 
 
 # debug
-set_global_assignment -name ENABLE_SIGNALTAP ON
+set_global_assignment -name ENABLE_SIGNALTAP OFF
 
-set_global_assignment -name SIGNALTAP_FILE debug/stp_scaler.stp
-
-set_global_assignment -name SIGNALTAP_FILE debug/stp_scaler_2.stp
 set_global_assignment -name USE_SIGNALTAP_FILE debug/stp_scaler_2.stp
+set_global_assignment -name SIGNALTAP_FILE debug/stp_scaler.stp
+set_global_assignment -name SIGNALTAP_FILE debug/stp_scaler_2.stp
 
 
 ## Assignments for Synthesis and Fitter
@@ -339,7 +338,7 @@ set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name SYNTH_PROTECT_SDC_CONSTRAINT ON
 set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 
-set_global_assignment -name SEED 14
+set_global_assignment -name SEED 13
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM

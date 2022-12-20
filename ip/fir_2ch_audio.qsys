@@ -70,7 +70,7 @@
  <module
    name="fir_compiler_ii_0"
    kind="altera_fir_compiler_ii"
-   version="21.1"
+   version="22.1"
    enabled="1"
    autoexport="1">
   <parameter name="L_bandsFilter" value="1" />
