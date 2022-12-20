@@ -49,7 +49,7 @@
   //    [25]    {(1bit reserved)}
   //    [24:19] {gamma (4bits),VI-DeBlur,16bit mode}
   //    [18: 9] {LineX V-Shift (5bits),LineX H-Shift (5bits)}
-  //    [ 8: 0] {(1bit reserve),De-Interlace Mode (1 bit),(1bit reserve),Vert. Interpolation Mode (2 bits),(1bit reserve),Horiz. Interpolation Mode (2 bits),PAL boxed mode (1 bit)}
+  //    [ 8: 0] {De-Interlace Mode (2 bit),(1bit reserve),Vert. Interpolation Mode (2 bits),(1bit reserve),Horiz. Interpolation Mode (2 bits),PAL boxed mode (1 bit)}
   //  wire [31:0] SysConfigSet0; (Scaler)
   //    [31:21] {LineX V-Scale Target (11bits)}
   //    [20: 9] {LineX H-Scale Target (12bits)}
@@ -110,7 +110,9 @@
   `define n16bit_mode_bit             19 + `SysCfg1_PPUCfg_Offset
   `define vshift_slice                18 + `SysCfg1_PPUCfg_Offset : 14 + `SysCfg1_PPUCfg_Offset
   `define hshift_slice                13 + `SysCfg1_PPUCfg_Offset :  9 + `SysCfg1_PPUCfg_Offset
-  `define deinterlacing_mode_bit       7 + `SysCfg1_PPUCfg_Offset
+  `define deinterlacing_mode_slice     8 + `SysCfg1_PPUCfg_Offset :  7 + `SysCfg1_PPUCfg_Offset
+  `define deinterlacing_mode_bit1      8 + `SysCfg1_PPUCfg_Offset
+  `define deinterlacing_mode_bit0      7 + `SysCfg1_PPUCfg_Offset
   `define v_interpolation_mode_slice   5 + `SysCfg1_PPUCfg_Offset :  4 + `SysCfg1_PPUCfg_Offset
   `define h_interpolation_mode_slice   2 + `SysCfg1_PPUCfg_Offset :  1 + `SysCfg1_PPUCfg_Offset
   `define pal_boxed_scale_bit          0 + `SysCfg1_PPUCfg_Offset

@@ -235,10 +235,10 @@ config_t hor_shift = {
 config_t deinterlace_mode = {
     .cfg_word        = &extcfg1_word,
     .cfg_word_offset = CFG_DEINTER_MODE_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_DEINTER_MODE_SETMASK,
-        .clrflag_mask = CFG_DEINTER_MODE_CLRMASK
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_DEINTER_MODE_MAX_VALUE,
+        .getvalue_mask = CFG_DEINTER_MODE_GETMASK
     },
     .value_string = &DeInterModes
 };

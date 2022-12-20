@@ -905,8 +905,7 @@ int update_cfg_screen(menu_t* current_menu)
           }
         }
         if (is_vicfg_screen(current_menu) && v_run == DEINTERLACE_SELECTION && use_240p_288p) {
-          val_select = 0;
-          font_color = FONTCOLOR_GREY;
+          val_select = val_select & 1;
         }
 
 //        if (v_run == current_menu->current_selection)

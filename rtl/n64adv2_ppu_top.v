@@ -136,7 +136,7 @@ wire palmode, n64_480i;
 wire [ 3:0] cfg_gamma;
 wire cfg_nvideblur_pre, cfg_n16bit_mode;
 wire [9:0] cfg_hvshift;
-wire cfg_bob_deinterlacing_mode_pre, cfg_bob_deinterlacing_mode;
+wire [1:0] cfg_deinterlacing_mode_pre, cfg_deinterlacing_mode;
 
 wire [`VID_CFG_W-1:0] sys_vmode_ntsc_w, sys_vmode_pal_w;
 wire [10:0] vlines_set_w;
@@ -146,7 +146,7 @@ wire palmode_sysclk_resynced, n64_480i_sysclk_resynced;
 wire use_interlaced_full_w;
 wire cfg_nvideblur_sysclk_resynced;
 
-wire cfg_deinterlacing_mode_dramclk_resynced;
+wire [1:0] cfg_deinterlacing_mode_dramclk_resynced;
 wire palmode_dramclk_resynced, n64_480i_dramclk_resynced;
 
 wire cfg_lowlatencymode_resynced;
@@ -283,7 +283,7 @@ end
 assign vlines_set_w = ConfigSet_w[`target_vlines_slice];
 assign hpixels_set_w = (ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP) ? ConfigSet_w[`target_hpixels_slice] >> 1 :
                                                                                         ConfigSet_w[`target_hpixels_slice];
-assign use_interlaced_full_w = n64_480i_sysclk_resynced & ConfigSet_w[`deinterlacing_mode_bit] & (ConfigSet_w[`target_resolution_slice] != `HDMI_TARGET_240P);  // do not use waeve deinterlacing in 240p/288p mode
+assign use_interlaced_full_w = n64_480i_sysclk_resynced & ConfigSet_w[`deinterlacing_mode_bit1] & (ConfigSet_w[`target_resolution_slice] != `HDMI_TARGET_240P);  // do not use waeve deinterlacing in 240p/288p mode
 
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
@@ -309,15 +309,18 @@ scaler_cfggen scaler_cfggen_u(
 // setup config in different clock domains ...
 
 // ... in N64_CLK_i
+assign cfg_deinterlacing_mode_pre[1] = ConfigSet_w[`deinterlacing_mode_bit1] & (ConfigSet_w[`target_resolution_slice] != `HDMI_TARGET_240P); // do not use waeve deinterlacing in 240p/288p mode
+assign cfg_deinterlacing_mode_pre[0] = ConfigSet_w[`deinterlacing_mode_bit0];
+
 register_sync #(
-  .reg_width(17), // 4 + 1 + 10 + 1 + 1
-  .reg_preset(17'd0)
+  .reg_width(18), // 4 + 1 + 10 + 2 + 1
+  .reg_preset(18'd0)
 ) cfg_sync4n64clk_u0 (
   .clk(N64_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ConfigSet_w[`gamma_slice],~ConfigSet_w[`n16bit_mode_bit],ConfigSet_w[`hshift_slice],ConfigSet_w[`vshift_slice],~ConfigSet_w[`deinterlacing_mode_bit],~ConfigSet_w[`videblur_bit]}),
-  .reg_o({cfg_gamma                ,cfg_n16bit_mode               ,cfg_hvshift                                          ,cfg_bob_deinterlacing_mode_pre       ,cfg_nvideblur_pre})
+  .reg_i({ConfigSet_w[`gamma_slice],~ConfigSet_w[`n16bit_mode_bit],ConfigSet_w[`hshift_slice],ConfigSet_w[`vshift_slice],cfg_deinterlacing_mode_pre,~ConfigSet_w[`videblur_bit]}),
+  .reg_o({cfg_gamma                ,cfg_n16bit_mode               ,cfg_hvshift                                          ,cfg_deinterlacing_mode    ,cfg_nvideblur_pre})
 ); // Note: add output reg as false path in sdc (cfg_sync4n64clk_u0|reg_synced_1[*])
 
 always @(*)
@@ -329,13 +332,13 @@ always @(*)
 
 // ... in DRAM clock domain
 register_sync #(
-  .reg_width(11),  // 10 + 1
-  .reg_preset(11'd0)
+  .reg_width(12),  // 10 + 2
+  .reg_preset({12{1'b0}})
 ) cfg_sync4dramlogic_u0 (
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({cfg_vpos_1st_rdline_w       ,ConfigSet_w[`deinterlacing_mode_bit]}),
+  .reg_i({cfg_vpos_1st_rdline_w       ,ConfigSet_w[`deinterlacing_mode_slice]}),
   .reg_o({cfg_vpos_1st_rdline_resynced,cfg_deinterlacing_mode_dramclk_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
@@ -421,8 +424,6 @@ assign videomode_pal_w =  ConfigSet_resynced[`target_resolution_slice] == `HDMI_
                           ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_720P   ? `USE_720p50   :
                           ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_576P   ? `USE_576p50   :
                                                                                                 `USE_288p50   ;
-
-assign cfg_bob_deinterlacing_mode = cfg_bob_deinterlacing_mode_pre & (ConfigSet_resynced[`target_resolution_slice] != `HDMI_TARGET_240P); // do not use waeve deinterlacing in 240p/288p mode
 
 always @(posedge VCLK_Tx) begin
   if (ConfigSet_resynced[`force60hz_bit] & !ConfigSet_resynced[`lowlatencymode_bit] & (ConfigSet_resynced[`target_resolution_slice] != `HDMI_TARGET_288P)) // do not allow forcing 60Hz mode in llm and in 288p mode
@@ -542,7 +543,7 @@ scaler scaler_u(
   .vdata_i(vdata24_pp_w[1]),
   .vdata_valid_i(vdata_valid_pp_w[1]),
   .vdata_hvshift_i(cfg_hvshift),
-  .vdata_bob_deinterlacing_mode_i(cfg_bob_deinterlacing_mode),
+  .vdata_deinterlacing_mode_i(cfg_deinterlacing_mode),
   .DRAM_CLK_i(DRAM_CLK_i),
   .DRAM_nRST_i(DRAM_nRST_i),
   .DRAM_ADDR(DRAM_ADDR),
