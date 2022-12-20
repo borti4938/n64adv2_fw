@@ -30,7 +30,7 @@
 #define APP_CFG_H_
 
 #define SW_FW_MAIN  2
-#define SW_FW_SUB   12
+#define SW_FW_SUB   13
 
 #define CFG_FW_MAIN SW_FW_MAIN
 #define CFG_FW_SUB  03
