@@ -75,6 +75,7 @@
   `define cfg3_audio_config_slice    7: 0
   `define cfg2_scanline_slice       29: 0
   `define cfg1_ppu_config_slice     24: 0
+  `define cfg0_ppu_config_slice     31: 0
   
   // Audio config (note the 1 bit shift compared to software)
   `define APUConfig_WordWidth        9

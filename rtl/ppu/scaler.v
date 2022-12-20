@@ -796,6 +796,8 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
     vdata3_for_post_sdram_buf[0] <= {(3*color_width_o){1'b0}};
     vdata3_for_post_sdram_buf[1] <= {(3*color_width_o){1'b0}};
     vdata3_for_post_sdram_buf[2] <= {(3*color_width_o){1'b0}};
+    
+    Z_vinfo_llm_slbuf_fb_L <= 9'd0;
   end else begin
     case (sdram_ctrl_state)
       ST_SDRAM_WAIT: begin
