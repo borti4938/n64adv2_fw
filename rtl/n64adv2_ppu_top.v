@@ -162,6 +162,8 @@ wire [17:0] cfg_h_interp_factor_w, cfg_h_interp_factor_resynced;
 wire [9:0] cfg_hpixel_in_needed_w, cfg_hpixel_in_needed_resynced;
 wire [9:0] cfg_hpixel_in_full_w, cfg_hpixel_in_full_resynced;
 
+wire v_allow_slemu_w, h_allow_slemu_w;
+
 wire palmode_vclk_o_resynced, n64_480i_vclk_o_resynced;
 wire [`VID_CFG_W-1:0] videomode_ntsc_w, videomode_pal_w;
 
@@ -216,8 +218,8 @@ assign palmode = vinfo_pass[1];
 assign n64_480i = vinfo_pass[0];
 
 assign ConfigSet_w[`PPUConfig_WordWidth-1:`vSL_en_bit+1] = ConfigSet[`PPUConfig_WordWidth-1:`vSL_en_bit+1];
-assign ConfigSet_w[`vSL_en_bit] = ConfigSet[`vSL_en_bit] & (ConfigSet[`target_resolution_slice] != `HDMI_TARGET_240P);  // do not allow scanlines for 240p/288p
-assign ConfigSet_w[`hSL_en_bit] = ConfigSet[`hSL_en_bit] & (ConfigSet[`target_resolution_slice] != `HDMI_TARGET_240P);  // do not allow scanlines for 240p/288p
+assign ConfigSet_w[`vSL_en_bit] = ConfigSet[`vSL_en_bit] & v_allow_slemu_w;  // do not allow scanlines if blocked due to lack of resolution
+assign ConfigSet_w[`hSL_en_bit] = ConfigSet[`hSL_en_bit] & h_allow_slemu_w;  // do not allow scanlines if blocked due to lack of resolution
 assign ConfigSet_w[`hSL_en_bit-1:0] = ConfigSet[`hSL_en_bit-1:0];
 
 assign PPUState[`PPU_input_pal_bit]             = palmode;
@@ -299,11 +301,13 @@ scaler_cfggen scaler_cfggen_u(
   .vlines_in_full_o(cfg_vlines_in_full_w),
   .vlines_out_o(cfg_vlines_out_w),
   .v_interp_factor_o(cfg_v_interp_factor_w),
+  .v_allow_slemu_o(v_allow_slemu_w),
   .hpos_1st_rdpixel_o(cfg_hpos_1st_rdpixel_w),
   .hpixels_in_needed_o(cfg_hpixel_in_needed_w),
   .hpixels_in_full_o(cfg_hpixel_in_full_w),
   .hpixels_out_o(cfg_hpixels_out_w),
-  .h_interp_factor_o(cfg_h_interp_factor_w)
+  .h_interp_factor_o(cfg_h_interp_factor_w),
+  .h_allow_slemu_o(h_allow_slemu_w)
 );
 
 // setup config in different clock domains ...

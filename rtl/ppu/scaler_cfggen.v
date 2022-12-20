@@ -48,12 +48,14 @@ module scaler_cfggen(
   vlines_in_full_o,
   vlines_out_o,
   v_interp_factor_o,
+  v_allow_slemu_o,
   
   hpos_1st_rdpixel_o,
   hpixels_in_needed_o,
   hpixels_in_full_o,
   hpixels_out_o,
-  h_interp_factor_o
+  h_interp_factor_o,
+  h_allow_slemu_o
 );
 
 `include "../../lib/n64adv_vparams.vh"
@@ -78,12 +80,14 @@ output reg [9:0] vlines_in_needed_o;  // number of lines needed to scale for act
 output reg [9:0] vlines_in_full_o;    // number of lines at input (either 240 in NTSC or 288 in PAL (or doubled for interlaced with weave and fully buffered deinterlacing))
 output reg [10:0] vlines_out_o;       // number of lines after scaling (max. 2047)
 output reg [17:0] v_interp_factor_o;  // factor needed to determine actual position during interpolation
+output reg v_allow_slemu_o;           // a flag that allows vertical scanline emulation
 
 output reg [9:0] hpos_1st_rdpixel_o;  // first horizontal pixel to read (needed if scaling factor is so high such that not all pixels are needed)
 output reg [9:0] hpixels_in_needed_o; // number of horizontal pixel needed to scale for active lines
 output reg [9:0] hpixels_in_full_o;   // number of horizontal pixel at input (should be 320 or 640)
 output reg [11:0] hpixels_out_o;      // number of horizontal pixel after scaling (max. 4093)
 output reg [17:0] h_interp_factor_o;  // factor needed to determine actual position during interpolation
+output reg h_allow_slemu_o;           // a flag that allows horizontal scanline emulation
 
 
 // params
@@ -219,6 +223,7 @@ always @(posedge SYS_CLK) begin
       vlines_in_full_o <= vlines_in_full_L;
       vlines_out_o <= v_divisor_LL;
       v_interp_factor_o <= v_appr_mult_factor_w;
+      h_allow_slemu_o <= v_divisor_LL >= {vlines_in_full_L,1'b0};
     end
     default: begin  // ST_CFGGEN_RDY
         if (((tgl_trigger_v_cfggen_phases_o != tgl_trigger_v_cfggen_phases_i) |
@@ -262,6 +267,7 @@ always @(posedge SYS_CLK) begin
       hpixels_in_full_o <= hpixels_in_full_L;
       hpixels_out_o <= h_divisor_LL;
       h_interp_factor_o <= h_appr_mult_factor_w;
+      v_allow_slemu_o <= h_divisor_LL >= {1'b0,hpixels_in_full_L,1'b0};
     end
     default: begin  // ST_CFGGEN_RDY
         if (((tgl_trigger_h_cfggen_phases_o != tgl_trigger_h_cfggen_phases_i) |

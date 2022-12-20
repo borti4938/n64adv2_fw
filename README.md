@@ -136,7 +136,7 @@ An empty default value means that this value is not affected by loading defaults
 | **Vertical - Bloom effect** \[10\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
 
 \[8\] _Input mode_ can be changed using **L** or **R** button on the controller.  
-\[9\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Another rule is, the larger the scaling factor the better the look.  
+\[9\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Another rule is, the larger the scaling factor the better the look. Also keep in mind that scanlines are not drawn if output resolution is not at least twice the input.  
 \[10\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
 
 #### VI-Processing

@@ -377,7 +377,8 @@ static const char *home_header __ufmdata_section__ =
 static const char *home_overlay __ufmdata_section__ =
     "[Video-Info]\n"
     "[Resolution]\n"
-    "[Scaler]\n\n"
+    "[Scaler]\n"
+    "[Scanlines]\n"
     "[VI-Processing]\n"
     "[Miscellaneous]\n"
     "[Save/Load/Fallback]\n\n"
@@ -394,7 +395,6 @@ static const char *home_overlay __ufmdata_section__ =
   ;
   /* 123456789012345678901234567890123456789012345678 */
 
-const char *Scanlines_Submenu_text __ufmdata_section__ = "[Scanlines]";
 
 const char *EnterSubMenu __ufmdata_section__  = "[Enter ...]";
 const char *RunFunction __ufmdata_section__   = "[Run ...]";
@@ -411,7 +411,7 @@ const char *InterpModes[]           = {"Integer","Integer (soft)","Integer+Bilin
 const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};
 const char *ScanlinesCalcBase[]     = {"Luma based","Per color based"};
 const char *ScanlinesThickness[]    = {"Adaptive","Thin","Normal","Thick"};
-const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular","Flat top"};
+const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular"};
 
 const char *RstMasking[] = {"None","VI pipeline","Audio","VI + Audio"};
 
