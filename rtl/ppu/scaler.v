@@ -1234,7 +1234,7 @@ always @(posedge VCLK_o or negedge nRST_o)
       h_active_px <= 1'b0;
     end
     if (Y_v_active_px) begin
-      if (hcnt_o_L == 0) begin
+      if (hcnt_o_L == 6) begin
         case (Y_vscale_phase)
           HVSCALE_PHASE_INIT: begin
               if (Y_vline_cnt_cmb >= {1'b0,X_pix_vlines_out_max} && Y_vline_load_cnt[0]) begin
