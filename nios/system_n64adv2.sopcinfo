@@ -934,7 +934,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.RESET_VALUE</name>
-   <value>269763072</value>
+   <value>10232064</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.compatible</name>
@@ -954,7 +954,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.dts.params.resetvalue</name>
-   <value>269763072</value>
+   <value>10232064</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.vendor</name>
@@ -1018,7 +1018,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="resetValue">
    <type>long</type>
-   <value>269763072</value>
+   <value>10232064</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -1712,7 +1712,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.RESET_VALUE</name>
-   <value>2</value>
+   <value>0</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.compatible</name>
@@ -1732,7 +1732,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.dts.params.resetvalue</name>
-   <value>2</value>
+   <value>0</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.vendor</name>
@@ -1796,7 +1796,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="resetValue">
    <type>long</type>
-   <value>2</value>
+   <value>0</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
