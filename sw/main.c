@@ -195,7 +195,7 @@ int main()
 
   cfg_apply_to_logic();
 
-  I2C_init(I2C_MASTER_BASE,ALT_CPU_FREQ,200000);
+  I2C_init(I2C_MASTER_BASE,ALT_CPU_FREQ,400000);
 
   led_drive(LED_1, LED_ON);
   led_drive(LED_2, LED_ON);
