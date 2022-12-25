@@ -143,7 +143,7 @@ An empty default value means that this value is not affected by loading defaults
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **De-Interlacing mode** | Bob | Selects between **Bob** or **Weave** deinterlacing for 480i/576i video input |
+| **De-Interlacing mode** | Bob | Selects between **Frame Drop**, **Bob** or **Weave** deinterlacing for 480i/576i video input<br>- Frame drop removes every even field from the input<br>- Bob deinterlacing handles input as 240p/288p<br>- Weave deinterlacing updates even and odd lines as an even or odd frame is drawn at the input |
 | **Gamma value** | 1.00 | Applies some gamma boost.<br>Gamma curve on output is defined as I = I_{in}^**\gamma**, where I is the intensity. |
 | **Color space - Format** | RGB | Choose between **RGB**, **YCbCr (ITU601/SD)** or **YCbCr (ITU709/HD)** color space |
 | **Color space - Limited range** | Off | Sets color space to use just a limited range (not full 8bit (0 to 255)) leaving some headroom<br>- RGB values in a range of 16 to 235<br>YCbCr values between 16 and 235 (Y) or between 16 and 239 (Cb/Cr) |
@@ -164,8 +164,8 @@ An empty default value means that this value is not affected by loading defaults
 | **Audio settings - Post filter gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
 | **Audio settings - S/PDIF enabled** | Off | Enables the S/PDIF audio output. |
 | **Controller routines - Reset** | On | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
-| **Controller routines - VI-DeBlur** | Off | Allows switching _low. res. deblur (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
-| **Controller routines - 16bit mode** | Off | Allows switching _low. 16bit mode (see description above) **on** and **off** via controller_<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
+| **Controller routines - VI-DeBlur** | Off | Allows switching _low. res. deblur_ (see description above) **on** and **off** via controller<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
+| **Controller routines - 16bit mode** | Off | Allows switching _16bit mode_ (see description above) **on** and **off** via controller<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
 | **Reset masking** | Off | User can opt to not reset video interface pipeline (**VI pipeline**) and/or **Audio** processing if the console is being reset |
 | **Unlock lucky 1440p** \[12\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
