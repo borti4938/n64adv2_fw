@@ -372,5 +372,5 @@ set_false_path -from [get_registers {n64adv2_apu_u|cfg_sync4mclk_u|reg_synced_1[
 # some misc output ports as false path
 #*************************************
 set_false_path -to [get_ports {ASPDIF_o}]
-set_false_path -to [get_ports {N64_nRST_io I2C_SCL I2C_SDA LED_o[*]}]
+set_false_path -to [get_ports {N64_nRST_io nViDeblur_o I2C_SCL I2C_SDA LED_o[*]}]
 
