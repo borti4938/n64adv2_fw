@@ -37,14 +37,14 @@
 #include "altera_avalon_pio_regs.h"
 
 
-void i2c_reg_bitset(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit, alt_u8 regmask) {
+void i2c_reg_bitset(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit) {
   if (bit > 7) return;
-  if ((1 << bit) & regmask) i2c_writereg(i2c_dev, regaddr,(i2c_readreg(i2c_dev, regaddr) | (1 << bit)),regmask);
+  i2c_writereg(i2c_dev, regaddr,(i2c_readreg(i2c_dev, regaddr) | (1 << bit)));
 }
 
-void i2c_reg_bitclear(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit, alt_u8 regmask) {
+void i2c_reg_bitclear(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit) {
   if (bit > 7) return;
-  if ((1 << bit) & regmask) i2c_writereg(i2c_dev, regaddr,(i2c_readreg(i2c_dev, regaddr) & ~(1 << bit)),regmask);
+  i2c_writereg(i2c_dev, regaddr,(i2c_readreg(i2c_dev, regaddr) & ~(1 << bit)));
 }
 
 alt_u8 i2c_readreg(alt_u8 i2c_dev, alt_u8 regaddr)
@@ -58,12 +58,9 @@ alt_u8 i2c_readreg(alt_u8 i2c_dev, alt_u8 regaddr)
   return (alt_u8) I2C_read(I2C_MASTER_BASE,1);
 }
 
-void i2c_writereg(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 data, alt_u8 regmask)
+void i2c_writereg(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 data)
 {
-  alt_u8 wr_data;
-  if (regmask == 0xFF) wr_data = data;
-  else wr_data = (data & regmask) | (i2c_readreg(i2c_dev,regaddr) & ~regmask);  // do not touch bits outside of regmask
   I2C_start(I2C_MASTER_BASE, i2c_dev, 0);
   I2C_write(I2C_MASTER_BASE, regaddr, 0);
-  I2C_write(I2C_MASTER_BASE, wr_data, 1);
+  I2C_write(I2C_MASTER_BASE, data, 1);
 }

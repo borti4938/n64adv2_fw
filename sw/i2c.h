@@ -34,12 +34,12 @@
 #include "alt_types.h"
 
 #define ADV7513_I2C_BASE    (0x72>>1)
-#define SI5356_I2C_BASE     0x70
+#define SI5356_I2C_BASE     (0xE0>>1)
 
-void i2c_reg_bitset(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit, alt_u8 regmask);
-void i2c_reg_bitclear(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit, alt_u8 regmask);
+void i2c_reg_bitset(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit);
+void i2c_reg_bitclear(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit);
 alt_u8 i2c_readreg(alt_u8 i2c_dev, alt_u8 regaddr);
-void i2c_writereg(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 data, alt_u8 regmask);
+void i2c_writereg(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 data);
 
 
 #endif /* I2C_H_ */

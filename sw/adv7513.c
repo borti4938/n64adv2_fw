@@ -40,10 +40,10 @@
 #include "led.h"
 
 
-#define adv7513_reg_bitset(regaddr,bit)   i2c_reg_bitset(ADV7513_I2C_BASE,regaddr,bit,0xFF)
-#define adv7513_reg_bitclear(regaddr,bit) i2c_reg_bitclear(ADV7513_I2C_BASE,regaddr,bit,0xFF)
+#define adv7513_reg_bitset(regaddr,bit)   i2c_reg_bitset(ADV7513_I2C_BASE,regaddr,bit)
+#define adv7513_reg_bitclear(regaddr,bit) i2c_reg_bitclear(ADV7513_I2C_BASE,regaddr,bit)
 #define adv7513_readreg(regaddr)          i2c_readreg(ADV7513_I2C_BASE,regaddr)
-#define adv7513_writereg(regaddr,data)    i2c_writereg(ADV7513_I2C_BASE,regaddr,data,0xFF)
+#define adv7513_writereg(regaddr,data)    i2c_writereg(ADV7513_I2C_BASE,regaddr,data)
 
 
 void set_color_format(color_format_t color_format) {

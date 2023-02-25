@@ -45,10 +45,10 @@
 #define PLL_LOCK_2_FPGA_TIMEOUT_US  150
 
 
-#define si5356_reg_bitset(regaddr,bit,regmask)   i2c_reg_bitset(SI5356_I2C_BASE,regaddr,bit,regmask)
-#define si5356_reg_bitclear(regaddr,bit,regmask) i2c_reg_bitclear(SI5356_I2C_BASE,regaddr,bit,regmask)
-#define si5356_readreg(regaddr)                  i2c_readreg(SI5356_I2C_BASE,regaddr)
-#define si5356_writereg(regaddr,data,regmask)    i2c_writereg(SI5356_I2C_BASE,regaddr,data,regmask)
+#define si5356_reg_bitset(regaddr,bit)   i2c_reg_bitset(SI5356_I2C_BASE,regaddr,bit)
+#define si5356_reg_bitclear(regaddr,bit) i2c_reg_bitclear(SI5356_I2C_BASE,regaddr,bit)
+#define si5356_readreg(regaddr)          i2c_readreg(SI5356_I2C_BASE,regaddr)
+#define si5356_writereg(regaddr,data)    i2c_writereg(SI5356_I2C_BASE,regaddr,data)
 
 
 int check_si5356()
@@ -65,21 +65,22 @@ bool_t configure_clk_si5356(clk_config_t target_cfg) {
   periphals_clr_ready_bit();  // must be set again from external
   
   int i;
-  si5356_writereg(OEB_REG,OEB_REG_VAL_OFF,0xFF);      // disable outputs
+  si5356_writereg(OEB_REG,OEB_REG_VAL_OFF); // disable outputs
   
   si_clk_src_t clk_src = target_cfg < FREE_240p_288p;
   for (i=0; i<NUM_INPSW_REGS; i++)
-    si5356_writereg(inpsw_regs[i].reg_addr,inpsw_regs[i].reg_val[clk_src],inpsw_regs[i].reg_mask);
+    if (inpsw_regs[i].reg_mask == 0xFF) si5356_writereg(inpsw_regs[i].reg_addr,inpsw_regs[i].reg_val[clk_src]);
+    else                                si5356_writereg(inpsw_regs[i].reg_addr,(inpsw_regs[i].reg_val[clk_src] & inpsw_regs[i].reg_mask) | (si5356_readreg(inpsw_regs[i].reg_addr) & ~inpsw_regs[i].reg_mask));
   
   for (i=0; i<NUM_CFG_MODE_REGS; i++)
-    si5356_writereg(si_mode_regs[i].reg_addr,si_mode_regs[i].reg_val[target_cfg],0xFF);
+    si5356_writereg(si_mode_regs[i].reg_addr,si_mode_regs[i].reg_val[target_cfg]);
 
-//  si5356_reg_bitset(SOFT_RST_REG,SOFT_RST_BIT,0xFF);    // soft reset
-  si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT),0xFF);   // soft reset
+//  si5356_reg_bitset(SOFT_RST_REG,SOFT_RST_BIT);   // soft reset
+  si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT));  // soft reset
   if (target_cfg == FREE_240p_288p)
-    si5356_writereg(OEB_REG,OEB_REG_VAL_SINGLE_ON,0xFF);  // enable outputs
+    si5356_writereg(OEB_REG,OEB_REG_VAL_SINGLE_ON); // enable outputs
   else
-    si5356_writereg(OEB_REG,OEB_REG_VAL_ALL_ON,0xFF);     // enable outputs
+    si5356_writereg(OEB_REG,OEB_REG_VAL_ALL_ON);    // enable outputs
   
   i = PLL_LOCK_MAXWAIT_US;
   while (!SI5356_PLL_LOCKSTATUS()) {  // wait for PLL lock
@@ -96,11 +97,12 @@ bool_t init_si5356(clk_config_t target_cfg) {
   periphals_clr_ready_bit();  // must be set again from external
   int i;
 
-  si5356_writereg(OEB_REG,OEB_REG_VAL_OFF,0xFF);      // disable outputs
-  si5356_writereg(DIS_LOL_REG,DIS_LOL_REG_VAL,0xFF);  // write needed for proper operation
+  si5356_writereg(OEB_REG,OEB_REG_VAL_OFF);     // disable outputs
+  si5356_writereg(DIS_LOL_REG,DIS_LOL_REG_VAL); // write needed for proper operation
 
   for (i=0; i<NUM_INIT_REGS; i++)
-    si5356_writereg(init_regs[i].reg_addr,init_regs[i].reg_val,init_regs[i].reg_mask);
+    if (init_regs[i].reg_mask == 0xFF) si5356_writereg(init_regs[i].reg_addr,init_regs[i].reg_val);
+    else                               si5356_writereg(init_regs[i].reg_addr,(init_regs[i].reg_val & init_regs[i].reg_mask) | (si5356_readreg(init_regs[i].reg_addr) & ~init_regs[i].reg_mask));
 
   return configure_clk_si5356(target_cfg);
 }
