@@ -82,7 +82,7 @@ config_t linex_force_5060 = {
         .max_value     = CFG_FORCE5060_MAX_VALUE,
         .getvalue_mask = CFG_FORCE_5060_GETMASK
     },
-    .value_string = &Force5060
+    .value_string = (const char **) &Force5060
 };
 
 config_t low_latency_mode = {
@@ -174,7 +174,7 @@ config_t rst_masking = {
         .max_value     = CFG_RST_MASKS_MAX_VALUE,
         .getvalue_mask = CFG_RST_MASKS_GETMASK
     },
-    .value_string = &RstMasking
+    .value_string = (const char **) &RstMasking
 };
 
 config_t gamma_lut = {
@@ -240,7 +240,7 @@ config_t deinterlace_mode = {
         .max_value     = CFG_DEINTER_MODE_MAX_VALUE,
         .getvalue_mask = CFG_DEINTER_MODE_GETMASK
     },
-    .value_string = &DeInterModes
+    .value_string = (const char **) &DeInterModes
 };
 
 config_t interpolation_mode_vert = {
@@ -251,7 +251,7 @@ config_t interpolation_mode_vert = {
         .max_value     = CFG_INTERP_MODE_MAX_VALUE,
         .getvalue_mask = CFG_V_INTERP_MODE_GETMASK
     },
-    .value_string = &InterpModes
+    .value_string = (const char **) &InterpModes
 };
 
 config_t interpolation_mode_hori = {
@@ -262,7 +262,7 @@ config_t interpolation_mode_hori = {
         .max_value     = CFG_INTERP_MODE_MAX_VALUE,
         .getvalue_mask = CFG_H_INTERP_MODE_GETMASK
     },
-    .value_string = &InterpModes
+    .value_string = (const char **) &InterpModes
 };
 
 config_t pal_boxed_mode = {
@@ -291,7 +291,7 @@ config_t sl_thickness_vert = {
         .max_value     = CFG_SL_THICKNESS_MAX_VALUE,
         .getvalue_mask = CFG_VSL_THICKNESS_GETMASK
     },
-    .value_string = &ScanlinesThickness
+    .value_string = (const char **) &ScanlinesThickness
 };
 
 config_t sl_profile_vert = {
@@ -302,7 +302,7 @@ config_t sl_profile_vert = {
         .max_value     = CFG_SL_PROFILE_MAX_VALUE,
         .getvalue_mask = CFG_VSL_PROFILE_GETMASK
     },
-    .value_string = &ScanlinesScaleProfile
+    .value_string = (const char **) &ScanlinesScaleProfile
 };
 
 config_t slhyb_str_vert = {
@@ -335,7 +335,7 @@ config_t sl_thickness_hori = {
         .max_value     = CFG_SL_THICKNESS_MAX_VALUE,
         .getvalue_mask = CFG_HSL_THICKNESS_GETMASK
     },
-    .value_string = &ScanlinesThickness
+    .value_string = (const char **) &ScanlinesThickness
 };
 
 config_t sl_profile_hori = {
@@ -346,7 +346,7 @@ config_t sl_profile_hori = {
         .max_value     = CFG_SL_PROFILE_MAX_VALUE,
         .getvalue_mask = CFG_HSL_PROFILE_GETMASK
     },
-    .value_string = &ScanlinesScaleProfile
+    .value_string = (const char **) &ScanlinesScaleProfile
 };
 
 config_t slhyb_str_hori = {
@@ -412,7 +412,7 @@ config_t sl_calc_base = {
         .setflag_mask = CFG_SL_CALC_BASE_SETMASK,
         .clrflag_mask = CFG_SL_CALC_BASE_CLRMASK
     },
-    .value_string = &ScanlinesCalcBase
+    .value_string = (const char **) &ScanlinesCalcBase
 };
 
 // audio

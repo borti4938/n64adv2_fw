@@ -54,7 +54,7 @@ config_t color_space = {
         .max_value     = CFG_COLORSPACE_MAX_VALUE,
         .getvalue_mask = CFG_COLORSPACE_GETMASK
     },
-    .value_string = &ColorSpace
+    .value_string = (const char **) &ColorSpace
 };
 
 config_t limited_colorspace = {
@@ -76,7 +76,7 @@ config_t link_hv_scale = {
         .max_value     = CFG_LINK_HV_SCALE_MAX_VALUE,
         .getvalue_mask = CFG_LINK_HV_SCALE_GETMASK
     },
-    .value_string = &ScaleVHLink
+    .value_string = (const char **) &ScaleVHLink
 };
 
 config_t deblur_mode_powercycle = {
@@ -87,7 +87,7 @@ config_t deblur_mode_powercycle = {
         .setflag_mask = CFG_DEBLUR_PC_DEFAULT_SETMASK,
         .clrflag_mask = CFG_DEBLUR_PC_DEFAULT_CLRMASK
     },
-    .value_string = &OffOn
+    .value_string = (const char **) &OffOn
 };
 
 config_t mode16bit_powercycle = {
@@ -98,7 +98,7 @@ config_t mode16bit_powercycle = {
         .setflag_mask = CFG_MODE16BIT_PC_DEFAULT_SETMASK,
         .clrflag_mask = CFG_MODE16BIT_PC_DEFAULT_CLRMASK
     },
-    .value_string = &OffOn
+    .value_string = (const char **) &OffOn
 };
 
 config_t igr_deblur = {
@@ -131,7 +131,7 @@ config_t fallbackmode = {
         .setflag_mask = CFG_FALBACK_SETMASK,
         .clrflag_mask = CFG_FALLBACK_CLRMASK
     },
-    .value_string = &FallbackRes
+    .value_string = (const char **) &FallbackRes
 };
 
 config_t scaling_steps = {
@@ -141,7 +141,7 @@ config_t scaling_steps = {
     .value_details = {
       .max_value = 1,
     },
-    .value_string = &ScaleSteps
+    .value_string = (const char **) &ScaleSteps
 };
 
 config_t region_selection = {
@@ -151,7 +151,7 @@ config_t region_selection = {
     .value_details = {
       .max_value = NUM_REGION_MODES,
     },
-    .value_string = &NTSCPAL_SEL
+    .value_string = (const char **) &NTSCPAL_SEL
 };
 
 config_t timing_selection = {
@@ -161,7 +161,7 @@ config_t timing_selection = {
     .value_details = {
       .max_value = NUM_TIMING_MODES,
     },
-    .value_string = &VTimingSel
+    .value_string = (const char **) &VTimingSel
 };
 
 config_t scaling_selection = {
@@ -181,7 +181,7 @@ config_t copy_direction = {
     .value_details = {
       .max_value = 1,
     },
-    .value_string = &CopyCfg
+    .value_string = (const char **) &CopyCfg
 };
 
 #endif /* CFG_INT_P_H_ */
