@@ -37,7 +37,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module n64adv2_ppu_top (
+module n64adv2_ppu_top #(
+  parameter osd_font_rom_version = "V1"
+) (
   // N64 Video Input
   N64_CLK_i,
   N64_nVRST_i,
@@ -80,7 +82,6 @@ module n64adv2_ppu_top (
   DRAM_nRAS,
   DRAM_nWE
 );
-
 
 `include "../lib/n64adv_cparams.vh"
 `include "../lib/n64adv_vparams.vh"
@@ -637,6 +638,7 @@ scanline_emu horizontal_scanline_emu_u (
 
 osd_injection #(
   .flavor("N64Adv2"),
+  .font_rom_version(osd_font_rom_version),
   .bits_per_color(color_width_o),
   .vcnt_width(11),
   .hcnt_width(12)

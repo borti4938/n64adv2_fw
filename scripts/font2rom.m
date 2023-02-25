@@ -2,7 +2,7 @@
 %
 % This file is part of the N64 RGB/YPbPr DAC project.
 %
-% Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
+% Copyright (C) 2015-2023 by Peter Bartmann <borti4938@gmail.com>
 %
 % N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -19,12 +19,17 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%#ok<*UNRCH>
+
 use_BRAM_implementation = 0;
 
 fileName = 'font_rom'; % file-name for verilog file (/wo extension)
 targetFolder = '../rtl/misc/';   % target folder for rom file
 
-load_font;
+% load_font;
+load_reduced_font;
+
+reduce_cases = 1;
 
 fid = fopen([fileName '.v'],'w');
 
@@ -33,7 +38,7 @@ fprintf(fid, ...
   '//\n' ...
   '// This file is part of the N64 RGB/YPbPr DAC project.\n' ...
   '//\n' ...
-  '// Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>\n' ...
+  '// Copyright (C) 2015-2023 by Peter Bartmann <borti4938@gmail.com>\n' ...
   '//\n' ...
   '// N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify\n' ...
   '// it under the terms of the GNU General Public License as published by\n' ...
@@ -114,8 +119,17 @@ if use_BRAM_implementation
   fprintf(fid,'      rddata <= font_mem[addr_r];\n');
 else
    fprintf(fid,'      case (addr_r)\n');
-   for idx = 1:length(font8x12)
-     fprintf(fid,'        %04d: rddata <= %03d;\n', idx-1, font8x12(idx));
+   if (reduce_cases == 0)
+     for idx = 1:length(font8x12)
+       fprintf(fid,'        %04d: rddata <= %03d;\n', idx-1, font8x12(idx));
+     end
+   else
+     for idx = 1:length(font8x12)
+       if font8x12(idx) > 0
+        fprintf(fid,'        %04d:    rddata <= %03d;\n', idx-1, font8x12(idx));
+       end
+     end
+     fprintf(fid,'        default: rddata <= 000;\n');
    end
    fprintf(fid,'    endcase\n');
 end

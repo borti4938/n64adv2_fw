@@ -98,6 +98,7 @@ module n64adv2_top (
 );
 
 `include "../lib/n64adv2_hw_cfg.vh"
+
 `include "../lib/n64adv_vparams.vh"
 `include "../lib/n64adv2_config.vh"
 
@@ -266,7 +267,7 @@ n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u(
 
 // picture processing unit
 
-n64adv2_ppu_top n64adv2_ppu_u(
+n64adv2_ppu_top #(font_rom_version) n64adv2_ppu_u(
   .N64_CLK_i(N64_CLK_w),
   .N64_nVRST_i(N64_nRST_w),
   .nVDSYNC_i(nVDSYNC_w),

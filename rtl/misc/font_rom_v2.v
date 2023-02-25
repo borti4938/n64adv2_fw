@@ -2,7 +2,7 @@
 //
 // This file is part of the N64 RGB/YPbPr DAC project.
 //
-// Copyright (C) 2015-2022 by Peter Bartmann <borti4938@gmail.com>
+// Copyright (C) 2015-2023 by Peter Bartmann <borti4938@gmail.com>
 //
 // N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -75,147 +75,9 @@ always @(posedge CLK or negedge nRST)
   end else begin
     lsb_addr_r <= char_addr[1:0];
     rden_r <= rden;
-
-    if (rden)
+  
+    if (rden) begin
       case ({char_line,char_addr[6:2]})
-        0000: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0001: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0002: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0003: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0004: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0005: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0006: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0007: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0008: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0009: begin
-            rddata_opt[0] <= 012;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0010: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0011: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0012: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0013: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0014: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0015: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0016: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0017: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0018: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0019: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0020: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0021: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0022: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
         0023: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 000;
@@ -228,117 +90,27 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0025: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0026: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0027: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0028: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0029: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0030: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0031: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0032: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 126;
-            rddata_opt[3] <= 000;
-          end
-        0033: begin
-            rddata_opt[0] <= 008;
-            rddata_opt[1] <= 024;
-            rddata_opt[2] <= 024;
-            rddata_opt[3] <= 000;
-          end
         0034: begin
             rddata_opt[0] <= 000;
-            rddata_opt[1] <= 028;
-            rddata_opt[2] <= 028;
-            rddata_opt[3] <= 124;
-          end
-        0035: begin
-            rddata_opt[0] <= 060;
             rddata_opt[1] <= 000;
-            rddata_opt[2] <= 254;
+            rddata_opt[2] <= 028;
             rddata_opt[3] <= 000;
           end
         0036: begin
             rddata_opt[0] <= 064;
             rddata_opt[1] <= 001;
-            rddata_opt[2] <= 024;
-            rddata_opt[3] <= 102;
-          end
-        0037: begin
-            rddata_opt[0] <= 254;
-            rddata_opt[1] <= 126;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 024;
-          end
-        0038: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 024;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0039: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
         0040: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 012;
-            rddata_opt[2] <= 102;
-            rddata_opt[3] <= 054;
-          end
-        0041: begin
-            rddata_opt[0] <= 012;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 014;
-            rddata_opt[3] <= 012;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0042: begin
             rddata_opt[0] <= 048;
             rddata_opt[1] <= 006;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0043: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
@@ -438,89 +210,23 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0060: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0061: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0062: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 056;
-          end
-        0063: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 007;
-            rddata_opt[2] <= 206;
-            rddata_opt[3] <= 000;
-          end
-        0064: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 195;
-            rddata_opt[3] <= 034;
-          end
-        0065: begin
-            rddata_opt[0] <= 028;
-            rddata_opt[1] <= 060;
-            rddata_opt[2] <= 060;
-            rddata_opt[3] <= 255;
-          end
         0066: begin
-            rddata_opt[0] <= 255;
-            rddata_opt[1] <= 034;
-            rddata_opt[2] <= 034;
-            rddata_opt[3] <= 112;
-          end
-        0067: begin
-            rddata_opt[0] <= 102;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 000;
-            rddata_opt[2] <= 198;
-            rddata_opt[3] <= 024;
+            rddata_opt[2] <= 034;
+            rddata_opt[3] <= 000;
           end
         0068: begin
             rddata_opt[0] <= 096;
             rddata_opt[1] <= 003;
-            rddata_opt[2] <= 060;
-            rddata_opt[3] <= 102;
-          end
-        0069: begin
-            rddata_opt[0] <= 219;
-            rddata_opt[1] <= 198;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 060;
-          end
-        0070: begin
-            rddata_opt[0] <= 060;
-            rddata_opt[1] <= 024;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
-          end
-        0071: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 008;
-            rddata_opt[3] <= 127;
           end
         0072: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 030;
-            rddata_opt[2] <= 102;
-            rddata_opt[3] <= 054;
-          end
-        0073: begin
-            rddata_opt[0] <= 062;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 027;
-            rddata_opt[3] <= 012;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0074: begin
             rddata_opt[0] <= 024;
@@ -630,89 +336,47 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0092: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
         0093: begin
             rddata_opt[0] <= 004;
             rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0094: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 012;
-          end
-        0095: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 012;
-            rddata_opt[2] <= 091;
-            rddata_opt[3] <= 000;
-          end
-        0096: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 129;
-            rddata_opt[3] <= 119;
-          end
-        0097: begin
-            rddata_opt[0] <= 062;
-            rddata_opt[1] <= 060;
-            rddata_opt[2] <= 126;
-            rddata_opt[3] <= 000;
-          end
         0098: begin
             rddata_opt[0] <= 000;
-            rddata_opt[1] <= 093;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 093;
-            rddata_opt[3] <= 092;
+            rddata_opt[3] <= 000;
           end
         0099: begin
-            rddata_opt[0] <= 102;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 099;
-            rddata_opt[2] <= 254;
-            rddata_opt[3] <= 219;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0100: begin
             rddata_opt[0] <= 112;
             rddata_opt[1] <= 007;
-            rddata_opt[2] <= 126;
-            rddata_opt[3] <= 102;
-          end
-        0101: begin
-            rddata_opt[0] <= 219;
-            rddata_opt[1] <= 012;
             rddata_opt[2] <= 000;
-            rddata_opt[3] <= 126;
+            rddata_opt[3] <= 000;
           end
         0102: begin
-            rddata_opt[0] <= 126;
-            rddata_opt[1] <= 024;
+            rddata_opt[0] <= 000;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 012;
             rddata_opt[3] <= 024;
-          end
-        0103: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 036;
-            rddata_opt[2] <= 008;
-            rddata_opt[3] <= 127;
           end
         0104: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 030;
-            rddata_opt[2] <= 102;
-            rddata_opt[3] <= 127;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0105: begin
-            rddata_opt[0] <= 003;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 035;
-            rddata_opt[2] <= 027;
-            rddata_opt[3] <= 012;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0106: begin
             rddata_opt[0] <= 012;
@@ -822,89 +486,47 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0124: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
         0125: begin
             rddata_opt[0] <= 006;
             rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0126: begin
+        0130: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 012;
-          end
-        0127: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 012;
-            rddata_opt[2] <= 115;
-            rddata_opt[3] <= 008;
-          end
-        0128: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 165;
-            rddata_opt[3] <= 127;
-          end
-        0129: begin
-            rddata_opt[0] <= 127;
-            rddata_opt[1] <= 255;
-            rddata_opt[2] <= 255;
+            rddata_opt[2] <= 069;
             rddata_opt[3] <= 000;
           end
-        0130: begin
-            rddata_opt[0] <= 255;
-            rddata_opt[1] <= 085;
-            rddata_opt[2] <= 069;
-            rddata_opt[3] <= 078;
-          end
         0131: begin
-            rddata_opt[0] <= 102;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 054;
-            rddata_opt[2] <= 198;
-            rddata_opt[3] <= 126;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0132: begin
             rddata_opt[0] <= 124;
             rddata_opt[1] <= 031;
-            rddata_opt[2] <= 024;
-            rddata_opt[3] <= 102;
-          end
-        0133: begin
-            rddata_opt[0] <= 219;
-            rddata_opt[1] <= 060;
             rddata_opt[2] <= 000;
-            rddata_opt[3] <= 024;
+            rddata_opt[3] <= 000;
           end
         0134: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 024;
+            rddata_opt[0] <= 000;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 006;
             rddata_opt[3] <= 048;
-          end
-        0135: begin
-            rddata_opt[0] <= 003;
-            rddata_opt[1] <= 102;
-            rddata_opt[2] <= 028;
-            rddata_opt[3] <= 062;
           end
         0136: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 030;
-            rddata_opt[2] <= 036;
-            rddata_opt[3] <= 054;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0137: begin
-            rddata_opt[0] <= 003;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 051;
-            rddata_opt[2] <= 014;
-            rddata_opt[3] <= 006;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0138: begin
             rddata_opt[0] <= 006;
@@ -1030,72 +652,42 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[0] <= 099;
             rddata_opt[1] <= 102;
             rddata_opt[2] <= 063;
-            rddata_opt[3] <= 006;
-          end
-        0159: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 024;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 028;
-          end
-        0160: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 129;
-            rddata_opt[3] <= 127;
-          end
-        0161: begin
-            rddata_opt[0] <= 127;
-            rddata_opt[1] <= 231;
-            rddata_opt[2] <= 255;
             rddata_opt[3] <= 000;
           end
         0162: begin
             rddata_opt[0] <= 000;
-            rddata_opt[1] <= 093;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 069;
-            rddata_opt[3] <= 031;
+            rddata_opt[3] <= 000;
           end
         0163: begin
-            rddata_opt[0] <= 060;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 028;
-            rddata_opt[2] <= 198;
-            rddata_opt[3] <= 231;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0164: begin
             rddata_opt[0] <= 127;
             rddata_opt[1] <= 127;
-            rddata_opt[2] <= 024;
-            rddata_opt[3] <= 102;
-          end
-        0165: begin
-            rddata_opt[0] <= 222;
-            rddata_opt[1] <= 102;
             rddata_opt[2] <= 000;
-            rddata_opt[3] <= 024;
+            rddata_opt[3] <= 000;
           end
         0166: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 024;
+            rddata_opt[0] <= 000;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 127;
             rddata_opt[3] <= 127;
-          end
-        0167: begin
-            rddata_opt[0] <= 003;
-            rddata_opt[1] <= 255;
-            rddata_opt[2] <= 028;
-            rddata_opt[3] <= 062;
           end
         0168: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 012;
             rddata_opt[2] <= 000;
-            rddata_opt[3] <= 054;
+            rddata_opt[3] <= 000;
           end
         0169: begin
-            rddata_opt[0] <= 030;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 024;
-            rddata_opt[2] <= 095;
+            rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
         0170: begin
@@ -1222,72 +814,42 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[0] <= 054;
             rddata_opt[1] <= 102;
             rddata_opt[2] <= 049;
-            rddata_opt[3] <= 003;
-          end
-        0191: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 048;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 054;
-          end
-        0192: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 189;
-            rddata_opt[3] <= 127;
-          end
-        0193: begin
-            rddata_opt[0] <= 062;
-            rddata_opt[1] <= 231;
-            rddata_opt[2] <= 126;
             rddata_opt[3] <= 000;
           end
         0194: begin
             rddata_opt[0] <= 000;
-            rddata_opt[1] <= 077;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 069;
-            rddata_opt[3] <= 051;
+            rddata_opt[3] <= 000;
           end
         0195: begin
-            rddata_opt[0] <= 024;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 028;
-            rddata_opt[2] <= 198;
-            rddata_opt[3] <= 231;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0196: begin
             rddata_opt[0] <= 124;
             rddata_opt[1] <= 031;
-            rddata_opt[2] <= 024;
+            rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0197: begin
-            rddata_opt[0] <= 216;
-            rddata_opt[1] <= 102;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 024;
-          end
         0198: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 024;
+            rddata_opt[0] <= 000;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 006;
             rddata_opt[3] <= 048;
-          end
-        0199: begin
-            rddata_opt[0] <= 003;
-            rddata_opt[1] <= 102;
-            rddata_opt[2] <= 062;
-            rddata_opt[3] <= 028;
           end
         0200: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 012;
             rddata_opt[2] <= 000;
-            rddata_opt[3] <= 054;
+            rddata_opt[3] <= 000;
           end
         0201: begin
-            rddata_opt[0] <= 048;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 012;
-            rddata_opt[2] <= 123;
+            rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
         0202: begin
@@ -1414,72 +976,36 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[0] <= 028;
             rddata_opt[1] <= 102;
             rddata_opt[2] <= 024;
-            rddata_opt[3] <= 006;
-          end
-        0223: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 024;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 099;
-          end
-        0224: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 153;
-            rddata_opt[3] <= 062;
-          end
-        0225: begin
-            rddata_opt[0] <= 028;
-            rddata_opt[1] <= 024;
-            rddata_opt[2] <= 024;
             rddata_opt[3] <= 000;
           end
         0226: begin
             rddata_opt[0] <= 000;
-            rddata_opt[1] <= 085;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 093;
-            rddata_opt[3] <= 051;
+            rddata_opt[3] <= 000;
           end
         0227: begin
-            rddata_opt[0] <= 126;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 054;
-            rddata_opt[2] <= 230;
-            rddata_opt[3] <= 126;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0228: begin
             rddata_opt[0] <= 112;
             rddata_opt[1] <= 007;
-            rddata_opt[2] <= 126;
+            rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0229: begin
-            rddata_opt[0] <= 216;
-            rddata_opt[1] <= 060;
-            rddata_opt[2] <= 127;
-            rddata_opt[3] <= 126;
-          end
         0230: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 126;
+            rddata_opt[0] <= 000;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 012;
             rddata_opt[3] <= 024;
           end
-        0231: begin
-            rddata_opt[0] <= 127;
-            rddata_opt[1] <= 036;
-            rddata_opt[2] <= 062;
-            rddata_opt[3] <= 028;
-          end
-        0232: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 127;
-          end
         0233: begin
-            rddata_opt[0] <= 048;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 006;
-            rddata_opt[2] <= 051;
+            rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
         0234: begin
@@ -1606,72 +1132,36 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[0] <= 028;
             rddata_opt[1] <= 102;
             rddata_opt[2] <= 006;
-            rddata_opt[3] <= 012;
-          end
-        0255: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 012;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 099;
-          end
-        0256: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 195;
-            rddata_opt[3] <= 028;
-          end
-        0257: begin
-            rddata_opt[0] <= 008;
-            rddata_opt[1] <= 024;
-            rddata_opt[2] <= 024;
             rddata_opt[3] <= 000;
           end
         0258: begin
             rddata_opt[0] <= 000;
-            rddata_opt[1] <= 034;
+            rddata_opt[1] <= 000;
             rddata_opt[2] <= 034;
-            rddata_opt[3] <= 051;
+            rddata_opt[3] <= 000;
           end
         0259: begin
-            rddata_opt[0] <= 024;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 099;
-            rddata_opt[2] <= 231;
-            rddata_opt[3] <= 219;
+            rddata_opt[2] <= 000;
+            rddata_opt[3] <= 000;
           end
         0260: begin
             rddata_opt[0] <= 096;
             rddata_opt[1] <= 003;
-            rddata_opt[2] <= 060;
-            rddata_opt[3] <= 102;
-          end
-        0261: begin
-            rddata_opt[0] <= 216;
-            rddata_opt[1] <= 048;
-            rddata_opt[2] <= 127;
-            rddata_opt[3] <= 060;
-          end
-        0262: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 060;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
-          end
-        0263: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 127;
-            rddata_opt[3] <= 008;
           end
         0264: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 012;
             rddata_opt[2] <= 000;
-            rddata_opt[3] <= 054;
+            rddata_opt[3] <= 000;
           end
         0265: begin
-            rddata_opt[0] <= 031;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 051;
-            rddata_opt[2] <= 059;
+            rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
         0266: begin
@@ -1798,72 +1288,30 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[0] <= 054;
             rddata_opt[1] <= 060;
             rddata_opt[2] <= 035;
-            rddata_opt[3] <= 012;
-          end
-        0287: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 012;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 127;
-          end
-        0288: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 255;
-            rddata_opt[2] <= 126;
-            rddata_opt[3] <= 008;
-          end
-        0289: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 126;
-            rddata_opt[2] <= 126;
             rddata_opt[3] <= 000;
           end
         0290: begin
             rddata_opt[0] <= 000;
-            rddata_opt[1] <= 028;
-            rddata_opt[2] <= 028;
-            rddata_opt[3] <= 030;
-          end
-        0291: begin
-            rddata_opt[0] <= 024;
             rddata_opt[1] <= 000;
-            rddata_opt[2] <= 103;
-            rddata_opt[3] <= 024;
+            rddata_opt[2] <= 028;
+            rddata_opt[3] <= 000;
           end
         0292: begin
             rddata_opt[0] <= 064;
             rddata_opt[1] <= 001;
-            rddata_opt[2] <= 024;
-            rddata_opt[3] <= 102;
-          end
-        0293: begin
-            rddata_opt[0] <= 216;
-            rddata_opt[1] <= 099;
-            rddata_opt[2] <= 127;
-            rddata_opt[3] <= 024;
-          end
-        0294: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 024;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
-          end
-        0295: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 127;
-            rddata_opt[3] <= 008;
           end
         0296: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 012;
             rddata_opt[2] <= 000;
-            rddata_opt[3] <= 054;
+            rddata_opt[3] <= 000;
           end
         0297: begin
-            rddata_opt[0] <= 012;
+            rddata_opt[0] <= 000;
             rddata_opt[1] <= 049;
-            rddata_opt[2] <= 110;
+            rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
         0298: begin
@@ -1990,94 +1438,10 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[0] <= 099;
             rddata_opt[1] <= 048;
             rddata_opt[2] <= 063;
-            rddata_opt[3] <= 056;
-          end
-        0319: begin
-            rddata_opt[0] <= 024;
-            rddata_opt[1] <= 007;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0320: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0321: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0322: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0323: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 003;
-            rddata_opt[3] <= 000;
-          end
-        0324: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0325: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 126;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 126;
-          end
-        0326: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0327: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0328: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0329: begin
-            rddata_opt[0] <= 012;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0330: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
         0331: begin
             rddata_opt[0] <= 006;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0332: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0333: begin
-            rddata_opt[0] <= 000;
             rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
@@ -2088,63 +1452,9 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 012;
           end
-        0335: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0336: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0337: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0338: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0339: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
         0340: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 120;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0341: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0342: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0343: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 255;
-          end
-        0344: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
@@ -2160,183 +1470,15 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[2] <= 051;
             rddata_opt[3] <= 000;
           end
-        0347: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
         0348: begin
             rddata_opt[0] <= 006;
             rddata_opt[1] <= 048;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0349: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
         0350: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 024;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0351: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0352: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0353: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0354: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0355: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0356: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0357: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0358: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0359: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0360: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0361: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0362: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0363: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0364: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0365: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0366: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0367: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0368: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0369: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0370: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0371: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0372: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0373: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0374: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0375: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0376: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
@@ -2352,21 +1494,9 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[2] <= 030;
             rddata_opt[3] <= 000;
           end
-        0379: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
         0380: begin
             rddata_opt[0] <= 015;
             rddata_opt[1] <= 120;
-            rddata_opt[2] <= 000;
-            rddata_opt[3] <= 000;
-          end
-        0381: begin
-            rddata_opt[0] <= 000;
-            rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
@@ -2376,14 +1506,16 @@ always @(posedge CLK or negedge nRST)
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-        0383: begin
+        default: begin
             rddata_opt[0] <= 000;
             rddata_opt[1] <= 000;
             rddata_opt[2] <= 000;
             rddata_opt[3] <= 000;
           end
-    endcase
-  if (rden_r)
-    rddata <= rddata_opt[lsb_addr_r];  end
+      endcase
+    end
+    if (rden_r)
+      rddata <= rddata_opt[lsb_addr_r];
+    end
 
 endmodule

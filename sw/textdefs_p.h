@@ -46,7 +46,6 @@
 #define VD_480I_OVERLAY_V_OFFSET  5
 #define VD_240P_OVERLAY_H_OFFSET  7
 
-#define COPYRIGHT_SIGN          0x0A
 #define COPYRIGHT_H_OFFSET      (VD_WIDTH - 14)
 #define COPYRIGHT_V_OFFSET      0
 #define COPYRIGHT_SIGN_H_OFFSET (COPYRIGHT_H_OFFSET - 2)
@@ -56,8 +55,6 @@
 
 #define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 19)
 #define VERSION_V_OFFSET (OVERLAY_V_OFFSET +  4)
-
-#define CHECKBOX_TICK 0x0D
 
 #define  BNT_FCT_H_OFFSET 27
 #define  BNT_FCT_V_OFFSET (VD_TXT_WIDTH - 1)
@@ -438,7 +435,8 @@ const char *ScaleVHLink[] = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)
 
 const char *ColorSpace[] = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
 
-const char *CopyCfg[] = {"NTSC->PAL","PAL->NTSC"};
+//const char *CopyCfg[] __ufmdata_section__ = {"NTSC->PAL","PAL->NTSC"};
+const char *CopyCfg[] __ufmdata_section__ = {"NTSC  PAL","PAL  NTSC"};
 const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521","N64Adv2_20220729"};
 
 #endif /* MENU_TEXT_TEXTDEFS_P_H_ */

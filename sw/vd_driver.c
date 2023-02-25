@@ -62,7 +62,7 @@ void vd_clear_area_local(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, al
   alt_u8 horiz_offset, vert_offset;
   for (horiz_offset = horiz_offset_start; horiz_offset<=horiz_offset_stop; horiz_offset++)
     for (vert_offset = vert_offset_start; vert_offset<=vert_offset_stop; vert_offset++)
-      vd_print_char_local(horiz_offset,vert_offset, BACKGROUNDCOLOR_STANDARD, FONTCOLOR_NON, 0x00);
+      vd_print_char_local(horiz_offset,vert_offset, BACKGROUNDCOLOR_STANDARD, FONTCOLOR_NON, EMPTY);
 };
 
 int vd_print_string_local(alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 background, alt_u8 color, const char *string, alt_u8 max_linebreaks)
