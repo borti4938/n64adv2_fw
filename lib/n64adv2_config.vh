@@ -36,7 +36,8 @@
 
   // configuration as defined in n64adv_controller.v (must match software)
   //  wire [ 7:0] SysConfigSet3; (Audio)
-  //    [ 7: 0] {audio_filter_bypass,audio_amp (5bits),audio_swap_lr,audio_spdif_en}
+  //    sw: [ 7: 0] {audio_filter_bypass,audio_amp (5bits),audio_swap_lr,audio_spdif_en}
+  //    hw: [ 8: 0] {audio_filter_bypass,audio_amp (5bits),audio_swap_lr,audio_spdif_en,hdmi_en}
   //  wire [31:0] SysConfigSet2; (Scanlines)
   //    [31:30] {(2bits reserved)}
   //    [29:17] vertical:   {Sl_thickness (2bit),Sl_profile (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits)}
