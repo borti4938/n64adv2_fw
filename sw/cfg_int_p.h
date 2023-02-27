@@ -134,6 +134,17 @@ config_t fallbackmode = {
     .value_string = (const char **) &FallbackRes
 };
 
+config_t autosave = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_AUTOSAVE_OFFSET,
+    .cfg_type     = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_AUTOSAVE_SETMASK,
+        .clrflag_mask = CFG_AUTOSAVE_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
+
 config_t scaling_steps = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function

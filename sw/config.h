@@ -195,21 +195,22 @@ typedef struct {
 #define PREDEFINED_SCALE_STEPS  21
 
 // the overall masks
-#define INTCFG0_GETALL_MASK   0x000003FF
+#define INTCFG0_GETALL_MASK   0x000007FF
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x000000FF
 
 // internal cfg set 0
-#define CFG_COLORSPACE_OFFSET             8
-#define CFG_LIMITED_COLORSPACE_OFFSET     7
-#define CFG_LINK_HV_SCALE_OFFSET          5
-#define CFG_DEBLUR_PC_DEFAULT_OFFSET      4
-#define CFG_MODE16BIT_PC_DEFAULT_OFFSET   3
-#define CFG_DEBLUR_IGR_OFFSET             2
-#define CFG_MODE16BIT_IGR_OFFSET          1
-#define CFG_FALLBACK_OFFSET               0
+#define CFG_COLORSPACE_OFFSET             9
+#define CFG_LIMITED_COLORSPACE_OFFSET     8
+#define CFG_LINK_HV_SCALE_OFFSET          6
+#define CFG_DEBLUR_PC_DEFAULT_OFFSET      5
+#define CFG_MODE16BIT_PC_DEFAULT_OFFSET   4
+#define CFG_DEBLUR_IGR_OFFSET             3
+#define CFG_MODE16BIT_IGR_OFFSET          2
+#define CFG_FALLBACK_OFFSET               1
+#define CFG_AUTOSAVE_OFFSET               0
 
 #define CFG_COLORSPACE_GETMASK              (3<<CFG_COLORSPACE_OFFSET)
   #define CFG_COLORSPACE_RSTMASK              (INTCFG0_GETALL_MASK & ~CFG_COLORSPACE_GETMASK)
@@ -235,6 +236,9 @@ typedef struct {
 #define CFG_FALBACK_GETMASK                 (1<<CFG_FALLBACK_OFFSET)
   #define CFG_FALBACK_SETMASK                 (1<<CFG_FALLBACK_OFFSET)
   #define CFG_FALLBACK_CLRMASK                (INTCFG0_GETALL_MASK & ~CFG_FALBACK_SETMASK)
+#define CFG_AUTOSAVE_GETMASK                (1<<CFG_AUTOSAVE_OFFSET)
+  #define CFG_AUTOSAVE_SETMASK                (1<<CFG_AUTOSAVE_OFFSET)
+  #define CFG_AUTOSAVE_CLRMASK                (INTCFG0_GETALL_MASK & ~CFG_AUTOSAVE_SETMASK)
 
 
 // external cfg set 0
@@ -539,7 +543,7 @@ extern configuration_t sysconfig;
 extern config_t color_space, limited_colorspace, link_hv_scale,
                 deblur_mode_powercycle, mode16bit_powercycle,
                 igr_deblur, igr_16bitmode,
-                fallbackmode;
+                fallbackmode, autosave;
 extern config_t scaling_steps, region_selection,
                 timing_selection, scaling_selection,
                 copy_direction;

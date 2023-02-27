@@ -332,6 +332,9 @@ int main()
     cfg_load_scaling_word(scaling_n64adv);
     cfg_apply_to_logic();
 
+    if ((todo == MENU_CLOSE) && cfg_get_value(&autosave,0))
+      cfg_save_to_flash(0);
+
     if (!periphal_state.si5356_i2c_up)
       periphal_state.si5356_i2c_up = check_si5356() == 0;
     else

@@ -175,7 +175,8 @@ An empty default value means that this value is not affected by loading defaults
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Save** | | Saves your current configuration |
+| **Save - Autosave ** | | Saves your current configuration everytime you close the menu if enabled |
+| **Save - Configuration now ** | | Saves your current configuration |
 | **Load - Last Configuration** | | Loads your last saved configuration |
 | **Load - 480p Defaults** | | Loads 480p/576p defaulted configuration |
 | **Load - 1080p Defaults** | | Loads 1080p defaulted configuration |
