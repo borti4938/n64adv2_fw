@@ -463,7 +463,7 @@ always @(posedge VCLK_Tx) begin
     cfg_vSL_str       <= ((ConfigSet_resynced[`vSL_str_slice]+8'h01)<<4)-1'b1;
   end
   cfg_vSL_en         <= ConfigSet_resynced[`vSL_en_bit];
-  cfg_sl_per_channel <= ConfigSet_resynced[`SL_per_Channel_bit];
+  cfg_sl_per_channel <= ~ConfigSet_resynced[`SL_per_Channel_bit];
   
   setVideoSYNCactive(cfg_videomode,cfg_active_vsync,cfg_active_hsync);
   setOSDConfig(cfg_videomode,cfg_osd_vscale,cfg_osd_hscale,cfg_osd_voffset,cfg_osd_hoffset);

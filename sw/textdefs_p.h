@@ -408,7 +408,7 @@ const char *FallbackRes[]           = {"1080p","480p/576p"};
 const char *DeInterModes[]          = {"Frame Drop","Bob","Weave"};
 const char *InterpModes[]           = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};
 const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};
-const char *ScanlinesCalcBase[]     = {"Luma based","Per color based"};
+const char *ScanlinesCalcBase[]     = {"Per color based","Luma based"};
 const char *ScanlinesThickness[]    = {"Adaptive","Thin","Normal","Thick"};
 const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular"};
 
