@@ -29,8 +29,9 @@
 
 
 module osd_injection #(
-  parameter flavor = "N64Adv", // choose either N64Adv or N64Adv2
-  parameter font_rom_version = "V1",
+  parameter flavor = "N64Adv",                // choose either N64Adv or N64Adv2
+  parameter font_rom_version = "V1",          // V1 or V2
+  parameter window_background = "Darkblue",   // allowed/implemented: White, Grey, Black, Darkblue
   parameter bits_per_color = color_width_i,
   parameter vcnt_width = $clog2(`TOTAL_LINES_PAL_LX1),
   parameter hcnt_width = $clog2(`PIXEL_PER_LINE_MAX)
@@ -65,7 +66,7 @@ module osd_injection #(
 
 input OSDCLK;
 output reg OSD_VSync;
-input [24:0] OSDWrVector;
+input [20:0] OSDWrVector;
 input [ 1:0] OSDInfo;
 
 input VCLK;
@@ -109,21 +110,14 @@ generate
     localparam [`VDATA_I_CO_SLICE] osd_logo_color            = `OSD_LOGO_COLOR;
     localparam [`VDATA_O_CO_SLICE] separation_line_color     = `SEPARATION_LINE_COLOR;
     localparam [`VDATA_I_CO_SLICE] font_color_default        = `OSD_TXT_COLOR_WHITE;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_black       = `OSD_TXT_COLOR_BLACK;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_grey        = `OSD_TXT_COLOR_GREY;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_lightgrey   = `OSD_TXT_COLOR_LIGHTGREY;
     localparam [`VDATA_I_CO_SLICE] osd_txt_color_white       = `OSD_TXT_COLOR_WHITE;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_red         = `OSD_TXT_COLOR_RED;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_green       = `OSD_TXT_COLOR_GREEN;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_blue        = `OSD_TXT_COLOR_BLUE;
+    localparam [`VDATA_I_CO_SLICE] osd_txt_color_grey        = `OSD_TXT_COLOR_GREY;
     localparam [`VDATA_I_CO_SLICE] osd_txt_color_yellow      = `OSD_TXT_COLOR_YELLOW;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_cyan        = `OSD_TXT_COLOR_CYAN;
+    localparam [`VDATA_I_CO_SLICE] osd_txt_color_navajowhite = `OSD_TXT_COLOR_NAVAJOWHITE;
+    localparam [`VDATA_I_CO_SLICE] osd_txt_color_green       = `OSD_TXT_COLOR_GREEN;
     localparam [`VDATA_I_CO_SLICE] osd_txt_color_magenta     = `OSD_TXT_COLOR_MAGENTA;
     localparam [`VDATA_I_CO_SLICE] osd_txt_color_darkorange  = `OSD_TXT_COLOR_DARKORANGE;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_darkmagenta = `OSD_TXT_COLOR_DARKMAGENTA;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_tomato      = `OSD_TXT_COLOR_TOMATO;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_navajowhite = `OSD_TXT_COLOR_NAVAJOWHITE;
-    localparam [`VDATA_I_CO_SLICE] osd_txt_color_darkgold    = `OSD_TXT_COLOR_DARKGOLD;
+    localparam [`VDATA_I_CO_SLICE] osd_txt_color_red         = `OSD_TXT_COLOR_RED;
   end else begin
     localparam [1023:0] n64adv_logo = 1024'h000000FE7003FFFFB9F338FF981C3EE60000008148060810654EA5827433E19500000079C805CF9F2340E57204204C8D000000C3A4054F91214ED35274124C850000009FA4054C11284ED3527412E0A1000000997205CF9F2C65B9732C11BCB100000043520208106A53A982981321A90000003ECE01FFFFD9CE677E700E1F67;
     
@@ -132,21 +126,14 @@ generate
     localparam [`VDATA_O_CO_SLICE] osd_logo_color            = `OSD_LOGO_COLOR_24;
     localparam [`VDATA_O_CO_SLICE] separation_line_color     = `SEPARATION_LINE_COLOR_24;
     localparam [`VDATA_O_CO_SLICE] font_color_default        = `OSD_TXT_COLOR_WHITE_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_black       = `OSD_TXT_COLOR_BLACK_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_grey        = `OSD_TXT_COLOR_GREY_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_lightgrey   = `OSD_TXT_COLOR_LIGHTGREY_24;
     localparam [`VDATA_O_CO_SLICE] osd_txt_color_white       = `OSD_TXT_COLOR_WHITE_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_red         = `OSD_TXT_COLOR_RED_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_green       = `OSD_TXT_COLOR_GREEN_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_blue        = `OSD_TXT_COLOR_BLUE_24;
+    localparam [`VDATA_O_CO_SLICE] osd_txt_color_grey        = `OSD_TXT_COLOR_GREY_24;
     localparam [`VDATA_O_CO_SLICE] osd_txt_color_yellow      = `OSD_TXT_COLOR_YELLOW_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_cyan        = `OSD_TXT_COLOR_CYAN_24;
+    localparam [`VDATA_O_CO_SLICE] osd_txt_color_navajowhite = `OSD_TXT_COLOR_NAVAJOWHITE_24;
+    localparam [`VDATA_O_CO_SLICE] osd_txt_color_green       = `OSD_TXT_COLOR_GREEN_24;
     localparam [`VDATA_O_CO_SLICE] osd_txt_color_magenta     = `OSD_TXT_COLOR_MAGENTA_24;
     localparam [`VDATA_O_CO_SLICE] osd_txt_color_darkorange  = `OSD_TXT_COLOR_DARKORANGE_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_darkmagenta = `OSD_TXT_COLOR_DARKMAGENTA_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_tomato      = `OSD_TXT_COLOR_TOMATO_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_navajowhite = `OSD_TXT_COLOR_NAVAJOWHITE_24;
-    localparam [`VDATA_O_CO_SLICE] osd_txt_color_darkgold    = `OSD_TXT_COLOR_DARKGOLD_24;
+    localparam [`VDATA_O_CO_SLICE] osd_txt_color_red         = `OSD_TXT_COLOR_RED_24;
   end
 endgenerate
 
@@ -164,20 +151,22 @@ localparam osd_letter_hcnt_width = $clog2(`MAX_CHARS_PER_ROW+1);
 localparam font_hcnt_width = $clog2(`OSD_FONT_WIDTH+1);
 localparam txt_hcnt_width = osd_letter_hcnt_width + font_hcnt_width;
 
-localparam bg_color_sel_width = 2;
-localparam bg_color_width = 9; // three bits per channel (do not change this)
-localparam [bg_color_width-1:0] window_bg_color_default = `OSD_WINDOW_BGCOLOR_DARKBLUE;
-
-localparam font_color_sel_width = 4;
-
-localparam color_mem_width = bg_color_sel_width + font_color_sel_width;
+localparam font_color_sel_width = 3;
+localparam bg_color_width = 9;
 localparam txt_mem_width = 7;
 
+generate
+  if      (window_background == "White") localparam [8:0] window_bg_color = `OSD_WINDOW_BGCOLOR_WHITE;
+  else if (window_background == "Grey")  localparam [8:0] window_bg_color = `OSD_WINDOW_BGCOLOR_GREY;
+  else if (window_background == "Black") localparam [8:0] window_bg_color = `OSD_WINDOW_BGCOLOR_BLACK;
+  else                                   localparam [8:0] window_bg_color = `OSD_WINDOW_BGCOLOR_DARKBLUE;
+endgenerate
 
-wire [                      1:0] vd_wrctrl_w       = OSDWrVector[24:23];
-wire [osd_letter_hcnt_width-1:0] vd_wrpage_w       = OSDWrVector[22:17];
-wire [osd_letter_vcnt_width-1:0] vd_wraddr_w       = OSDWrVector[16:13];
-wire [      color_mem_width-1:0] vd_color_wrdata_w = OSDWrVector[12: 7];
+
+wire                             vd_wrctrl_w       = OSDWrVector[   20];
+wire [osd_letter_hcnt_width-1:0] vd_wrpage_w       = OSDWrVector[19:14];
+wire [osd_letter_vcnt_width-1:0] vd_wraddr_w       = OSDWrVector[13:10];
+wire [ font_color_sel_width-1:0] vd_color_wrdata_w = OSDWrVector[ 9: 7];
 wire [        txt_mem_width-1:0] vd_txt_wrdata_w   = OSDWrVector[ 6: 0];
 
 wire show_osd_logo = OSDInfo[1];
@@ -191,21 +180,19 @@ wire VSYNC_cur = vdata_i[3*bits_per_color+3];
 
 wire [osd_letter_hcnt_width-1:0] txt_xrdaddr;
 wire [osd_letter_vcnt_width-1:0] txt_yrdaddr;
-wire [bg_color_sel_width-1:0] bg_color_sel_tmp;
 wire [font_color_sel_width-1:0] font_color_sel_tmp;
 wire [txt_mem_width-1:0] font_char_select;
 
 wire [`OSD_FONT_WIDTH:0] font_lineword_tmp;
 
-wire [bg_color_width-1:0] window_bg_color_tmp;
 wire [3*bits_per_color-1:0] txt_color_tmp; 
 
 
 // regs
-reg [2:0] vd_wrcolor, vd_wrtxt;
-reg [osd_letter_hcnt_width-1:0] vd_wrcolor_page, vd_wrtxt_page;
-reg [osd_letter_vcnt_width-1:0] vd_wrcolor_addr, vd_wrtxt_addr;
-reg [      color_mem_width-1:0] vd_wrcolor_data;
+reg [2:0] vd_wrtxt;
+reg [osd_letter_hcnt_width-1:0] vd_wrtxt_page;
+reg [osd_letter_vcnt_width-1:0] vd_wrtxt_addr;
+reg [ font_color_sel_width-1:0] vd_wrcolor_data;
 reg [        txt_mem_width-1:0] vd_wrtxt_data;
 
 reg HSYNC_pre = 1'b0;
@@ -262,14 +249,12 @@ reg [7:1]        en_txtrd = 7'h0  /* synthesis ramstyle = "logic" */; // introdu
 reg [7:2]       en_fontrd = 6'h0  /* synthesis ramstyle = "logic" */; // read font
 
 
-reg [bg_color_sel_width-1:0] bg_color_sel = {bg_color_sel_width{1'b0}};
 reg [font_color_sel_width-1:0] font_color_sel = {font_color_sel_width{1'b0}};
 
 reg [font_hcnt_width+1:0] font_pixel_select_4x = {font_hcnt_width+2{1'b0}};
 reg [`OSD_FONT_WIDTH:0] font_lineword = {(`OSD_FONT_WIDTH+1){1'b0}};
 reg act_char_px = 1'b0;
 
-reg [bg_color_width-1:0] window_bg_color = window_bg_color_default;
 reg [3*bits_per_color-1:0] txt_color = font_color_default;
 
 
@@ -509,68 +494,41 @@ assign txt_yrdaddr = Y_txt_vcnt_msb;
 
 
 always @(posedge OSDCLK) begin
-  if (!vd_wrcolor[1] & vd_wrcolor[0]) begin // write new color data
-    vd_wrcolor[2] <= 1'b1;
-    vd_wrcolor_page <= vd_wrpage_w;
-    vd_wrcolor_addr <= vd_wraddr_w;
-    vd_wrcolor_data <= vd_color_wrdata_w;
-  end else begin
-    vd_wrcolor[2] <= 1'b0;
-  end
-  vd_wrcolor[1:0] <= {vd_wrcolor[0],vd_wrctrl_w[1]};
   if (!vd_wrtxt[1] & vd_wrtxt[0]) begin // write new txt data
     vd_wrtxt[2] <= 1'b1;
     vd_wrtxt_page <= vd_wrpage_w;
     vd_wrtxt_addr <= vd_wraddr_w;
+    vd_wrcolor_data <= vd_color_wrdata_w;
     vd_wrtxt_data <= vd_txt_wrdata_w;
   end else begin
     vd_wrtxt[2] <= 1'b0;
   end
-  vd_wrtxt[1:0] <= {vd_wrtxt[0],vd_wrctrl_w[0]};
+  vd_wrtxt[1:0] <= {vd_wrtxt[0],vd_wrctrl_w};
 end
 
 ram2port #(
   .num_of_pages(`MAX_CHARS_PER_ROW+1),
   .pagesize(`MAX_HDR_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_ROWS + 3),
-  .data_width(color_mem_width)
-) vd_color_u (
-  .wrCLK(OSDCLK),
-  .wren(vd_wrcolor[2]),
-  .wrpage(vd_wrcolor_page),
-  .wraddr(vd_wrcolor_addr),
-  .wrdata(vd_wrcolor_data),
-  .rdCLK(VCLK),
-  .rden(en_fontrd[2]),
-  .rdpage(txt_xrdaddr),
-  .rdaddr(txt_yrdaddr),
-  .rddata({bg_color_sel_tmp,font_color_sel_tmp})
-);
-
-ram2port #(
-  .num_of_pages(`MAX_CHARS_PER_ROW+1),
-  .pagesize(`MAX_HDR_ROWS + `MAX_TEXT_ROWS + `MAX_INFO_ROWS + 3),
-  .data_width(txt_mem_width)
+  .data_width(font_color_sel_width+txt_mem_width)
 ) vd_text_u (
   .wrCLK(OSDCLK),
   .wren(vd_wrtxt[2]),
   .wrpage(vd_wrtxt_page),
   .wraddr(vd_wrtxt_addr),
-  .wrdata(vd_wrtxt_data),
+  .wrdata({vd_wrcolor_data,vd_wrtxt_data}),
   .rdCLK(VCLK),
   .rden(en_fontrd[2]),
   .rdpage(txt_xrdaddr),
   .rdaddr(txt_yrdaddr),
-  .rddata(font_char_select)
+  .rddata({font_color_sel_tmp,font_char_select})
 );
 
 always @(posedge VCLK or negedge nVRST) // delay font selection according to memory delay of chars and color
                                         // use the fact that pixel stays constant for´four clock cycles
   if (!nVRST) begin
-    bg_color_sel <= {bg_color_sel_width{1'b0}};
     font_color_sel <= {font_color_sel_width{1'b0}};
   end else begin
     if (en_fontrd[4]) begin
-      bg_color_sel   <= bg_color_sel_tmp;
       font_color_sel <= font_color_sel_tmp;
     end
   end
@@ -598,28 +556,23 @@ generate
 endgenerate
 
 
-assign window_bg_color_tmp = (bg_color_sel == `OSD_BACKGROUND_WHITE) ? `OSD_WINDOW_BGCOLOR_WHITE   :
-                             (bg_color_sel == `OSD_BACKGROUND_GREY)  ? `OSD_WINDOW_BGCOLOR_GREY    :
-                             (bg_color_sel == `OSD_BACKGROUND_BLACK) ? `OSD_WINDOW_BGCOLOR_BLACK   :
-                                                                       `OSD_WINDOW_BGCOLOR_DARKBLUE;
-assign txt_color_tmp = (font_color_sel == `FONTCOLOR_BLACK)       ? osd_txt_color_black       :
-                       (font_color_sel == `FONTCOLOR_GREY)        ? osd_txt_color_grey        :
-                       (font_color_sel == `FONTCOLOR_LIGHTGREY)   ? osd_txt_color_lightgrey   :
-                       (font_color_sel == `FONTCOLOR_WHITE)       ? osd_txt_color_white       :
-                       (font_color_sel == `FONTCOLOR_RED)         ? osd_txt_color_red         :
-                       (font_color_sel == `FONTCOLOR_GREEN)       ? osd_txt_color_green       :
-                       (font_color_sel == `FONTCOLOR_BLUE)        ? osd_txt_color_blue        :
+//assign txt_color_tmp = (font_color_sel == `FONTCOLOR_WHITE)       ? osd_txt_color_white       :
+//                       (font_color_sel == `FONTCOLOR_GREY)        ? osd_txt_color_grey        :
+//                       (font_color_sel == `FONTCOLOR_YELLOW)      ? osd_txt_color_yellow      :
+//                       (font_color_sel == `FONTCOLOR_NAVAJOWHITE) ? osd_txt_color_navajowhite :
+//                       (font_color_sel == `FONTCOLOR_GREEN)       ? osd_txt_color_green       :
+//                       (font_color_sel == `FONTCOLOR_MAGENTA)     ? osd_txt_color_magenta     :
+//                       (font_color_sel == `FONTCOLOR_DARKORANGE)  ? osd_txt_color_darkorange  :
+//                       (font_color_sel == `FONTCOLOR_RED)         ? osd_txt_color_red         :
+//                                                                    font_color_default        ;
+assign txt_color_tmp = (font_color_sel == `FONTCOLOR_GREY)        ? osd_txt_color_grey        :
                        (font_color_sel == `FONTCOLOR_YELLOW)      ? osd_txt_color_yellow      :
-                       (font_color_sel == `FONTCOLOR_CYAN)        ? osd_txt_color_cyan        :
+                       (font_color_sel == `FONTCOLOR_NAVAJOWHITE) ? osd_txt_color_navajowhite :
+                       (font_color_sel == `FONTCOLOR_GREEN)       ? osd_txt_color_green       :
                        (font_color_sel == `FONTCOLOR_MAGENTA)     ? osd_txt_color_magenta     :
                        (font_color_sel == `FONTCOLOR_DARKORANGE)  ? osd_txt_color_darkorange  :
-                       (font_color_sel == `FONTCOLOR_TOMATO)      ? osd_txt_color_tomato      :
-                       (font_color_sel == `FONTCOLOR_DARKMAGENTA) ? osd_txt_color_darkmagenta :
-                       (font_color_sel == `FONTCOLOR_NAVAJOWHITE) ? osd_txt_color_navajowhite :
-                       (font_color_sel == `FONTCOLOR_DARKGOLD)    ? osd_txt_color_darkgold    :
+                       (font_color_sel == `FONTCOLOR_RED)         ? osd_txt_color_red         :
                                                                     font_color_default        ;
-
-
 
 
 always @(posedge VCLK or negedge nVRST)
@@ -627,7 +580,6 @@ always @(posedge VCLK or negedge nVRST)
     font_pixel_select_4x <= {font_hcnt_width+2{1'b0}};
     font_lineword <= {(`OSD_FONT_WIDTH+1){1'b0}};
     act_char_px <= 1'b0;
-    window_bg_color <= window_bg_color_default;
     txt_color = font_color_default;
   end else begin
     if (en_fontrd[6]) begin
@@ -641,12 +593,11 @@ always @(posedge VCLK or negedge nVRST)
     
     if (en_fontrd[6]) begin
       font_lineword <= font_lineword_tmp;
-      act_char_px <= (font_color_sel == `FONTCOLOR_NON) ? 1'b0 : font_lineword_tmp[0];
+      act_char_px <= font_lineword_tmp[0];
       txt_color <= txt_color_tmp;
     end else if (en_txtrd[6]) begin
       if (vdata_valid_L[6])
-        act_char_px <= (font_color_sel == `FONTCOLOR_NON) ? 1'b0 : font_lineword[font_pixel_select_4x[font_hcnt_width+1:2]];
-      window_bg_color <= !draw_logo[6] ? window_bg_color_tmp : window_bg_color_default;
+        act_char_px <= font_lineword[font_pixel_select_4x[font_hcnt_width+1:2]];
       txt_color <= txt_color_tmp;
     end
   end

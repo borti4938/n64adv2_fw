@@ -961,7 +961,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="2" />
+  <parameter name="width" value="1" />
  </module>
  <module name="vd_wrdata" kind="altera_avalon_pio" version="22.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
@@ -975,7 +975,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="23" />
+  <parameter name="width" value="20" />
  </module>
  <connection
    kind="avalon"

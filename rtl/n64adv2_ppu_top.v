@@ -38,7 +38,8 @@
 
 
 module n64adv2_ppu_top #(
-  parameter osd_font_rom_version = "V1"
+  parameter osd_font_rom_version = "V1",
+  parameter osd_window_color = "Darkblue"
 ) (
   // N64 Video Input
   N64_CLK_i,
@@ -102,7 +103,7 @@ input  [`PPUConfig_WordWidth-1:0] ConfigSet;
 input        SYS_CLK;
 
 output       OSD_VSync;
-input [24:0] OSDWrVector;
+input [20:0] OSDWrVector;
 input [ 1:0] OSDInfo;
 
 input scaler_nresync_i;
@@ -639,6 +640,7 @@ scanline_emu horizontal_scanline_emu_u (
 osd_injection #(
   .flavor("N64Adv2"),
   .font_rom_version(osd_font_rom_version),
+  .window_background(osd_window_color),
   .bits_per_color(color_width_o),
   .vcnt_width(11),
   .hcnt_width(12)

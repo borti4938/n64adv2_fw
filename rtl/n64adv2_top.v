@@ -177,7 +177,7 @@ wire [`APUConfig_WordWidth-1:0] APUConfigSet;
 wire [`PPU_State_Width-1:0] PPUState_w;
 wire [`PPUConfig_WordWidth-1:0] PPUConfigSet_w;
 wire OSD_VSync_w;
-wire [24:0] OSDWrVector_w;
+wire [20:0] OSDWrVector_w;
 wire [ 1:0] OSDInfo_w;
 
 wire HSYNC_o_w, VSYNC_o_w, DE_o_w;
@@ -267,7 +267,10 @@ n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u(
 
 // picture processing unit
 
-n64adv2_ppu_top #(font_rom_version) n64adv2_ppu_u(
+n64adv2_ppu_top #(
+  .osd_font_rom_version(osd_font_rom_version),
+  .osd_window_color(osd_window_color)
+) n64adv2_ppu_u(
   .N64_CLK_i(N64_CLK_w),
   .N64_nVRST_i(N64_nRST_w),
   .nVDSYNC_i(nVDSYNC_w),

@@ -92,7 +92,7 @@ input      [`PPU_State_Width-1:0] PPUState;
 output reg [`PPUConfig_WordWidth-1:0] PPUConfigSet;
 
 input             OSD_VSync;
-output reg [24:0] OSDWrVector;
+output reg [20:0] OSDWrVector;
 output reg [ 1:0] OSDInfo;
 
 input N64_CLK_i;
@@ -122,8 +122,8 @@ localparam ST_CTRL_RD  = 2'b10; // controller response
 
 // wires
 
-wire [ 1:0] vd_wrctrl_w;
-wire [22:0] vd_wrdata_w;
+wire        vd_wrctrl_w;
+wire [19:0] vd_wrdata_w;
 
 wire FallbackMode_resynced, FallbackMode_valid_resynced;
 wire [`PPU_State_Width:0] PPUState_resynced; // pal_pattern at MSB concat with PPU_state of input

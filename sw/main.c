@@ -268,7 +268,7 @@ int main()
         case RW_DONE:
         case RW_FAILED:
         case RW_ABORT:
-          vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[todo-RW_DONE],RW_Message[todo-RW_DONE]);
+          vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,RW_Message_FontColor[todo-RW_DONE],RW_Message[todo-RW_DONE]);
           message_cnt = RWM_SHOW_CNT;
           break;
         default:
@@ -361,7 +361,7 @@ int main()
     }
 
     if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
-      vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,RW_Message_FontColor[0],Unlock_1440p_Message);
+      vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,RW_Message_FontColor[0],Unlock_1440p_Message);
       message_cnt = RWM_SHOW_CNT;
     }
 

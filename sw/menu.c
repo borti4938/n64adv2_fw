@@ -443,38 +443,38 @@ void print_current_timing_mode()
 {
   vd_clear_info_area(0,COPYRIGHT_SIGN_H_OFFSET-1,0,0);
   sprintf(szText,"Current:");
-  vd_print_string(VD_INFO,0, 0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+  vd_print_string(VD_INFO,0, 0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
   val2txt_scale_sel_func(scaling_n64adv);
-  vd_print_string(VD_INFO,9,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+  vd_print_string(VD_INFO,9,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }
 
 void print_ctrl_data() {
   sprintf(szText,"Ctrl.Data: 0x%08x",(uint) ctrl_data);
   vd_clear_info_area(0,COPYRIGHT_SIGN_H_OFFSET-1,0,0);
-  vd_print_string(VD_INFO,0,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+  vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }
 
 void print_cr_info() {
   vd_clear_info_area(COPYRIGHT_SIGN_H_OFFSET,VD_WIDTH-1,0,0);
-  vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,copyright_note);
-  vd_print_char(VD_INFO,COPYRIGHT_SIGN_H_OFFSET,COPYRIGHT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,(char) COPYRIGHT_SIGN);
+  vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,copyright_note);
+  vd_print_char(VD_INFO,COPYRIGHT_SIGN_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,(char) COPYRIGHT_SIGN);
 }
 
 void print_fw_version()
 {
   alt_u16 ext_fw = (alt_u16) get_pcb_version();
-  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,pcb_rev[ext_fw]);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET,FONTCOLOR_WHITE,pcb_rev[ext_fw]);
 
   sprintf(szText,"0x%08x%08x",(uint) get_chip_id(1),(uint) get_chip_id(0));
-  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,FONTCOLOR_WHITE,&szText[0]);
 
   ext_fw = get_hdl_version();
   sprintf(szText,"%1d.%02d",((ext_fw & HDL_FW_GETMAIN_MASK) >> HDL_FW_MAIN_OFFSET),
                             ((ext_fw & HDL_FW_GETSUB_MASK) >> HDL_FW_SUB_OFFSET));
-  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+2,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+2,FONTCOLOR_WHITE,&szText[0]);
 
   sprintf(szText,"%1d.%02d",SW_FW_MAIN,SW_FW_SUB);
-  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+3,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+3,FONTCOLOR_WHITE,&szText[0]);
 }
 
 void update_vmode_menu()
@@ -705,13 +705,13 @@ void print_overlay(menu_t* current_menu)
   vd_clear_hdr();
   vd_clear_txt();
 
-  if (current_menu->header) vd_wr_hdr(BACKGROUNDCOLOR_STANDARD,FONTCOLOR_DARKORANGE,*current_menu->header);
-  vd_print_string(VD_TEXT,current_menu->body.hoffset,0,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,*current_menu->body.text);
+  if (current_menu->header) vd_wr_hdr(FONTCOLOR_DARKORANGE,*current_menu->header);
+  vd_print_string(VD_TEXT,current_menu->body.hoffset,0,FONTCOLOR_WHITE,*current_menu->body.text);
 
 
   #ifndef DEBUG
     if (is_about_screen(current_menu)) print_fw_version();
-    if (is_license_screen(current_menu)) vd_print_char(VD_TEXT,CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
+    if (is_license_screen(current_menu)) vd_print_char(VD_TEXT,CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
   #endif
 }
 
@@ -726,8 +726,8 @@ void print_selection_arrow(menu_t* current_menu)
       h_r_offset = current_menu->leaves[v_run].arrow_desc->hpos + (current_menu->leaves[v_run].arrow_desc->shape->right != EMPTY);
       v_offset   = current_menu->leaves[v_run].id;
       if (v_run == current_menu->current_selection) {
-        vd_print_char(VD_TEXT,h_r_offset,v_offset,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->right);
-        vd_print_char(VD_TEXT,h_l_offset,v_offset,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->left);
+        vd_print_char(VD_TEXT,h_r_offset,v_offset,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->right);
+        vd_print_char(VD_TEXT,h_l_offset,v_offset,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->left);
       } else {
         vd_clear_txt_area(h_l_offset,h_l_offset,v_offset,v_offset);
         vd_clear_txt_area(h_r_offset,h_r_offset,v_offset,v_offset);
@@ -742,12 +742,12 @@ int update_vinfo_screen(menu_t* current_menu)
   // PPU state
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET);
   sprintf(szText,"0x%08x",(uint) ppu_state);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   // Video Input
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VideoMode[(palmode << 1) | scanmode]);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VIN_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[palmode]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET,FONTCOLOR_WHITE,VideoMode[(palmode << 1) | scanmode]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VIN_V_OFFSET,FONTCOLOR_WHITE,VRefresh[palmode]);
 
   // Video Output
   linex_cnt linex_mode = (ppu_state & PPU_RESOLUTION_GETMASK) >> PPU_RESOLUTION_OFFSET;
@@ -759,50 +759,50 @@ int update_vinfo_screen(menu_t* current_menu)
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET);
   switch (linex_mode) {
     case PASSTHROUGH:
-      if (palmode) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution288p576p[0]);
-      else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution240p480p[0]);
+      if (palmode) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution288p576p[0]);
+      else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution240p480p[0]);
       break;
     case LineX2:
       if (is_50Hz_mode) {
-        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution288p576p[1]);
+        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution288p576p[1]);
       } else {
         if ((ppu_state & PPU_USE_VGA_FOR_480P_GETMASK) >> PPU_USE_VGA_FOR_480P_OFFSET) {
-          vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,ResolutionVGA);
+          vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,ResolutionVGA);
           printhz4vga = TRUE;
         } else {
-          vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolution240p480p[1]);
+          vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution240p480p[1]);
         }
       }
       break;
     default:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,Resolutions[linex_mode]);
+      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolutions[linex_mode]);
   }
-  if (printhz4vga) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[0]);
-  else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5 + (linex_mode > LineX4),INFO_VOUT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,VRefresh[is_50Hz_mode]);
+  if (printhz4vga) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,VRefresh[0]);
+  else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5 + (linex_mode > LineX4),INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,VRefresh[is_50Hz_mode]);
 
   // Image size
   sprintf(szText,"%ux%u", (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_HORSCALE_GETMASK) >> CFG_HORSCALE_OFFSET),
                           (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_VERTSCALE_GETMASK) >> CFG_VERTSCALE_OFFSET));
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VRES_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VRES_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VRES_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   // Source-Sync. Mode
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
   if (is_lowlatency_mode) {
     sprintf(szText,"(%d sl. buffered)",(uint) ((ppu_state & PPU_LLM_SLBUF_FB_GETMASK) >> PPU_LLM_SLBUF_FB_OFFSET));
-    vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET+3,INFO_LLM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+    vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET+3,INFO_LLM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
   }
 
   // 240p DeBlur
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET);
-  if (scanmode == INTERLACED) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREY,text_480i_576i_br);
-  else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,OffOn[!hor_hires]);
+  if (scanmode == INTERLACED) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_DEBLUR_V_OFFSET,FONTCOLOR_GREY,text_480i_576i_br);
+  else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET,FONTCOLOR_WHITE,OffOn[!hor_hires]);
 
   // Gamma Table
   gamma2txt_func((ppu_state & PPU_GAMMA_TABLE_GETMASK) >> PPU_GAMMA_TABLE_OFFSET);
   vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   return 0;
 }
@@ -814,7 +814,7 @@ int update_cfg_screen(menu_t* current_menu)
 
   alt_u8 h_l_offset;
   alt_u8 v_run, v_offset;
-  alt_u8 background_color, font_color;
+  alt_u8 font_color;
   alt_u16 val_select, ref_val_select;
   bool_t val_is_ref;
 
@@ -822,8 +822,6 @@ int update_cfg_screen(menu_t* current_menu)
 
   bool_t use_sl_vert_negoffset = apply_sl_vert_negoffset(current_menu);
   alt_u8 v_run_negoffset = 0;
-
-  background_color = BACKGROUNDCOLOR_STANDARD;
 
   for (v_run = 0; v_run < current_menu->number_selections - v_run_negoffset; v_run++) {
     h_l_offset = current_menu->leaves[v_run + v_run_negoffset].arrow_desc->hpos + 3;
@@ -870,7 +868,7 @@ int update_cfg_screen(menu_t* current_menu)
 //          if (((cfg_get_value(&sl_en,0) == OFF) && v_run > SL_EN_SELECTION && v_run < SL_INPUT_480I_SELECTION)        ||
 //              ((cfg_get_value(&sl_en_480i,0) == OFF) && v_run > SL_EN_480I_SELECTION )                                ||
 //              (use_sl_linked_vals && v_run_offset == 0 && (cfg_get_value(&sl_en,0) == OFF) && v_run > SL_EN_SELECTION) )
-//            font_color = val_is_ref ? FONTCOLOR_GREY : FONTCOLOR_DARKGOLD;
+//            font_color = val_is_ref ? FONTCOLOR_GREY : FONTCOLOR_NAVAJOWHITE;
 //        }
 
         // check scaling menu
@@ -899,9 +897,9 @@ int update_cfg_screen(menu_t* current_menu)
         if (current_menu->leaves[v_run].config_value->cfg_type == FLAGTXT ||
             current_menu->leaves[v_run].config_value->cfg_type == NUMVALUE ) {
           current_menu->leaves[v_run].config_value->val2char_func(val_select);
-          vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
+          vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,&szText[0]);
         } else {
-          vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
+          vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
         }
         break;
       case ICFGVALFUNC:
@@ -920,7 +918,7 @@ int update_cfg_screen(menu_t* current_menu)
           font_color = FONTCOLOR_WHITE;
         }
         vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
-        vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
+        vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,&szText[0]);
         break;
       case ICFGCMDFUNC3:  // at the moment just for horizontal and vertical scale
         if (!use_240p_288p && v_run == HORISCALE_SELECTION && cfg_get_value(&link_hv_scale,0) != CFG_LINK_HV_SCALE_MAX_VALUE) {
@@ -928,7 +926,7 @@ int update_cfg_screen(menu_t* current_menu)
           val_select = current_menu->leaves[v_run].cfgfct_call_3(0,0,0,0);
           ref_val_select = current_menu->leaves[v_run].cfgfct_call_3(0,0,0,1);
           val2txt_4u_func(val_select);
-          font_color = (val_select == ref_val_select) ? FONTCOLOR_GREY : FONTCOLOR_DARKGOLD;
+          font_color = (val_select == ref_val_select) ? FONTCOLOR_GREY : FONTCOLOR_NAVAJOWHITE;
         } else {
           val_select = current_menu->leaves[v_run].cfgfct_call_3(0,v_run==VERTSCALE_SELECTION,0,0);
           ref_val_select = current_menu->leaves[v_run].cfgfct_call_3(0,v_run==VERTSCALE_SELECTION,0,1);
@@ -937,17 +935,17 @@ int update_cfg_screen(menu_t* current_menu)
           font_color = val_is_ref ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
         }
         vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
-        vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,&szText[0]);
+        vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,&szText[0]);
         break;
       case ISUBMENU:
         font_color = FONTCOLOR_WHITE;
-        vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,EnterSubMenu);
+        vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,EnterSubMenu);
         break;
       case IFUNC0:
       case IFUNC1:
       case IFUNC2:
         font_color = FONTCOLOR_WHITE;
-        vd_print_string(VD_TEXT,h_l_offset,v_offset,background_color,font_color,RunFunction);
+        vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,RunFunction);
         break;
       default:
         break;

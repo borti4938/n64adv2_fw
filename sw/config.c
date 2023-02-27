@@ -315,8 +315,8 @@ bool_t confirmation_routine()
   cmd_t command;
   alt_u8 abort = 0;
 
-  vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_NAVAJOWHITE,confirm_message);
-  vd_print_string(VD_TEXT,CONFIRM_BNT_FCT_H_OFFSET,CONFIRM_BNT_FCT_V_OFFSET,BACKGROUNDCOLOR_STANDARD,FONTCOLOR_GREEN,btn_fct_confirm_overlay);
+  vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,FONTCOLOR_NAVAJOWHITE,confirm_message);
+  vd_print_string(VD_TEXT,CONFIRM_BNT_FCT_H_OFFSET,CONFIRM_BNT_FCT_V_OFFSET,FONTCOLOR_GREEN,btn_fct_confirm_overlay);
 
   while(1) {
     while(!get_vsync_cpu()){};                         // wait for OSD_VSYNC goes high
