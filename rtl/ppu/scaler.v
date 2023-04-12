@@ -1394,7 +1394,8 @@ always @(posedge VCLK_o or negedge nRST_o)
   end
 
 // assign final outputs
-always @(*) begin
+//always @(*) begin
+always @(posedge VCLK_o) begin
   vinfo_llm_slbuf_fb_o <= Z_vinfo_llm_slbuf_fb_L;
   scale_vpos_rel_o <= Y_scale_vpos_rel;
   scale_hpos_rel_o <= scale_hpos_rel[Videogen_Pipeline_Length-1];
