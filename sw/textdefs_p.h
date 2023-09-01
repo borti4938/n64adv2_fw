@@ -63,19 +63,6 @@
 #define  BNT_FCT_H_OFFSET 27
 #define  BNT_FCT_V_OFFSET (VD_TXT_WIDTH - 1)
 
-#define INFO_OVERLAY_H_OFFSET       OVERLAY_H_OFFSET
-#define INFO_OVERLAY_V_OFFSET       OVERLAY_V_OFFSET
-#define INFO_VALS_H_OFFSET          (27 + INFO_OVERLAY_H_OFFSET)
-#define INFO_VALS_V_OFFSET          INFO_OVERLAY_V_OFFSET
-#define INFO_PPU_STATE_V_OFFSET     ( 0 + INFO_VALS_V_OFFSET)
-#define INFO_VIN_V_OFFSET           ( 2 + INFO_VALS_V_OFFSET)
-#define INFO_VOUT_V_OFFSET          ( 3 + INFO_VALS_V_OFFSET)
-#define INFO_VRES_V_OFFSET          ( 4 + INFO_VALS_V_OFFSET)
-#define INFO_LLM_V_OFFSET           ( 5 + INFO_VALS_V_OFFSET)
-#define INFO_DEBLUR_V_OFFSET        ( 7 + INFO_VALS_V_OFFSET)
-#define INFO_GAMMA_V_OFFSET         ( 8 + INFO_VALS_V_OFFSET)
-#define INFO_RESYNC_VI_PL_V_OFFSET  (10 + INFO_VALS_V_OFFSET)
-
 #define RESCFG_OVERLAY_H_OFFSET     OVERLAY_H_OFFSET
 #define RESCFG_OVERLAY_V_OFFSET     OVERLAY_V_OFFSET
 #define RESCFG_VALS_H_OFFSET        (29 + OVERLAY_H_OFFSET)
@@ -167,15 +154,28 @@
 #define RWDATA_CPYCFG_FUNCTION_V_OFFSET   ( 9 + RWDATA_OVERLAY_V_OFFSET)
 #define RWDATA_FALLBACK_V_OFFSET          (10 + RWDATA_OVERLAY_V_OFFSET)
 
+#define N64DEBUG_OVERLAY_H_OFFSET       OVERLAY_H_OFFSET
+#define N64DEBUG_OVERLAY_V_OFFSET       OVERLAY_V_OFFSET
+#define N64DEBUG_VALS_H_OFFSET          (27 + N64DEBUG_OVERLAY_H_OFFSET)
+#define N64DEBUG_VALS_V_OFFSET          N64DEBUG_OVERLAY_V_OFFSET
+#define N64DEBUG_PPU_STATE_V_OFFSET     ( 0 + N64DEBUG_VALS_V_OFFSET)
+#define N64DEBUG_VIN_V_OFFSET           ( 2 + N64DEBUG_VALS_V_OFFSET)
+#define N64DEBUG_VOUT_V_OFFSET          ( 3 + N64DEBUG_VALS_V_OFFSET)
+#define N64DEBUG_VRES_V_OFFSET          ( 4 + N64DEBUG_VALS_V_OFFSET)
+#define N64DEBUG_LLM_V_OFFSET           ( 5 + N64DEBUG_VALS_V_OFFSET)
+#define N64DEBUG_DEBLUR_V_OFFSET        ( 7 + N64DEBUG_VALS_V_OFFSET)
+#define N64DEBUG_GAMMA_V_OFFSET         ( 8 + N64DEBUG_VALS_V_OFFSET)
+#define N64DEBUG_RESYNC_VI_PL_V_OFFSET  (10 + N64DEBUG_VALS_V_OFFSET)
+
 #define MAIN_OVERLAY_H_OFFSET   ( 3 + OVERLAY_H_OFFSET)
 #define MAIN_OVERLAY_V_OFFSET   OVERLAY_V_OFFSET
-#define MAIN2VINFO_V_OFFSET     ( 0 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2RES_V_OFFSET       ( 1 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2SCALER_V_OFFSET    ( 2 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2SCANLINE_V_OFFSET  ( 3 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2VIPROC_V_OFFSET    ( 4 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2MISC_V_OFFSET      ( 5 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2SAVE_V_OFFSET      ( 6 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2RES_V_OFFSET       ( 0 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SCALER_V_OFFSET    ( 1 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SCANLINE_V_OFFSET  ( 2 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2VIPROC_V_OFFSET    ( 3 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2MISC_V_OFFSET      ( 4 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SAVE_V_OFFSET      ( 5 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2DEBUG_V_OFFSET     ( 6 + MAIN_OVERLAY_V_OFFSET)
 #define MAIN2ABOUT_V_OFFSET     ( 8 + MAIN_OVERLAY_V_OFFSET)
 #define MAIN2THANKS_V_OFFSET    ( 9 + MAIN_OVERLAY_V_OFFSET)
 #define MAIN2LICENSE_V_OFFSET   (10 + MAIN_OVERLAY_V_OFFSET)
@@ -187,20 +187,6 @@ static const char *copyright_note __ufmdata_section__ =
 
 const char *btn_fct_confirm_overlay =
     "(A..Confirm, B..Cancel)";
-
-static const char *vinfo_header __ufmdata_section__ =
-    "Video-Info";
-static const char *vinfo_overlay __ufmdata_section__ =
-    "* PPU state value:\n"
-    "* Video mode\n"
-    "  - Input resolution:\n"
-    "  - Output resolution:\n"
-    "  - Scaled image size:\n"
-    "  - Frame-Locked mode:\n"
-    "* Filter Options\n"
-    "  - LowRes. VI-DeBlur:\n"
-    "  - Gamma boost exponent:\n\n"
-    "* Re-sync VI pipeline:";
 
 static const char *resolution_header __ufmdata_section__ =
     "Resolution";
@@ -297,6 +283,19 @@ static const char *rwdata_overlay __ufmdata_section__ =
     "  - Copy config now:\n"
     "* Fallback config:";
 
+static const char *n64debug_header __ufmdata_section__ =
+    "Debug-Info";
+static const char *n64debug_overlay __ufmdata_section__ =
+    "* PPU state value:\n"
+    "* Video mode\n"
+    "  - Input resolution:\n"
+    "  - Output resolution:\n"
+    "  - Scaled image size:\n"
+    "  - Frame-Locked mode:\n"
+    "* Filter Options\n"
+    "  - LowRes. VI-DeBlur:\n"
+    "  - Gamma boost exponent:\n\n"
+    "* Re-sync VI pipeline:";
 
 #ifndef DEBUG
   static const char *thanks_header __ufmdata_section__ =
@@ -378,13 +377,13 @@ static const char *rwdata_overlay __ufmdata_section__ =
 static const char *home_header __ufmdata_section__ =
     "Main Menu";
 static const char *home_overlay __ufmdata_section__ =
-    "[Video-Info]\n"
     "[Resolution]\n"
     "[Scaler]\n"
     "[Scanlines]\n"
     "[VI-Processing]\n"
     "[Miscellaneous]\n"
-    "[Save/Load/Fallback]\n\n"
+    "[Save/Load/Fallback]\n"
+    "[Debug-Info]\n\n"
 #ifndef DEBUG
     "About...\n"
     "Acknowledgment...\n"

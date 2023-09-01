@@ -54,11 +54,12 @@
 #define GET_PCB_REV_MASK  0x0000F
 
 typedef enum {
-  HWINFO_CHIP_ID_0 = 0,
+  HDL_FW_N_PCB_ID = 0,
+  HW_PINCHECK_STATUS,
+  HWINFO_CHIP_ID_0,
   HWINFO_CHIP_ID_1,
   HWINFO_CHIP_ID_2,
   HWINFO_CHIP_ID_3,
-  HDL_FW_N_PCB_ID
 } hw_info_sel_t;
 
 alt_u8 info_sync_val;

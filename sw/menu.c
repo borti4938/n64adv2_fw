@@ -104,8 +104,8 @@ static const arrow_t rwdata_optval_arrow = {
 };
 
 
-menu_t home_menu, vinfo_screen, vires_screen, viscaling_screen, slcfg_opt_subscreen, vicfg_screen,
-       misc_screen, rwdata_screen;
+menu_t home_menu, vires_screen, viscaling_screen, slcfg_opt_subscreen,
+       vicfg_screen, misc_screen, rwdata_screen, debug_screen;
 #ifndef DEBUG
   menu_t about_screen, thanks_screen, license_screen, notice_screen;
 #endif
@@ -118,7 +118,7 @@ menu_t home_menu = {
       .hoffset = MAIN_OVERLAY_H_OFFSET,
       .text = &home_overlay
     },
-    .current_selection = 1,
+    .current_selection = 0,
 #ifndef DEBUG
   #ifdef USE_NOTICE_SECTION
     .number_selections = 11,
@@ -129,36 +129,36 @@ menu_t home_menu = {
     .number_selections = 7,
 #endif
     .leaves = {
-        {.id = MAIN2VINFO_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vinfo_screen},
         {.id = MAIN2RES_V_OFFSET     , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vires_screen},
         {.id = MAIN2SCALER_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &viscaling_screen},
         {.id = MAIN2SCANLINE_V_OFFSET, .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &slcfg_opt_subscreen},
         {.id = MAIN2VIPROC_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_screen},
         {.id = MAIN2MISC_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &misc_screen},
         {.id = MAIN2SAVE_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
+        {.id = MAIN2DEBUG_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &debug_screen},
   #ifndef DEBUG
         {.id = MAIN2ABOUT_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &about_screen},
         {.id = MAIN2THANKS_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &thanks_screen},
         {.id = MAIN2LICENSE_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &license_screen},
-  #ifdef USE_NOTICE_SECTION
+    #ifdef USE_NOTICE_SECTION
         {.id = MAIN2NOTICE_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &notice_screen}
+    #endif
   #endif
-#endif
     }
 };
 
-menu_t vinfo_screen = {
-    .type = VINFO,
-    .header = &vinfo_header,
+menu_t debug_screen = {
+    .type = N64DEBUG,
+    .header = &n64debug_header,
     .body = {
-      .hoffset = INFO_OVERLAY_H_OFFSET,
-      .text = &vinfo_overlay
+      .hoffset = N64DEBUG_OVERLAY_H_OFFSET,
+      .text = &n64debug_overlay
     },
     .parent = &home_menu,
     .current_selection = 0,
     .number_selections = 1,
     .leaves = {
-        {.id = INFO_RESYNC_VI_PL_V_OFFSET, .arrow_desc = &misc_sel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &resync_vi_pipeline}
+        {.id = N64DEBUG_RESYNC_VI_PL_V_OFFSET, .arrow_desc = &misc_sel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &resync_vi_pipeline}
     }
 };
 
@@ -510,7 +510,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         (*current_menu)->current_selection = 0;
         *current_menu = (*current_menu)->parent;
       }
-      (*current_menu)->current_selection = 1;
+      (*current_menu)->current_selection = 0;
       return MENU_CLOSE;
     case CMD_MENU_BACK:
       cfg_reset_selections();
@@ -732,79 +732,6 @@ void print_selection_arrow(menu_t* current_menu)
     }
 }
 
-int update_vinfo_screen(menu_t* current_menu)
-{
-  if (current_menu->type != VINFO) return -1;
-
-  // PPU state
-  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET);
-  sprintf(szText,"0x%08x",(uint) ppu_state);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_PPU_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
-
-  // Video Input
-  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VIN_V_OFFSET,FONTCOLOR_WHITE,VideoMode[(palmode << 1) | scanmode]);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5,INFO_VIN_V_OFFSET,FONTCOLOR_WHITE,VRefresh[palmode]);
-
-  // Video Output
-  linex_cnt linex_mode = (ppu_state & PPU_RESOLUTION_GETMASK) >> PPU_RESOLUTION_OFFSET;
-  bool_t is_lowlatency_mode = ((ppu_state & PPU_LOWLATENCYMODE_GETMASK) >> PPU_LOWLATENCYMODE_OFFSET);
-  alt_u8 force5060val = (ppu_state & PPU_FORCE5060_GETMASK) >> PPU_FORCE5060_OFFSET;
-  bool_t is_50Hz_mode = (is_lowlatency_mode || (linex_mode == PASSTHROUGH) || (force5060val == 0x00)) ? palmode : (force5060val == 0x02);
-  bool_t printhz4vga = FALSE;
-
-  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET);
-  switch (linex_mode) {
-    case PASSTHROUGH:
-      if (palmode) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution288p576p[0]);
-      else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution240p480p[0]);
-      break;
-    case LineX2:
-      if (is_50Hz_mode) {
-        vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution288p576p[1]);
-      } else {
-        if ((ppu_state & PPU_USE_VGA_FOR_480P_GETMASK) >> PPU_USE_VGA_FOR_480P_OFFSET) {
-          vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET     ,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,ResolutionVGA);
-          printhz4vga = TRUE;
-        } else {
-          vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution240p480p[1]);
-        }
-      }
-      break;
-    default:
-      vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET    ,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolutions[linex_mode]);
-  }
-  if (printhz4vga) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 14,INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,VRefresh[0]);
-  else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET + 5 + (linex_mode > LineX4),INFO_VOUT_V_OFFSET,FONTCOLOR_WHITE,VRefresh[is_50Hz_mode]);
-
-  // Image size
-  sprintf(szText,"%ux%u", (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_HORSCALE_GETMASK) >> CFG_HORSCALE_OFFSET),
-                          (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_VERTSCALE_GETMASK) >> CFG_VERTSCALE_OFFSET));
-  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VRES_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_VRES_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
-
-  // Source-Sync. Mode
-  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_LLM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
-  if (is_lowlatency_mode) {
-    sprintf(szText,"(%d sl. buffered)",(uint) ((ppu_state & PPU_LLM_SLBUF_FB_GETMASK) >> PPU_LLM_SLBUF_FB_OFFSET));
-    vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET+3,INFO_LLM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
-  }
-
-  // 240p DeBlur
-  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET);
-  if (scanmode == INTERLACED) vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_DEBLUR_V_OFFSET,FONTCOLOR_GREY,text_480i_576i_br);
-  else vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET, INFO_DEBLUR_V_OFFSET,FONTCOLOR_WHITE,OffOn[!hor_hires]);
-
-  // Gamma Table
-  gamma2txt_func((ppu_state & PPU_GAMMA_TABLE_GETMASK) >> PPU_GAMMA_TABLE_OFFSET);
-  vd_clear_lineend(VD_TEXT,INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET);
-  vd_print_string(VD_TEXT,INFO_VALS_H_OFFSET,INFO_GAMMA_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
-
-  return 0;
-}
-
-
 int update_cfg_screen(menu_t* current_menu)
 {
   if (current_menu->type == HOME || current_menu->type == TEXT) return -1;
@@ -948,6 +875,78 @@ int update_cfg_screen(menu_t* current_menu)
         break;
     }
   }
+
+  return 0;
+}
+
+int update_debug_screen(menu_t* current_menu)
+{
+  if (current_menu->type != N64DEBUG) return -1;
+
+  // PPU state
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PPU_STATE_V_OFFSET);
+  sprintf(szText,"0x%08x",(uint) ppu_state);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PPU_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+
+  // Video Input
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VIN_V_OFFSET);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VIN_V_OFFSET,FONTCOLOR_WHITE,VideoMode[(palmode << 1) | scanmode]);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET + 5,N64DEBUG_VIN_V_OFFSET,FONTCOLOR_WHITE,VRefresh[palmode]);
+
+  // Video Output
+  linex_cnt linex_mode = (ppu_state & PPU_RESOLUTION_GETMASK) >> PPU_RESOLUTION_OFFSET;
+  bool_t is_lowlatency_mode = ((ppu_state & PPU_LOWLATENCYMODE_GETMASK) >> PPU_LOWLATENCYMODE_OFFSET);
+  alt_u8 force5060val = (ppu_state & PPU_FORCE5060_GETMASK) >> PPU_FORCE5060_OFFSET;
+  bool_t is_50Hz_mode = (is_lowlatency_mode || (linex_mode == PASSTHROUGH) || (force5060val == 0x00)) ? palmode : (force5060val == 0x02);
+  bool_t printhz4vga = FALSE;
+
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET);
+  switch (linex_mode) {
+    case PASSTHROUGH:
+      if (palmode) vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution288p576p[0]);
+      else vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution240p480p[0]);
+      break;
+    case LineX2:
+      if (is_50Hz_mode) {
+        vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution288p576p[1]);
+      } else {
+        if ((ppu_state & PPU_USE_VGA_FOR_480P_GETMASK) >> PPU_USE_VGA_FOR_480P_OFFSET) {
+          vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,ResolutionVGA);
+          printhz4vga = TRUE;
+        } else {
+          vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution240p480p[1]);
+        }
+      }
+      break;
+    default:
+      vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolutions[linex_mode]);
+  }
+  if (printhz4vga) vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET + 14,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,VRefresh[0]);
+  else vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET + 5 + (linex_mode > LineX4),N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,VRefresh[is_50Hz_mode]);
+
+  // Image size
+  sprintf(szText,"%ux%u", (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_HORSCALE_GETMASK) >> CFG_HORSCALE_OFFSET),
+                          (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_VERTSCALE_GETMASK) >> CFG_VERTSCALE_OFFSET));
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VRES_V_OFFSET);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VRES_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+
+  // Source-Sync. Mode
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_LLM_V_OFFSET);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_LLM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
+  if (is_lowlatency_mode) {
+    sprintf(szText,"(%d sl. buffered)",(uint) ((ppu_state & PPU_LLM_SLBUF_FB_GETMASK) >> PPU_LLM_SLBUF_FB_OFFSET));
+    vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET+3,N64DEBUG_LLM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+  }
+
+  // 240p DeBlur
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET, N64DEBUG_DEBLUR_V_OFFSET);
+  if (scanmode == INTERLACED) vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_DEBLUR_V_OFFSET,FONTCOLOR_GREY,text_480i_576i_br);
+  else vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_DEBLUR_V_OFFSET,FONTCOLOR_WHITE,OffOn[!hor_hires]);
+
+  // Gamma Table
+  gamma2txt_func((ppu_state & PPU_GAMMA_TABLE_GETMASK) >> PPU_GAMMA_TABLE_OFFSET);
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_GAMMA_V_OFFSET);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_GAMMA_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   return 0;
 }

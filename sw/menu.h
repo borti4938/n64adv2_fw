@@ -62,9 +62,9 @@ typedef enum {
 
 typedef enum {
   HOME = 0,
-  VINFO,
   CONFIG,
   RWDATA,
+  N64DEBUG,
   TEXT
 } screentype_t;
 
@@ -156,7 +156,7 @@ void update_timing_menu(void);
 updateaction_t modify_menu(cmd_t command, menu_t** current_menu);
 void print_overlay(menu_t* current_menu);
 void print_selection_arrow(menu_t* current_menu);
-int update_vinfo_screen(menu_t* current_menu);
 int update_cfg_screen(menu_t* current_menu);
+int update_debug_screen(menu_t* current_menu);
 
 #endif /* MENU_H_ */

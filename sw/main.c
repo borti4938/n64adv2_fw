@@ -278,8 +278,8 @@ int main()
 
       update_cfg_screen(menu);
 
-      if (menu->type == VINFO)
-        update_vinfo_screen(menu);
+      if (menu->type == N64DEBUG)
+        update_debug_screen(menu);
 
       if (menu->type == CONFIG) {
         cfg_store_linex_word(vmode_menu);

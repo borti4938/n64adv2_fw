@@ -52,6 +52,9 @@ module n64adv2_controller #(
   Interrupt_i,
   HDMI_cfg_done_o,
 
+  run_pincheck_o,
+  pincheck_status_i,
+
   APUConfigSet,
 
   PPUState,
@@ -86,6 +89,9 @@ inout       I2C_SCL;
 inout       I2C_SDA;
 input [1:0] Interrupt_i;
 output      HDMI_cfg_done_o;
+
+output run_pincheck_o;
+input [15:0] pincheck_status_i;
 
 output reg [`APUConfig_WordWidth-1:0] APUConfigSet;
 input      [`PPU_State_Width-1:0] PPUState;
@@ -243,10 +249,11 @@ chip_id chip_id_u(
 
 assign nVSYNC_CPU_w = HDMI_cfg_done_o ? OSD_VSync_resynced : nVSYNC_buf_resynced;
 assign CHIP_ID_w = CHIP_ID_valid_w ? CHIP_ID_pre_w : 64'h0;
-assign hw_info = hw_info_sel == 3'b011 ? CHIP_ID_w[63:48] :
-                 hw_info_sel == 3'b010 ? CHIP_ID_w[47:32] :
-                 hw_info_sel == 3'b001 ? CHIP_ID_w[31:16] :
-                 hw_info_sel == 3'b000 ? CHIP_ID_w[15: 0] :
+assign hw_info = hw_info_sel == 3'b101 ? CHIP_ID_w[63:48] :
+                 hw_info_sel == 3'b100 ? CHIP_ID_w[47:32] :
+                 hw_info_sel == 3'b011 ? CHIP_ID_w[31:16] :
+                 hw_info_sel == 3'b010 ? CHIP_ID_w[15: 0] :
+                 hw_info_sel == 3'b001 ? pincheck_status_i :
                                          {hdl_fw,2'b00,PCB_ID_i};
 
 system_n64adv2 system_u(
@@ -265,7 +272,7 @@ system_n64adv2 system_u(
   .cfg_set2_out_export(SysConfigSet2),
   .cfg_set1_out_export(SysConfigSet1),
   .cfg_set0_out_export(SysConfigSet0),
-  .info_sync_out_export({HDMI_cfg_done_o,hw_info_sel,ctrl_data_tack}),
+  .info_sync_out_export({HDMI_cfg_done_o,hw_info_sel,run_pincheck_o,ctrl_data_tack}),
   .led_out_export(LED_o),
   .hw_info_in_export(hw_info)
 );

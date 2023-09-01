@@ -174,6 +174,9 @@ wire HDMI_cfg_done_w;
 
 wire [`APUConfig_WordWidth-1:0] APUConfigSet;
 
+wire run_pincheck_w;
+wire [15:0] pincheck_status_w;
+
 wire [`PPU_State_Width-1:0] PPUState_w;
 wire [`PPUConfig_WordWidth-1:0] PPUConfigSet_w;
 wire OSD_VSync_w;
@@ -192,6 +195,25 @@ wire [3:0] DRAM_DQ_dummy;
 
 assign N64_CLK_o = N64_CLK_i;
 assign nViDeblur_o = ~PPUConfigSet_w[`videblur_bit];
+
+// pin checking module
+
+pincheck pincheck_u(
+  .clk_i(CLKs_controller_w[1]),
+  .run_i(run_pincheck_w),
+  .CLK_SYS_i(SYS_CLK_i),
+  .CLK_AUD_i(AMCLK_i),
+  .CLK_ePLL1_i(HDMI_CLKsub_i),
+  .CLK_ePLL0_i(HDMI_CLKmain_i),
+  .VD_i(VD_i),
+  .nVDSYNC_i(nVDSYNC_i),
+  .N64_CLK_i(N64_CLK_i),
+  .ALRCLK_i(ALRCLK_i),
+  .ASDATA_i(ASDATA_i),
+  .ASCLK_i(ASCLK_i),
+  .status_o(pincheck_status_w)
+);
+
 
 // input registering
 
@@ -249,6 +271,8 @@ n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u(
   .I2C_SDA(I2C_SDA),
   .Interrupt_i({INT_ADV7513,INT_SI5356}),
   .HDMI_cfg_done_o(HDMI_cfg_done_w),
+  .run_pincheck_o(run_pincheck_w),
+  .pincheck_status_i(pincheck_status_w),
   .APUConfigSet(APUConfigSet),
   .PPUState(PPUState_w),
   .PPUConfigSet(PPUConfigSet_w),
