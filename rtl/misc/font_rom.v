@@ -72,6 +72,7 @@ always @(posedge CLK or negedge nRST)
         0138:    rddata <= 028;
         0144:    rddata <= 064;
         0145:    rddata <= 001;
+        0148:    rddata <= 028;
         0161:    rddata <= 012;
         0168:    rddata <= 048;
         0169:    rddata <= 006;
@@ -130,6 +131,7 @@ always @(posedge CLK or negedge nRST)
         0266:    rddata <= 034;
         0272:    rddata <= 096;
         0273:    rddata <= 003;
+        0276:    rddata <= 034;
         0289:    rddata <= 030;
         0296:    rddata <= 024;
         0297:    rddata <= 012;
@@ -192,6 +194,7 @@ always @(posedge CLK or negedge nRST)
         0397:    rddata <= 099;
         0400:    rddata <= 112;
         0401:    rddata <= 007;
+        0404:    rddata <= 093;
         0410:    rddata <= 012;
         0411:    rddata <= 024;
         0417:    rddata <= 030;
@@ -258,6 +261,7 @@ always @(posedge CLK or negedge nRST)
         0525:    rddata <= 054;
         0528:    rddata <= 124;
         0529:    rddata <= 031;
+        0532:    rddata <= 069;
         0538:    rddata <= 006;
         0539:    rddata <= 048;
         0545:    rddata <= 030;
@@ -343,6 +347,7 @@ always @(posedge CLK or negedge nRST)
         0653:    rddata <= 028;
         0656:    rddata <= 127;
         0657:    rddata <= 127;
+        0660:    rddata <= 069;
         0666:    rddata <= 127;
         0667:    rddata <= 127;
         0673:    rddata <= 012;
@@ -426,6 +431,7 @@ always @(posedge CLK or negedge nRST)
         0781:    rddata <= 028;
         0784:    rddata <= 124;
         0785:    rddata <= 031;
+        0788:    rddata <= 069;
         0794:    rddata <= 006;
         0795:    rddata <= 048;
         0801:    rddata <= 012;
@@ -509,6 +515,7 @@ always @(posedge CLK or negedge nRST)
         0909:    rddata <= 054;
         0912:    rddata <= 112;
         0913:    rddata <= 007;
+        0916:    rddata <= 093;
         0922:    rddata <= 012;
         0923:    rddata <= 024;
         0933:    rddata <= 006;
@@ -591,6 +598,7 @@ always @(posedge CLK or negedge nRST)
         1037:    rddata <= 099;
         1040:    rddata <= 096;
         1041:    rddata <= 003;
+        1044:    rddata <= 034;
         1057:    rddata <= 012;
         1061:    rddata <= 051;
         1064:    rddata <= 024;
@@ -672,6 +680,7 @@ always @(posedge CLK or negedge nRST)
         1162:    rddata <= 028;
         1168:    rddata <= 064;
         1169:    rddata <= 001;
+        1172:    rddata <= 028;
         1185:    rddata <= 012;
         1189:    rddata <= 049;
         1192:    rddata <= 048;

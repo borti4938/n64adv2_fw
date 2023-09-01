@@ -35,6 +35,9 @@
 #include "system.h"
 #include "config.h"
 
+
+#define EMPTY               0x20
+
 const alt_u8 vd_overall_width = VD_WIDTH;
 const alt_u8 vd_overall_height = (VD_HDR_HEIGHT + VD_TXT_HEIGHT + VD_INFO_HEIGHT);
 

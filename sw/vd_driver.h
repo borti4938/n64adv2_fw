@@ -98,14 +98,6 @@ typedef enum {
 #define FONTCOLOR_DARKORANGE  0x6
 #define FONTCOLOR_RED         0x7
 
-// some special chars
-#define CHECKBOX_TICK       0x0D
-#define COPYRIGHT_SIGN      0x0A
-#define EMPTY               0x20
-#define TRIANGLE_LEFT       0x10
-#define TRIANGLE_RIGHT      0x11
-#define ARROW_LEFT          0x1A
-#define ARROW_RIGHT         0x1B
 
 // some macros
 #define VD_SET_ADDR(h,v)      ((h<<VD_WRADDR_HSHIFT_OFFSET) & VD_WRADDR_H_ANDMASK) | (v & VD_WRADDR_V_ANDMASK))

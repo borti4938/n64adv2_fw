@@ -28,7 +28,7 @@ targetFolder = '../rtl/misc/';   % target folder for rom file
 load_reduced_font;
 % load_reduced_shifted_font;
 
-separated_cases = 0;
+separated_cases = 1;
 reduce_cases = 1;
 
 fid = fopen([fileName '.v'],'w');
@@ -177,8 +177,13 @@ else
           fprintf(fid,'        %04d:    rddata_opt[%d] <= %03d;\n', idx, jdx-1, font8x12(4*idx+jdx));
         end
       end
-      fprintf(fid,['        default: rddata_opt[%d] <= 000;\n' ...
-                   '      endcase\n'], jdx-1);
+      if (jdx < 4)
+        fprintf(fid,['        default: rddata_opt[%d] <= 000;\n' ...
+                     '      endcase\n\n'], jdx-1);
+      else
+        fprintf(fid,['        default: rddata_opt[%d] <= 000;\n' ...
+                     '      endcase\n'], jdx-1);
+      end
     end
     fprintf(fid,'    end\n');
   end
