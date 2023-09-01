@@ -45,6 +45,17 @@ cfg_b32word_t intcfg0_word =
     .cfg_ref_word_val = 0x00000000
   };
 
+config_t hdr10_injection = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_HDR10INJ_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_HDR10INJ_SETMASK,
+        .clrflag_mask = CFG_HDR10INJ_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
+
 config_t color_space = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_COLORSPACE_OFFSET,
@@ -125,10 +136,10 @@ config_t igr_16bitmode = {
 config_t fallbackmode = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_FALLBACK_OFFSET,
-    .cfg_type     = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_FALBACK_SETMASK,
-        .clrflag_mask = CFG_FALLBACK_CLRMASK
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_FALLBACK_MAX_VALUE,
+        .getvalue_mask = CFG_FALLBACK_GETMASK
     },
     .value_string = (const char **) &FallbackRes
 };

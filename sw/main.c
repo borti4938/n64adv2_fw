@@ -135,7 +135,8 @@ int main()
   menu_t *menu = &home_menu;
   bool_t keep_vout_rst = TRUE;
 
-  bool_t load_n64_defaults, use_fallback;
+  bool_t load_n64_defaults;
+  fallback_vmodes_t use_fallback;
   print_cr_info();
 
   periphal_state_t periphal_state = {FALSE,FALSE,FALSE,FALSE};
@@ -164,17 +165,17 @@ int main()
   load_n64_defaults = (cfg_load_from_flash(0) != 0);
 
   while (is_fallback_mode_valid() == FALSE) {};
-  use_fallback = get_fallback_mode();
+  use_fallback = (fallback_vmodes_t) get_fallback_mode(); // returns either 0 or 1 (not associated to 1080p, 240p and 480p Fallback mode)
 
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
-    cfg_load_defaults(use_fallback,0);
+    cfg_load_defaults(2*use_fallback,0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
     cfg_set_flag(&igr_reset); // handle a bit different from other defaults
     cfg_update_reference();
     open_osd_main(&menu);
   } else {
-    if (use_fallback) {
-      cfg_load_defaults(cfg_get_value(&fallbackmode,0),0);
+    if (use_fallback > 0) {
+      cfg_load_defaults(cfg_get_value(&fallbackmode,0),0);  // load the desired default settings
       open_osd_main(&menu);
     } else {
       cfg_clear_flag(&show_osd);

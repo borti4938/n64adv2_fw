@@ -93,7 +93,7 @@ typedef int (*sys_call_0)(void);
 typedef int (*sys_call_1)(alt_u8);
 typedef int (*sys_call_bool_1)(bool_t);
 typedef int (*sys_call_2)(alt_u8,alt_u8);
-typedef int (*sys_call_bool_2)(bool_t,bool_t);
+typedef int (*sys_call_bool_2)(fallback_vmodes_t,bool_t);
 
 typedef alt_u16 (*cfgfct_call_2)(alt_u16,bool_t,bool_t);
 typedef alt_u16 (*cfgfct_call_3)(alt_u16,bool_t,bool_t,bool_t);

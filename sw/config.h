@@ -106,6 +106,12 @@ typedef enum {
 } linex_cnt;
 
 typedef enum {
+  FB_1080P = 0,
+  FB_240P,
+  FB_480P
+} fallback_vmodes_t;
+
+typedef enum {
   PAL_PAT0 = 0,
   PAL_PAT1
 } cfg_pal_pattern_t;
@@ -195,22 +201,22 @@ typedef struct {
 #define PREDEFINED_SCALE_STEPS  21
 
 // the overall masks
-#define INTCFG0_GETALL_MASK   0x000007FF
+#define INTCFG0_GETALL_MASK   0x00000FFF
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x000000FF
 
 // internal cfg set 0
-#define CFG_COLORSPACE_OFFSET             9
-#define CFG_LIMITED_COLORSPACE_OFFSET     8
-#define CFG_LINK_HV_SCALE_OFFSET          6
-#define CFG_DEBLUR_PC_DEFAULT_OFFSET      5
-#define CFG_MODE16BIT_PC_DEFAULT_OFFSET   4
-#define CFG_DEBLUR_IGR_OFFSET             3
-#define CFG_MODE16BIT_IGR_OFFSET          2
-#define CFG_FALLBACK_OFFSET               1
-#define CFG_AUTOSAVE_OFFSET               0
+#define CFG_COLORSPACE_OFFSET              10
+#define CFG_LIMITED_COLORSPACE_OFFSET      9
+#define CFG_LINK_HV_SCALE_OFFSET           7
+#define CFG_DEBLUR_PC_DEFAULT_OFFSET       6
+#define CFG_MODE16BIT_PC_DEFAULT_OFFSET    5
+#define CFG_DEBLUR_IGR_OFFSET              4
+#define CFG_MODE16BIT_IGR_OFFSET           3
+#define CFG_FALLBACK_OFFSET                1
+#define CFG_AUTOSAVE_OFFSET                0
 
 #define CFG_COLORSPACE_GETMASK              (3<<CFG_COLORSPACE_OFFSET)
   #define CFG_COLORSPACE_RSTMASK              (INTCFG0_GETALL_MASK & ~CFG_COLORSPACE_GETMASK)
@@ -233,8 +239,8 @@ typedef struct {
 #define CFG_MODE16BIT_IGR_GETMASK           (1<<CFG_MODE16BIT_IGR_OFFSET)
   #define CFG_MODE16BIT_IGR_SETMASK           (1<<CFG_MODE16BIT_IGR_OFFSET)
   #define CFG_MODE16BIT_IGR_CLRMASK           (INTCFG0_GETALL_MASK & ~CFG_MODE16BIT_IGR_SETMASK)
-#define CFG_FALBACK_GETMASK                 (1<<CFG_FALLBACK_OFFSET)
-  #define CFG_FALBACK_SETMASK                 (1<<CFG_FALLBACK_OFFSET)
+#define CFG_FALLBACK_GETMASK                (3<<CFG_FALLBACK_OFFSET)
+  #define CFG_FALLBACK_RSTMASK                (INTCFG0_GETALL_MASK & ~CFG_FALBACK_SETMASK)
   #define CFG_FALLBACK_CLRMASK                (INTCFG0_GETALL_MASK & ~CFG_FALBACK_SETMASK)
 #define CFG_AUTOSAVE_GETMASK                (1<<CFG_AUTOSAVE_OFFSET)
   #define CFG_AUTOSAVE_SETMASK                (1<<CFG_AUTOSAVE_OFFSET)
@@ -507,8 +513,10 @@ typedef struct {
                                      CFG_DEBLUR_PC_DEFAULT_GETMASK | CFG_MODE16BIT_PC_DEFAULT_GETMASK)
 #define INTCFG0_NODEFAULTS_GETMASK  (INTCFG0_GETALL_MASK & ~INTCFG0_DEFAULTS_GETMASK)
 
+#define EXTCFG0_DEFAULTS_NTSC240P   (CFG_SCALING_NTSC_240_DEFAULT_SHIFTED | CFG_RESOLUTION_240_SETMASK)
 #define EXTCFG0_DEFAULTS_NTSC480P   (CFG_SCALING_NTSC_480_DEFAULT_SHIFTED | CFG_RESOLUTION_480_SETMASK)
 #define EXTCFG0_DEFAULTS_NTSC1080P  (CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED | CFG_RESOLUTION_1080_SETMASK)
+#define EXTCFG0_DEFAULTS_PAL288P    (CFG_SCALING_PAL_288_DEFAULT_SHIFTED | CFG_RESOLUTION_240_SETMASK)
 #define EXTCFG0_DEFAULTS_PAL576P    (CFG_SCALING_PAL_576_DEFAULT_SHIFTED | CFG_RESOLUTION_480_SETMASK)
 #define EXTCFG0_DEFAULTS_PAL1080P   (CFG_SCALING_PAL_1080_DEFAULT_SHIFTED | CFG_RESOLUTION_1080_SETMASK)
 #define EXTCFG0_DEFAULTS_GETMASK    (CFG_VERTSCALE_GETMASK | CFG_HORSCALE_GETMASK | CFG_FORCE_5060_GETMASK | \
@@ -589,7 +597,7 @@ void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
 void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
-int cfg_load_defaults(bool_t video1080p,bool_t need_confirm);
+int cfg_load_defaults(fallback_vmodes_t vmode,bool_t need_confirm);
 void cfg_apply_to_logic(void);
 void cfg_clear_words(void);
 void cfg_update_reference(void);
