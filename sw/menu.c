@@ -147,8 +147,6 @@ menu_t home_menu = {
     }
 };
 
-#define SCANLINE_SUB_SELECTION  3
-
 menu_t vinfo_screen = {
     .type = VINFO,
     .header = &vinfo_header,
@@ -442,7 +440,7 @@ bool_t apply_sl_vert_negoffset(menu_t* current_menu) {
 
 void print_current_timing_mode()
 {
-  vd_clear_info_area(0,COPYRIGHT_SIGN_H_OFFSET-1,0,0);
+  vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
   sprintf(szText,"Current:");
   vd_print_string(VD_INFO,0, 0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
   val2txt_scale_sel_func(scaling_n64adv);
@@ -451,14 +449,13 @@ void print_current_timing_mode()
 
 void print_ctrl_data() {
   sprintf(szText,"Ctrl.Data: 0x%08x",(uint) ctrl_data);
-  vd_clear_info_area(0,COPYRIGHT_SIGN_H_OFFSET-1,0,0);
+  vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
   vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }
 
 void print_cr_info() {
-  vd_clear_info_area(COPYRIGHT_SIGN_H_OFFSET,VD_WIDTH-1,0,0);
+  vd_clear_info_area(COPYRIGHT_H_OFFSET,VD_WIDTH-1,0,0);
   vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,copyright_note);
-  vd_print_char(VD_INFO,COPYRIGHT_SIGN_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,(char) COPYRIGHT_SIGN);
 }
 
 void print_fw_version()
@@ -712,7 +709,6 @@ void print_overlay(menu_t* current_menu)
 
   #ifndef DEBUG
     if (is_about_screen(current_menu)) print_fw_version();
-    if (is_license_screen(current_menu)) vd_print_char(VD_TEXT,CR_SIGN_LICENSE_H_OFFSET,CR_SIGN_LICENSE_V_OFFSET,FONTCOLOR_WHITE,(char) COPYRIGHT_SIGN);
   #endif
 }
 

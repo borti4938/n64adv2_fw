@@ -171,8 +171,8 @@ config_t rst_masking = {
     .cfg_word_offset = CFG_RSTMASKS_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
-        .max_value     = CFG_RST_MASKS_MAX_VALUE,
-        .getvalue_mask = CFG_RST_MASKS_GETMASK
+        .max_value     = CFG_RSTMASKS_MAX_VALUE,
+        .getvalue_mask = CFG_RSTMASKS_GETMASK
     },
     .value_string = (const char **) &RstMasking
 };
