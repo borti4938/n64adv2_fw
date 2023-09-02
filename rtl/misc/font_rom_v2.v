@@ -651,6 +651,7 @@ always @(posedge CLK or negedge nRST)
         0053:    rddata_opt[3] <= 099;
         0054:    rddata_opt[3] <= 060;
         0058:    rddata_opt[3] <= 007;
+        0064:    rddata_opt[3] <= 034;
         0075:    rddata_opt[3] <= 064;
         0076:    rddata_opt[3] <= 051;
         0077:    rddata_opt[3] <= 099;
@@ -663,6 +664,7 @@ always @(posedge CLK or negedge nRST)
         0085:    rddata_opt[3] <= 099;
         0086:    rddata_opt[3] <= 012;
         0090:    rddata_opt[3] <= 006;
+        0096:    rddata_opt[3] <= 119;
         0102:    rddata_opt[3] <= 024;
         0106:    rddata_opt[3] <= 024;
         0107:    rddata_opt[3] <= 096;
@@ -678,6 +680,7 @@ always @(posedge CLK or negedge nRST)
         0117:    rddata_opt[3] <= 099;
         0118:    rddata_opt[3] <= 012;
         0122:    rddata_opt[3] <= 006;
+        0128:    rddata_opt[3] <= 127;
         0134:    rddata_opt[3] <= 048;
         0138:    rddata_opt[3] <= 024;
         0139:    rddata_opt[3] <= 048;
@@ -698,6 +701,7 @@ always @(posedge CLK or negedge nRST)
         0155:    rddata_opt[3] <= 030;
         0156:    rddata_opt[3] <= 030;
         0157:    rddata_opt[3] <= 099;
+        0160:    rddata_opt[3] <= 127;
         0166:    rddata_opt[3] <= 127;
         0170:    rddata_opt[3] <= 126;
         0171:    rddata_opt[3] <= 024;
@@ -717,6 +721,7 @@ always @(posedge CLK or negedge nRST)
         0187:    rddata_opt[3] <= 051;
         0188:    rddata_opt[3] <= 051;
         0189:    rddata_opt[3] <= 099;
+        0192:    rddata_opt[3] <= 127;
         0198:    rddata_opt[3] <= 048;
         0202:    rddata_opt[3] <= 024;
         0203:    rddata_opt[3] <= 012;
@@ -736,6 +741,7 @@ always @(posedge CLK or negedge nRST)
         0219:    rddata_opt[3] <= 051;
         0220:    rddata_opt[3] <= 006;
         0221:    rddata_opt[3] <= 107;
+        0224:    rddata_opt[3] <= 062;
         0230:    rddata_opt[3] <= 024;
         0234:    rddata_opt[3] <= 024;
         0235:    rddata_opt[3] <= 006;
@@ -755,6 +761,7 @@ always @(posedge CLK or negedge nRST)
         0251:    rddata_opt[3] <= 051;
         0252:    rddata_opt[3] <= 024;
         0253:    rddata_opt[3] <= 107;
+        0256:    rddata_opt[3] <= 028;
         0267:    rddata_opt[3] <= 003;
         0268:    rddata_opt[3] <= 051;
         0269:    rddata_opt[3] <= 012;
@@ -773,6 +780,7 @@ always @(posedge CLK or negedge nRST)
         0283:    rddata_opt[3] <= 051;
         0284:    rddata_opt[3] <= 051;
         0285:    rddata_opt[3] <= 054;
+        0288:    rddata_opt[3] <= 008;
         0299:    rddata_opt[3] <= 001;
         0300:    rddata_opt[3] <= 030;
         0301:    rddata_opt[3] <= 012;
@@ -792,6 +800,7 @@ always @(posedge CLK or negedge nRST)
         0316:    rddata_opt[3] <= 030;
         0317:    rddata_opt[3] <= 054;
         0334:    rddata_opt[3] <= 012;
+        0343:    rddata_opt[3] <= 255;
         0345:    rddata_opt[3] <= 051;
         0377:    rddata_opt[3] <= 030;
         default: rddata_opt[3] <= 000;

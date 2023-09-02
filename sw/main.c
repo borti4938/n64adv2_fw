@@ -280,6 +280,8 @@ int main()
 
       if (menu->type == N64DEBUG)
         update_debug_screen(menu);
+      else
+        run_pin_state(0);
 
       if (menu->type == CONFIG) {
         cfg_store_linex_word(vmode_menu);

@@ -37,6 +37,7 @@
 #define HEADER_UNDERLINE      0x08
 #define HOME_LOWSEC_UNDERLINE 0x01
 
+#define HEART               0x03
 #define CHECKBOX_TICK       0x0D
 #define TRIANGLE_LEFT       0x10
 #define TRIANGLE_RIGHT      0x11
@@ -156,16 +157,33 @@
 
 #define N64DEBUG_OVERLAY_H_OFFSET       OVERLAY_H_OFFSET
 #define N64DEBUG_OVERLAY_V_OFFSET       OVERLAY_V_OFFSET
-#define N64DEBUG_VALS_H_OFFSET          (27 + N64DEBUG_OVERLAY_H_OFFSET)
+#define N64DEBUG_VALS_H_OFFSET          (19 + N64DEBUG_OVERLAY_H_OFFSET)
 #define N64DEBUG_VALS_V_OFFSET          N64DEBUG_OVERLAY_V_OFFSET
 #define N64DEBUG_PPU_STATE_V_OFFSET     ( 0 + N64DEBUG_VALS_V_OFFSET)
-#define N64DEBUG_VIN_V_OFFSET           ( 2 + N64DEBUG_VALS_V_OFFSET)
-#define N64DEBUG_VOUT_V_OFFSET          ( 3 + N64DEBUG_VALS_V_OFFSET)
-#define N64DEBUG_VRES_V_OFFSET          ( 4 + N64DEBUG_VALS_V_OFFSET)
-#define N64DEBUG_LLM_V_OFFSET           ( 5 + N64DEBUG_VALS_V_OFFSET)
-#define N64DEBUG_DEBLUR_V_OFFSET        ( 7 + N64DEBUG_VALS_V_OFFSET)
-#define N64DEBUG_GAMMA_V_OFFSET         ( 8 + N64DEBUG_VALS_V_OFFSET)
-#define N64DEBUG_RESYNC_VI_PL_V_OFFSET  (10 + N64DEBUG_VALS_V_OFFSET)
+  #define N64DEBUG_PPU_VI_H_OFFSET        (17 + OVERLAY_H_OFFSET)
+  #define N64DEBUG_PPU_VI_V_OFFSET        ( 1 + N64DEBUG_PPU_STATE_V_OFFSET)
+  #define N64DEBUG_SSM_H_OFFSET           (17 + OVERLAY_H_OFFSET)
+  #define N64DEBUG_SSM_V_OFFSET           ( 2 + N64DEBUG_PPU_STATE_V_OFFSET)
+#define N64DEBUG_PIN_STATE_V_OFFSET     ( 3 + N64DEBUG_VALS_V_OFFSET)
+  #define N64DEBUG_PIN_CLK_LINE0_V_OFFSET ( 1 + N64DEBUG_PIN_STATE_V_OFFSET)
+  #define N64DEBUG_PIN_CLK_LINE1_V_OFFSET ( 2 + N64DEBUG_PIN_STATE_V_OFFSET)
+  #define N64DEBUG_PIN_CLK_PLL1_H_OFFSET  (17 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_CLK_PLL0_H_OFFSET  (19 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_PLL_SRC_H_OFFSET   (25 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_CLK_SYS_H_OFFSET   (17 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_CLK_AUD_H_OFFSET   (26 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_CLK_N64_H_OFFSET   (34 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_VDATA_V_OFFSET     ( 3 + N64DEBUG_PIN_STATE_V_OFFSET)
+  #define N64DEBUG_PIN_VD_SYNC_H_OFFSET   (17 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_VD_DATA_H_OFFSET   (26 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_AUDIO_V_OFFSET     ( 4 + N64DEBUG_PIN_STATE_V_OFFSET)
+  #define N64DEBUG_PIN_AUDIO_LRC_H_OFFSET (17 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_AUDIO_SD_H_OFFSET  (26 + N64DEBUG_OVERLAY_H_OFFSET)
+  #define N64DEBUG_PIN_AUDIO_SC_H_OFFSET  (34 + N64DEBUG_OVERLAY_H_OFFSET)
+#define N64DEBUG_FUNC_H_OFFSET          (28 + N64DEBUG_OVERLAY_H_OFFSET)
+#define N64DEBUG_FUNC_V_OFFSET          ( 9 + N64DEBUG_VALS_V_OFFSET)
+  #define N64DEBUG_RESYNC_VI_PL_V_OFFSET  ( 0 + N64DEBUG_FUNC_V_OFFSET)
+  #define N64DEBUG_LOCK_MENU_V_OFFSET     ( 1 + N64DEBUG_FUNC_V_OFFSET)
 
 #define MAIN_OVERLAY_H_OFFSET   ( 3 + OVERLAY_H_OFFSET)
 #define MAIN_OVERLAY_V_OFFSET   OVERLAY_V_OFFSET
@@ -287,15 +305,16 @@ static const char *n64debug_header __ufmdata_section__ =
     "Debug-Info";
 static const char *n64debug_overlay __ufmdata_section__ =
     "* PPU state value:\n"
-    "* Video mode\n"
-    "  - Input resolution:\n"
-    "  - Output resolution:\n"
-    "  - Scaled image size:\n"
-    "  - Frame-Locked mode:\n"
-    "* Filter Options\n"
-    "  - LowRes. VI-DeBlur:\n"
-    "  - Gamma boost exponent:\n\n"
-    "* Re-sync VI pipeline:";
+    "  - VI mode:\n"
+    "  - Frame-Lock:\n"
+    "* Pin check value:\n"
+    "  - CLKs:  PLL : -/\n"
+    "           Sys.: -, Aud.: -, N64:\n"
+    "  - VI:    Sync: -, Data: -/-/-/-/-/-/\n"
+    "  - Audio: ALRC: -, ASD : -, ASC:\n\n"
+    "* Re-sync VI pipeline:\n"
+    "* Lock menu (ctrl. test):";
+  /* 123456789012345678901234567890123456789012345678 */
 
 #ifndef DEBUG
   static const char *thanks_header __ufmdata_section__ =

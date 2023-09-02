@@ -88,10 +88,10 @@ static const arrow_t misc_opt_arrow = {
     .hpos = (MISC_VALS_H_OFFSET - 2)
 };
 
-static const arrow_t misc_sel_arrow = {
-    .shape = &selection_arrow,
-    .hpos = (MISC_VALS_H_OFFSET - 2)
-};
+//static const arrow_t misc_sel_arrow = {
+//    .shape = &selection_arrow,
+//    .hpos = (MISC_VALS_H_OFFSET - 2)
+//};
 
 static const arrow_t rwdata_sel_arrow = {
     .shape = &selection_arrow,
@@ -101,6 +101,11 @@ static const arrow_t rwdata_sel_arrow = {
 static const arrow_t rwdata_optval_arrow = {
     .shape = &optval_arrow,
     .hpos = (RWDATA_VALS_H_OFFSET - 2)
+};
+
+static const arrow_t db_sel_arrow = {
+    .shape = &selection_arrow,
+    .hpos = (N64DEBUG_FUNC_H_OFFSET - 2)
 };
 
 
@@ -144,21 +149,6 @@ menu_t home_menu = {
         {.id = MAIN2NOTICE_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &notice_screen}
     #endif
   #endif
-    }
-};
-
-menu_t debug_screen = {
-    .type = N64DEBUG,
-    .header = &n64debug_header,
-    .body = {
-      .hoffset = N64DEBUG_OVERLAY_H_OFFSET,
-      .text = &n64debug_overlay
-    },
-    .parent = &home_menu,
-    .current_selection = 0,
-    .number_selections = 1,
-    .leaves = {
-        {.id = N64DEBUG_RESYNC_VI_PL_V_OFFSET, .arrow_desc = &misc_sel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &resync_vi_pipeline}
     }
 };
 
@@ -335,6 +325,20 @@ menu_t rwdata_screen = {
 
 #define RW_LOAD_DEFAULT480P_SELECTION   2
 #define RW_LOAD_DEFAULT1080P_SELECTION  3
+menu_t debug_screen = {
+    .type = N64DEBUG,
+    .header = &n64debug_header,
+    .body = {
+      .hoffset = N64DEBUG_OVERLAY_H_OFFSET,
+      .text = &n64debug_overlay
+    },
+    .parent = &home_menu,
+    .current_selection = 0,
+    .number_selections = 1,
+    .leaves = {
+        {.id = N64DEBUG_RESYNC_VI_PL_V_OFFSET, .arrow_desc = &db_sel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &resync_vi_pipeline}
+    }
+};
 
 #ifndef DEBUG
   menu_t about_screen = {
@@ -885,68 +889,71 @@ int update_debug_screen(menu_t* current_menu)
 
   // PPU state
   vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PPU_STATE_V_OFFSET);
-  sprintf(szText,"0x%08x",(uint) ppu_state);
+  sprintf(szText,"0x%07x",(uint) ppu_state);
   vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PPU_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
-  // Video Input
-  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VIN_V_OFFSET);
-  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VIN_V_OFFSET,FONTCOLOR_WHITE,VideoMode[(palmode << 1) | scanmode]);
-  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET + 5,N64DEBUG_VIN_V_OFFSET,FONTCOLOR_WHITE,VRefresh[palmode]);
-
-  // Video Output
-  linex_cnt linex_mode = (ppu_state & PPU_RESOLUTION_GETMASK) >> PPU_RESOLUTION_OFFSET;
-  bool_t is_lowlatency_mode = ((ppu_state & PPU_LOWLATENCYMODE_GETMASK) >> PPU_LOWLATENCYMODE_OFFSET);
-  alt_u8 force5060val = (ppu_state & PPU_FORCE5060_GETMASK) >> PPU_FORCE5060_OFFSET;
-  bool_t is_50Hz_mode = (is_lowlatency_mode || (linex_mode == PASSTHROUGH) || (force5060val == 0x00)) ? palmode : (force5060val == 0x02);
-  bool_t printhz4vga = FALSE;
-
-  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET);
-  switch (linex_mode) {
-    case PASSTHROUGH:
-      if (palmode) vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution288p576p[0]);
-      else vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution240p480p[0]);
-      break;
-    case LineX2:
-      if (is_50Hz_mode) {
-        vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution288p576p[1]);
-      } else {
-        if ((ppu_state & PPU_USE_VGA_FOR_480P_GETMASK) >> PPU_USE_VGA_FOR_480P_OFFSET) {
-          vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,ResolutionVGA);
-          printhz4vga = TRUE;
-        } else {
-          vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolution240p480p[1]);
-        }
-      }
-      break;
-    default:
-      vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,Resolutions[linex_mode]);
+  // PPU state: VI mode
+  vd_clear_lineend(VD_TEXT,N64DEBUG_PPU_VI_H_OFFSET,N64DEBUG_PPU_VI_V_OFFSET);
+  if (palmode) {
+    sprintf(szText,VTimingSel[2+scanmode]);
+    sprintf(&szText[10]," (Pat. %d)",pal_pattern);
+  } else {
+    sprintf(szText,VTimingSel[scanmode]);
   }
-  if (printhz4vga) vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET + 14,N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,VRefresh[0]);
-  else vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET + 5 + (linex_mode > LineX4),N64DEBUG_VOUT_V_OFFSET,FONTCOLOR_WHITE,VRefresh[is_50Hz_mode]);
+  vd_print_string(VD_TEXT,N64DEBUG_PPU_VI_H_OFFSET,N64DEBUG_PPU_VI_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
-  // Image size
-  sprintf(szText,"%ux%u", (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_HORSCALE_GETMASK) >> CFG_HORSCALE_OFFSET),
-                          (alt_u16) ((scaling_words[scaling_n64adv].config_val & CFG_VERTSCALE_GETMASK) >> CFG_VERTSCALE_OFFSET));
-  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VRES_V_OFFSET);
-  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_VRES_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
-
-  // Source-Sync. Mode
-  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_LLM_V_OFFSET);
-  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_LLM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
+  // PPU state: Source-Sync. Mode
+  bool_t is_lowlatency_mode = ((ppu_state & PPU_LOWLATENCYMODE_GETMASK) >> PPU_LOWLATENCYMODE_OFFSET);
+  vd_clear_lineend(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET);
+  vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
   if (is_lowlatency_mode) {
     sprintf(szText,"(%d sl. buffered)",(uint) ((ppu_state & PPU_LLM_SLBUF_FB_GETMASK) >> PPU_LLM_SLBUF_FB_OFFSET));
-    vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET+3,N64DEBUG_LLM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+    vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET+3,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
   }
 
-  // 240p DeBlur
-  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET, N64DEBUG_DEBLUR_V_OFFSET);
-  if (scanmode == INTERLACED) vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_DEBLUR_V_OFFSET,FONTCOLOR_GREY,text_480i_576i_br);
-  else vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_DEBLUR_V_OFFSET,FONTCOLOR_WHITE,OffOn[!hor_hires]);
+  // Pin state
+  run_pin_state(TRUE);
+  alt_u16 pin_state = get_pin_state();
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PIN_STATE_V_OFFSET);
+  sprintf(szText,"0x%04x",(uint) pin_state);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PIN_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
-  // Gamma Table
-  gamma2txt_func((ppu_state & PPU_GAMMA_TABLE_GETMASK) >> PPU_GAMMA_TABLE_OFFSET);
-  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_GAMMA_V_OFFSET);
-  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_GAMMA_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+  // Pin state: show hearts
+  const alt_u8 Nok_Ok[2] = {CHECKBOX_TICK,HEART};
+  const alt_u8 Nok_Ok_color[2] = {FONTCOLOR_RED,FONTCOLOR_GREEN};
+  const char *ClkSrc[] = {"27Mhz","N64"};
+
+  alt_u8 idx;
+  sprintf(szText,"-");
+  const alt_u8 hoffsets[16] = {
+    N64DEBUG_PIN_AUDIO_SC_H_OFFSET, N64DEBUG_PIN_AUDIO_SD_H_OFFSET, N64DEBUG_PIN_AUDIO_LRC_H_OFFSET,
+    N64DEBUG_PIN_VD_SYNC_H_OFFSET, N64DEBUG_PIN_VD_DATA_H_OFFSET + 0, N64DEBUG_PIN_VD_DATA_H_OFFSET + 2, N64DEBUG_PIN_VD_DATA_H_OFFSET + 4,
+    N64DEBUG_PIN_VD_DATA_H_OFFSET + 6, N64DEBUG_PIN_VD_DATA_H_OFFSET + 8, N64DEBUG_PIN_VD_DATA_H_OFFSET + 10, N64DEBUG_PIN_VD_DATA_H_OFFSET + 12,
+    N64DEBUG_PIN_CLK_N64_H_OFFSET, N64DEBUG_PIN_CLK_PLL0_H_OFFSET, N64DEBUG_PIN_CLK_PLL1_H_OFFSET,
+    N64DEBUG_PIN_CLK_AUD_H_OFFSET, N64DEBUG_PIN_CLK_SYS_H_OFFSET
+  };  // define offsets according to bit position in in pin_state variable
+  const alt_u8 voffsets[16] = {
+    N64DEBUG_PIN_AUDIO_V_OFFSET, N64DEBUG_PIN_AUDIO_V_OFFSET, N64DEBUG_PIN_AUDIO_V_OFFSET,
+    N64DEBUG_PIN_VDATA_V_OFFSET, N64DEBUG_PIN_VDATA_V_OFFSET, N64DEBUG_PIN_VDATA_V_OFFSET, N64DEBUG_PIN_VDATA_V_OFFSET,
+    N64DEBUG_PIN_VDATA_V_OFFSET, N64DEBUG_PIN_VDATA_V_OFFSET, N64DEBUG_PIN_VDATA_V_OFFSET, N64DEBUG_PIN_VDATA_V_OFFSET,
+    N64DEBUG_PIN_CLK_LINE1_V_OFFSET, N64DEBUG_PIN_CLK_LINE0_V_OFFSET, N64DEBUG_PIN_CLK_LINE0_V_OFFSET,
+    N64DEBUG_PIN_CLK_LINE1_V_OFFSET, N64DEBUG_PIN_CLK_LINE1_V_OFFSET
+  };  // define offsets according to bit position in in pin_state variable
+  alt_u8 nok_ok_val;
+  for (idx = 0; idx < 16; idx++) {
+    nok_ok_val = ((pin_state & (1<<idx)) >> idx);
+    szText[0] = (char) Nok_Ok[nok_ok_val];
+    vd_print_string(VD_TEXT,hoffsets[idx],voffsets[idx],Nok_Ok_color[nok_ok_val],&szText[0]);
+  }
+
+  vd_clear_lineend(VD_TEXT,N64DEBUG_PIN_PLL_SRC_H_OFFSET,N64DEBUG_PIN_CLK_LINE0_V_OFFSET);
+  sprintf(szText,"(Source: %s)",ClkSrc[cfg_get_value(&low_latency_mode,0)]);
+  vd_print_string(VD_TEXT,N64DEBUG_PIN_PLL_SRC_H_OFFSET,N64DEBUG_PIN_CLK_LINE0_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+
+//  // for testing, if positions are right
+//  alt_u8 position_to_test = PIN_STATE_SYSCLK_OFFSET;
+//  sprintf(szText,"-");
+//  vd_print_string(VD_TEXT,hoffsets[position_to_test],voffsets[position_to_test],FONTCOLOR_WHITE,&szText[0]);
 
   return 0;
 }

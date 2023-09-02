@@ -81,6 +81,20 @@ void periphals_set_ready_bit() {
   IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
 }
 
+void run_pin_state(bool_t enable)
+{
+  if (enable) info_sync_val = (info_sync_val & SYNC_INFO_OUT_ALL_MASK) | RUN_PINCHECK_SET_MASK;
+  else        info_sync_val =  info_sync_val & RUN_PINCHECK_CLR_MASK;
+  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+}
+
+alt_u16 get_pin_state()
+{
+  SET_HWINFO_SEL(HW_PINCHECK_STATUS);
+  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+  return IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE);
+}
+
 void update_ppu_state()
 {
   ppu_state = (IORD_ALTERA_AVALON_PIO_DATA(PPU_STATE_IN_BASE) & PPU_FEEDBACK_GETALL_MASK);

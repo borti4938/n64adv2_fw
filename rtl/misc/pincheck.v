@@ -70,7 +70,7 @@ input ASDATA_i;   // Pin 7
 input ASCLK_i;    // Pin 6
 // Note: missing pins are always a (VCC,GND)-pair
 
-output [13:0] status_o;
+output [15:0] status_o;
 
 
 // start of rtl
@@ -293,14 +293,15 @@ always @(posedge N64_CLK_i)
     if ( VD_i[3] & !VD_i[4]) pin20to19_ok[0] <= 1'b1;
     if (!VD_i[4] &  VD_i[5]) pin19to18_ok[1] <= 1'b1;
     if ( VD_i[4] & !VD_i[5]) pin19to18_ok[0] <= 1'b1;
-    if (!VD_i[5]) pin18toVcc_ok <= 1'b1; // becomes 1 if VD_i[5] is low for one cycle
-    if ( VD_i[6]) pin15toGND_ok <= 1'b1; // becomes 1 if VD_i[6] is high for one cycle
+    if (!VD_i[5]) pin18toVcc_ok <= 1'b1;  // becomes 1 if VD_i[5] is low for one cycle
+    if ( VD_i[6]) pin15toGND_ok <= 1'b1;  // becomes 1 if VD_i[6] is high for one cycle
     if (!VD_i[6] &  nVDSYNC_i) pin15to14_ok[1] <= 1'b1;
-    if ( VD_i[6] & !nVDSYNC_i) pin15to14_ok[0] <= 1'b1;
-    if (!nVDSYNC_i) pin14toVcc_ok <= 1'b1; // becomes 1 if nVDSYNC_i is low for one cycle
+    if ( VD_i[6]) pin15to14_ok[0] <= 1'b1;  // VD[6] is always low if VDSYNC is low,
+                                            // so just check if VD[6] is able to be high here
+    if (!nVDSYNC_i) pin14toVcc_ok <= 1'b1;  // becomes 1 if nVDSYNC_i is low for one cycle
     if (!ALRCLK_w) pin10check_ok[1] <= 1'b1;
     if ( ALRCLK_w) pin10check_ok[0] <= 1'b1;
-    if ( ASDATA_w) pin7toGND_ok <= 1'b1; // becomes 1 if ASDATA_i is high for one cycle
+    if ( ASDATA_w) pin7toGND_ok <= 1'b1;  // becomes 1 if ASDATA_i is high for one cycle
     if (!ASDATA_w &  ASCLK_w) pin7to6_ok[1] <= 1'b1;
     if ( ASDATA_w & !ASCLK_w) pin7to6_ok[0] <= 1'b1;
     
@@ -328,7 +329,7 @@ generate
       .clk(clk_i),
       .clk_en(1'b1),
       .nrst(1'b1),
-      .reg_i({clk_sys_ok,clk_aud_ok,clk_epll1_ok,clk_epll0_ok,clk_n64_ok,pin24_ok,pin23_ok,pin20_ok,pin19_ok,pin18_ok,pin15_ok,pin14_ok,pin10_ok,pin7_ok,pin6_ok}),
+      .reg_i({clk_sys_ok,clk_aud_ok,clk_epll1_ok,clk_epll0_ok,clk_n64_ok,pin25_ok,pin24_ok,pin23_ok,pin20_ok,pin19_ok,pin18_ok,pin15_ok,pin14_ok,pin10_ok,pin7_ok,pin6_ok}),
       .reg_o(status_o)
     );
   end else begin

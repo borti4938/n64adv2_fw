@@ -196,30 +196,13 @@ wire [3:0] DRAM_DQ_dummy;
 assign N64_CLK_o = N64_CLK_i;
 assign nViDeblur_o = ~PPUConfigSet_w[`videblur_bit];
 
-// pin checking module
-
-pincheck pincheck_u(
-  .clk_i(CLKs_controller_w[1]),
-  .run_i(run_pincheck_w),
-  .CLK_SYS_i(SYS_CLK_i),
-  .CLK_AUD_i(AMCLK_i),
-  .CLK_ePLL1_i(HDMI_CLKsub_i),
-  .CLK_ePLL0_i(HDMI_CLKmain_i),
-  .VD_i(VD_i),
-  .nVDSYNC_i(nVDSYNC_i),
-  .N64_CLK_i(N64_CLK_i),
-  .ALRCLK_i(ALRCLK_i),
-  .ASDATA_i(ASDATA_i),
-  .ASCLK_i(ASCLK_i),
-  .status_o(pincheck_status_w)
-);
-
 
 // input registering
 
 wire N64_CLK_w = N64_CLK_i;
 wire nVDSYNC_w;
 wire [6:0] VD_w;
+wire ALRCLK_w, ASDATA_w, ASCLK_w;
 
 register_sync #(
   .reg_width(8),
@@ -230,6 +213,36 @@ register_sync #(
   .nrst(1'b1),
   .reg_i({nVDSYNC_i,VD_i}),
   .reg_o({nVDSYNC_w,VD_w})
+);
+
+register_sync #(
+  .reg_width(3),
+  .reg_preset(3'b000)
+) inp_aregs_u(  // just for the pincheck module
+  .clk(N64_CLK_w),
+  .clk_en(1'b1),
+  .nrst(1'b1),
+  .reg_i({ALRCLK_i,ASDATA_i,ASCLK_i}),
+  .reg_o({ALRCLK_w,ASDATA_w,ASCLK_w})
+);
+
+
+// pin checking module
+
+pincheck pincheck_u(
+  .clk_i(CLKs_controller_w[1]),
+  .run_i(run_pincheck_w),
+  .CLK_SYS_i(SYS_CLK_i),
+  .CLK_AUD_i(AMCLK_i),
+  .CLK_ePLL1_i(HDMI_CLKsub_i),
+  .CLK_ePLL0_i(HDMI_CLKmain_i),
+  .VD_i(VD_w),
+  .nVDSYNC_i(nVDSYNC_w),
+  .N64_CLK_i(N64_CLK_w),
+  .ALRCLK_i(ALRCLK_w),
+  .ASDATA_i(ASDATA_w),
+  .ASCLK_i(ASCLK_w),
+  .status_o(pincheck_status_w)
 );
 
 
