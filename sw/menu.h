@@ -89,29 +89,25 @@ typedef struct {
   alt_u8       hpos;
 } arrow_t;
 
-typedef int (*sys_call_0)(void);
-typedef int (*sys_call_1)(alt_u8);
-typedef int (*sys_call_bool_1)(bool_t);
-typedef int (*sys_call_2)(alt_u8,alt_u8);
-typedef int (*sys_call_bool_2)(fallback_vmodes_t,bool_t);
+typedef int (*sys_call_type_0)(void);
+typedef int (*sys_call_type_1)(bool_t);
+typedef int (*sys_call_type_2)(fallback_vmodes_t,bool_t);
 
-typedef alt_u16 (*cfgfct_call_2)(alt_u16,bool_t,bool_t);
-typedef alt_u16 (*cfgfct_call_3)(alt_u16,bool_t,bool_t,bool_t);
+typedef alt_u16 (*cfgfct_call_type_2)(alt_u16,bool_t,bool_t);
+typedef alt_u16 (*cfgfct_call_type_3)(alt_u16,bool_t,bool_t,bool_t);
 
 typedef struct {
   alt_u8        id;
   const arrow_t *arrow_desc;
   leavetype_t   leavetype;
   union {
-    struct menu     *submenu;
-    config_t        *config_value;
-    cfgfct_call_2   cfgfct_call_2;
-    cfgfct_call_3   cfgfct_call_3;
-    sys_call_0      sys_fun_0;
-    sys_call_1      sys_fun_1;
-    sys_call_bool_1 sys_fun_bool_1;
-    sys_call_2      sys_fun_2;
-    sys_call_bool_2 sys_fun_bool_2;
+    struct menu         *submenu;
+    config_t            *config_value;
+    cfgfct_call_type_2  cfgfct_call_2;
+    cfgfct_call_type_3  cfgfct_call_3;
+    sys_call_type_0     sys_fun_0;
+    sys_call_type_1     sys_fun_1;
+    sys_call_type_2     sys_fun_2;
   };
 } leaves_t;
 
