@@ -149,11 +149,10 @@
 #define RWDATA_AUTOSAVE_V_OFFSET          ( 1 + RWDATA_OVERLAY_V_OFFSET)
 #define RWDATA_SAVE_FL_V_OFFSET           ( 2 + RWDATA_OVERLAY_V_OFFSET)
 #define RWDATA_LOAD_FL_V_OFFSET           ( 4 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_DEFAULT480P_V_OFFSET  ( 5 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_DEFAULT1080P_V_OFFSET ( 6 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_CPYCFG_DIRECTION_V_OFFSET  ( 8 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_CPYCFG_FUNCTION_V_OFFSET   ( 9 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_FALLBACK_V_OFFSET          (10 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_FBDEFAULTS_V_OFFSET   ( 5 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_CPYCFG_DIRECTION_V_OFFSET  ( 7 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_CPYCFG_FUNCTION_V_OFFSET   ( 8 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FALLBACK_V_OFFSET          ( 9 + RWDATA_OVERLAY_V_OFFSET)
 
 #define N64DEBUG_OVERLAY_H_OFFSET       OVERLAY_H_OFFSET
 #define N64DEBUG_OVERLAY_V_OFFSET       OVERLAY_V_OFFSET
@@ -294,8 +293,7 @@ static const char *rwdata_overlay __ufmdata_section__ =
     "  - Configuration now:\n"
     "* Load\n"
     "  - Last configuration:\n"
-    "  - 480p defaults:\n"
-    "  - 1080p defaults:\n"
+    "  - Fallback defaults:\n"
     "* Copy:\n"
     "  - Direction:\n"
     "  - Copy config now:\n"

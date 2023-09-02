@@ -561,7 +561,8 @@ int cfg_load_defaults(fallback_vmodes_t vmode, bool_t need_confirm)
       cfg_store_linex_word(NTSC);
       break;
     default:  // FB_1080P
-//      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL1080P;
+//      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
+      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL1080P;
       cfg_store_linex_word(PAL);
       sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
       sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC1080P;
