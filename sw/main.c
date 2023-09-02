@@ -360,8 +360,6 @@ int main()
       else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE())
         periphal_state.adv7513_hdmi_up = FALSE;
       else if ((palmode_pre != palmode)                     ||
-               (target_resolution_pre != target_resolution) ||
-//               (hor_hires_pre != hor_hires)                 ||
                (todo == NEW_CONF_VALUE))
         set_cfg_adv7513();
     }
