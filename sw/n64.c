@@ -222,8 +222,10 @@ int resync_vi_pipeline()
   bool_t abort = confirmation_routine();
   if (abort) return -CFG_RESYNC_ABORT;
   periphals_clr_ready_bit();
+  run_pin_state(FALSE);
   usleep(100);
   periphals_set_ready_bit();
+  run_pin_state(TRUE);
   return 0;
 }
 
