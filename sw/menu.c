@@ -895,9 +895,12 @@ int update_debug_screen(menu_t* current_menu)
   // Pin state
   run_pin_state(TRUE);
   alt_u16 pin_state = get_pin_state();
+  if (pin_state == PIN_STATE_GETALL_MASK) idx = 1;
+  else if ((pin_state & PIN_STATE_NOAUDIO_PINS_GETMASK) == PIN_STATE_NOAUDIO_PINS_GETMASK) idx = 2;
+  else idx = 0;
   vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PIN_STATE_V_OFFSET);
   sprintf(szText,"0x%04x",(uint) pin_state);
-  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PIN_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PIN_STATE_V_OFFSET,Nok_Ok_color[idx],&szText[0]);
 
   // Pin state: show hearts
   sprintf(szText,"-");
