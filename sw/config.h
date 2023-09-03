@@ -575,7 +575,7 @@ void cfg_dec_value(config_t* cfg_data);
 alt_u16 cfg_get_value(config_t* cfg_data,cfg_offon_t get_reference);
 void cfg_set_value(config_t* cfg_data, alt_u16 value);
 alt_u16 cfgfct_linex(alt_u16 value, bool_t set_value, bool_t ret_reference);
-alt_u16 cfgfct_unlock1440p(alt_u16 value, bool_t set_value, bool_t ret_reference);
+void cfgfct_unlock1440p(bool_t set_value);
 alt_u8 cfg_scale_is_predefined(alt_u16 value,bool_t use_vertical);
 void cfg_scale_v2h_update(void);
 alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t get_reference);

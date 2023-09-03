@@ -45,67 +45,17 @@ char szText[VD_WIDTH];
 extern cfg_region_sel_type_t vmode_menu, vmode_n64adv;
 extern cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
-extern config_tray_t scaling_words[NUM_SCALING_MODES];
+//extern config_tray_t scaling_words[NUM_SCALING_MODES];
 
 
-static const arrowshape_t selection_arrow = {
-    .left  = ARROW_RIGHT,
-    .right = EMPTY
+static const arrowshape_t select_arrow = {
+    .left  = EMPTY,
+    .right = TRIANGLE_RIGHT
 };
 
 static const arrowshape_t optval_arrow = {
     .left  = TRIANGLE_LEFT,
     .right = TRIANGLE_RIGHT
-};
-
-static const arrow_t front_sel_arrow = {
-    .shape = &selection_arrow,
-    .hpos = 1
-};
-
-static const arrow_t vires_opt_arrow = {
-    .shape = &optval_arrow,
-    .hpos = (RESCFG_VALS_H_OFFSET - 2)
-};
-
-static const arrow_t viscaling_opt_arrow = {
-    .shape = &optval_arrow,
-    .hpos = (SCALERCFG_VALS_H_OFFSET - 2)
-};
-
-static const arrow_t vicfg_opt_arrow = {
-    .shape = &optval_arrow,
-    .hpos = (VICFG_VALS_H_OFFSET - 2)
-};
-
-static const arrow_t slcfg_opt_arrow = {
-    .shape = &optval_arrow,
-    .hpos = (SLCFG_VALS_H_OFFSET - 2)
-};
-
-static const arrow_t misc_opt_arrow = {
-    .shape = &optval_arrow,
-    .hpos = (MISC_VALS_H_OFFSET - 2)
-};
-
-//static const arrow_t misc_sel_arrow = {
-//    .shape = &selection_arrow,
-//    .hpos = (MISC_VALS_H_OFFSET - 2)
-//};
-
-static const arrow_t rwdata_sel_arrow = {
-    .shape = &selection_arrow,
-    .hpos = (RWDATA_VALS_H_OFFSET - 2)
-};
-
-static const arrow_t rwdata_optval_arrow = {
-    .shape = &optval_arrow,
-    .hpos = (RWDATA_VALS_H_OFFSET - 2)
-};
-
-static const arrow_t db_sel_arrow = {
-    .shape = &selection_arrow,
-    .hpos = (N64DEBUG_FUNC_H_OFFSET - 2)
 };
 
 
@@ -123,6 +73,7 @@ menu_t home_menu = {
       .hoffset = MAIN_OVERLAY_H_OFFSET,
       .text = &home_overlay
     },
+    .arrow_position = 0,
     .current_selection = 0,
 #ifndef DEBUG
   #ifdef USE_NOTICE_SECTION
@@ -134,19 +85,19 @@ menu_t home_menu = {
     .number_selections = 7,
 #endif
     .leaves = {
-        {.id = MAIN2RES_V_OFFSET     , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vires_screen},
-        {.id = MAIN2SCALER_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &viscaling_screen},
-        {.id = MAIN2SCANLINE_V_OFFSET, .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &slcfg_opt_subscreen},
-        {.id = MAIN2VIPROC_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_screen},
-        {.id = MAIN2MISC_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &misc_screen},
-        {.id = MAIN2SAVE_V_OFFSET    , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
-        {.id = MAIN2DEBUG_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &debug_screen},
+        {.id = MAIN2RES_V_OFFSET     , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &vires_screen},
+        {.id = MAIN2SCALER_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &viscaling_screen},
+        {.id = MAIN2SCANLINE_V_OFFSET, .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &slcfg_opt_subscreen},
+        {.id = MAIN2VIPROC_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_screen},
+        {.id = MAIN2MISC_V_OFFSET    , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &misc_screen},
+        {.id = MAIN2SAVE_V_OFFSET    , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
+        {.id = MAIN2DEBUG_V_OFFSET   , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &debug_screen},
   #ifndef DEBUG
-        {.id = MAIN2ABOUT_V_OFFSET   , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &about_screen},
-        {.id = MAIN2THANKS_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &thanks_screen},
-        {.id = MAIN2LICENSE_V_OFFSET , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &license_screen},
+        {.id = MAIN2ABOUT_V_OFFSET   , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &about_screen},
+        {.id = MAIN2THANKS_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &thanks_screen},
+        {.id = MAIN2LICENSE_V_OFFSET , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &license_screen},
     #ifdef USE_NOTICE_SECTION
-        {.id = MAIN2NOTICE_V_OFFSET  , .arrow_desc = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &notice_screen}
+        {.id = MAIN2NOTICE_V_OFFSET  , .arrowshape = &front_sel_arrow, .leavetype = ISUBMENU, .submenu = &notice_screen}
     #endif
   #endif
     }
@@ -160,24 +111,26 @@ menu_t vires_screen = {
       .text = &resolution_overlay
     },
     .parent = &home_menu,
+    .arrow_position = (RESCFG_VALS_H_OFFSET - 2),
     .current_selection = 0,
     .number_selections = 12,
     .leaves = {
-        {.id = RESCFG_INPUT_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &region_selection},
-        {.id = RESCFG_240P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-        {.id = RESCFG_480P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-        {.id = RESCFG_720P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-        {.id = RESCFG_960P_V_OFFSET       , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-        {.id = RESCFG_1080P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-        {.id = RESCFG_1200P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-        {.id = RESCFG_1440P_V_OFFSET      , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-        {.id = RESCFG_1440WP_V_OFFSET     , .arrow_desc = &vires_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_linex},
-        {.id = RESCFG_USE_VGA_RES_V_OFFSET, .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &vga_for_480p},
-        {.id = RESCFG_USE_SRCSYNC_V_OFFSET, .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &low_latency_mode},
-        {.id = RESCFG_FORCE_5060_V_OFFSET , .arrow_desc = &vires_opt_arrow, .leavetype = ICONFIG    , .config_value  = &linex_force_5060}
+        {.id = RESCFG_INPUT_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &region_selection},
+        {.id = RESCFG_240P_V_OFFSET       , .arrowshape = &select_arrow, .leavetype = CFG_FUNC3, .cfgfct_call_3 = &cfgfct_linex},
+        {.id = RESCFG_480P_V_OFFSET       , .arrowshape = &select_arrow, .leavetype = CFG_FUNC3, .cfgfct_call_3 = &cfgfct_linex},
+        {.id = RESCFG_720P_V_OFFSET       , .arrowshape = &select_arrow, .leavetype = CFG_FUNC3, .cfgfct_call_3 = &cfgfct_linex},
+        {.id = RESCFG_960P_V_OFFSET       , .arrowshape = &select_arrow, .leavetype = CFG_FUNC3, .cfgfct_call_3 = &cfgfct_linex},
+        {.id = RESCFG_1080P_V_OFFSET      , .arrowshape = &select_arrow, .leavetype = CFG_FUNC3, .cfgfct_call_3 = &cfgfct_linex},
+        {.id = RESCFG_1200P_V_OFFSET      , .arrowshape = &select_arrow, .leavetype = CFG_FUNC3, .cfgfct_call_3 = &cfgfct_linex},
+        {.id = RESCFG_1440P_V_OFFSET      , .arrowshape = &select_arrow, .leavetype = CFG_FUNC3, .cfgfct_call_3 = &cfgfct_linex},
+        {.id = RESCFG_1440WP_V_OFFSET     , .arrowshape = &select_arrow, .leavetype = CFG_FUNC3, .cfgfct_call_3 = &cfgfct_linex},
+        {.id = RESCFG_USE_VGA_RES_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &vga_for_480p},
+        {.id = RESCFG_USE_SRCSYNC_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &low_latency_mode},
+        {.id = RESCFG_FORCE_5060_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &linex_force_5060}
     }
 };
 
+#define RES_FUNCTIONS_OFFSET   1
 #define RES_1440P_SELECTION    7
 #define RES_1440WP_SELECTION   8
 #define FORCE5060_SELECTION   11
@@ -190,20 +143,21 @@ menu_t viscaling_screen = {
       .text = &scaler_overlay
     },
     .parent = &home_menu,
+    .arrow_position = (SCALERCFG_VALS_H_OFFSET - 2),
     .current_selection = 0,
     .number_selections = 11,
     .leaves = {
-        {.id = SCALERCFG_V_INTERP_V_OFFSET   , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &interpolation_mode_vert},
-        {.id = SCALERCFG_H_INTERP_V_OFFSET   , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &interpolation_mode_hori},
-        {.id = SCALERCFG_IN2OUT_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &scaling_selection},
-        {.id = SCALERCFG_LINKVH_V_OFFSET     , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &link_hv_scale},
-        {.id = SCALERCFG_VHSTEPS_V_OFFSET    , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &scaling_steps},
-        {.id = SCALERCFG_VERTSCALE_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICFGCMDFUNC3, .cfgfct_call_3 = &cfgfct_scale},
-        {.id = SCALERCFG_HORISCALE_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICFGCMDFUNC3, .cfgfct_call_3 = &cfgfct_scale},
-        {.id = SCALERCFG_PALBOXED_V_OFFSET   , .arrow_desc = &viscaling_opt_arrow ,.leavetype = ICONFIG     , .config_value  = &pal_boxed_mode},
-        {.id = SCALERCFG_INSHIFTMODE_V_OFFSET, .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &timing_selection},
-        {.id = SCALERCFG_VERTSHIFT_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &vert_shift},
-        {.id = SCALERCFG_HORISHIFT_V_OFFSET  , .arrow_desc = &viscaling_opt_arrow, .leavetype = ICONFIG     , .config_value  = &hor_shift}
+        {.id = SCALERCFG_V_INTERP_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &interpolation_mode_vert},
+        {.id = SCALERCFG_H_INTERP_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &interpolation_mode_hori},
+        {.id = SCALERCFG_IN2OUT_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &scaling_selection},
+        {.id = SCALERCFG_LINKVH_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &link_hv_scale},
+        {.id = SCALERCFG_VHSTEPS_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &scaling_steps},
+        {.id = SCALERCFG_VERTSCALE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = CFG_FUNC4, .cfgfct_call_4 = &cfgfct_scale},
+        {.id = SCALERCFG_HORISCALE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = CFG_FUNC4, .cfgfct_call_4 = &cfgfct_scale},
+        {.id = SCALERCFG_PALBOXED_V_OFFSET   , .arrowshape = &optval_arrow,.leavetype = ICONFIG  , .config_value  = &pal_boxed_mode},
+        {.id = SCALERCFG_INSHIFTMODE_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &timing_selection},
+        {.id = SCALERCFG_VERTSHIFT_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &vert_shift},
+        {.id = SCALERCFG_HORISHIFT_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &hor_shift}
     }
 };
 
@@ -227,22 +181,23 @@ menu_t slcfg_opt_subscreen = {
       .text = &slcfg_opt_overlay
     },
     .parent = &home_menu,
+    .arrow_position = (SLCFG_VALS_H_OFFSET - 2),
     .current_selection = 0,
     .number_selections = 13,
     .leaves = {
-        {.id = SLCFG_INPUT_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &region_selection},
-        {.id = SLCFG_CALC_BASE_V_OFFSET , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_calc_base},
-        {.id = SLCFG_HEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_en_hori},
-        {.id = SLCFG_HTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_thickness_hori},
-        {.id = SLCFG_HPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_profile_hori},
-        {.id = SLCFG_HSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_str_hori},
-        {.id = SLCFG_HHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &slhyb_str_hori},
-        {.id = SLCFG_VEN_V_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_en_vert},
-        {.id = SLCFG_VLINK_OFFSET       , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_link_h2v},
-        {.id = SLCFG_VTHICKNESS_V_OFFSET, .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_thickness_vert},
-        {.id = SLCFG_VPROFILE_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_profile_vert},
-        {.id = SLCFG_VSTR_V_OFFSET      , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &sl_str_vert},
-        {.id = SLCFG_VHYB_STR_V_OFFSET  , .arrow_desc = &slcfg_opt_arrow, .leavetype = ICONFIG , .config_value = &slhyb_str_vert}
+        {.id = SLCFG_INPUT_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &region_selection},
+        {.id = SLCFG_CALC_BASE_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_calc_base},
+        {.id = SLCFG_HEN_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_en_hori},
+        {.id = SLCFG_HTHICKNESS_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_thickness_hori},
+        {.id = SLCFG_HPROFILE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_profile_hori},
+        {.id = SLCFG_HSTR_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_str_hori},
+        {.id = SLCFG_HHYB_STR_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &slhyb_str_hori},
+        {.id = SLCFG_VEN_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_en_vert},
+        {.id = SLCFG_VLINK_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_link_h2v},
+        {.id = SLCFG_VTHICKNESS_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_thickness_vert},
+        {.id = SLCFG_VPROFILE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_profile_vert},
+        {.id = SLCFG_VSTR_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &sl_str_vert},
+        {.id = SLCFG_VHYB_STR_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &slhyb_str_vert}
     }
 };
 
@@ -257,17 +212,18 @@ menu_t vicfg_screen = {
       .text = &vicfg_overlay
     },
     .parent = &home_menu,
+    .arrow_position = (VICFG_VALS_H_OFFSET - 2),
     .current_selection = 0,
     .number_selections = 8,
     .leaves = {
-        {.id = VICFG_DEINTERL_V_OFFSET    , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deinterlace_mode},
-        {.id = VICFG_GAMMA_V_OFFSET       , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &gamma_lut},
-        {.id = VICFG_COLORSPACE_V_OFFSET  , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &color_space},
-        {.id = VICFG_LIMITEDRANGE_V_OFFSET, .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &limited_colorspace},
-        {.id = VICFG_DEBLUR_V_OFFSET      , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode},
-        {.id = VICFG_PCDEBLUR_V_OFFSET    , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode_powercycle},
-        {.id = VICFG_16BITMODE_V_OFFSET   , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &mode16bit},
-        {.id = VICFG_PC16BITMODE_V_OFFSET , .arrow_desc = &vicfg_opt_arrow, .leavetype = ICONFIG , .config_value = &mode16bit_powercycle}
+        {.id = VICFG_DEINTERL_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deinterlace_mode},
+        {.id = VICFG_GAMMA_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &gamma_lut},
+        {.id = VICFG_COLORSPACE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &color_space},
+        {.id = VICFG_LIMITEDRANGE_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &limited_colorspace},
+        {.id = VICFG_DEBLUR_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode},
+        {.id = VICFG_PCDEBLUR_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode_powercycle},
+        {.id = VICFG_16BITMODE_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &mode16bit},
+        {.id = VICFG_PC16BITMODE_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &mode16bit_powercycle}
     }
 };
 
@@ -285,18 +241,19 @@ menu_t misc_screen = {
       .text = &misc_overlay,
     },
     .parent = &home_menu,
+    .arrow_position = (MISC_VALS_H_OFFSET - 2),
     .current_selection = 0,
     .number_selections = 9,
     .leaves = {
-        {.id = MISC_AUDIO_SWAP_LR_V_OFFSET       , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_swap_lr},
-        {.id = MISC_AUDIO_FILTER_BYPASS_V_OFFSET , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_fliter_bypass},
-        {.id = MISC_AUDIO_AMP_V_OFFSET           , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_amp},
-        {.id = MISC_AUDIO_SPDIF_EN_V_OFFSET      , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &audio_spdif_en},
-        {.id = MISC_IGR_RESET_V_OFFSET           , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_reset},
-        {.id = MISC_IGR_DEBLUR_V_OFFSET          , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_deblur},
-        {.id = MISC_IGR_16BITMODE_V_OFFSET       , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &igr_16bitmode},
-        {.id = MISC_RST_MASKING_V_OFFSET         , .arrow_desc = &misc_opt_arrow, .leavetype = ICONFIG    , .config_value = &rst_masking},
-        {.id = MISC_LUCKY_1440P_V_OFFSET         , .arrow_desc = &misc_opt_arrow, .leavetype = ICFGVALFUNC, .cfgfct_call_2 = &cfgfct_unlock1440p}
+        {.id = MISC_AUDIO_SWAP_LR_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &audio_swap_lr},
+        {.id = MISC_AUDIO_FILTER_BYPASS_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &audio_fliter_bypass},
+        {.id = MISC_AUDIO_AMP_V_OFFSET           , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &audio_amp},
+        {.id = MISC_AUDIO_SPDIF_EN_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &audio_spdif_en},
+        {.id = MISC_IGR_RESET_V_OFFSET           , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_reset},
+        {.id = MISC_IGR_DEBLUR_V_OFFSET          , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_deblur},
+        {.id = MISC_IGR_16BITMODE_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_16bitmode},
+        {.id = MISC_RST_MASKING_V_OFFSET         , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &rst_masking},
+        {.id = MISC_LUCKY_1440P_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = CFG_FUNC1, .cfgfct_call_1 = &cfgfct_unlock1440p}
     }
 };
 
@@ -308,17 +265,18 @@ menu_t rwdata_screen = {
       .text = &rwdata_overlay
     },
     .parent = &home_menu,
+    .arrow_position = (RWDATA_VALS_H_OFFSET - 2),
     .current_selection = 0,
     .number_selections = 7,
     .leaves = {
-        {.id = RWDATA_AUTOSAVE_V_OFFSET         , .arrow_desc = &rwdata_optval_arrow, .leavetype = ICONFIG, .config_value = &autosave},
-        {.id = RWDATA_SAVE_FL_V_OFFSET          , .arrow_desc = &rwdata_sel_arrow   , .leavetype = IFUNC1,  .sys_fun_1 = &cfg_save_to_flash},
-        {.id = RWDATA_LOAD_FL_V_OFFSET          , .arrow_desc = &rwdata_sel_arrow   , .leavetype = IFUNC1,  .sys_fun_1 = &cfg_load_from_flash},
-        {.id = RWDATA_LOAD_FBDEFAULTS_V_OFFSET , .arrow_desc = &rwdata_sel_arrow    , .leavetype = IFUNC2,  .sys_fun_2 = &cfg_load_defaults},
-        {.id = RWDATA_CPYCFG_DIRECTION_V_OFFSET , .arrow_desc = &rwdata_optval_arrow, .leavetype = ICONFIG, .config_value = &copy_direction},
-        {.id = RWDATA_CPYCFG_FUNCTION_V_OFFSET  , .arrow_desc = &rwdata_sel_arrow   , .leavetype = IFUNC0,  .sys_fun_0 = &cfg_copy_ntsc2pal},
-        {.id = RWDATA_FALLBACK_V_OFFSET         , .arrow_desc = &rwdata_optval_arrow, .leavetype = ICONFIG, .config_value = &fallbackmode},
-//        {.id = RWDATA_UPDATE_V_OFFSET           , .arrow_desc = &rwdata_optsel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &fw_update}
+        {.id = RWDATA_AUTOSAVE_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &autosave},
+        {.id = RWDATA_SAVE_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1 = &cfg_save_to_flash},
+        {.id = RWDATA_LOAD_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1 = &cfg_load_from_flash},
+        {.id = RWDATA_LOAD_FBDEFAULTS_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC2, .sys_fun_2 = &cfg_load_defaults},
+        {.id = RWDATA_CPYCFG_DIRECTION_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &copy_direction},
+        {.id = RWDATA_CPYCFG_FUNCTION_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0 = &cfg_copy_ntsc2pal},
+        {.id = RWDATA_FALLBACK_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallbackmode},
+//        {.id = RWDATA_UPDATE_V_OFFSET          , .arrowshape = &optval_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0 = &fw_update}
     }
 };
 
@@ -330,10 +288,11 @@ menu_t debug_screen = {
       .text = &n64debug_overlay
     },
     .parent = &home_menu,
+    .arrow_position = (N64DEBUG_FUNC_H_OFFSET - 2),
     .current_selection = 0,
     .number_selections = 2,
     .leaves = {
-        {.id = N64DEBUG_RESYNC_VI_PL_V_OFFSET, .arrow_desc = &db_sel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &resync_vi_pipeline}
+        {.id = N64DEBUG_RESYNC_VI_PL_V_OFFSET, .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0 = &resync_vi_pipeline},
         {.id = N64DEBUG_LOCK_MENU_V_OFFSET   , .arrowshape = &select_arrow, .leavetype = ICONFIG, .config_value = &lock_menu}
     }
 };
@@ -395,8 +354,8 @@ static inline bool_t is_vicfg_screen (menu_t *menu)
 #ifndef DEBUG
   static inline bool_t is_about_screen (menu_t *menu)
     {  return (menu == &about_screen); }
-  static inline bool_t is_license_screen (menu_t *menu)
-    {  return (menu == &license_screen); }
+//  static inline bool_t is_license_screen (menu_t *menu)
+//    {  return (menu == &license_screen); }
 #endif
 
 
@@ -696,24 +655,30 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   }
 
   // check for functions embedded in menu
-  if ((*current_menu)->leaves[current_sel].leavetype == ICFGVALFUNC) {
+  if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC1) {
     if (command == CMD_MENU_RIGHT) {
-      (*current_menu)->leaves[current_sel].cfgfct_call_2(current_sel-1,1,0);  // at the moment only used in resolution menu, so this is correct
+      (*current_menu)->leaves[current_sel].cfgfct_call_1(1);  // at the moment only used for unlock 1440p, so this is correct
       return NEW_CONF_VALUE;
     }
   }
-  if ((*current_menu)->leaves[current_sel].leavetype == ICFGCMDFUNC3) { // at the moment only used in scaling menu for horizontal and vertical scale
+  if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC3) {
+    if (command == CMD_MENU_RIGHT) {
+      (*current_menu)->leaves[current_sel].cfgfct_call_3(current_sel-RES_FUNCTIONS_OFFSET,1,0);  // at the moment only used in resolution menu, so this is correct
+      return NEW_CONF_VALUE;
+    }
+  }
+  if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC4) { // at the moment only used in scaling menu for horizontal and vertical scale
     if ((command == CMD_MENU_RIGHT) || (command == CMD_MENU_LEFT)) {
-      (*current_menu)->leaves[current_sel].cfgfct_call_3(command,current_sel==VERTSCALE_SELECTION,1,0);
+      (*current_menu)->leaves[current_sel].cfgfct_call_4(command,current_sel==VERTSCALE_SELECTION,1,0);
       return NEW_CONF_VALUE;
     }
   }
 
-  if (((command == CMD_MENU_RIGHT) || (command == CMD_MENU_ENTER)) && ((*current_menu)->leaves[current_sel].leavetype >= IFUNC0)) {
+  if (((command == CMD_MENU_RIGHT) || (command == CMD_MENU_ENTER)) && ((*current_menu)->leaves[current_sel].leavetype >= INFO_RET_FUNC0)) {
     int retval = 0;
-    if ((*current_menu)->leaves[current_sel].leavetype == IFUNC0) retval = (*current_menu)->leaves[current_sel].sys_fun_0();
-    if ((*current_menu)->leaves[current_sel].leavetype == IFUNC1) retval = (*current_menu)->leaves[current_sel].sys_fun_1(1);
-    if ((*current_menu)->leaves[current_sel].leavetype == IFUNC2) retval = (*current_menu)->leaves[current_sel].sys_fun_2(cfg_get_value(&fallbackmode,0),1);
+    if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC0) retval = (*current_menu)->leaves[current_sel].sys_fun_0();
+    if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC1) retval = (*current_menu)->leaves[current_sel].sys_fun_1(1);
+    if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC2) retval = (*current_menu)->leaves[current_sel].sys_fun_2(cfg_get_value(&fallbackmode,0),1);
     return (retval == 0                     ? CONFIRM_OK  :
             retval == -CFG_FLASH_SAVE_ABORT ? CONFIRM_ABORTED :
                                               CONFIRM_FAILED);
@@ -737,20 +702,17 @@ void print_overlay(menu_t* current_menu)
 
 void print_selection_arrow(menu_t* current_menu)
 {
-  alt_u8 h_l_offset, h_r_offset;
+  alt_u8 h_l_offset = current_menu->arrow_position;
   alt_u8 v_run, v_offset;
 
   for (v_run = 0; v_run < current_menu->number_selections; v_run++)
-    if (current_menu->leaves[v_run].arrow_desc != NULL) {
-      h_l_offset = current_menu->leaves[v_run].arrow_desc->hpos;
-      h_r_offset = current_menu->leaves[v_run].arrow_desc->hpos + (current_menu->leaves[v_run].arrow_desc->shape->right != EMPTY);
+    if (current_menu->leaves[v_run].arrowshape != NULL) {
       v_offset   = current_menu->leaves[v_run].id;
       if (v_run == current_menu->current_selection) {
-        vd_print_char(VD_TEXT,h_r_offset,v_offset,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->right);
-        vd_print_char(VD_TEXT,h_l_offset,v_offset,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrow_desc->shape->left);
+        vd_print_char(VD_TEXT,h_l_offset  ,v_offset,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrowshape->left);
+        vd_print_char(VD_TEXT,h_l_offset+1,v_offset,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrowshape->right);
       } else {
-        vd_clear_txt_area(h_l_offset,h_l_offset,v_offset,v_offset);
-        vd_clear_txt_area(h_r_offset,h_r_offset,v_offset,v_offset);
+        vd_clear_txt_area(h_l_offset,h_l_offset+1,v_offset,v_offset);
       }
     }
 }
@@ -759,7 +721,7 @@ int update_cfg_screen(menu_t* current_menu)
 {
   if (current_menu->type == HOME || current_menu->type == TEXT) return -1;
 
-  alt_u8 h_l_offset;
+  alt_u8 h_l_offset = current_menu->arrow_position + 3;
   alt_u8 v_run, v_offset;
   alt_u8 font_color;
   alt_u16 val_select, ref_val_select;
@@ -771,7 +733,6 @@ int update_cfg_screen(menu_t* current_menu)
   alt_u8 v_run_negoffset = 0;
 
   for (v_run = 0; v_run < current_menu->number_selections - v_run_negoffset; v_run++) {
-    h_l_offset = current_menu->leaves[v_run + v_run_negoffset].arrow_desc->hpos + 3;
     v_offset   = current_menu->leaves[v_run + v_run_negoffset].id;
 
     if (use_sl_vert_negoffset && v_run > SL_VLINK_SELECTION) {
@@ -780,6 +741,8 @@ int update_cfg_screen(menu_t* current_menu)
       v_run_negoffset = SL_HORI_TO_VERT_OFFSET;
     }
 
+    vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
+    bool_t print_szText = FALSE;
     switch (current_menu->leaves[v_run].leavetype) {
       case ICONFIG:
         val_select = cfg_get_value(current_menu->leaves[v_run].config_value,0);
@@ -839,64 +802,61 @@ int update_cfg_screen(menu_t* current_menu)
         }
 
 //        if (v_run == current_menu->current_selection)
-        vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
 
         if (current_menu->leaves[v_run].config_value->cfg_type == FLAGTXT ||
             current_menu->leaves[v_run].config_value->cfg_type == NUMVALUE ) {
           current_menu->leaves[v_run].config_value->val2char_func(val_select);
-          vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,&szText[0]);
+          print_szText = TRUE;
         } else {
           vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
         }
         break;
-      case ICFGVALFUNC:
-      case ICFGCMDFUNC2:  // at the moment just in resolution screen
-        val_select = current_menu->leaves[v_run].cfgfct_call_2(v_run-1,0,0) + 1;
-        ref_val_select = current_menu->leaves[v_run].cfgfct_call_2(v_run-1,0,1) + 1;
-        val_is_ref = ((val_select != v_run && ref_val_select != v_run) || val_select == ref_val_select);
-        if (is_vires_screen(current_menu)) {
-          flag2set_func(val_select == v_run);
-          if ((unlock_1440p == FALSE) && ((v_run == RES_1440P_SELECTION) || (v_run == RES_1440WP_SELECTION)))
-            font_color = FONTCOLOR_GREY;
-          else
-            font_color = val_is_ref ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
-        } else {
-          flag2set_func(unlock_1440p);
-          font_color = FONTCOLOR_WHITE;
-        }
-        vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
-        vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,&szText[0]);
+      case CFG_FUNC1:  // at the moment just for unlock 1440p
+        flag2set_func(unlock_1440p);
+        font_color = FONTCOLOR_WHITE;
+        print_szText = TRUE;
         break;
-      case ICFGCMDFUNC3:  // at the moment just for horizontal and vertical scale
+      case CFG_FUNC3:  // at the moment just in resolution screen
+        val_select = current_menu->leaves[v_run].cfgfct_call_3(v_run-RES_FUNCTIONS_OFFSET,0,0) + 1;
+        ref_val_select = current_menu->leaves[v_run].cfgfct_call_3(v_run-RES_FUNCTIONS_OFFSET,0,1) + 1;
+        val_is_ref = ((val_select != v_run && ref_val_select != v_run) || val_select == ref_val_select);
+        flag2set_func(val_select == v_run);
+        if ((unlock_1440p == FALSE) && ((v_run == RES_1440P_SELECTION) || (v_run == RES_1440WP_SELECTION)))
+          font_color = FONTCOLOR_GREY;
+        else
+          font_color = val_is_ref ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
+        print_szText = TRUE;
+        break;
+      case CFG_FUNC4:  // at the moment just for horizontal and vertical scale
         if (!use_240p_288p && v_run == HORISCALE_SELECTION && cfg_get_value(&link_hv_scale,0) != CFG_LINK_HV_SCALE_MAX_VALUE) {
           cfg_scale_v2h_update();
-          val_select = current_menu->leaves[v_run].cfgfct_call_3(0,0,0,0);
-          ref_val_select = current_menu->leaves[v_run].cfgfct_call_3(0,0,0,1);
+          val_select = current_menu->leaves[v_run].cfgfct_call_4(0,0,0,0);
+          ref_val_select = current_menu->leaves[v_run].cfgfct_call_4(0,0,0,1);
           val2txt_4u_func(val_select);
           font_color = (val_select == ref_val_select) ? FONTCOLOR_GREY : FONTCOLOR_NAVAJOWHITE;
         } else {
-          val_select = current_menu->leaves[v_run].cfgfct_call_3(0,v_run==VERTSCALE_SELECTION,0,0);
-          ref_val_select = current_menu->leaves[v_run].cfgfct_call_3(0,v_run==VERTSCALE_SELECTION,0,1);
+          val_select = current_menu->leaves[v_run].cfgfct_call_4(0,v_run==VERTSCALE_SELECTION,0,0);
+          ref_val_select = current_menu->leaves[v_run].cfgfct_call_4(0,v_run==VERTSCALE_SELECTION,0,1);
           val_is_ref = (val_select == ref_val_select);
           val2txt_scale_func(val_select,v_run==VERTSCALE_SELECTION);
           font_color = val_is_ref ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
         }
-        vd_clear_txt_area(h_l_offset,h_l_offset + OPT_WINDOW_WIDTH,v_offset,v_offset);
-        vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,&szText[0]);
+        print_szText = TRUE;
         break;
       case ISUBMENU:
         font_color = FONTCOLOR_WHITE;
         vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,EnterSubMenu);
         break;
-      case IFUNC0:
-      case IFUNC1:
-      case IFUNC2:
+      case INFO_RET_FUNC0:
+      case INFO_RET_FUNC1:
+      case INFO_RET_FUNC2:
         font_color = FONTCOLOR_WHITE;
         vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,RunFunction);
         break;
       default:
         break;
     }
+    if (print_szText) vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,&szText[0]);
   }
 
   return 0;
@@ -905,6 +865,8 @@ int update_cfg_screen(menu_t* current_menu)
 int update_debug_screen(menu_t* current_menu)
 {
   if (current_menu->type != N64DEBUG) return -1;
+
+  alt_u8 idx;
 
   // PPU state
   vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PPU_STATE_V_OFFSET);
@@ -938,11 +900,6 @@ int update_debug_screen(menu_t* current_menu)
   vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PIN_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   // Pin state: show hearts
-  const alt_u8 Nok_Ok[2] = {CHECKBOX_TICK,HEART};
-  const alt_u8 Nok_Ok_color[2] = {FONTCOLOR_RED,FONTCOLOR_GREEN};
-  const char *ClkSrc[] = {"27Mhz","N64"};
-
-  alt_u8 idx;
   sprintf(szText,"-");
   const alt_u8 hoffsets[16] = {
     N64DEBUG_PIN_AUDIO_SC_H_OFFSET, N64DEBUG_PIN_AUDIO_SD_H_OFFSET, N64DEBUG_PIN_AUDIO_LRC_H_OFFSET,
