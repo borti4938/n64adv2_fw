@@ -442,16 +442,37 @@ bool_t apply_sl_vert_negoffset(menu_t* current_menu) {
 void print_current_timing_mode()
 {
   vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
-  sprintf(szText,"Current:");
-  vd_print_string(VD_INFO,0, 0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
   val2txt_scale_sel_func(scaling_n64adv);
-  vd_print_string(VD_INFO,9,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+  vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+
+  alt_u8 hoffset = strlen(&szText[0]);
+  alt_u16 hscale = cfg_get_value(&hor_scale,0);
+  alt_u16 vscale = cfg_get_value(&vert_scale,0);
+
+  sprintf(szText,"(%d x %d)",hscale,vscale);
+  szText[6-(hscale<1000)] = (char) CHECKBOX_TICK;
+  vd_print_string(VD_INFO,hoffset + 1,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }
 
 void print_ctrl_data() {
   sprintf(szText,"Ctrl.Data: 0x%08x",(uint) ctrl_data);
   vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
   vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+}
+
+void print_confirm_info(alt_u8 type) {
+  if (type > 3) return;
+  if (type == 3) {
+    vd_print_string(VD_INFO,VD_WIDTH - CONFIRM_H_LENGTH - CONFIRM_BTN_H_LENGTH - 1,0,confirm_messages_color[3],confirm_messages[3]);
+    vd_print_string(VD_INFO,VD_WIDTH - CONFIRM_BTN_H_LENGTH,0,confirm_messages_color[3],btn_fct_confirm_overlay);
+  } else {
+    vd_print_string(VD_INFO,VD_WIDTH - CONFIRM_H_LENGTH,0,confirm_messages_color[type],confirm_messages[type]);
+  }
+}
+
+void print_1440p_unlock_info() {
+  vd_clear_info();
+  vd_print_string(VD_INFO,VD_WIDTH - UNLOCK1140P_H_LENGTH,0,confirm_messages_color[0],Unlock_1440p_Message);;
 }
 
 void print_cr_info() {
@@ -692,9 +713,9 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     if ((*current_menu)->leaves[current_sel].leavetype == IFUNC0) retval = (*current_menu)->leaves[current_sel].sys_fun_0();
     if ((*current_menu)->leaves[current_sel].leavetype == IFUNC1) retval = (*current_menu)->leaves[current_sel].sys_fun_1(1);
     if ((*current_menu)->leaves[current_sel].leavetype == IFUNC2) retval = (*current_menu)->leaves[current_sel].sys_fun_2(cfg_get_value(&fallbackmode,0),1);
-    return (retval == 0                     ? RW_DONE  :
-            retval == -CFG_FLASH_SAVE_ABORT ? RW_ABORT :
-                                              RW_FAILED);
+    return (retval == 0                     ? CONFIRM_OK  :
+            retval == -CFG_FLASH_SAVE_ABORT ? CONFIRM_ABORTED :
+                                              CONFIRM_FAILED);
   }
   return NON;
 }

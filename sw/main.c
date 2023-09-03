@@ -47,11 +47,6 @@
 #define CTRL_IGNORE_FRAMES 10
 
 
-const alt_u8 RW_Message_FontColor[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA};
-const char *RW_Message[] __ufmdata_section__ = {"< Success >","< Failed >","< Aborted >"};
-const char *Unlock_1440p_Message __ufmdata_section__ = "On your own risk, so\n"
-                                                       "Good Luck I guess :)";
-
 typedef struct {
   bool_t si5356_i2c_up;
   bool_t si5356_locked;
@@ -242,7 +237,6 @@ int main()
           command = CMD_NON;
           message_cnt = 1;
         }
-        if (message_cnt == 1) vd_clear_txt_area(RWM_H_OFFSET,VD_WIDTH-1,RWM_V_OFFSET,RWM_V_OFFSET+1);
         message_cnt--;
       }
 
@@ -266,11 +260,11 @@ int main()
         case NEW_SELECTION:
           print_selection_arrow(menu);
           break;
-        case RW_DONE:
-        case RW_FAILED:
-        case RW_ABORT:
-          vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,RW_Message_FontColor[todo-RW_DONE],RW_Message[todo-RW_DONE]);
-          message_cnt = RWM_SHOW_CNT;
+        case CONFIRM_OK:
+        case CONFIRM_FAILED:
+        case CONFIRM_ABORTED:
+          print_confirm_info(todo-CONFIRM_OK);
+          message_cnt = CONFIRM_SHOW_CNT;
           break;
         default:
           break;
@@ -287,9 +281,12 @@ int main()
         cfg_store_linex_word(vmode_menu);
         cfg_store_timing_word(timing_menu);
         cfg_store_scaling_word(scaling_menu);
-        print_current_timing_mode();
-      } else {
+      }
+      if (menu->type == N64DEBUG) {
         print_ctrl_data();
+      } else if (message_cnt == 0) {
+        print_current_timing_mode();
+        print_cr_info();
       }
       
     } else { /* ELSE OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
@@ -365,8 +362,8 @@ int main()
     }
 
     if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
-      vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,RW_Message_FontColor[0],Unlock_1440p_Message);
-      message_cnt = RWM_SHOW_CNT;
+      print_1440p_unlock_info();
+      message_cnt = CONFIRM_SHOW_CNT;
     }
 
     keep_vout_rst = !periphal_state.si5356_locked || !periphal_state.adv7513_hdmi_up;

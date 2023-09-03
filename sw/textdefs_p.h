@@ -37,6 +37,7 @@
 #define HEADER_UNDERLINE      0x08
 #define HOME_LOWSEC_UNDERLINE 0x01
 
+#define SMILEY              0x02
 #define HEART               0x03
 #define CHECKBOX_TICK       0x0D
 #define TRIANGLE_LEFT       0x10
@@ -63,6 +64,10 @@
 
 #define  BNT_FCT_H_OFFSET 27
 #define  BNT_FCT_V_OFFSET (VD_TXT_WIDTH - 1)
+
+#define CONFIRM_H_LENGTH 11
+#define CONFIRM_BTN_H_LENGTH  23
+#define UNLOCK1140P_H_LENGTH 41
 
 #define RESCFG_OVERLAY_H_OFFSET     OVERLAY_H_OFFSET
 #define RESCFG_OVERLAY_V_OFFSET     OVERLAY_V_OFFSET
@@ -199,11 +204,14 @@
 #define MAIN2NOTICE_V_OFFSET    (11 + MAIN_OVERLAY_V_OFFSET)
 
 
+const alt_u8 confirm_messages_color[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA,FONTCOLOR_NAVAJOWHITE};
+const char *confirm_messages[] __ufmdata_section__  = {"< Success >","< Failed  >","< Aborted >","< Really? >"};
+const char *btn_fct_confirm_overlay __ufmdata_section__ = "(A..Confirm, B..Cancel)";
+
+const char *Unlock_1440p_Message __ufmdata_section__ = "On your own risk, so good luck I guess. ";
+
 static const char *copyright_note __ufmdata_section__ =
     " 2023 borti4938"; /* 14 chars */
-
-const char *btn_fct_confirm_overlay =
-    "(A..Confirm, B..Cancel)";
 
 static const char *resolution_header __ufmdata_section__ =
     "Resolution";

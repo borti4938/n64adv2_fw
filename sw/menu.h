@@ -38,11 +38,10 @@
 #define MENU_H_
 
 #define OPT_WINDOW_WIDTH  21
-#define OPT_WINDOWCOLOR_BG    BACKGROUNDCOLOR_WHITE
-#define OPT_WINDOWCOLOR_FONT  FONTCOLOR_BLACK
+//#define OPT_WINDOWCOLOR_BG    BACKGROUNDCOLOR_WHITE
+//#define OPT_WINDOWCOLOR_FONT  FONTCOLOR_BLACK
 
-#define BTN_OVERLAY_H_OFFSET  (VD_WIDTH - 13)
-#define BTN_OVERLAY_V_OFFSET  (VD_TXT_HEIGHT - 1)
+#define CONFIRM_SHOW_CNT 255
 
 extern char szText[];
 
@@ -55,9 +54,9 @@ typedef enum {
   NEW_OVERLAY,
   NEW_SELECTION,
   NEW_CONF_VALUE,
-  RW_DONE,
-  RW_FAILED,
-  RW_ABORT
+  CONFIRM_OK,
+  CONFIRM_FAILED,
+  CONFIRM_ABORTED
 } updateaction_t;
 
 typedef enum {
@@ -143,6 +142,8 @@ void gamma2txt_func(alt_u16 v);
 
 void print_current_timing_mode(void);
 void print_ctrl_data(void);
+void print_confirm_info(alt_u8 type);
+void print_1440p_unlock_info(void);
 void print_cr_info(void);
 
 void update_vmode_menu(void);

@@ -538,14 +538,6 @@ typedef struct {
 #define EXTCFG3_NODEFAULTS_GETMASK  (EXTCFG3_GETALL_MASK & ~EXTCFG3_DEFAULTS_GETMASK)
 
 
-#define RWM_H_OFFSET 25
-#define RWM_V_OFFSET (VD_TXT_HEIGHT - 2)
-#define RWM_SHOW_CNT 255
-
-
-
-
-
 extern configuration_t sysconfig;
 
 extern config_t color_space, limited_colorspace, link_hv_scale,

@@ -43,10 +43,6 @@
 #define CFG2FLASH_WORD_FACTOR_U32   4
 #define CFG2FLASH_WORD_FACTOR_U16   2
 
-//#define CONFIRM_BNT_FCT_H_OFFSET  26
-#define CONFIRM_BNT_FCT_H_OFFSET  RWM_H_OFFSET
-#define CONFIRM_BNT_FCT_V_OFFSET  (VD_TXT_HEIGHT - 1)
-
 typedef struct {
   alt_u8  vers_cfg_main;
   alt_u8  vers_cfg_sub;
@@ -120,9 +116,6 @@ const alt_u16 predef_scaling_vals[LINEX_TYPES+1][PREDEFINED_SCALE_STEPS] __ufmda
 //extern bool_t use_flash;
 extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 extern vmode_t vmode_scaling_menu;
-
-static const char *confirm_message = "< Really? >";
-extern const char *btn_fct_confirm_overlay;
 
 bool_t unlock_1440p;
 
@@ -315,21 +308,21 @@ bool_t confirmation_routine()
   cmd_t command;
   alt_u8 abort = 0;
 
-  vd_print_string(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET,FONTCOLOR_NAVAJOWHITE,confirm_message);
-  vd_print_string(VD_TEXT,CONFIRM_BNT_FCT_H_OFFSET,CONFIRM_BNT_FCT_V_OFFSET,FONTCOLOR_GREEN,btn_fct_confirm_overlay);
+  vd_clear_info();
+  print_confirm_info(3);
 
   while(1) {
-    while(!get_vsync_cpu()){};                         // wait for OSD_VSYNC goes high
-    while( get_vsync_cpu() && new_ctrl_available()){}; // wait for OSD_VSYNC goes low and
-                                                      // wait for new controller available
+    while(!get_vsync_cpu()){};                          // wait for OSD_VSYNC goes high
+    while( get_vsync_cpu() && new_ctrl_available()){};  // wait for OSD_VSYNC goes low and
+                                                        // wait for new controller available
     update_ctrl_data();
     command = ctrl_data_to_cmd(1);
 
     if ((command == CMD_MENU_ENTER) || (command == CMD_MENU_RIGHT)) break;
     if ((command == CMD_MENU_BACK)  || (command == CMD_MENU_LEFT))  {abort = 1; break;};
   }
-  vd_clear_lineend(VD_TEXT,RWM_H_OFFSET,RWM_V_OFFSET);
-  vd_clear_lineend(VD_TEXT,CONFIRM_BNT_FCT_H_OFFSET,CONFIRM_BNT_FCT_V_OFFSET);
+
+  vd_clear_info();
   return abort;
 }
 
