@@ -205,4 +205,14 @@ config_t copy_direction = {
     .value_string = (const char **) &CopyCfg
 };
 
+config_t lock_menu = {
+    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
+    .cfg_type     = FLAGTXT,
+    .cfg_value    = 0,
+    .value_details = {
+      .max_value = 1,
+    },
+    .val2char_func = &flag2set_func
+};
+
 #endif /* CFG_INT_P_H_ */

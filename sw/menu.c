@@ -331,9 +331,10 @@ menu_t debug_screen = {
     },
     .parent = &home_menu,
     .current_selection = 0,
-    .number_selections = 1,
+    .number_selections = 2,
     .leaves = {
         {.id = N64DEBUG_RESYNC_VI_PL_V_OFFSET, .arrow_desc = &db_sel_arrow, .leavetype = IFUNC0, .sys_fun_0 = &resync_vi_pipeline}
+        {.id = N64DEBUG_LOCK_MENU_V_OFFSET   , .arrowshape = &select_arrow, .leavetype = ICONFIG, .config_value = &lock_menu}
     }
 };
 

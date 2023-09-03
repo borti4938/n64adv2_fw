@@ -139,6 +139,9 @@ int main()
   bool_t ctrl_update = 1;
   bool_t ctrl_ignore = 0;
 
+  bool_t igr_reset_tmp;
+  bool_t lock_menu_pre;
+
   vmode_t palmode_pre;
   clk_config_t target_resolution, target_resolution_pre;
 //  bool_t hor_hires_pre;
@@ -190,6 +193,8 @@ int main()
   target_resolution = get_target_resolution(PAL_PAT0,NTSC);
 
   cfg_apply_to_logic();
+  lock_menu_pre = FALSE;
+  igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
 
   I2C_init(I2C_MASTER_BASE,ALT_CPU_FREQ,400000);
 
@@ -330,6 +335,16 @@ int main()
     cfg_load_linex_word(vmode_n64adv);
     cfg_load_timing_word(timing_n64adv);
     cfg_load_scaling_word(scaling_n64adv);
+
+    if (cfg_get_value(&lock_menu,0)) {
+      if (!lock_menu_pre) igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
+      cfg_clear_flag(&igr_reset);
+      lock_menu_pre = TRUE;
+    } else {
+      cfg_set_value(&igr_reset,(alt_u16) igr_reset_tmp);
+      lock_menu_pre = FALSE;
+    }
+
     cfg_apply_to_logic();
 
     if ((todo == MENU_CLOSE) && cfg_get_value(&autosave,0))

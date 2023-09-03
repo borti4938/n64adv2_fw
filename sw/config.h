@@ -546,7 +546,7 @@ extern config_t color_space, limited_colorspace, link_hv_scale,
                 fallbackmode, autosave;
 extern config_t scaling_steps, region_selection,
                 timing_selection, scaling_selection,
-                copy_direction;
+                copy_direction, lock_menu;
 
 extern config_t vert_scale, hor_scale,
                 linex_force_5060, low_latency_mode,

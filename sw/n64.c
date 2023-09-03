@@ -120,68 +120,74 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
 
   static alt_u8 rep_cnt = 0, hold_cnt = HOLD_CNT_HIGH;
 
-  switch (ctrl_data & CTRL_GETALL_DIGITAL_MASK) {
-    case BTN_OPEN_OSDMENU:
-      cmd_new = CMD_OPEN_MENU;
-      break;
-    case BTN_CLOSE_OSDMENU:
-      cmd_new = CMD_CLOSE_MENU;
-      break;
-    case BTN_MUTE_OSDMENU:
-      cmd_new = CMD_MUTE_MENU;
-      break;
-    case BTN_DEBLUR_QUICK_ON:
-      cmd_new = CMD_DEBLUR_QUICK_ON;
-      break;
-    case BTN_DEBLUR_QUICK_OFF:
-      cmd_new = CMD_DEBLUR_QUICK_OFF;
-      break;
-    case BTN_16BIT_QUICK_ON:
-      cmd_new = CMD_16BIT_QUICK_ON;
-      break;
-    case BTN_16BIT_QUICK_OFF:
-      cmd_new = CMD_16BIT_QUICK_OFF;
-      break;
-    case BTN_MENU_ENTER:
-      cmd_new = CMD_MENU_ENTER;
-      break;
-    case BTN_MENU_BACK:
-      cmd_new = CMD_MENU_BACK;
-      break;
-    case CTRL_R_SETMASK:
-      cmd_new = CMD_MENU_PAGE_RIGHT;
-      break;
-    case CTRL_L_SETMASK:
-    case CTRL_Z_SETMASK:
-      cmd_new = CMD_MENU_PAGE_LEFT;
-      break;
-    case CTRL_DU_SETMASK:
-    case CTRL_CU_SETMASK:
-      cmd_new = CMD_MENU_UP;
-      break;
-    case CTRL_DD_SETMASK:
-    case CTRL_CD_SETMASK:
-      cmd_new = CMD_MENU_DOWN;
-      break;
-    case CTRL_DL_SETMASK:
-    case CTRL_CL_SETMASK:
-      cmd_new = CMD_MENU_LEFT;
-      break;
-    case CTRL_DR_SETMASK:
-    case CTRL_CR_SETMASK:
+  if (cfg_get_value(&lock_menu,0)) {
+    if (((ctrl_data & CTRL_GETALL_DIGITAL_MASK) == CTRL_DR_SETMASK) ||
+        ((ctrl_data & CTRL_GETALL_DIGITAL_MASK) == CTRL_CR_SETMASK)   )
       cmd_new = CMD_MENU_RIGHT;
-      break;
-  };
+  } else {
+    switch (ctrl_data & CTRL_GETALL_DIGITAL_MASK) {
+      case BTN_OPEN_OSDMENU:
+        cmd_new = CMD_OPEN_MENU;
+        break;
+      case BTN_CLOSE_OSDMENU:
+        cmd_new = CMD_CLOSE_MENU;
+        break;
+      case BTN_MUTE_OSDMENU:
+        cmd_new = CMD_MUTE_MENU;
+        break;
+      case BTN_DEBLUR_QUICK_ON:
+        cmd_new = CMD_DEBLUR_QUICK_ON;
+        break;
+      case BTN_DEBLUR_QUICK_OFF:
+        cmd_new = CMD_DEBLUR_QUICK_OFF;
+        break;
+      case BTN_16BIT_QUICK_ON:
+        cmd_new = CMD_16BIT_QUICK_ON;
+        break;
+      case BTN_16BIT_QUICK_OFF:
+        cmd_new = CMD_16BIT_QUICK_OFF;
+        break;
+      case BTN_MENU_ENTER:
+        cmd_new = CMD_MENU_ENTER;
+        break;
+      case BTN_MENU_BACK:
+        cmd_new = CMD_MENU_BACK;
+        break;
+      case CTRL_R_SETMASK:
+        cmd_new = CMD_MENU_PAGE_RIGHT;
+        break;
+      case CTRL_L_SETMASK:
+      case CTRL_Z_SETMASK:
+        cmd_new = CMD_MENU_PAGE_LEFT;
+        break;
+      case CTRL_DU_SETMASK:
+      case CTRL_CU_SETMASK:
+        cmd_new = CMD_MENU_UP;
+        break;
+      case CTRL_DD_SETMASK:
+      case CTRL_CD_SETMASK:
+        cmd_new = CMD_MENU_DOWN;
+        break;
+      case CTRL_DL_SETMASK:
+      case CTRL_CL_SETMASK:
+        cmd_new = CMD_MENU_LEFT;
+        break;
+      case CTRL_DR_SETMASK:
+      case CTRL_CR_SETMASK:
+        cmd_new = CMD_MENU_RIGHT;
+        break;
+    };
 
-  if (cmd_new == CMD_NON) {
-		alt_u16 xy_axis = ALT_CI_NIOS_CUSTOM_INSTR_BITSWAP_0(ctrl_data);
-		alt_8 x_axis_val = xy_axis >> 8;
-		alt_8 y_axis_val = xy_axis;
+    if (cmd_new == CMD_NON) {
+      alt_u16 xy_axis = ALT_CI_NIOS_CUSTOM_INSTR_BITSWAP_0(ctrl_data);
+      alt_8 x_axis_val = xy_axis >> 8;
+      alt_8 y_axis_val = xy_axis;
 
-		if (x_axis_val  >  ANALOG_TH) cmd_new = CMD_MENU_RIGHT;
-		if (x_axis_val  < -ANALOG_TH) cmd_new = CMD_MENU_LEFT;
-		if (y_axis_val  >  ANALOG_TH) cmd_new = CMD_MENU_UP;
-		if (y_axis_val  < -ANALOG_TH) cmd_new = CMD_MENU_DOWN;
+      if (x_axis_val  >  ANALOG_TH) cmd_new = CMD_MENU_RIGHT;
+      if (x_axis_val  < -ANALOG_TH) cmd_new = CMD_MENU_LEFT;
+      if (y_axis_val  >  ANALOG_TH) cmd_new = CMD_MENU_UP;
+      if (y_axis_val  < -ANALOG_TH) cmd_new = CMD_MENU_DOWN;
+    }
   }
 
   if (cmd_new == CMD_MUTE_MENU) {
