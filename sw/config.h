@@ -540,6 +540,8 @@ typedef struct {
 
 extern configuration_t sysconfig;
 
+extern config_tray_u8_t linex_words[2];
+
 extern config_t color_space, limited_colorspace, link_hv_scale,
                 deblur_mode_powercycle, mode16bit_powercycle,
                 igr_deblur, igr_16bitmode,

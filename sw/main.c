@@ -144,6 +144,10 @@ int main()
   vmode_t palmode_pre;
   clk_config_t target_resolution, target_resolution_pre;
 //  bool_t hor_hires_pre;
+
+  alt_u8 linex_word_pre;
+  bool_t changed_linex_setting = FALSE;
+
   bool_t unlock_1440p_pre;
 
   message_cnt = 0;
@@ -228,6 +232,9 @@ int main()
     update_timing_menu();
     if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
     else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
+
+    if (!changed_linex_setting) // important to check this flag as program cycles 1x through menu after change to set also the scaling correctly
+      linex_word_pre = linex_words[palmode].config_val;
 
     if(cfg_get_value(&show_osd,0) && !keep_vout_rst) {
       cfg_load_linex_word(vmode_menu);
@@ -381,6 +388,21 @@ int main()
     keep_vout_rst = !periphal_state.si5356_locked || !periphal_state.adv7513_hdmi_up;
     if (!keep_vout_rst)
       periphals_set_ready_bit();
+
+    if (changed_linex_setting) {  // important to check this flag in that order
+                                  // as program cycles 1x through menu after change to set also the scaling correctly
+      if (!confirmation_routine(1)) {  // change was not ok
+        print_confirm_info(CONFIRM_ABORTED-CONFIRM_OK);
+        linex_words[palmode].config_val = linex_word_pre;
+        message_cnt = CONFIRM_SHOW_CNT_LONG;
+      } else {
+        print_confirm_info(CONFIRM_OK-CONFIRM_OK);
+        message_cnt = CONFIRM_SHOW_CNT_MID;
+      }
+      changed_linex_setting = FALSE;
+    } else {
+      changed_linex_setting = (linex_word_pre != linex_words[palmode].config_val);
+    }
 
     while(!get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes high */
     while( get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes low  */
