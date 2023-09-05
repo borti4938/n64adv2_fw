@@ -302,27 +302,39 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
   return current_scale;
 }
 
-bool_t confirmation_routine()
+bool_t confirmation_routine(bool_t question_type)
 {
-  cmd_t command;
-  alt_u8 abort = 0;
+  cmd_t command = NON;
+  bool_t ok = TRUE;
 
   vd_clear_info();
-  print_confirm_info(3);
-
-  while(1) {
-    while(!get_vsync_cpu()){};                          // wait for OSD_VSYNC goes high
-    while( get_vsync_cpu() && new_ctrl_available()){};  // wait for OSD_VSYNC goes low and
-                                                        // wait for new controller available
-    update_ctrl_data();
-    command = ctrl_data_to_cmd(1);
-
-    if ((command == CMD_MENU_ENTER) || (command == CMD_MENU_RIGHT)) break;
-    if ((command == CMD_MENU_BACK)  || (command == CMD_MENU_LEFT))  {abort = 1; break;};
+  if (question_type) {
+    message_cnt = CONFIRM_SHOW_CNT_LONG;
+    print_confirm_info(4);
+  } else {
+    message_cnt = CONFIRM_SHOW_CNT_MID;
+    print_confirm_info(3);
   }
 
+  while(1) {
+    while(!get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes high */
+    while( get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes low  */
+
+    if ( new_ctrl_available()) {
+      update_ctrl_data();
+      command = ctrl_data_to_cmd(1);
+    } else {
+      command = NON;
+    }
+
+    if ((command == CMD_MENU_ENTER) || (command == CMD_MENU_RIGHT)) break;
+    if ((command == CMD_MENU_BACK)  || (command == CMD_MENU_LEFT) || (message_cnt == 0))  {ok = FALSE; break;};
+    message_cnt--;
+  }
+
+  message_cnt = 0;
   vd_clear_info();
-  return abort;
+  return ok;
 }
 
 int cfg_save_to_flash(bool_t need_confirm)
@@ -330,8 +342,7 @@ int cfg_save_to_flash(bool_t need_confirm)
 //  if (!use_flash) return -CFG_FLASH_NOT_USED;
 
   if (need_confirm) {
-    bool_t abort = confirmation_routine();
-    if (abort) return -CFG_FLASH_SAVE_ABORT;
+    if (!confirmation_routine(0)) return -CFG_FLASH_SAVE_ABORT; // does not return ok
   }
 
   alt_u8 databuf[PAGESIZE];
@@ -373,8 +384,7 @@ int cfg_load_from_flash(bool_t need_confirm)
 //  if (!use_flash) return -CFG_FLASH_NOT_USED;
 
   if (need_confirm) {
-    bool_t abort = confirmation_routine();
-    if (abort) return -CFG_FLASH_LOAD_ABORT;
+    if (!confirmation_routine(0)) return -CFG_FLASH_LOAD_ABORT; // does not return ok
   }
 
   alt_u8 databuf[PAGESIZE];
@@ -517,8 +527,7 @@ void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
 int cfg_load_defaults(fallback_vmodes_t vmode, bool_t need_confirm)
 {
   if (need_confirm) {
-    alt_u8 abort = confirmation_routine();
-    if (abort) return -CFG_DEF_LOAD_ABORT;
+    if (!confirmation_routine(0)) return -CFG_DEF_LOAD_ABORT; // does not return ok
   }
 
   sysconfig.cfg_word_def[INTCFG0]->cfg_word_val &= INTCFG0_NODEFAULTS_GETMASK;
@@ -608,8 +617,7 @@ void cfg_update_reference()
 
 int cfg_copy_ntsc2pal()
 {
-  alt_u8 abort = confirmation_routine();
-  if (abort) return -CFG_CFG_COPY_ABORT;
+  if (!confirmation_routine(0)) return -CFG_CFG_COPY_ABORT; // does not return ok
 
   alt_u8 idx;
   if (cfg_get_value(&copy_direction,0)) { // PAL to NTSC

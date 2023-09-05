@@ -136,7 +136,6 @@ int main()
 
   periphal_state_t periphal_state = {FALSE,FALSE,FALSE,FALSE};
 
-  bool_t ctrl_update = 1;
   bool_t ctrl_ignore = 0;
 
   bool_t igr_reset_tmp;
@@ -147,7 +146,7 @@ int main()
 //  bool_t hor_hires_pre;
   bool_t unlock_1440p_pre;
 
-  alt_u8 message_cnt = 0;
+  message_cnt = 0;
 
 //  use_flash = FALSE;
 //  if (check_flash() == 0) use_flash = TRUE;
@@ -210,9 +209,7 @@ int main()
 
   /* Event loop never exits. */
   while (1) {
-    ctrl_update = new_ctrl_available();
-
-    if (ctrl_update && !ctrl_ignore) {
+    if (new_ctrl_available() && !ctrl_ignore) {
       update_ctrl_data();
       command = ctrl_data_to_cmd(0);
     } else {
@@ -269,7 +266,7 @@ int main()
         case CONFIRM_FAILED:
         case CONFIRM_ABORTED:
           print_confirm_info(todo-CONFIRM_OK);
-          message_cnt = CONFIRM_SHOW_CNT;
+          message_cnt = CONFIRM_SHOW_CNT_MID;
           break;
         default:
           break;
@@ -378,7 +375,7 @@ int main()
 
     if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
       print_1440p_unlock_info();
-      message_cnt = CONFIRM_SHOW_CNT;
+      message_cnt = CONFIRM_SHOW_CNT_MID;
     }
 
     keep_vout_rst = !periphal_state.si5356_locked || !periphal_state.adv7513_hdmi_up;

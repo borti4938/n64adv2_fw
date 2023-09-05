@@ -65,7 +65,7 @@
 #define  BNT_FCT_H_OFFSET 27
 #define  BNT_FCT_V_OFFSET (VD_TXT_WIDTH - 1)
 
-#define CONFIRM_H_LENGTH 11
+#define CONFIRM_H_LENGTH 9
 #define CONFIRM_BTN_H_LENGTH  23
 #define UNLOCK1140P_H_LENGTH 41
 
@@ -205,7 +205,7 @@
 
 
 const alt_u8 confirm_messages_color[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA,FONTCOLOR_NAVAJOWHITE};
-const char *confirm_messages[] __ufmdata_section__  = {"< Success >","< Failed  >","< Aborted >","< Really? >"};
+const char *confirm_messages[] __ufmdata_section__  = {"< Success >","< Failed >","< Aborted >","< Sure? >","< Keep? >"};
 const char *btn_fct_confirm_overlay __ufmdata_section__ = "(A..Confirm, B..Cancel)";
 
 const char *Unlock_1440p_Message __ufmdata_section__ = "On your own risk, so good luck I guess. ";

@@ -41,7 +41,8 @@
 //#define OPT_WINDOWCOLOR_BG    BACKGROUNDCOLOR_WHITE
 //#define OPT_WINDOWCOLOR_FONT  FONTCOLOR_BLACK
 
-#define CONFIRM_SHOW_CNT 255
+#define CONFIRM_SHOW_CNT_MID  255
+#define CONFIRM_SHOW_CNT_LONG 511
 
 extern char szText[];
 
@@ -125,6 +126,7 @@ typedef struct menu {
 
 } menu_t;
 
+extern alt_u16 message_cnt;
 extern menu_t home_menu;
 
 void val2txt_func(alt_u16 v);

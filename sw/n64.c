@@ -225,8 +225,7 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
 
 int resync_vi_pipeline()
 {
-  bool_t abort = confirmation_routine();
-  if (abort) return -CFG_RESYNC_ABORT;
+  if (!confirmation_routine(0)) return -CFG_RESYNC_ABORT; // does not return ok
   periphals_clr_ready_bit();
   run_pin_state(FALSE);
   usleep(100);

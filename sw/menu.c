@@ -58,6 +58,7 @@ static const arrowshape_t optval_arrow = {
     .right = TRIANGLE_RIGHT
 };
 
+alt_u16 message_cnt;
 
 menu_t home_menu, vires_screen, viscaling_screen, slcfg_opt_subscreen,
        vicfg_screen, misc_screen, rwdata_screen, debug_screen;
@@ -154,7 +155,7 @@ menu_t viscaling_screen = {
         {.id = SCALERCFG_VHSTEPS_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &scaling_steps},
         {.id = SCALERCFG_VERTSCALE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = CFG_FUNC4, .cfgfct_call_4 = &cfgfct_scale},
         {.id = SCALERCFG_HORISCALE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = CFG_FUNC4, .cfgfct_call_4 = &cfgfct_scale},
-        {.id = SCALERCFG_PALBOXED_V_OFFSET   , .arrowshape = &optval_arrow,.leavetype = ICONFIG  , .config_value  = &pal_boxed_mode},
+        {.id = SCALERCFG_PALBOXED_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &pal_boxed_mode},
         {.id = SCALERCFG_INSHIFTMODE_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &timing_selection},
         {.id = SCALERCFG_VERTSHIFT_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &vert_shift},
         {.id = SCALERCFG_HORISHIFT_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &hor_shift}
@@ -415,18 +416,18 @@ void print_current_timing_mode()
 }
 
 void print_ctrl_data() {
-  sprintf(szText,"Ctrl.Data: 0x%08x",(uint) ctrl_data);
+  sprintf(szText,"Ctrl. data: 0x%08x",(uint) ctrl_data);
   vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
   vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }
 
 void print_confirm_info(alt_u8 type) {
-  if (type > 3) return;
-  if (type == 3) {
-    vd_print_string(VD_INFO,VD_WIDTH - CONFIRM_H_LENGTH - CONFIRM_BTN_H_LENGTH - 1,0,confirm_messages_color[3],confirm_messages[3]);
+  if (type > 4) return;
+  if (type > 2) {
+    vd_print_string(VD_INFO,VD_WIDTH - CONFIRM_H_LENGTH - CONFIRM_BTN_H_LENGTH - 1,0,confirm_messages_color[3],confirm_messages[type]);
     vd_print_string(VD_INFO,VD_WIDTH - CONFIRM_BTN_H_LENGTH,0,confirm_messages_color[3],btn_fct_confirm_overlay);
   } else {
-    vd_print_string(VD_INFO,VD_WIDTH - CONFIRM_H_LENGTH,0,confirm_messages_color[type],confirm_messages[type]);
+    vd_print_string(VD_INFO,VD_WIDTH - strlen(confirm_messages[type]),0,confirm_messages_color[type],confirm_messages[type]);
   }
 }
 
@@ -496,12 +497,11 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       return MENU_CLOSE;
     case CMD_MENU_BACK:
       cfg_reset_selections();
+      (*current_menu)->current_selection = 0;
       if ((*current_menu)->parent) {
-        (*current_menu)->current_selection = 0;
         *current_menu = (*current_menu)->parent;
         todo = NEW_OVERLAY;
       } else {
-        (*current_menu)->current_selection = 1;
         return MENU_CLOSE;
       }
       break;
