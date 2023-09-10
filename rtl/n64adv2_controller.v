@@ -186,6 +186,8 @@ end
 reg [ 4:0] ctrl_data_cnt    = 5'h0;
 reg [ 1:0] new_ctrl_data    = 2'b00;
 
+reg ctrl_detected = 1'b0;
+
 reg initiate_nrst = 1'b0;
 reg       drv_rst =  1'b0;
 reg [19:0] rst_cnt = 20'b0; // ~230ms are needed to count from max downto 0 with CTRL_CLK being 4MHz.
@@ -335,6 +337,7 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
     serial_data[0]  <= 32'h0;
     ctrl_data_cnt   <=  5'h0;
     new_ctrl_data   <=  2'b0;
+    ctrl_detected   <=  1'b0;
     initiate_nrst   <=  1'b0;
     ctrl_data_tack_resynced_L <= 2'b00;
   end else begin
@@ -349,7 +352,7 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
         if (ctrl_posedge)       // sample data part 1
           ctrl_low_cnt <= wait_cnt;
         if (ctrl_negedge) begin // sample data part 2
-          if (!ctrl_data_cnt[3]) begin  // eight bits read
+          if (!ctrl_data_cnt[3]) begin  // eight bits not read yet
             serial_data[0][29:22] <= {ctrl_bit,serial_data[0][29:23]};
             ctrl_data_cnt         <=  ctrl_data_cnt + 1'b1;
           end else if (serial_data[0][29:22] == 8'b10000000) begin // check command
@@ -372,6 +375,7 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
             rd_state         <= ST_WAIT4N64;
             serial_data[1]   <= {ctrl_bit,serial_data[0][31:1]};
             new_ctrl_data[0] <= 1'b1;  // signalling new controller data available
+            ctrl_detected    <= 1'b1;
           end
         end
       end
@@ -383,10 +387,13 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
     if (ctrl_negedge | ctrl_posedge) begin // counter reset
       wait_cnt <= 8'h0;
     end else begin
-      if (~&wait_cnt) // saturate counter if needed
+      if (~&wait_cnt) begin // saturate counter if needed
         wait_cnt <= wait_cnt + 1'b1;
-      else  // counter saturated
+      end else begin        // counter saturated
+        if (rd_state == ST_N64_RD)
+          ctrl_detected <= 1'b0;
         rd_state <= ST_WAIT4N64;
+      end
     end
 
     ctrl_hist <= {ctrl_hist[1:0],CTRL_i};
