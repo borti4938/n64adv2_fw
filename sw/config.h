@@ -581,7 +581,7 @@ void cfgfct_unlock1440p(bool_t set_value);
 alt_u8 cfg_scale_is_predefined(alt_u16 value,bool_t use_vertical);
 void cfg_scale_v2h_update(void);
 alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t get_reference);
-bool_t confirmation_routine(void);
+bool_t confirmation_routine(bool_t question_type);
 int cfg_save_to_flash(bool_t need_confirm);
 int cfg_load_from_flash(bool_t need_confirm);
 void cfg_reset_selections(void);

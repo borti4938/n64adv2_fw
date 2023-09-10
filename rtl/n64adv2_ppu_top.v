@@ -360,7 +360,7 @@ register_sync_2 #(
   .nrst(1'b1),
   .clk_i(N64_CLK_i),
   .clk_i_en(1'b1),
-  .reg_i(vinfo_pass),
+  .reg_i({palmode,n64_480i}),
   .clk_o(DRAM_CLK_i),
   .clk_o_en(1'b1),
   .reg_o({palmode_dramclk_resynced,n64_480i_dramclk_resynced})
@@ -398,7 +398,7 @@ register_sync_2 #(
   .nrst(1'b1),
   .clk_i(N64_CLK_i),
   .clk_i_en(1'b1),
-  .reg_i(vinfo_pass),
+  .reg_i({palmode,n64_480i}),
   .clk_o(VCLK_Tx),
   .clk_o_en(1'b1),
   .reg_o({palmode_vclk_o_resynced,n64_480i_vclk_o_resynced})
