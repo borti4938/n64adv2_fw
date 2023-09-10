@@ -132,7 +132,8 @@ output        DRAM_nWE;
 // start of rtl
 
 // wires
-wire [1:0] vinfo_pass;  // [1:0] {vmode,n64_480i}
+wire [2:0] vinfo_pass;  // [2:0] {vmode,n64_480i}
+wire vdata_detected;
 wire palmode, n64_480i;
 
 wire [ 3:0] cfg_gamma;
@@ -216,6 +217,7 @@ reg palmode_change;
 // apply some assignments
 // ----------------------
 
+assign vdata_detected = vinfo_pass[2];
 assign palmode = vinfo_pass[1];
 assign n64_480i = vinfo_pass[0];
 

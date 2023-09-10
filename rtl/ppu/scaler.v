@@ -97,7 +97,7 @@ module scaler(
 input async_nRST_i;
 
 input VCLK_i;
-input [1:0] vinfo_i;
+input [2:0] vinfo_i;
 input vdata_valid_i;
 input [`VDATA_O_FU_SLICE] vdata_i;
 input [9:0] vdata_hvshift_i;
@@ -192,6 +192,7 @@ localparam H_A0_CALC_DELAY = 3;
 // misc
 integer int_idx;
 
+wire vdata_detected = vinfo_i[2];
 wire palmode = vinfo_i[1];
 wire interlaced = vinfo_i[0];
 wire palmode_dramclk_resynced = vinfo_dramsynced_i[1];

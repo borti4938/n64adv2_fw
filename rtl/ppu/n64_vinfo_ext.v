@@ -51,7 +51,7 @@ input nVDSYNC;
 input  [3:0] Sync_pre;
 input  [3:0] Sync_cur;
 
-output [1:0] vinfo_o;   // order: palmode,n64_480i
+output [2:0] vinfo_o;   // order: vdata_detected,palmode,n64_480i
 
 
 // some pre-assignments
@@ -59,6 +59,28 @@ output [1:0] vinfo_o;   // order: palmode,n64_480i
 wire negedge_nVSYNC =  Sync_pre[3] & !Sync_cur[3];
 wire negedge_nHSYNC =  Sync_pre[1] & !Sync_cur[1];
 
+
+// check for video data running at all
+// ===================================
+
+reg [11:0] clk_cnt = 12'd0;
+reg [1:0] vdata_detected = 2'b00;
+
+always @(posedge VCLK or negedge nRST)
+  if (!nRST) begin
+    clk_cnt <= 12'd0;
+    vdata_detected <= 2'b00;
+  end else begin
+    if (&clk_cnt) // clock count saturated - probably no video input running
+      vdata_detected <= 2'b00;
+    else if (~|clk_cnt) // clock count at zero - there was a negedge_nHSYNC
+      vdata_detected <= {vdata_detected[0],1'b1};
+    
+    if (negedge_nHSYNC)
+      clk_cnt <= 12'd0;
+    else
+      clk_cnt <= &clk_cnt ? clk_cnt : clk_cnt + 12'd1;  // saturate at 4095
+  end
 
 
 // estimation of 240p/288p
@@ -79,8 +101,8 @@ always @(posedge VCLK or negedge nRST)
   end
 
 
-// determine vmode and blurry pixel position
-// =========================================
+// determine vmode
+// ===============
 
 reg [1:0] line_cnt = 2'b00; // PAL: line_cnt[1:0] == 0x ; NTSC: line_cnt[1:0] = 1x
 reg        palmode = 1'b0;  // PAL: palmode == 1        ; NTSC: palmode == 0
@@ -101,6 +123,6 @@ always @(posedge VCLK or negedge nRST)
 // pack vinfo_o vector
 // ===================
 
-assign vinfo_o = {palmode,n64_480i};
+assign vinfo_o = {vdata_detected[1],palmode,n64_480i};
 
-endmodule 
+endmodule
