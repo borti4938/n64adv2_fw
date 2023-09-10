@@ -67,9 +67,16 @@ cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 
 void open_osd_main(menu_t **menu)
 {
+  #ifdef DEBUG
+    (*menu)->current_selection = 6;
+    (*menu) = (*menu)->leaves[(*menu)->current_selection].submenu;
+  #endif
   print_overlay(*menu);
   cfg_set_flag(&show_logo);
   print_selection_arrow(*menu);
+  #ifndef DEBUG
+    print_current_timing_mode();
+  #endif
   cfg_set_flag(&show_osd);
   cfg_clear_flag(&mute_osd_tmp);
 }
