@@ -869,26 +869,26 @@ int update_debug_screen(menu_t* current_menu)
   alt_u8 idx;
 
   // PPU state
-  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PPU_STATE_V_OFFSET);
-  sprintf(szText,"0x%07x",(uint) ppu_state);
-  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PPU_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+  vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_N64ADV_STATE_V_OFFSET);
+  sprintf(szText,"0x%07x",(uint) n64adv_state);
+  vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_N64ADV_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   // PPU state: VI mode
-  vd_clear_lineend(VD_TEXT,N64DEBUG_PPU_VI_H_OFFSET,N64DEBUG_PPU_VI_V_OFFSET);
+  vd_clear_lineend(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET);
   if (palmode) {
     sprintf(szText,VTimingSel[2+scanmode]);
     sprintf(&szText[10]," (Pat. %d)",pal_pattern);
   } else {
     sprintf(szText,VTimingSel[scanmode]);
   }
-  vd_print_string(VD_TEXT,N64DEBUG_PPU_VI_H_OFFSET,N64DEBUG_PPU_VI_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+  vd_print_string(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   // PPU state: Source-Sync. Mode
-  bool_t is_lowlatency_mode = ((ppu_state & PPU_LOWLATENCYMODE_GETMASK) >> PPU_LOWLATENCYMODE_OFFSET);
+  bool_t is_lowlatency_mode = ((n64adv_state & N64ADV_LOWLATENCYMODE_GETMASK) >> N64ADV_LOWLATENCYMODE_OFFSET);
   vd_clear_lineend(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET);
   vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
   if (is_lowlatency_mode) {
-    sprintf(szText,"(%d sl. buffered)",(uint) ((ppu_state & PPU_LLM_SLBUF_FB_GETMASK) >> PPU_LLM_SLBUF_FB_OFFSET));
+    sprintf(szText,"(%d sl. buffered)",(uint) ((n64adv_state & N64ADV_LLM_SLBUF_FB_GETMASK) >> N64ADV_LLM_SLBUF_FB_OFFSET));
     vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET+3,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
   }
 

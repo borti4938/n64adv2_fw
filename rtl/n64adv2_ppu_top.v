@@ -226,6 +226,8 @@ assign ConfigSet_w[`vSL_en_bit] = ConfigSet[`vSL_en_bit] & v_allow_slemu_w;  // 
 assign ConfigSet_w[`hSL_en_bit] = ConfigSet[`hSL_en_bit] & h_allow_slemu_w;  // do not allow scanlines if blocked due to lack of resolution
 assign ConfigSet_w[`hSL_en_bit-1:0] = ConfigSet[`hSL_en_bit-1:0];
 
+assign PPUState[`PPU_input_vdata_detected_bit]  = vdata_detected;
+assign PPUState[`PPU_input_palpattern_bit]      = 1'b0;
 assign PPUState[`PPU_input_pal_bit]             = palmode;
 assign PPUState[`PPU_input_interlaced_bit]      = n64_480i;
 assign PPUState[`PPU_output_f5060_slice]        = {ConfigSet_resynced[`force50hz_bit],ConfigSet_resynced[`force60hz_bit]};

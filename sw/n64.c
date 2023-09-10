@@ -64,7 +64,7 @@ typedef enum {
 
 alt_u8 info_sync_val;
 alt_u32 ctrl_data;
-alt_u32 ppu_state;
+alt_u32 n64adv_state;
 cfg_pal_pattern_t pal_pattern;
 vmode_t palmode;
 scanmode_t scanmode;
@@ -95,13 +95,13 @@ alt_u16 get_pin_state()
   return IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE);
 }
 
-void update_ppu_state()
+void update_n64adv_state()
 {
-  ppu_state = (IORD_ALTERA_AVALON_PIO_DATA(PPU_STATE_IN_BASE) & PPU_FEEDBACK_GETALL_MASK);
-  pal_pattern = ((ppu_state & PPU_INPUT_PALPATTERN_GETMASK) >> PPU_INPUT_PALPATTERN_OFFSET);
-  palmode = ((ppu_state & PPU_INPUT_PALMODE_GETMASK) >> PPU_INPUT_PALMODE_OFFSET);
-  scanmode = ((ppu_state & PPU_INPUT_INTERLACED_GETMASK) >> PPU_INPUT_INTERLACED_OFFSET);
-  hor_hires = (scanmode == INTERLACED) || ((ppu_state & PPU_240P_DEBLUR_GETMASK) == 0);
+  n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
+  pal_pattern = ((n64adv_state & N64ADV_INPUT_PALPATTERN_GETMASK) >> N64ADV_INPUT_PALPATTERN_OFFSET);
+  palmode = ((n64adv_state & N64ADV_INPUT_PALMODE_GETMASK) >> N64ADV_INPUT_PALMODE_OFFSET);
+  scanmode = ((n64adv_state & N64ADV_INPUT_INTERLACED_GETMASK) >> N64ADV_INPUT_INTERLACED_OFFSET);
+  hor_hires = (scanmode == INTERLACED) || ((n64adv_state & N64ADV_240P_DEBLUR_GETMASK) == 0);
 }
 
 void update_ctrl_data()

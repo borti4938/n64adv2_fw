@@ -205,7 +205,7 @@ int main()
   led_drive(LED_2, LED_ON);
   periphals_clr_ready_bit();
 
-  update_ppu_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
+  update_n64adv_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
   palmode_pre = palmode;
   target_resolution_pre = target_resolution;
 //  hor_hires_pre = hor_hires;
@@ -411,7 +411,7 @@ int main()
     target_resolution_pre = target_resolution;
  //   hor_hires_pre = hor_hires;
     unlock_1440p_pre = unlock_1440p;
-    update_ppu_state();
+    update_n64adv_state();
   }
 
   return 0;

@@ -132,7 +132,8 @@ wire        vd_wrctrl_w;
 wire [19:0] vd_wrdata_w;
 
 wire FallbackMode_resynced, FallbackMode_valid_resynced;
-wire [`PPU_State_Width:0] PPUState_resynced; // pal_pattern at MSB concat with PPU_state of input
+wire [`PPU_State_Width-1:0] PPUState_resynced;
+wire ctrl_detected_resynced;
 wire OSD_VSync_resynced;
 
 wire nVSYNC_buf_resynced;
@@ -232,14 +233,14 @@ always @(posedge N64_CLK_i)
 
 
 register_sync #(
-  .reg_width(`PPU_State_Width + 6), // 1 + PPU_State_Width + 1 + 1 + 1 + 1 + 1
-  .reg_preset({(`PPU_State_Width + 6){1'b0}})
+  .reg_width(1 + `PPU_State_Width + 5), // 1 + PPU_State_Width + 1 + 1 + 1 + 1 + 1
+  .reg_preset({(1 + `PPU_State_Width + 5){1'b0}})
 ) sync4cpu_u0(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({pal_pattern,PPUState,FallbackMode,FallbackMode_valid,new_ctrl_data[1],OSD_VSync,nVSYNC_buf}),
-  .reg_o({PPUState_resynced,FallbackMode_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced,nVSYNC_buf_resynced})
+  .reg_i({ctrl_detected,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],FallbackMode,FallbackMode_valid,new_ctrl_data[1],OSD_VSync,nVSYNC_buf}),
+  .reg_o({ctrl_detected_resynced,PPUState_resynced,FallbackMode_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced,nVSYNC_buf_resynced})
 );
 
 chip_id chip_id_u(
@@ -268,7 +269,7 @@ system_n64adv2 system_u(
   .vd_wrctrl_export(vd_wrctrl_w),
   .vd_wrdata_export(vd_wrdata_w),
   .ctrl_data_in_export(serial_data[2]),
-  .ppu_state_in_export(PPUState_resynced),
+  .n64adv_state_in_export({ctrl_detected_resynced,PPUState_resynced}),
   .fallback_in_export({FallbackMode_resynced,FallbackMode_valid_resynced}),
   .cfg_set3_out_export(SysConfigSet3),
   .cfg_set2_out_export(SysConfigSet2),

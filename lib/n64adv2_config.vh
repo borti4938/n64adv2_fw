@@ -144,9 +144,10 @@
   
   // PPU Feedback Channel
   
-  `define PPU_State_Width               24  // without pal pattern bit
+  `define PPU_State_Width               26  // without pal pattern bit
   
-  `define PPU_input_palpattern_bit      24  // will be extended in controller module
+  `define PPU_input_vdata_detected_bit  25
+  `define PPU_input_palpattern_bit      24
   `define PPU_input_pal_bit             23
   `define PPU_input_interlaced_bit      22
   
