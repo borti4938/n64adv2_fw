@@ -212,7 +212,7 @@ wire [3:0] vshift    = vdata_hvshift_i[4] ? vdata_hvshift_i[3:0] : ~vdata_hvshif
 wire nRST_i, nRST_DRAM_proc, nRST_o;
 
 // wires for input rtl
-wire sdram_rdy_vclk_i_resynced, output_proc_en_vclk_i_resynced;
+wire sdram_rdy_rxclk_resynced, output_proc_en_rxclk_resynced;
 
 wire nHS_i, nVS_i;
 wire negedge_nHSYNC, negedge_nVSYNC;
@@ -221,14 +221,15 @@ wire input_proc_en_w;
 wire [1:0] vdata_input_processing_w;
 
 // wires for sdram rtl
-wire [3:0] datainfo_pre_sdram_buf_sdr_clk_resynced;
-wire lineid_pre_sdram_buf_sdr_clk_resynced;
+wire [3:0] datainfo_pre_sdram_buf_drclk_resynced;
+wire lineid_pre_sdram_buf_drclk_resynced;
 
-wire input_proc_en_dram_clk_resynced;
-wire [8:0] vcnt_i_dram_clk_resynced;
+wire vdata_detected_drclk_resynced;
+wire input_proc_en_drclk_resynced;
+wire [8:0] vcnt_i_drclk_resynced;
 
-wire [11:0] vcnt_o_sdr_clk_resynced;
-wire [1:0] rdpage_slbuf_sdr_clk_resynced;
+wire [11:0] vcnt_o_drclk_resynced;
+wire [1:0] rdpage_slbuf_drclk_resynced;
 
 wire [7:0] sdram_data_dummy_o;
 wire [`VDATA_O_CO_SLICE] sdram_data_o;
@@ -241,7 +242,8 @@ wire [1:0] datainfo_pre_sdram_buf_bank_sel_w;
 wire datainfo_pre_sdram_buf_field_rdy4out_w;
 
 // wires for output rtl
-wire in2out_en_resynced;
+wire vdata_detected_txclk_resynced;
+wire in2out_en_txclk_resynced;
 
 wire [11:0] X_hpos_px_offset_w;
 wire [10:0] X_vpos_px_offset_w;
@@ -435,7 +437,7 @@ reg [`VDATA_O_CO_SLICE] vdata_vpl_end_L;
 
 // start of rtl
 
-// generate resets
+// generate internal resets
 
 reset_generator #(
   .rst_length(8)
@@ -480,7 +482,7 @@ register_sync_2 #(
   .reg_i(sdram_ctrl_rdy_o & sdram_proc_en),
   .clk_o(VCLK_i),
   .clk_o_en(1'b1),
-  .reg_o(sdram_rdy_vclk_i_resynced)
+  .reg_o(sdram_rdy_rxclk_resynced)
 );
 
 register_sync_2 #(
@@ -494,7 +496,7 @@ register_sync_2 #(
   .reg_i(output_proc_en),
   .clk_o(VCLK_i),
   .clk_o_en(1'b1),
-  .reg_o(output_proc_en_vclk_i_resynced)
+  .reg_o(output_proc_en_rxclk_resynced)
 );
 
 
@@ -503,7 +505,7 @@ assign nVS_i = vdata_i[3*color_width_o+3];
 assign negedge_nHSYNC =  nHS_i_L & !nHS_i;
 assign negedge_nVSYNC =  nVS_i_L & !nVS_i;
 
-assign input_proc_en_w = sdram_rdy_vclk_i_resynced & output_proc_en_vclk_i_resynced;
+assign input_proc_en_w = sdram_rdy_rxclk_resynced & output_proc_en_rxclk_resynced;
 assign vdata_input_processing_w = interlaced & vdata_deinterlacing_mode_i == 2'b00 ? 2'b00 :  // frame drop deinterlacing
                                   interlaced & vdata_deinterlacing_mode_i[1]       ? 2'b01 :  // standard deinterlacing (weave)
                                                                                      2'b10 ;  // normal mode (progressive input or bob deinterlacing)
@@ -631,21 +633,21 @@ register_sync_2 #(
   .reg_i({datainfo_pre_sdram_buf,lineid_pre_sdram_buf}),
   .clk_o(DRAM_CLK_i),
   .clk_o_en(1'b1),
-  .reg_o({datainfo_pre_sdram_buf_sdr_clk_resynced,lineid_pre_sdram_buf_sdr_clk_resynced})
+  .reg_o({datainfo_pre_sdram_buf_drclk_resynced,lineid_pre_sdram_buf_drclk_resynced})
 );
 
 register_sync_2 #(
-  .reg_width(1+vcnt_width),
-  .reg_preset({(1+vcnt_width){1'b0}}),
+  .reg_width(2+vcnt_width),
+  .reg_preset({(2+vcnt_width){1'b0}}),
   .resync_stages(resync_stages)
 ) register_sync_vclki2dram_u1 (
   .nrst(async_nRST_i),
   .clk_i(VCLK_i),
   .clk_i_en(1'b1),
-  .reg_i({Y_input_proc_en,Y_vcnt_i_L}),
+  .reg_i({vdata_detected,Y_input_proc_en,Y_vcnt_i_L}),
   .clk_o(DRAM_CLK_i),
   .clk_o_en(1'b1),
-  .reg_o({input_proc_en_dram_clk_resynced,vcnt_i_dram_clk_resynced})
+  .reg_o({vdata_detected_drclk_resynced,input_proc_en_drclk_resynced,vcnt_i_drclk_resynced})
 );
 
 register_sync_2 #(
@@ -659,7 +661,7 @@ register_sync_2 #(
   .reg_i(Y_vcnt_o_L),
   .clk_o(DRAM_CLK_i),
   .clk_o_en(1'b1),
-  .reg_o(vcnt_o_sdr_clk_resynced)
+  .reg_o(vcnt_o_drclk_resynced)
 );
 
 register_sync_2 #(
@@ -673,7 +675,7 @@ register_sync_2 #(
   .reg_i(rdpage_post_sdram_buf),
   .clk_o(DRAM_CLK_i),
   .clk_o_en(1'b1),
-  .reg_o(rdpage_slbuf_sdr_clk_resynced)
+  .reg_o(rdpage_slbuf_drclk_resynced)
 );
 
 
@@ -707,7 +709,7 @@ sdram_ctrl #(
 
 // read configuration
 always @(posedge DRAM_CLK_i)
-  if (vcnt_o_sdr_clk_resynced == 0)
+  if (vcnt_o_drclk_resynced == 0)
     X_vpos_1st_rdline <= video_vpos_1st_rdline_i;
 
 // write data from sdram into post buffer
@@ -738,9 +740,9 @@ end
 //   - true interlacing -> pushing even and odd frame into same frame page
 //                         repeating each frame twice
 
-assign datainfo_pre_sdram_buf_field_id_w = datainfo_pre_sdram_buf_sdr_clk_resynced[3];
-assign datainfo_pre_sdram_buf_bank_sel_w = datainfo_pre_sdram_buf_sdr_clk_resynced[2:1];
-assign datainfo_pre_sdram_buf_field_rdy4out_w = datainfo_pre_sdram_buf_sdr_clk_resynced[0];
+assign datainfo_pre_sdram_buf_field_id_w = datainfo_pre_sdram_buf_drclk_resynced[3];
+assign datainfo_pre_sdram_buf_bank_sel_w = datainfo_pre_sdram_buf_drclk_resynced[2:1];
+assign datainfo_pre_sdram_buf_field_rdy4out_w = datainfo_pre_sdram_buf_drclk_resynced[0];
 
 always @(*) begin
   if (wrpage_post_sdram_buf[1]) begin
@@ -803,7 +805,7 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
     case (sdram_ctrl_state)
       ST_SDRAM_WAIT: begin
           sdram_proc_en <= 1'b1;
-          if (sdram_wr_lineid ^ lineid_pre_sdram_buf_sdr_clk_resynced) begin  // new input line -> store elements in SDRAM
+          if (sdram_wr_lineid ^ lineid_pre_sdram_buf_drclk_resynced) begin  // new input line -> store elements in SDRAM
             if (datainfo_pre_sdram_buf_field_id_w) begin
               if (datainfo_pre_sdram_buf_bank_sel_w  != sdram_wr_bank_sel_odd) begin
                 sdram_wr_bank_sel_odd  <= datainfo_pre_sdram_buf_bank_sel_w;  // set new bank for frame
@@ -833,9 +835,9 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             sdram_addr_i[ 9: 0] <= {hpos_width{1'b0}};  // horizontal position
             sdram_wr_hcnt <= {hpos_width{1'b0}};
             sdram_ctrl_state <= ST_SDRAM_FIFO2RAM0;
-          end else if (vcnt_o_sdr_clk_resynced == 1) begin // fetch first line to read
-            if (input_proc_en_dram_clk_resynced)
-              Z_vinfo_llm_slbuf_fb_L <= video_llm_i ? vcnt_i_dram_clk_resynced : 9'd0; // provide feedback
+          end else if (vcnt_o_drclk_resynced == 1) begin // fetch first line to read
+            if (input_proc_en_drclk_resynced)
+              Z_vinfo_llm_slbuf_fb_L <= video_llm_i ? vcnt_i_drclk_resynced : 9'd0; // provide feedback
             
             if (interlaced_dramclk_resynced & video_deinterlacing_mode_i[1]) begin  // handle frame drop and bob deinterlacing as non-deinterlacing
               sdram_use_interlaced_out <= 1'b1;
@@ -854,8 +856,8 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             wraddr_post_sdram_buf_main <= 8'hff;
             wraddr_post_sdram_buf_sub <= 2'b10;
             sdram_ctrl_state <= ST_SDRAM_RAM2BUF0;
-          end else if (vcnt_o_sdr_clk_resynced > 1 &&
-                       wrpage_post_sdram_buf_cmb != rdpage_slbuf_sdr_clk_resynced ) begin  // fetch concurrent lines on demand
+          end else if (vcnt_o_drclk_resynced > 1 &&
+                       wrpage_post_sdram_buf_cmb != rdpage_slbuf_drclk_resynced ) begin  // fetch concurrent lines on demand
             if (sdram_use_interlaced_out) begin
               sdram_rd_bank_sel_current <= sdram_rd_vcnt[0] ? sdram_rd_bank_sel_even : sdram_rd_bank_sel_odd; // toggle between even and odd field bank
               sdram_rd_vcnt <= sdram_rd_vcnt + 1'b1;
@@ -920,7 +922,8 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             wrcnt_post_sdram_buf <= wrcnt_post_sdram_buf + 1'b1;
             wraddr_post_sdram_buf_main <= wraddr_post_sdram_buf_main_next_cmb;
             wraddr_post_sdram_buf_sub <= wraddr_post_sdram_buf_sub_next_cmb;
-            vdata3_for_post_sdram_buf[wraddr_post_sdram_buf_sub_next_cmb] <= sdram_data_o;
+            vdata3_for_post_sdram_buf[wraddr_post_sdram_buf_sub_next_cmb] <= vdata_detected_drclk_resynced ? sdram_data_o : {(3*color_width_o){1'b0}};
+//            vdata3_for_post_sdram_buf[wraddr_post_sdram_buf_sub_next_cmb] <= sdram_data_o;
           end else begin
             wren_post_sdram_buf <= 1'b0;
             if (wrcnt_post_sdram_buf == `ACTIVE_PIXEL_PER_LINE - 1)
@@ -940,17 +943,17 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
 
 // resync registers
 register_sync_2 #(
-  .reg_width(1),
-  .reg_preset(1'b0),
+  .reg_width(2),
+  .reg_preset(2'b0),
   .resync_stages(resync_stages)
 ) register_sync_input2hdmi_u0 (
   .nrst(async_nRST_i),
   .clk_i(VCLK_i),
   .clk_i_en(1'b1),
-  .reg_i(Y_in2out_en),
+  .reg_i({vdata_detected,Y_in2out_en}),
   .clk_o(VCLK_o),
   .clk_o_en(1'b1),
-  .reg_o(in2out_en_resynced)
+  .reg_o({vdata_detected_txclk_resynced,in2out_en_txclk_resynced})
 );
 
 // read configuration for output
@@ -1201,7 +1204,7 @@ always @(posedge VCLK_o or negedge nRST_o)
   end else begin
     output_proc_en <= 1'b1;
     // generate sync
-    if (in2out_en_resynced) begin
+    if (!vdata_detected_txclk_resynced | in2out_en_txclk_resynced) begin
       if (hcnt_o_L < X_HTOTAL - 1) begin
         Y_cfg_h_update_window <= &Y_cfg_h_update_window ? Y_cfg_h_update_window : Y_cfg_h_update_window + 4'h1;
         hcnt_o_L <= hcnt_o_L + 1;
@@ -1388,6 +1391,7 @@ always @(posedge VCLK_o or negedge nRST_o)
     VSYNC_vpl_L <= {VSYNC_vpl_L[Videogen_Pipeline_Length-2:0],(Y_vcnt_o_L < X_VSYNCLEN) ~^ X_VSYNC_active};
     DE_vpl_L <= {DE_vpl_L[Videogen_Pipeline_Length-2:0],(h_active_de && Y_v_active_de)};
     
+//    if (vdata_detected_txclk_resynced & DE_virt_vpl_L[Videogen_Pipeline_Length-2] & DE_vpl_L[Videogen_Pipeline_Length-2])
     if (DE_virt_vpl_L[Videogen_Pipeline_Length-2] & DE_vpl_L[Videogen_Pipeline_Length-2])
       vdata_vpl_end_L <= {red_h_interp_out,gr_h_interp_out,bl_h_interp_out};
     else

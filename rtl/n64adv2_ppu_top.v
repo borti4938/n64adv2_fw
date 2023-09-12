@@ -209,8 +209,8 @@ reg [11:0] cfg_osd_hoffset;
 reg cfg_active_vsync;
 reg cfg_active_hsync;
 
-reg [3:0] palmode_buf;
-reg palmode_change;
+reg [3:0] palmode_buf, vdata_detected_buf;
+reg palmode_change, vdata_detected_change;
 
 
 
@@ -542,9 +542,11 @@ gamma_module_v2 gamma_module_u(
 always @(posedge N64_CLK_i) begin
   palmode_change <= palmode_buf[3] ^ palmode;
   palmode_buf <= {palmode_buf[2:0],palmode};
+  vdata_detected_change <= vdata_detected_buf[3] ^ vdata_detected;
+  vdata_detected_buf <= {vdata_detected_buf[2:0],vdata_detected};
 end
 
-assign async_nRST_scaler_w = N64_nVRST_i & DRAM_nRST_i & nVRST_Tx & scaler_nresync_i & ~palmode_change;
+assign async_nRST_scaler_w = N64_nVRST_i & DRAM_nRST_i & nVRST_Tx & scaler_nresync_i & ~palmode_change & ~vdata_detected_change;
 
 scaler scaler_u(
   .async_nRST_i(async_nRST_scaler_w),
