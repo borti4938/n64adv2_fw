@@ -157,8 +157,6 @@ int main()
 
   bool_t unlock_1440p_pre;
 
-  message_cnt = 0;
-
 //  use_flash = FALSE;
 //  if (check_flash() == 0) use_flash = TRUE;
 //
@@ -218,6 +216,8 @@ int main()
 //  hor_hires_pre = hor_hires;
   unlock_1440p_pre = unlock_1440p;
 
+  message_cnt = 0;
+
   /* Event loop never exits. */
   while (1) {
     if (new_ctrl_available() && !ctrl_ignore) {
@@ -249,10 +249,10 @@ int main()
       cfg_load_scaling_word(scaling_menu);
 
       if (message_cnt > 0) {
-        if (command != CMD_NON) {
-          command = CMD_NON;
-          message_cnt = 1;
-        }
+//        if (command != CMD_NON) {
+//          command = CMD_NON;
+//          message_cnt = 1;
+//        }
         message_cnt--;
       }
 
@@ -288,23 +288,21 @@ int main()
 
       update_cfg_screen(menu);
 
-      if (menu->type == N64DEBUG)
-        update_debug_screen(menu);
-      else
-        run_pin_state(0);
-
       if (menu->type == CONFIG) {
         cfg_store_linex_word(vmode_menu);
         cfg_store_timing_word(timing_menu);
         cfg_store_scaling_word(scaling_menu);
       }
-      if (menu->type == N64DEBUG) {
-        print_ctrl_data();
-      } else if (message_cnt == 0) {
-        print_current_timing_mode();
+
+      if (menu->type == N64DEBUG) update_debug_screen(menu);
+      else run_pin_state(0);
+
+      if (message_cnt == 0) {
         print_cr_info();
+        if (menu->type == N64DEBUG) print_ctrl_data();
+        else print_current_timing_mode();
       }
-      
+
     } else { /* ELSE OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
       todo = NON;
 
