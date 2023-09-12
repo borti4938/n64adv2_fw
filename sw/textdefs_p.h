@@ -474,4 +474,7 @@ const alt_u8 Nok_Ok[2] = {CHECKBOX_TICK,HEART};
 const alt_u8 Nok_Ok_color[3] = {FONTCOLOR_RED,FONTCOLOR_GREEN,FONTCOLOR_YELLOW};
 const char *ClkSrc[] = {"27Mhz","N64"};
 
+const char *NoCtrlDetected __ufmdata_section__ = "No controller detected";
+const char *NoVideoDetected __ufmdata_section__ = "No video input detected";
+
 #endif /* MENU_TEXT_TEXTDEFS_P_H_ */

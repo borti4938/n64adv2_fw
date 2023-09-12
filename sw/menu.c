@@ -416,9 +416,13 @@ void print_current_timing_mode()
 }
 
 void print_ctrl_data() {
-  sprintf(szText,"Ctrl. data: 0x%08x",(uint) ctrl_data);
   vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
-  vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+  if ((n64adv_state & N64ADV_INPUT_CTRL_DETECTED_GETMASK) >> N64ADV_INPUT_CTRL_DETECTED_OFFSET) {
+    sprintf(szText,"Ctrl. data: 0x%08x",(uint) ctrl_data);
+    vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+  } else {
+    vd_print_string(VD_INFO,0,0,FONTCOLOR_RED,NoCtrlDetected);
+  }
 }
 
 void print_confirm_info(alt_u8 type) {
@@ -873,23 +877,26 @@ int update_debug_screen(menu_t* current_menu)
   sprintf(szText,"0x%07x",(uint) n64adv_state);
   vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_N64ADV_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
-  // PPU state: VI mode
-  vd_clear_lineend(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET);
-  if (palmode) {
-    sprintf(szText,VTimingSel[2+scanmode]);
-    sprintf(&szText[10]," (Pat. %d)",pal_pattern);
-  } else {
-    sprintf(szText,VTimingSel[scanmode]);
-  }
-  vd_print_string(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
-
-  // PPU state: Source-Sync. Mode
+  // PPU state: VI mode and Source-Sync. Mode
   bool_t is_lowlatency_mode = ((n64adv_state & N64ADV_LOWLATENCYMODE_GETMASK) >> N64ADV_LOWLATENCYMODE_OFFSET);
+  vd_clear_lineend(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET);
   vd_clear_lineend(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET);
-  vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
-  if (is_lowlatency_mode) {
-    sprintf(szText,"(%d sl. buffered)",(uint) ((n64adv_state & N64ADV_LLM_SLBUF_FB_GETMASK) >> N64ADV_LLM_SLBUF_FB_OFFSET));
-    vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET+3,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+  if ((n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET) {
+    if (palmode) {
+      sprintf(szText,VTimingSel[2+scanmode]);
+      sprintf(&szText[10]," (Pat. %d)",pal_pattern);
+    } else {
+      sprintf(szText,VTimingSel[scanmode]);
+    }
+    vd_print_string(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+    vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
+    if (is_lowlatency_mode) {
+      sprintf(szText,"(%d sl. buffered)",(uint) ((n64adv_state & N64ADV_LLM_SLBUF_FB_GETMASK) >> N64ADV_LLM_SLBUF_FB_OFFSET));
+      vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET+3,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+    }
+  } else {
+    sprintf(szText,"No video input detected");
+    vd_print_string(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET,FONTCOLOR_RED,NoVideoDetected);
   }
 
   // Pin state
