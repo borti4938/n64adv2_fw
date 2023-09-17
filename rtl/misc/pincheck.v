@@ -62,7 +62,7 @@ input CLK_AUD_i;
 input CLK_ePLL1_i;
 input CLK_ePLL0_i;
 
-input [6:0] VD_i; // Pin 25, 24, 23, 20, 19, 18, 15
+input [6:0] VD_i; // Pin 15, 18, 19, 20, 23, 24, 25
 input nVDSYNC_i;  // Pin 14
 input N64_CLK_i;  // Pin 11
 input ALRCLK_i;   // Pin 10
