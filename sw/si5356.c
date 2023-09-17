@@ -61,7 +61,7 @@ int check_si5356()
 }
 
 bool_t configure_clk_si5356(clk_config_t target_cfg) {
-  led_drive(LED_1, LED_ON);
+  led_drive(LED_NOK, LED_ON); // LED must be cleared from outside
   periphals_clr_ready_bit();  // must be set again from external
   
   int i;
@@ -89,7 +89,6 @@ bool_t configure_clk_si5356(clk_config_t target_cfg) {
     i--;
   };
   usleep(PLL_LOCK_2_FPGA_TIMEOUT_US);
-  led_drive(LED_1, LED_OFF);
   return TRUE;
 }
 

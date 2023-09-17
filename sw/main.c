@@ -383,8 +383,18 @@ int main()
     }
 
     keep_vout_rst = !periphal_state.si5356_locked || !periphal_state.adv7513_hdmi_up;
-    if (!keep_vout_rst)
+    if (!keep_vout_rst) {
       periphals_set_ready_bit();
+      if (menu->type != N64DEBUG) { // LEDs are under control by Debug-Screen
+        led_drive(LED_OK,LED_OFF);
+        if (video_input_detected) {
+          clear_led_timeout(LED_NOK);
+          led_drive(LED_NOK,LED_OFF);
+        } else {
+          led_drive(LED_NOK,LED_ON);
+        }
+      }
+    }
 
     if (changed_linex_setting) {  // important to check this flag in that order
                                   // as program cycles 1x through menu after change to set also the scaling correctly

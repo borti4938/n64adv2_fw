@@ -36,8 +36,8 @@
 
 
 typedef enum {
-  LED_1 = 0,
-  LED_2
+  LED_OK = 0,
+  LED_NOK
 } led_idx_t;
 
 typedef enum {
@@ -45,6 +45,9 @@ typedef enum {
   LED_ON
 } led_state_t;
 
+void clear_led_timeout(led_idx_t led_idx);
+void dec_led_timeout(led_idx_t led_idx);
+alt_u8 get_led_timout(led_idx_t led_idx);
 void led_drive(led_idx_t led_idx, led_state_t led_state);
 
 

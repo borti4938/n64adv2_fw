@@ -39,6 +39,7 @@
 #include "menu.h"
 #include "textdefs_p.h"
 #include "vd_driver.h"
+#include "led.h"
 
 char szText[VD_WIDTH];
 //extern bool_t use_flash;
@@ -871,6 +872,8 @@ int update_debug_screen(menu_t* current_menu)
   if (current_menu->type != N64DEBUG) return -1;
 
   alt_u8 idx;
+  bool_t show_led_ok = TRUE;
+  bool_t show_led_nok = FALSE;
 
   // PPU state
   vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_N64ADV_STATE_V_OFFSET);
@@ -897,14 +900,23 @@ int update_debug_screen(menu_t* current_menu)
   } else {
     sprintf(szText,"No video input detected");
     vd_print_string(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET,FONTCOLOR_RED,NoVideoDetected);
+    show_led_ok = FALSE;
+    show_led_nok = TRUE;
   }
 
   // Pin state
   run_pin_state(TRUE);
   alt_u16 pin_state = get_pin_state();
-  if (pin_state == PIN_STATE_GETALL_MASK) idx = 1;
-  else if ((pin_state & PIN_STATE_NOAUDIO_PINS_GETMASK) == PIN_STATE_NOAUDIO_PINS_GETMASK) idx = 2;
-  else idx = 0;
+  if (pin_state == PIN_STATE_GETALL_MASK) {
+    idx = 1;
+  } else if ((pin_state & PIN_STATE_NOAUDIO_PINS_GETMASK) == PIN_STATE_NOAUDIO_PINS_GETMASK) {
+    idx = 2;
+    show_led_nok = TRUE;
+  } else {
+    idx = 0;
+    show_led_ok = FALSE;
+    show_led_nok = TRUE;
+  }
   vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PIN_STATE_V_OFFSET);
   sprintf(szText,"0x%04x",(uint) pin_state);
   vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_PIN_STATE_V_OFFSET,Nok_Ok_color[idx],&szText[0]);
@@ -940,6 +952,9 @@ int update_debug_screen(menu_t* current_menu)
 //  alt_u8 position_to_test = PIN_STATE_SYSCLK_OFFSET;
 //  sprintf(szText,"-");
 //  vd_print_string(VD_TEXT,hoffsets[position_to_test],voffsets[position_to_test],FONTCOLOR_WHITE,&szText[0]);
+
+  led_drive(LED_OK, (led_state_t) show_led_ok);
+  led_drive(LED_NOK, (led_state_t) show_led_nok);
 
   return 0;
 }

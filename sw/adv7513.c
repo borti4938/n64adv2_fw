@@ -169,7 +169,7 @@ int check_adv7513()
 }
 
 bool_t init_adv7513() {
-  led_drive(LED_2, LED_ON);
+  led_drive(LED_NOK, LED_ON); // LED must be cleared from outside
   periphals_clr_ready_bit();  // must be set again from external
   if (!ADV_POWER_RDY()) return FALSE;
 
@@ -220,7 +220,6 @@ bool_t init_adv7513() {
   adv7513_writereg(ADV7513_REG_AUDIO_CFG3, 0x0B);       // [3:0] I2S Word length per channel: 1011 = 24bit
 
   set_cfg_adv7513();
-  led_drive(LED_2, LED_OFF);
   return TRUE;
 }
 
