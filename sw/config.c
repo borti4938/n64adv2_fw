@@ -588,7 +588,10 @@ void cfg_apply_to_logic()
   if ((scaling_n64adv == PAL_TO_288) && ((bool_t) cfg_get_value(&pal_boxed_mode,0) == FALSE) && (cfg_get_value(&vert_scale,0) < CFG_VERTSCALE_PAL_MIN))
     cfg_set_value(&vert_scale,288);
   cfg_scale_v2h_update();
-  IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE,sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val);
+  alt_u32 cfg0_word_val = sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val;
+  if (!video_input_detected)
+    cfg0_word_val = (cfg0_word_val & (CFG_RESOLUTION_RSTMASK & CFG_FORCE_5060_RSTMASK)) | CFG_RESOLUTION_480_SETMASK | CFG_FORCE_60_SETMASK; // set to 480p60 if no video input is being detected
+  IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG0_OUT_BASE,cfg0_word_val);
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG1_OUT_BASE,sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val);
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG2_OUT_BASE,sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val);
   IOWR_ALTERA_AVALON_PIO_DATA(EXTCFG3_OUT_BASE,sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val);

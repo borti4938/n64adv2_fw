@@ -77,42 +77,44 @@ void open_osd_main(menu_t **menu)
 
 clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t palmode_tmp)
 {
-  alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
-  if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
-    alt_u8 case_val = (pal_pattern_tmp << 1 | palmode_tmp);
-    switch (case_val) {
-      case 3:
-        return PAL1_N64_288p + linex_setting;
-      case 1:
-        return PAL0_N64_288p + linex_setting;
-      default:
-        if ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == LineX2)  return NTSC_N64_VGA;
-        else return NTSC_N64_240p + linex_setting;
-    }
-  } else {
-    switch (linex_setting) {
-      case PASSTHROUGH:
-        return FREE_240p_288p;
-      case LineX2:
-        if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
-          if (palmode_tmp == NTSC) return FREE_480p_VGA;
-          else                     return FREE_576p;
-        } else {
-          if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) return FREE_480p_VGA;
-          else return FREE_576p;
-        }
-      case LineX3:
-      case LineX4:
-        return FREE_720p_960p;
-      case LineX4p5:
-      case LineX5:
-        return FREE_1080p_1200p;
-      case LineX6:
-      case LineX6W:
-        return FREE_1440p;
+  if (video_input_detected) {
+    alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
+    if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
+      alt_u8 case_val = (pal_pattern_tmp << 1 | palmode_tmp);
+      switch (case_val) {
+        case 3:
+          return PAL1_N64_288p + linex_setting;
+        case 1:
+          return PAL0_N64_288p + linex_setting;
+        default:
+          if ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == LineX2)  return NTSC_N64_VGA;
+          else return NTSC_N64_240p + linex_setting;
+      }
+    } else {
+      switch (linex_setting) {
+        case PASSTHROUGH:
+          return FREE_240p_288p;
+        case LineX2:
+          if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
+            if (palmode_tmp == NTSC) return FREE_480p_VGA;
+            else                     return FREE_576p;
+          } else {
+            if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) return FREE_480p_VGA;
+            else return FREE_576p;
+          }
+        case LineX3:
+        case LineX4:
+          return FREE_720p_960p;
+        case LineX4p5:
+        case LineX5:
+          return FREE_1080p_1200p;
+        case LineX6:
+        case LineX6W:
+          return FREE_1440p;
+      }
     }
   }
-  return FREE_480p_VGA; // should never happen
+  return FREE_480p_VGA; // should only happen if no video input is being detected
 }
 
 cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
@@ -126,10 +128,11 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 int main()
 {
   // initialize menu
-  menu_t *menu = &home_menu;
   #ifdef DEBUG
-    menu->current_selection = 6;
-    menu = menu->leaves[menu->current_selection].submenu;
+    home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
+    menu_t *menu = &debug_screen;
+  #else
+    menu_t *menu = &home_menu;
   #endif
 
 
@@ -175,18 +178,18 @@ int main()
   cfg_apply_to_logic();
 
 
+  // update N64Adv2 state
+  update_n64adv_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
+  vmode_t palmode_pre = palmode;
+  bool_t unlock_1440p_pre = unlock_1440p;
+
+
   // initialize I2C and periphal states
   // periphal devices will be initialized during event loop
   I2C_init(I2C_MASTER_BASE,ALT_CPU_FREQ,400000);
 
   periphal_state_t periphal_state = {FALSE,FALSE,FALSE,FALSE};
   periphals_clr_ready_bit();
-
-
-  // update N64Adv2 state
-  update_n64adv_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
-  vmode_t palmode_pre = palmode;
-  bool_t unlock_1440p_pre = unlock_1440p;
 
 
   // set LEDs
@@ -248,7 +251,15 @@ int main()
         message_cnt--;
       }
 
-      todo = modify_menu(command,&menu);
+      if (!video_input_detected) {  // go directly to debug screen if no video input is being detected and if not already there
+        if (menu->type != N64DEBUG) {
+          home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
+          menu = &debug_screen;
+          todo = NEW_OVERLAY;
+        }
+      } else {  // else operate normally
+        todo = modify_menu(command,&menu);
+      }
 
       switch (todo) {
         case MENU_CLOSE:
@@ -298,9 +309,16 @@ int main()
     } else { /* ELSE OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
       todo = NON;
 
-      if (command == CMD_OPEN_MENU && !keep_vout_rst) {
-        open_osd_main(&menu);
-        ctrl_ignore = CTRL_IGNORE_FRAMES;
+      if (!keep_vout_rst) {
+        if (!video_input_detected) {  // open menu in debug screen if no video input is being detected
+          command = CMD_OPEN_MENU;
+          home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
+          menu = &debug_screen;
+        }
+        if (command == CMD_OPEN_MENU) {
+          open_osd_main(&menu);
+          ctrl_ignore = CTRL_IGNORE_FRAMES;
+        }
       }
 
       if (cfg_get_value(&igr_deblur,0))

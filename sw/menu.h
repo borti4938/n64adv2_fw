@@ -127,7 +127,9 @@ typedef struct menu {
 } menu_t;
 
 extern alt_u16 message_cnt;
-extern menu_t home_menu;
+extern menu_t home_menu, debug_screen;
+
+#define DEBUG_IN_MAIN_MENU_SELECTION  6
 
 void val2txt_func(alt_u16 v);
 void val2txt_5b_binaryoffset_func(alt_u16 v);

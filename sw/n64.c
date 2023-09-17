@@ -38,6 +38,8 @@
 #include "vd_driver.h"
 #include "si5356.h"
 
+#define VIN_DETECTION_TIMEOUT   15
+
 #define ANALOG_TH     50
 
 #define HOLD_CNT_LOW	3
@@ -98,8 +100,16 @@ alt_u16 get_pin_state()
 
 void update_n64adv_state()
 {
+  static alt_u8 vin_detection_timeout = VIN_DETECTION_TIMEOUT;
+
   n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
-  video_input_detected = (n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET;
+  video_input_detected = TRUE;
+  if ((n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET) {
+    vin_detection_timeout = VIN_DETECTION_TIMEOUT;
+  } else {
+    if (vin_detection_timeout == 0) video_input_detected = FALSE;
+    else vin_detection_timeout--;
+  }
   pal_pattern = ((n64adv_state & N64ADV_INPUT_PALPATTERN_GETMASK) >> N64ADV_INPUT_PALPATTERN_OFFSET);
   palmode = ((n64adv_state & N64ADV_INPUT_PALMODE_GETMASK) >> N64ADV_INPUT_PALMODE_OFFSET);
   scanmode = ((n64adv_state & N64ADV_INPUT_INTERLACED_GETMASK) >> N64ADV_INPUT_INTERLACED_OFFSET);
