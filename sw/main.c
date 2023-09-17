@@ -67,16 +67,9 @@ cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 
 void open_osd_main(menu_t **menu)
 {
-  #ifdef DEBUG
-    (*menu)->current_selection = 6;
-    (*menu) = (*menu)->leaves[(*menu)->current_selection].submenu;
-  #endif
   print_overlay(*menu);
   cfg_set_flag(&show_logo);
   print_selection_arrow(*menu);
-  #ifndef DEBUG
-    print_current_timing_mode();
-  #endif
   cfg_set_flag(&show_osd);
   cfg_clear_flag(&mute_osd_tmp);
 }
@@ -132,46 +125,21 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 
 int main()
 {
-  cmd_t command;
-  updateaction_t todo = NON;
+  // initialize menu
   menu_t *menu = &home_menu;
-  bool_t keep_vout_rst = TRUE;
+  #ifdef DEBUG
+    menu->current_selection = 6;
+    menu = menu->leaves[menu->current_selection].submenu;
+  #endif
 
-  bool_t load_n64_defaults;
-  fallback_vmodes_t use_fallback;
-  print_cr_info();
 
-  periphal_state_t periphal_state = {FALSE,FALSE,FALSE,FALSE};
-
-  bool_t ctrl_ignore = 0;
-
-  bool_t igr_reset_tmp;
-  bool_t lock_menu_pre;
-
-  vmode_t palmode_pre;
-  clk_config_t target_resolution, target_resolution_pre;
-//  bool_t hor_hires_pre;
-
-  alt_u8 linex_word_pre;
-  bool_t changed_linex_setting = FALSE;
-
-  bool_t unlock_1440p_pre;
-
-//  use_flash = FALSE;
-//  if (check_flash() == 0) use_flash = TRUE;
-//
-//  bool_t load_n64_defaults = FALSE;
-//  cfg_clear_words();
-//  if (use_flash) {
-//    load_n64_defaults = (cfg_load_from_flash(0) != 0);
-//  }
-
+  // initialize flash and configuration
   cfg_clear_words();
   init_flash();
-  load_n64_defaults = (cfg_load_from_flash(0) != 0);
+  bool_t load_n64_defaults = (cfg_load_from_flash(0) != 0);
 
   while (is_fallback_mode_valid() == FALSE) {};
-  use_fallback = (fallback_vmodes_t) get_fallback_mode(); // returns either 0 or 1 (not associated to 1080p, 240p and 480p Fallback mode)
+  fallback_vmodes_t use_fallback = (fallback_vmodes_t) get_fallback_mode(); // returns either 0 or 1 (not associated to 1080p, 240p and 480p Fallback mode)
 
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
@@ -184,39 +152,63 @@ int main()
       cfg_load_defaults(cfg_get_value(&fallbackmode,0),0);  // load the desired default settings
       open_osd_main(&menu);
     } else {
-      cfg_clear_flag(&show_osd);
+      #ifdef DEBUG
+        open_osd_main(&menu);
+      #else
+        cfg_clear_flag(&show_osd);
+      #endif
     }
     cfg_set_value(&deblur_mode,cfg_get_value(&deblur_mode_powercycle,0));
     cfg_set_value(&mode16bit,cfg_get_value(&mode16bit_powercycle,0));
   }
 
-#ifdef DEBUG
-  open_osd_main(&menu);
-#endif
 
+  // setup target resolution and apply config to FPGA
   cfg_load_linex_word(NTSC);
   cfg_load_timing_word(NTSC_PROGRESSIVE);
   cfg_load_scaling_word(get_target_scaler(NTSC));
 
+  clk_config_t target_resolution, target_resolution_pre;
   target_resolution = get_target_resolution(PAL_PAT0,NTSC);
+  target_resolution_pre = target_resolution;
 
   cfg_apply_to_logic();
-  lock_menu_pre = FALSE;
-  igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
 
+
+  // initialize I2C and periphal states
+  // periphal devices will be initialized during event loop
   I2C_init(I2C_MASTER_BASE,ALT_CPU_FREQ,400000);
 
-  led_drive(LED_1, LED_ON);
-  led_drive(LED_2, LED_ON);
+  periphal_state_t periphal_state = {FALSE,FALSE,FALSE,FALSE};
   periphals_clr_ready_bit();
 
+
+  // update N64Adv2 state
   update_n64adv_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
-  palmode_pre = palmode;
-  target_resolution_pre = target_resolution;
-//  hor_hires_pre = hor_hires;
-  unlock_1440p_pre = unlock_1440p;
+  vmode_t palmode_pre = palmode;
+  bool_t unlock_1440p_pre = unlock_1440p;
+
+
+  // set LEDs
+  led_drive(LED_OK, LED_ON);
+  led_drive(LED_NOK, LED_ON);
+
+
+  // define some variables for housekeeping
+  cmd_t command;
+  updateaction_t todo = NON;
+
+  bool_t keep_vout_rst = TRUE;
+  bool_t ctrl_ignore = 0;
+
+  bool_t igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
+  bool_t lock_menu_pre = FALSE;
+
+  alt_u8 linex_word_pre;
+  bool_t changed_linex_setting = FALSE;
 
   message_cnt = 0;
+
 
   /* Event loop never exits. */
   while (1) {
@@ -414,7 +406,6 @@ int main()
 
     palmode_pre = palmode;
     target_resolution_pre = target_resolution;
- //   hor_hires_pre = hor_hires;
     unlock_1440p_pre = unlock_1440p;
     update_n64adv_state();
   }
