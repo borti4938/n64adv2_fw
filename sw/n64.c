@@ -65,6 +65,7 @@ typedef enum {
 alt_u8 info_sync_val;
 alt_u32 ctrl_data;
 alt_u32 n64adv_state;
+bool_t video_input_detected;
 cfg_pal_pattern_t pal_pattern;
 vmode_t palmode;
 scanmode_t scanmode;
@@ -98,6 +99,7 @@ alt_u16 get_pin_state()
 void update_n64adv_state()
 {
   n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
+  video_input_detected = (n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET;
   pal_pattern = ((n64adv_state & N64ADV_INPUT_PALPATTERN_GETMASK) >> N64ADV_INPUT_PALPATTERN_OFFSET);
   palmode = ((n64adv_state & N64ADV_INPUT_PALMODE_GETMASK) >> N64ADV_INPUT_PALMODE_OFFSET);
   scanmode = ((n64adv_state & N64ADV_INPUT_INTERLACED_GETMASK) >> N64ADV_INPUT_INTERLACED_OFFSET);

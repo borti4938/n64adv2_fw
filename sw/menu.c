@@ -881,7 +881,7 @@ int update_debug_screen(menu_t* current_menu)
   bool_t is_lowlatency_mode = ((n64adv_state & N64ADV_LOWLATENCYMODE_GETMASK) >> N64ADV_LOWLATENCYMODE_OFFSET);
   vd_clear_lineend(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET);
   vd_clear_lineend(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET);
-  if ((n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET) {
+  if (video_input_detected) {
     if (palmode) {
       sprintf(szText,VTimingSel[2+scanmode]);
       sprintf(&szText[10]," (Pat. %d)",pal_pattern);
