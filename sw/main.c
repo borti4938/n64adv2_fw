@@ -241,10 +241,10 @@ int main()
       cfg_load_scaling_word(scaling_menu);
 
       if (message_cnt > 0) {
-//        if (command != CMD_NON) {
-//          command = CMD_NON;
-//          message_cnt = 1;
-//        }
+        if (command != CMD_NON) {
+          command = CMD_NON;
+          message_cnt = 1;
+        }
         message_cnt--;
       }
 
