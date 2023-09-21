@@ -110,13 +110,14 @@ always @(posedge VCLK or negedge nRST)
   if (!nRST) begin
     field_id  <= 1'b1;
     n64_480i <= 1'b1;
-  end else if (!nVDSYNC) begin
-    if (negedge_nVSYNC) begin 
-      field_id <= negedge_nHSYNC;
-      n64_480i <= field_id ^ negedge_nHSYNC;
+  end else begin
+    if (!nVDSYNC) begin
+      if (negedge_nVSYNC) begin 
+        field_id <= negedge_nHSYNC;
+        n64_480i <= field_id ^ negedge_nHSYNC;
+      end
     end
   end
-
 
 // determine vmode
 // ===============
@@ -128,12 +129,14 @@ always @(posedge VCLK or negedge nRST)
   if (!nRST) begin
     line_cnt <= 2'b00;
     palmode  <= 1'b0;
-  end else if (!nVDSYNC) begin
-    if(negedge_nVSYNC) begin // reset line_cnt and set palmode
-      line_cnt <= 2'b00;
-      palmode  <= ~line_cnt[1];
-    end else if(negedge_nHSYNC) // new line -> increase line_cnt
-      line_cnt <= line_cnt + 1'b1;
+  end else begin
+    if (!nVDSYNC) begin
+      if(negedge_nVSYNC) begin // reset line_cnt and set palmode
+        line_cnt <= 2'b00;
+        palmode  <= ~line_cnt[1];
+      end else if(negedge_nHSYNC) // new line -> increase line_cnt
+        line_cnt <= line_cnt + 1'b1;
+    end
   end
 
 
