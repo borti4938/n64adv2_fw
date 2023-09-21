@@ -64,6 +64,9 @@ An empty default value means that this value is not affected by loading defaults
 
 #### Resolution
 
+Any change on the configuration in this menu needs you to confirm the new setting.
+If you do not do so within a few seconds, the setting will switch back to the previous one.
+
 | Entry | Default | Description |
 |:------|:--------|:------------|
 | **Input mode** \[1\] | | Mode where the following settings are applied |
