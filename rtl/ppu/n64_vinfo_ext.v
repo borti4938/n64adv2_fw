@@ -63,23 +63,40 @@ wire negedge_nHSYNC =  Sync_pre[1] & !Sync_cur[1];
 // check for video data running at all
 // ===================================
 
-reg [11:0] clk_cnt = 12'd0;
-reg [1:0] vdata_detected = 2'b00;
+reg [2:0] dsclk_cnt = 3'd0;
+reg [8:0] vclk_cnt = 9'd0;
+reg [11:0] hclk_cnt = 12'd0;
+reg vdata_detected = 1'b0;
 
 always @(posedge VCLK or negedge nRST)
   if (!nRST) begin
-    clk_cnt <= 12'd0;
-    vdata_detected <= 2'b00;
+    dsclk_cnt <= 4'd0;
+    vclk_cnt <= 9'd0;
+    hclk_cnt <= 12'd0;
+    vdata_detected <= 1'b0;
   end else begin
-    if (&clk_cnt) // clock count saturated - probably no video input running
-      vdata_detected <= 2'b00;
-    else if (~|clk_cnt) // clock count at zero - there was a negedge_nHSYNC
-      vdata_detected <= {vdata_detected[0],1'b1};
+    if (&dsclk_cnt | &vclk_cnt | &hclk_cnt) // clock count saturated - probably no video input running
+      vdata_detected <= 1'b0;
+    
+    if (!nVDSYNC & negedge_nVSYNC & negedge_nHSYNC)
+      vdata_detected <= 1'b1;
+    
+    if (!nVDSYNC)
+      dsclk_cnt <= 3'd0;
+    else
+      dsclk_cnt <= &dsclk_cnt ? dsclk_cnt : dsclk_cnt + 3'd1;  // saturate at 7
+    
+    if (negedge_nVSYNC)
+      vclk_cnt <= 9'd0;
+    else if (!nVDSYNC & negedge_nHSYNC)
+      vclk_cnt <= &vclk_cnt ? vclk_cnt : vclk_cnt + 9'd1;  // saturate at 512
+    else
+      vclk_cnt <= vclk_cnt;
     
     if (negedge_nHSYNC)
-      clk_cnt <= 12'd0;
+      hclk_cnt <= 12'd0;
     else
-      clk_cnt <= &clk_cnt ? clk_cnt : clk_cnt + 12'd1;  // saturate at 4095
+      hclk_cnt <= &hclk_cnt ? hclk_cnt : hclk_cnt + 12'd1;  // saturate at 4095
   end
 
 
@@ -123,6 +140,6 @@ always @(posedge VCLK or negedge nRST)
 // pack vinfo_o vector
 // ===================
 
-assign vinfo_o = {vdata_detected[1],palmode,n64_480i};
+assign vinfo_o = {vdata_detected,palmode,n64_480i};
 
 endmodule
