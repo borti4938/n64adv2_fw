@@ -36,8 +36,8 @@
 
 
 typedef enum {
-  LED_OK = 0,
-  LED_NOK
+  LED_NOK = 0,
+  LED_OK
 } led_idx_t;
 
 typedef enum {

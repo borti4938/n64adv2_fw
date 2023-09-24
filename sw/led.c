@@ -30,6 +30,7 @@
 #include <stddef.h>
 #include <unistd.h>
 #include "led.h"
+#include "config.h"
 #include "alt_types.h"
 #include "altera_avalon_pio_regs.h"
 #include "system.h"
@@ -58,7 +59,11 @@ alt_u8 get_led_timout(led_idx_t led_idx) {
 }
 
 void led_drive(led_idx_t led_idx, led_state_t led_state) {
-  if (led_state == LED_OFF) IOWR_ALTERA_AVALON_PIO_DATA(LED_OUT_BASE,IORD_ALTERA_AVALON_PIO_DATA(LED_OUT_BASE) & ~(1<<led_idx));
-  else                      IOWR_ALTERA_AVALON_PIO_DATA(LED_OUT_BASE,IORD_ALTERA_AVALON_PIO_DATA(LED_OUT_BASE) |  (1<<led_idx));
+  led_idx_t led_jdx;
+  if (cfg_get_value(&swap_led,0)) led_jdx = led_idx == LED_OK ? LED_NOK : LED_OK;
+  else                            led_jdx = led_idx;
+
+  if (led_state == LED_OFF) IOWR_ALTERA_AVALON_PIO_DATA(LED_OUT_BASE,IORD_ALTERA_AVALON_PIO_DATA(LED_OUT_BASE) & ~(1<<led_jdx));
+  else                      IOWR_ALTERA_AVALON_PIO_DATA(LED_OUT_BASE,IORD_ALTERA_AVALON_PIO_DATA(LED_OUT_BASE) |  (1<<led_jdx));
   activate_led_timeout(led_idx);
 }

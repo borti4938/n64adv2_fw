@@ -145,7 +145,8 @@
 #define MISC_IGR_DEBLUR_V_OFFSET          ( 7 + MISC_VALS_V_OFFSET)
 #define MISC_IGR_16BITMODE_V_OFFSET       ( 8 + MISC_VALS_V_OFFSET)
 #define MISC_RST_MASKING_V_OFFSET         ( 9 + MISC_VALS_V_OFFSET)
-#define MISC_LUCKY_1440P_V_OFFSET         (10 + MISC_VALS_V_OFFSET)
+#define MISC_SWAP_LED_V_OFFSET            (10 + MISC_VALS_V_OFFSET)
+#define MISC_LUCKY_1440P_V_OFFSET         (11 + MISC_VALS_V_OFFSET)
 
 #define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
 #define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
@@ -285,12 +286,13 @@ static const char *misc_overlay __ufmdata_section__ =
     "  - Swap L/R:\n"
     "  - Bypass filter:\n"
     "  - Post filter gain:\n"
-    "  - S/PDIF enabled:\n"
+    "  - Enable S/PDIF:\n"
     "* Controller routines:\n"
     "  - Reset:\n"
     "  - VI-DeBlur:\n"
     "  - 16bit mode:\n"
     "* Reset masking:\n"
+    "* Swap R/G-LED:\n"
     "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =

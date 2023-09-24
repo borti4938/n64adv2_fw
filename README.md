@@ -160,6 +160,7 @@ If you do not do so within a few seconds, the setting will switch back to the pr
 | **Controller routines - VI-DeBlur** | Off | Allows switching _low. res. deblur_ (see description above) **on** and **off** via controller<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
 | **Controller routines - 16bit mode** | Off | Allows switching _16bit mode_ (see description above) **on** and **off** via controller<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
 | **Reset masking** | VI + Audio | User can opt to not reset video interface pipeline (**VI pipeline**) and/or **Audio** processing if the console is being reset |
+| **Swap LED** | Off | Swap use of LED D1 and D2 (usually D1 is NOK / red and D2 is OK / green). Useful if D1 and D2 have opposite color on hardware. |
 | **Unlock lucky 1440p** \[12\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
 \[12\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 

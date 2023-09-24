@@ -201,13 +201,14 @@ typedef struct {
 #define PREDEFINED_SCALE_STEPS  21
 
 // the overall masks
-#define INTCFG0_GETALL_MASK   0x00000FFF
+#define INTCFG0_GETALL_MASK   0x00002FFF
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x000000FF
 
 // internal cfg set 0
+#define CFG_LEDSWAP_OFFSET                 13
 #define CFG_COLORSPACE_OFFSET              10
 #define CFG_LIMITED_COLORSPACE_OFFSET      9
 #define CFG_LINK_HV_SCALE_OFFSET           7
@@ -218,6 +219,9 @@ typedef struct {
 #define CFG_FALLBACK_OFFSET                1
 #define CFG_AUTOSAVE_OFFSET                0
 
+#define CFG_LEDSWAP_GETMASK                 (1<<CFG_LEDSWAP_OFFSET)
+  #define CFG_LEDSWAP_SETMASK                 (1<<CFG_LEDSWAP_OFFSET)
+  #define CFG_LEDSWAP_CLRMASK                 (INTCFG0_GETALL_MASK & ~CFG_LEDSWAP_GETMASK)
 #define CFG_COLORSPACE_GETMASK              (3<<CFG_COLORSPACE_OFFSET)
   #define CFG_COLORSPACE_RSTMASK              (INTCFG0_GETALL_MASK & ~CFG_COLORSPACE_GETMASK)
   #define CFG_COLORSPACE_CLRMASK              (INTCFG0_GETALL_MASK & ~CFG_COLORSPACE_GETMASK)
@@ -545,10 +549,9 @@ extern configuration_t sysconfig;
 
 extern config_tray_u8_t linex_words[2];
 
-extern config_t color_space, limited_colorspace, link_hv_scale,
-                deblur_mode_powercycle, mode16bit_powercycle,
-                igr_deblur, igr_16bitmode,
-                fallbackmode, autosave;
+extern config_t swap_led, color_space, limited_colorspace,
+                link_hv_scale,deblur_mode_powercycle, mode16bit_powercycle,
+                igr_deblur, igr_16bitmode, fallbackmode, autosave;
 extern config_t scaling_steps, region_selection,
                 timing_selection, scaling_selection,
                 copy_direction, lock_menu;
