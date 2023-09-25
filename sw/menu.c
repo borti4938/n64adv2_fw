@@ -667,28 +667,29 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       return NEW_CONF_VALUE;
     }
   }
-  if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC3) {
-    if (command == CMD_MENU_RIGHT) {
+
+  if ((command == CMD_MENU_RIGHT) || (command == CMD_MENU_ENTER)) {
+    if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC3) {
       (*current_menu)->leaves[current_sel].cfgfct_call_3(current_sel-RES_FUNCTIONS_OFFSET,1,0);  // at the moment only used in resolution menu, so this is correct
       return NEW_CONF_VALUE;
     }
-  }
-  if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC4) { // at the moment only used in scaling menu for horizontal and vertical scale
-    if ((command == CMD_MENU_RIGHT) || (command == CMD_MENU_LEFT)) {
-      (*current_menu)->leaves[current_sel].cfgfct_call_4(command,current_sel==VERTSCALE_SELECTION,1,0);
-      return NEW_CONF_VALUE;
+    if ((*current_menu)->leaves[current_sel].leavetype >= INFO_RET_FUNC0) {
+      int retval = 0;
+      if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC0) retval = (*current_menu)->leaves[current_sel].sys_fun_0();
+      if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC1) retval = (*current_menu)->leaves[current_sel].sys_fun_1(1);
+      if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC2) retval = (*current_menu)->leaves[current_sel].sys_fun_2(cfg_get_value(&fallbackmode,0),1);
+      return (retval == 0                     ? CONFIRM_OK  :
+              retval == -CFG_FLASH_SAVE_ABORT ? CONFIRM_ABORTED :
+                                                CONFIRM_FAILED);
     }
   }
 
-  if (((command == CMD_MENU_RIGHT) || (command == CMD_MENU_ENTER)) && ((*current_menu)->leaves[current_sel].leavetype >= INFO_RET_FUNC0)) {
-    int retval = 0;
-    if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC0) retval = (*current_menu)->leaves[current_sel].sys_fun_0();
-    if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC1) retval = (*current_menu)->leaves[current_sel].sys_fun_1(1);
-    if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC2) retval = (*current_menu)->leaves[current_sel].sys_fun_2(cfg_get_value(&fallbackmode,0),1);
-    return (retval == 0                     ? CONFIRM_OK  :
-            retval == -CFG_FLASH_SAVE_ABORT ? CONFIRM_ABORTED :
-                                              CONFIRM_FAILED);
+  if (((command == CMD_MENU_RIGHT) || (command == CMD_MENU_LEFT)) &&
+      ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC4)) { // at the moment only used in scaling menu for horizontal and vertical scale
+    (*current_menu)->leaves[current_sel].cfgfct_call_4(command,current_sel==VERTSCALE_SELECTION,1,0);
+    return NEW_CONF_VALUE;
   }
+
   return NON;
 }
 
