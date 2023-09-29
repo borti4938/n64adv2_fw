@@ -71,12 +71,12 @@ typedef enum {
 typedef enum {
   ICONFIG = 0,
   ISUBMENU,
-  INFO_RET_FUNC0,
-  INFO_RET_FUNC1,
-  INFO_RET_FUNC2,
   CFG_FUNC1,
   CFG_FUNC3,
-  CFG_FUNC4
+  CFG_FUNC4,
+  INFO_RET_FUNC0,
+  INFO_RET_FUNC1,
+  INFO_RET_FUNC2
 } leavetype_t;
 
 typedef struct {
@@ -127,7 +127,7 @@ typedef struct menu {
 } menu_t;
 
 extern alt_u16 message_cnt;
-extern menu_t home_menu, debug_screen;
+extern menu_t home_menu, vires_screen, debug_screen;
 
 #define DEBUG_IN_MAIN_MENU_SELECTION  6
 

@@ -403,7 +403,7 @@ int main()
     keep_vout_rst = !periphal_state.si5356_locked || !periphal_state.adv7513_hdmi_up;
     if (!keep_vout_rst) {
       periphals_set_ready_bit();
-      if (menu->type != N64DEBUG) { // LEDs are under control by Debug-Screen
+      if (menu->type != N64DEBUG) { // LEDs are not under control by Debug-Screen
         led_drive(LED_OK,LED_OFF);
         if (video_input_detected) {
           clear_led_timeout(LED_NOK);
@@ -425,7 +425,7 @@ int main()
         message_cnt = CONFIRM_SHOW_CNT_MID;
       }
       changed_linex_setting = FALSE;
-    } else {
+    } else if (menu == &vires_screen) {
       changed_linex_setting = (linex_word_pre != linex_words[palmode].config_val);
     }
 

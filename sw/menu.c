@@ -661,14 +661,17 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   }
 
   // check for functions embedded in menu
-  if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC1) {
-    if (command == CMD_MENU_RIGHT) {
-      (*current_menu)->leaves[current_sel].cfgfct_call_1(1);  // at the moment only used for unlock 1440p, so this is correct
-      return NEW_CONF_VALUE;
-    }
+  if (((command == CMD_MENU_RIGHT) || (command == CMD_MENU_LEFT)) &&
+      ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC4)) { // at the moment only used in scaling menu for horizontal and vertical scale
+    (*current_menu)->leaves[current_sel].cfgfct_call_4(command,current_sel==VERTSCALE_SELECTION,1,0);
+    return NEW_CONF_VALUE;
   }
 
   if ((command == CMD_MENU_RIGHT) || (command == CMD_MENU_ENTER)) {
+    if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC1) {
+      (*current_menu)->leaves[current_sel].cfgfct_call_1(1);  // at the moment only used for unlock 1440p, so this is correct
+      return NEW_CONF_VALUE;
+    }
     if ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC3) {
       (*current_menu)->leaves[current_sel].cfgfct_call_3(current_sel-RES_FUNCTIONS_OFFSET,1,0);  // at the moment only used in resolution menu, so this is correct
       return NEW_CONF_VALUE;
@@ -682,12 +685,6 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
               retval == -CFG_FLASH_SAVE_ABORT ? CONFIRM_ABORTED :
                                                 CONFIRM_FAILED);
     }
-  }
-
-  if (((command == CMD_MENU_RIGHT) || (command == CMD_MENU_LEFT)) &&
-      ((*current_menu)->leaves[current_sel].leavetype == CFG_FUNC4)) { // at the moment only used in scaling menu for horizontal and vertical scale
-    (*current_menu)->leaves[current_sel].cfgfct_call_4(command,current_sel==VERTSCALE_SELECTION,1,0);
-    return NEW_CONF_VALUE;
   }
 
   return NON;
