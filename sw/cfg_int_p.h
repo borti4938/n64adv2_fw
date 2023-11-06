@@ -45,6 +45,16 @@ cfg_b32word_t intcfg0_word =
     .cfg_ref_word_val = 0x00000000
   };
 
+config_t swap_led = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_LEDSWAP_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_LEDSWAP_SETMASK,
+        .clrflag_mask = CFG_LEDSWAP_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
 
 config_t color_space = {
     .cfg_word        = &intcfg0_word,
