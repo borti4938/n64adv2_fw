@@ -56,8 +56,9 @@ output [2:0] vinfo_o;   // order: vdata_detected,palmode,n64_480i
 
 // some pre-assignments
 
-wire negedge_nVSYNC =  Sync_pre[3] & !Sync_cur[3];
-wire negedge_nHSYNC =  Sync_pre[1] & !Sync_cur[1];
+wire negedge_nVSYNC = Sync_pre[3] & !Sync_cur[3];
+wire negedge_nHSYNC = Sync_pre[1] & !Sync_cur[1];
+wire negedge_nCSYNC = Sync_pre[0] & !Sync_cur[0];
 
 
 // check for video data running at all
@@ -65,38 +66,67 @@ wire negedge_nHSYNC =  Sync_pre[1] & !Sync_cur[1];
 
 reg [2:0] dsclk_cnt = 3'd0;
 reg [8:0] vclk_cnt = 9'd0;
-reg [11:0] hclk_cnt = 12'd0;
+reg [9:0] hclk_cnt = 10'd0;
+reg [10:0] cclk_cnt = 11'd0;
+reg [3:0] vdata_detection_flags = 4'h0;
 reg vdata_detected = 1'b0;
 
 always @(posedge VCLK or negedge nRST)
   if (!nRST) begin
-    dsclk_cnt <= 4'd0;
+    dsclk_cnt <= 3'd0;
     vclk_cnt <= 9'd0;
-    hclk_cnt <= 12'd0;
+    hclk_cnt <= 10'd0;
+    cclk_cnt <= 10'd0;
+    vdata_detection_flags <= 4'h0;
     vdata_detected <= 1'b0;
   end else begin
-    if (&dsclk_cnt | &vclk_cnt | &hclk_cnt) // clock count saturated - probably no video input running
-      vdata_detected <= 1'b0;
+    vdata_detected <= &vdata_detection_flags[3:0];
     
-    if (!nVDSYNC & negedge_nVSYNC & negedge_nHSYNC)
-      vdata_detected <= 1'b1;
+    // manage detection flags
+    if (&dsclk_cnt) // vdsync not detected - probably no video input running
+      vdata_detection_flags[3] <= 1'b0;
+    else
+      vdata_detection_flags[3] <= 1'b1;
     
+    if (&vclk_cnt) // vertical sync not detected - probably no video input running
+      vdata_detection_flags[2] <= 1'b0;
+    else
+      vdata_detection_flags[2] <= 1'b1;
+    
+    if (&hclk_cnt) // horizontal sync not detected - probably no video input running
+      vdata_detection_flags[1] <= 1'b0;
+    else
+      vdata_detection_flags[1] <= 1'b1;
+    
+    if (&cclk_cnt) // composite sync not detected - probably no video input running
+      vdata_detection_flags[0] <= 1'b0;
+    else
+      vdata_detection_flags[0] <= 1'b1;
+    
+    // check for inputs and manage timeouts
     if (!nVDSYNC)
       dsclk_cnt <= 3'd0;
     else
       dsclk_cnt <= &dsclk_cnt ? dsclk_cnt : dsclk_cnt + 3'd1;  // saturate at 7
     
-    if (negedge_nVSYNC)
-      vclk_cnt <= 9'd0;
-    else if (!nVDSYNC & negedge_nHSYNC)
-      vclk_cnt <= &vclk_cnt ? vclk_cnt : vclk_cnt + 9'd1;  // saturate at 512
-    else
-      vclk_cnt <= vclk_cnt;
-    
-    if (negedge_nHSYNC)
-      hclk_cnt <= 12'd0;
-    else
-      hclk_cnt <= &hclk_cnt ? hclk_cnt : hclk_cnt + 12'd1;  // saturate at 4095
+    if (!nVDSYNC) begin
+      if (negedge_nVSYNC)
+        vclk_cnt <= 9'd0;
+      else if (negedge_nHSYNC)
+        vclk_cnt <= &vclk_cnt ? vclk_cnt : vclk_cnt + 9'd1;  // saturate at 511
+      else
+        vclk_cnt <= vclk_cnt;
+      
+      if (negedge_nHSYNC)
+        hclk_cnt <= 10'd0;
+      else
+        hclk_cnt <= &hclk_cnt ? hclk_cnt : hclk_cnt + 10'd1;  // saturate at 1023
+      
+      if (negedge_nCSYNC)
+        cclk_cnt <= 11'd0;
+      else
+        cclk_cnt <= &cclk_cnt ? cclk_cnt : cclk_cnt + 11'd1;  // saturate at 2047
+    end
   end
 
 
