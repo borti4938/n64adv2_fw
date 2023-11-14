@@ -193,7 +193,7 @@ int main()
 
 
   // set LEDs
-  led_drive(LED_OK, LED_ON);
+  led_drive(LED_OK, LED_OFF);
   led_drive(LED_NOK, LED_ON);
 
 
@@ -201,6 +201,7 @@ int main()
   cmd_t command;
   updateaction_t todo = NON;
 
+  bool_t i2c_devs_ok = FALSE;
   bool_t keep_vout_rst = TRUE;
   bool_t ctrl_ignore = 0;
 
@@ -376,23 +377,30 @@ int main()
 
     target_resolution = get_target_resolution(pal_pattern,palmode);
 
-    if (!periphal_state.si5356_locked)
+    if (!periphal_state.si5356_locked) {
+      i2c_devs_ok = FALSE;
       periphal_state.si5356_locked = init_si5356(target_resolution);
-    else if (target_resolution_pre != target_resolution)
+    } else if (target_resolution_pre != target_resolution) {
+      i2c_devs_ok = FALSE;
       configure_clk_si5356(target_resolution);
+    }
 
 
     if (!periphal_state.adv7513_i2c_up)
       periphal_state.adv7513_i2c_up = check_adv7513() == 0;
 
     if (periphal_state.adv7513_i2c_up) {
-      if (!periphal_state.adv7513_hdmi_up)
+      if (!periphal_state.adv7513_hdmi_up) {
+          i2c_devs_ok = FALSE;
           periphal_state.adv7513_hdmi_up = init_adv7513();
-      else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE())
+      } else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
+//      } else if (!ADV_MONITOR_SENSE_STATE()) {
+        i2c_devs_ok = FALSE;
         periphal_state.adv7513_hdmi_up = FALSE;
-      else if ((palmode_pre != palmode)                     ||
-               (todo == NEW_CONF_VALUE))
+      } else if ((palmode_pre != palmode) || (todo == NEW_CONF_VALUE)) {
+        i2c_devs_ok = FALSE;
         set_cfg_adv7513();
+      }
     }
 
     if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
@@ -400,11 +408,17 @@ int main()
       message_cnt = CONFIRM_SHOW_CNT_MID;
     }
 
+    if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) {
+      if (!i2c_devs_ok) led_drive(LED_OK,LED_ON);
+      if (get_led_timout(LED_OK) == 0) led_drive(LED_OK,LED_OFF);
+      else dec_led_timeout(LED_OK);
+      i2c_devs_ok = TRUE;
+    }
+
     keep_vout_rst = !periphal_state.si5356_locked || !periphal_state.adv7513_hdmi_up;
     if (!keep_vout_rst) {
       periphals_set_ready_bit();
       if (menu->type != N64DEBUG) { // LEDs are not under control by Debug-Screen
-        led_drive(LED_OK,LED_OFF);
         if (video_input_detected) {
           clear_led_timeout(LED_NOK);
           led_drive(LED_NOK,LED_OFF);
