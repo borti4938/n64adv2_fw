@@ -370,11 +370,11 @@ void val2txt_scale_sel_func(alt_u16 v) {
     sprintf(szText,NTSCPAL_SEL[PPU_REGION_CURRENT]);
   } else {
     if (v > NTSC_LAST_SCALING_MODE) {
-      sprintf(szText,"PAL to ");
-      sprintf(&szText[7],Resolutions[v - PAL_TO_288]);
+      sprintf(szText,"PAL.%s to ",scanmode == INTERLACED ? "i" : "p");
+      sprintf(&szText[9],Resolutions[v - PAL_TO_288]);
     } else {
-      sprintf(szText,"NTSC to ");
-      sprintf(&szText[8],Resolutions[v - NTSC_TO_240]);
+      sprintf(szText,"NTSC.%s to ",scanmode == INTERLACED ? "i" : "p");
+      sprintf(&szText[10],Resolutions[v - NTSC_TO_240]);
     }
   }
 };
