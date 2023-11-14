@@ -76,7 +76,7 @@ localparam [1:0] inop_reserved    = 2'b11;
 localparam [1:0] calcop_normal    = 2'b00;
 localparam [1:0] calcop_bypass_a0 = 2'b01;
 localparam [1:0] calcop_bypass_a1 = 2'b10;
-localparam [1:0] calcop_reserved  = 2'b11;
+localparam [1:0] calcop_reserved  = 2'b11;  // atm same as calcop_normal
 
 localparam pipeline_length = 2;
 
@@ -86,7 +86,7 @@ integer int_idx;
 // wires
 
 // registers
-reg [2:0] calcopcode_L[0:pipeline_length-1];
+reg [1:0] calcopcode_L[0:pipeline_length-1];
 reg [INPUT_DATA_A_W-1:0] data_a0_L, data_a1_L;
 reg [INPUT_DATA_B_W-1:0] data_b0_L, data_b1_L;
 
@@ -134,7 +134,7 @@ always @(posedge CLK_i or negedge nRST_i)
     mult_result_1 <= {(INPUT_DATA_A_W+INPUT_DATA_B_W){1'b0}};
     overall_result <= {(INPUT_DATA_A_W+INPUT_DATA_B_W+1){1'b0}};
   end else begin
-    bypass_mult_result <= calcopcode_L[0] ? data_a1_L : data_a0_L;
+    bypass_mult_result <= calcopcode_L[0][0] ? data_a0_L : data_a1_L;
 //    mult_result_0 <= data_a0_L * data_b0_L;
 //    mult_result_1 <= data_a1_L * data_b1_L;
     mult_result_0 <= data_a0_L * (* multstyle = "dsp" *) data_b0_L;
