@@ -64,9 +64,9 @@ output reg [`VDATA_I_FU_SLICE] vdata_r_1 = {vdata_width_i{1'b0}}; // (unpacked a
 
 // unpack demux info
 
-wire       palmode     = demuxparams_i[  2];
-wire       ndo_deblur  = demuxparams_i[  1];
-wire       n16bit_mode = demuxparams_i[  0];
+wire palmode     = demuxparams_i[  2];
+wire ndo_deblur  = demuxparams_i[  1];
+wire n16bit_mode = demuxparams_i[  0];
 
 wire posedge_nCSYNC = !vdata_r_0[3*color_width_i] &  VD_i[0];
 
