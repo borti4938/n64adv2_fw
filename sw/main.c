@@ -179,7 +179,8 @@ int main()
 
 
   // update N64Adv2 state
-  update_n64adv_state(); // also update commonly used ppu states (palmode, scanmode, linemult_mode)
+  bool_t video_input_detected_pre = TRUE;
+  update_n64adv_state(); // also update commonly used ppu states (video_input_detected, palmode, scanmode, linemult_mode)
   vmode_t palmode_pre = palmode;
   bool_t unlock_1440p_pre = unlock_1440p;
 
@@ -252,12 +253,10 @@ int main()
         message_cnt--;
       }
 
-      if (!video_input_detected) {  // go directly to debug screen if no video input is being detected and if not already there
-        if (menu->type != N64DEBUG) {
-          home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
-          menu = &debug_screen;
-          todo = NEW_OVERLAY;
-        }
+      if (video_input_detected_pre && !video_input_detected) {  // go directly to debug screen if no video input is being detected and if not already there
+        home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
+        menu = &debug_screen;
+        todo = NEW_OVERLAY;
       } else {  // else operate normally
         todo = modify_menu(command,&menu);
       }
@@ -311,7 +310,7 @@ int main()
       todo = NON;
 
       if (!keep_vout_rst) {
-        if (!video_input_detected) {  // open menu in debug screen if no video input is being detected
+        if (video_input_detected_pre && !video_input_detected) {  // open menu in debug screen if no video input is being detected
           command = CMD_OPEN_MENU;
           home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
           menu = &debug_screen;
@@ -446,6 +445,7 @@ int main()
     while(!get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes high */
     while( get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes low  */
 
+    video_input_detected_pre = video_input_detected;
     palmode_pre = palmode;
     target_resolution_pre = target_resolution;
     unlock_1440p_pre = unlock_1440p;
