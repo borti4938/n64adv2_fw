@@ -38,8 +38,8 @@
 #include "vd_driver.h"
 #include "si5356.h"
 
-#define VIN_BOOT_DETECTION_TIMEOUT  50
-#define VIN_DETECTION_TIMEOUT       15
+#define VIN_BOOT_DETECTION_TIMEOUT  210
+#define VIN_DETECTION_TIMEOUT        15
 
 #define ANALOG_TH     50
 
@@ -106,7 +106,7 @@ void update_n64adv_state()
   n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
   video_input_detected = TRUE;
   if ((n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET) {
-    vin_detection_timeout = VIN_DETECTION_TIMEOUT;
+    if (vin_detection_timeout < VIN_DETECTION_TIMEOUT) vin_detection_timeout = VIN_DETECTION_TIMEOUT;
   } else {
     if (vin_detection_timeout == 0) video_input_detected = FALSE;
     else vin_detection_timeout--;
