@@ -266,13 +266,14 @@ menu_t misc_screen = {
     .parent = &home_menu,
     .arrow_position = (MISC_VALS_H_OFFSET - 2),
     .current_selection = 0,
-    .number_selections = 6,
+    .number_selections = 7,
     .leaves = {
         {.id = MISC_IGR_RESET_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_reset},
         {.id = MISC_IGR_DEBLUR_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_deblur},
         {.id = MISC_IGR_16BITMODE_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_16bitmode},
         {.id = MISC_RST_MASKING_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &rst_masking},
         {.id = MISC_SWAP_LED_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &swap_led},
+        {.id = MISC_DEBUG_BOOT_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &debug_boot},
         {.id = MISC_LUCKY_1440P_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = CFG_FUNC1, .cfgfct_call_1 = &cfgfct_unlock1440p}
     }
 };

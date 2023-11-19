@@ -151,6 +151,7 @@
 #define MISC_IGR_16BITMODE_V_OFFSET       ( 4 + MISC_VALS_V_OFFSET)
 #define MISC_RST_MASKING_V_OFFSET         ( 5 + MISC_VALS_V_OFFSET)
 #define MISC_SWAP_LED_V_OFFSET            ( 7 + MISC_VALS_V_OFFSET)
+#define MISC_DEBUG_BOOT_V_OFFSET          ( 8 + MISC_VALS_V_OFFSET)
 #define MISC_LUCKY_1440P_V_OFFSET         ( 9 + MISC_VALS_V_OFFSET)
 
 #define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
@@ -306,7 +307,8 @@ static const char *misc_overlay __ufmdata_section__ =
     "  - 16bit mode:\n"
     "* Reset masking:\n"
     "* Menu-Variations:\n"
-    "  - Swap R/G-LED:\n\n"
+    "  - Swap R/G-LED:\n"
+    "  - Debug-Boot:\n"
     "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =
@@ -459,6 +461,8 @@ const char *ScanlinesThickness[]    __ufmdata_section__ = {"Adaptive","Thin","No
 const char *ScanlinesScaleProfile[] __ufmdata_section__ = {"Hanning","Gaussian","Rectangular"};
 
 const char *RstMasking[] __ufmdata_section__ = {"None","VI pipeline","Audio","VI + Audio"};
+
+const char *DebugBoot[] __ufmdata_section__ = {"Debug at no vi-input","Normal boot"};
 
 const char *VideoMode[]  __ufmdata_section__ = {"240p","480i","288p","576i"};
 const char *VRefresh[]   __ufmdata_section__ = {"@ 60Hz","@ 50Hz"};

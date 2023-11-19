@@ -37,7 +37,7 @@
 #ifndef CFG_INT_P_H_
 #define CFG_INT_P_H_
 
-extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[], *CopyCfg[];
+extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[], *CopyCfg[], *DebugBoot[];
 
 cfg_b32word_t intcfg0_word =
   { .cfg_word_mask    = INTCFG0_GETALL_MASK,
@@ -153,6 +153,17 @@ config_t autosave = {
         .clrflag_mask = CFG_AUTOSAVE_CLRMASK
     },
     .val2char_func = &flag2set_func
+};
+
+config_t debug_boot = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_DEBUGBOOT_OFFSET,
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_DEBUGBOOT_MAX_VALUE,
+        .getvalue_mask = CFG_DEBUGBOOT_GETMASK
+    },
+    .value_string = (const char **) &DebugBoot
 };
 
 config_t scaling_steps = {

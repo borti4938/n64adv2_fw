@@ -101,14 +101,21 @@ alt_u16 get_pin_state()
 
 void update_n64adv_state()
 {
+  static bool_t boot_mask_video_input_detection = FALSE;
   static alt_u8 vin_detection_timeout = VIN_BOOT_DETECTION_TIMEOUT;
 
   n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
   video_input_detected = TRUE;
   if ((n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET) {
-    if (vin_detection_timeout < VIN_DETECTION_TIMEOUT) vin_detection_timeout = VIN_DETECTION_TIMEOUT;
+    if (vin_detection_timeout < VIN_DETECTION_TIMEOUT) {
+      vin_detection_timeout = VIN_DETECTION_TIMEOUT;
+      boot_mask_video_input_detection = FALSE;
+    } else {
+      vin_detection_timeout--;
+    }
   } else {
-    if (vin_detection_timeout == 0) video_input_detected = FALSE;
+    if (vin_detection_timeout > VIN_DETECTION_TIMEOUT) boot_mask_video_input_detection = (bool_t) cfg_get_value(&debug_boot,0);
+    if (vin_detection_timeout == 0) video_input_detected = boot_mask_video_input_detection;
     else vin_detection_timeout--;
   }
   pal_pattern = ((n64adv_state & N64ADV_INPUT_PALPATTERN_GETMASK) >> N64ADV_INPUT_PALPATTERN_OFFSET);

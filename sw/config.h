@@ -201,23 +201,25 @@ typedef struct {
 #define PREDEFINED_SCALE_STEPS  21
 
 // the overall masks
-#define INTCFG0_GETALL_MASK   0x00002FFF
+#define INTCFG0_GETALL_MASK   0x00007FFF
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x000003FE  // LSB is reserved for use in hardware only
 
 // internal cfg set 0
-#define CFG_LEDSWAP_OFFSET                 13
-#define CFG_COLORSPACE_OFFSET              10
-#define CFG_LIMITED_COLORSPACE_OFFSET      9
-#define CFG_LINK_HV_SCALE_OFFSET           7
-#define CFG_DEBLUR_PC_DEFAULT_OFFSET       6
-#define CFG_MODE16BIT_PC_DEFAULT_OFFSET    5
-#define CFG_DEBLUR_IGR_OFFSET              4
-#define CFG_MODE16BIT_IGR_OFFSET           3
-#define CFG_FALLBACK_OFFSET                1
-#define CFG_AUTOSAVE_OFFSET                0
+#define CFG_LEDSWAP_OFFSET                 14
+#define CFG_HDR10INJ_OFFSET                13
+#define CFG_COLORSPACE_OFFSET              11
+#define CFG_LIMITED_COLORSPACE_OFFSET      10
+#define CFG_LINK_HV_SCALE_OFFSET           8
+#define CFG_DEBLUR_PC_DEFAULT_OFFSET       7
+#define CFG_MODE16BIT_PC_DEFAULT_OFFSET    6
+#define CFG_DEBLUR_IGR_OFFSET              5
+#define CFG_MODE16BIT_IGR_OFFSET           4
+#define CFG_FALLBACK_OFFSET                2
+#define CFG_AUTOSAVE_OFFSET                1
+#define CFG_DEBUGBOOT_OFFSET               0
 
 #define CFG_LEDSWAP_GETMASK                 (1<<CFG_LEDSWAP_OFFSET)
   #define CFG_LEDSWAP_SETMASK                 (1<<CFG_LEDSWAP_OFFSET)
@@ -244,11 +246,14 @@ typedef struct {
   #define CFG_MODE16BIT_IGR_SETMASK           (1<<CFG_MODE16BIT_IGR_OFFSET)
   #define CFG_MODE16BIT_IGR_CLRMASK           (INTCFG0_GETALL_MASK & ~CFG_MODE16BIT_IGR_SETMASK)
 #define CFG_FALLBACK_GETMASK                (3<<CFG_FALLBACK_OFFSET)
-  #define CFG_FALLBACK_RSTMASK                (INTCFG0_GETALL_MASK & ~CFG_FALBACK_SETMASK)
-  #define CFG_FALLBACK_CLRMASK                (INTCFG0_GETALL_MASK & ~CFG_FALBACK_SETMASK)
+  #define CFG_FALLBACK_RSTMASK                (INTCFG0_GETALL_MASK & ~CFG_FALLBACK_GETMASK)
+  #define CFG_FALLBACK_CLRMASK                (INTCFG0_GETALL_MASK & ~CFG_FALLBACK_GETMASK)
 #define CFG_AUTOSAVE_GETMASK                (1<<CFG_AUTOSAVE_OFFSET)
   #define CFG_AUTOSAVE_SETMASK                (1<<CFG_AUTOSAVE_OFFSET)
   #define CFG_AUTOSAVE_CLRMASK                (INTCFG0_GETALL_MASK & ~CFG_AUTOSAVE_SETMASK)
+#define CFG_DEBUGBOOT_GETMASK               (1<<CFG_DEBUGBOOT_OFFSET)
+  #define CFG_DEBUGBOOT_RSTMASK               (INTCFG0_GETALL_MASK & ~CFG_DEBUGBOOT_GETMASK)
+  #define CFG_DEBUGBOOT_CLRMASK               (INTCFG0_GETALL_MASK & ~CFG_DEBUGBOOT_GETMASK)
 
 
 // external cfg set 0
@@ -453,6 +458,7 @@ typedef struct {
 #define CFG_COLORSPACE_MAX_VALUE         2
 #define CFG_LINK_HV_SCALE_MAX_VALUE      3
 #define CFG_FALLBACK_MAX_VALUE           2
+#define CFG_DEBUGBOOT_MAX_VALUE          2
 
 #define CFG_VERTSCALE_MAX_VALUE        2016 // equals 7.00x @ PAL
 #define CFG_HORSCALE_MAX_VALUE      (16*CFG_VERTSCALE_MAX_VALUE/9)
@@ -555,7 +561,7 @@ extern config_tray_u8_t linex_words[2];
 
 extern config_t swap_led, color_space, limited_colorspace,
                 link_hv_scale,deblur_mode_powercycle, mode16bit_powercycle,
-                igr_deblur, igr_16bitmode, fallbackmode, autosave;
+                igr_deblur, igr_16bitmode, fallbackmode, autosave, debug_boot;
 extern config_t scaling_steps, region_selection,
                 timing_selection, scaling_selection,
                 copy_direction, lock_menu;
