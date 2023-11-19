@@ -100,18 +100,22 @@ reg vdata_valid_L[0:2];
 reg [3:0] vdata_sync_L[0:2];
 integer int_idx;
 initial begin
-  for (int_idx = 0; int_idx < 3; int_idx = int_idx+1) begin
-    vdata_valid_L[int_idx] = 1'b0;
-    vdata_sync_L[int_idx] = 4'h0;
-  end
+  vdata_valid_L[2] = 1'b0;
+  vdata_valid_L[1] = 1'b0;
+  vdata_valid_L[0] = 1'b0;
+  vdata_sync_L[2] = 4'h0;
+  vdata_sync_L[1] = 4'h0;
+  vdata_sync_L[0] = 4'h0;
 end
 
 always @(posedge VCLK or negedge nRST)
   if (!nRST) begin
-    for (int_idx = 0; int_idx < 3; int_idx = int_idx+1) begin
-      vdata_valid_L[int_idx] <= 1'b0;
-      vdata_sync_L[int_idx] <= 4'h0;
-    end
+    vdata_valid_L[2] <= 1'b0;
+    vdata_valid_L[1] <= 1'b0;
+    vdata_valid_L[0] <= 1'b0;
+    vdata_sync_L[2] <= 4'h0;
+    vdata_sync_L[1] <= 4'h0;
+    vdata_sync_L[0] <= 4'h0;
   end else begin
     vdata_valid_L[2] <= vdata_valid_L[1];
     vdata_valid_L[1] <= vdata_valid_L[0];
