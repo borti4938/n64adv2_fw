@@ -441,57 +441,57 @@ static const char *home_overlay __ufmdata_section__ =
   /* 123456789012345678901234567890123456789012345678 */
 
 
-const char *EnterSubMenu __ufmdata_section__  = "[Enter ...]";
-const char *RunFunction __ufmdata_section__   = "[Run ...]";
+const char *EnterSubMenu  __ufmdata_section__ = "[Enter ...]";
+const char *RunFunction   __ufmdata_section__ = "[Run ...]";
 const char *not_available __ufmdata_section__ = "-----";
-const char *Global __ufmdata_section__        = "Global";
+const char *Global        __ufmdata_section__ = "Global";
 
-const char *OffOn[]                 = {"Off","On"};
-const char *NTSCPAL_SEL[]           = {"NTSC  ","PAL   ","Current"};
-const char *Force5060[]             = {"Off (N64 Auto)","60Hz","50Hz"};
-const char *Resolutions[]           = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p","1440p w."};
-const char *FallbackRes[]           = {"1080p","240p/288p","480p/576p"};
-const char *DeInterModes[]          = {"Frame Drop","Bob","Weave"};
-const char *InterpModes[]           = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};
-const char *VTimingSel[]            = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};
-const char *ScanlinesCalcBase[]     = {"Per color based","Luma based"};
-const char *ScanlinesThickness[]    = {"Adaptive","Thin","Normal","Thick"};
-const char *ScanlinesScaleProfile[] = {"Hanning","Gaussian","Rectangular"};
+const char *OffOn[]                 __ufmdata_section__ = {"Off","On"};
+const char *NTSCPAL_SEL[]           __ufmdata_section__ = {"NTSC  ","PAL   ","Current"};
+const char *Force5060[]             __ufmdata_section__ = {"Off (N64 Auto)","60Hz","50Hz"};
+const char *Resolutions[]           __ufmdata_section__ = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p","1440p w."};
+const char *FallbackRes[]           __ufmdata_section__ = {"1080p","240p/288p","480p/576p"};
+const char *DeInterModes[]          __ufmdata_section__ = {"Frame Drop","Bob","Weave"};
+const char *InterpModes[]           __ufmdata_section__ = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};
+const char *VTimingSel[]            __ufmdata_section__ = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl.","Current"};
+const char *ScanlinesCalcBase[]     __ufmdata_section__ = {"Per color based","Luma based"};
+const char *ScanlinesThickness[]    __ufmdata_section__ = {"Adaptive","Thin","Normal","Thick"};
+const char *ScanlinesScaleProfile[] __ufmdata_section__ = {"Hanning","Gaussian","Rectangular"};
 
-const char *RstMasking[] = {"None","VI pipeline","Audio","VI + Audio"};
+const char *RstMasking[] __ufmdata_section__ = {"None","VI pipeline","Audio","VI + Audio"};
 
-const char *VideoMode[] __ufmdata_section__   = {"240p","480i","288p","576i"};
-const char *VRefresh[] __ufmdata_section__    = {"@ 60Hz","@ 50Hz"};
-const char *VideoColor[] __ufmdata_section__  = {"21bit (7/7/7)","16bit (5/6/5)"};
+const char *VideoMode[]  __ufmdata_section__ = {"240p","480i","288p","576i"};
+const char *VRefresh[]   __ufmdata_section__ = {"@ 60Hz","@ 50Hz"};
+const char *VideoColor[] __ufmdata_section__ = {"21bit (7/7/7)","16bit (5/6/5)"};
 
-const char *ResolutionVGA        = "VGA (640x480)";
-const char *Resolution240p480p[] = {"240p","480p"};
-const char *Resolution288p576p[] = {"288p","576p"};
-const char *text_480i_576i_br    = "(480i/576i)";
+const char *ResolutionVGA        __ufmdata_section__ = "VGA (640x480)";
+const char *Resolution240p480p[] __ufmdata_section__ = {"240p","480p"};
+const char *Resolution288p576p[] __ufmdata_section__ = {"288p","576p"};
+const char *text_480i_576i_br    __ufmdata_section__ = "(480i/576i)";
 
-const char *ScaleSteps[] = {"0.25x","Pixelwise"};
-const char *PredefScaleSteps[] __ufmdata_section__ = {"(2.00x)","(2.25x)","(2.50x)","(2.75x)",
-                                                      "(3.00x)","(3.25x)","(3.50x)","(3.75x)",
-                                                      "(4.00x)","(4.25x)","(4.50x)","(4.75x)",
-                                                      "(5.00x)","(5.25x)","(5.50x)","(5.75x)",
-                                                      "(6.00x)","(6.25x)","(6.50x)","(6.75x)",
-                                                      "(7.00x)"};
+const char *ScaleSteps[]           __ufmdata_section__ = {"0.25x","Pixelwise"};
+const char *PredefScaleSteps[]     __ufmdata_section__ = {"(2.00x)","(2.25x)","(2.50x)","(2.75x)",
+                                                          "(3.00x)","(3.25x)","(3.50x)","(3.75x)",
+                                                          "(4.00x)","(4.25x)","(4.50x)","(4.75x)",
+                                                          "(5.00x)","(5.25x)","(5.50x)","(5.75x)",
+                                                          "(6.00x)","(6.25x)","(6.50x)","(6.75x)",
+                                                          "(7.00x)"};
 const char *PredefScaleStepsHalf[] __ufmdata_section__ = {"(1.00x)","(1.25x)","(1.50x)","(1.75x)",
                                                           "(2.00x)","(2.25x)","(2.50x)","(2.75x)",
                                                           "(3.00x)","(3.25x)","(3.50x)"};
-const char *ScaleVHLink[] = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open"};
+const char *ScaleVHLink[] __ufmdata_section__ = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open"};
 
-const char *ColorSpace[] = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
+const char *ColorSpace[] __ufmdata_section__ = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
 
 //const char *CopyCfg[] __ufmdata_section__ = {"NTSC->PAL","PAL->NTSC"};
 const char *CopyCfg[] __ufmdata_section__ = {"NTSC  PAL","PAL  NTSC"};
 const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521","N64Adv2_20220729","N64Adv2_20231119","n.a."};
 
-const alt_u8 Nok_Ok[2] = {CHECKBOX_TICK,HEART};
 const alt_u8 Nok_Ok_color[3] = {FONTCOLOR_RED,FONTCOLOR_GREEN,FONTCOLOR_YELLOW};
-const char *ClkSrc[] = {"27Mhz","N64"};
+const alt_u8 Nok_Ok[2] __ufmdata_section__ = {CHECKBOX_TICK,HEART};
+const char *ClkSrc[]   __ufmdata_section__ = {"27Mhz","N64"};
 
-const char *NoCtrlDetected __ufmdata_section__ = "No controller detected";
+const char *NoCtrlDetected  __ufmdata_section__ = "No controller detected";
 const char *NoVideoDetected __ufmdata_section__ = "No video input detected";
 
 #endif /* MENU_TEXT_TEXTDEFS_P_H_ */
