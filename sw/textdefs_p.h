@@ -485,7 +485,7 @@ const char *ColorSpace[] = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
 
 //const char *CopyCfg[] __ufmdata_section__ = {"NTSC->PAL","PAL->NTSC"};
 const char *CopyCfg[] __ufmdata_section__ = {"NTSC  PAL","PAL  NTSC"};
-const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521","N64Adv2_20220729"};
+const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521","N64Adv2_20220729","N64Adv2_20231119","n.a."};
 
 const alt_u8 Nok_Ok[2] = {CHECKBOX_TICK,HEART};
 const alt_u8 Nok_Ok_color[3] = {FONTCOLOR_RED,FONTCOLOR_GREEN,FONTCOLOR_YELLOW};

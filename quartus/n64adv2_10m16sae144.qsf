@@ -237,6 +237,7 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to DRAM_DQ
 set_location_assignment PIN_10 -to LED_o[0]
 set_location_assignment PIN_11 -to LED_o[1]
 
+set_location_assignment PIN_119 -to PCB_ID_i[2]
 set_location_assignment PIN_8 -to PCB_ID_i[1]
 set_location_assignment PIN_7 -to PCB_ID_i[0]
 

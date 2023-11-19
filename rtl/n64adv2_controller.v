@@ -108,7 +108,7 @@ input VD_VS_i;
 input VD_HS_i;
 
 output [ 1:0] LED_o;
-input [ 1:0] PCB_ID_i;
+input [ 2:0] PCB_ID_i;
 
 
 // start of rtl
@@ -257,7 +257,7 @@ assign hw_info = hw_info_sel == 3'b101 ? CHIP_ID_w[63:48] :
                  hw_info_sel == 3'b011 ? CHIP_ID_w[31:16] :
                  hw_info_sel == 3'b010 ? CHIP_ID_w[15: 0] :
                  hw_info_sel == 3'b001 ? pincheck_status_i :
-                                         {hdl_fw,2'b00,PCB_ID_i};
+                                         {hdl_fw,1'b0,PCB_ID_i};
 
 system_n64adv2 system_u(
   .clk_clk(SYS_CLK),

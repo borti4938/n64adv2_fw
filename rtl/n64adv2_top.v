@@ -156,7 +156,7 @@ output        DRAM_nWE;
 
 output [1:0] LED_o;
 
-input [1:0] PCB_ID_i;
+input [2:0] PCB_ID_i;
 
 
 // connection wires

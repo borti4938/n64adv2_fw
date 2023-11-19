@@ -54,7 +54,7 @@
 #define HDL_FW_OFFSET     4
 #define GET_HDL_FW_MASK   0x0FFF0
 #define PCB_REV_OFFSET    0
-#define GET_PCB_REV_MASK  0x0000F
+#define GET_PCB_REV_MASK  0x00003
 
 typedef enum {
   HDL_FW_N_PCB_ID = 0,
