@@ -122,7 +122,7 @@
 
 #define VICFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
 #define VICFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
-#define VICFG_VALS_H_OFFSET         (28 + OVERLAY_H_OFFSET)
+#define VICFG_VALS_H_OFFSET         (27 + OVERLAY_H_OFFSET)
 #define VICFG_VALS_V_OFFSET         OVERLAY_V_OFFSET
 #define VICFG_DEINTERL_V_OFFSET     ( 1 + VICFG_VALS_V_OFFSET)
 #define VICFG_GAMMA_V_OFFSET        ( 2 + VICFG_VALS_V_OFFSET)
@@ -133,20 +133,25 @@
 #define VICFG_16BITMODE_V_OFFSET    ( 8 + VICFG_VALS_V_OFFSET)
 #define VICFG_PC16BITMODE_V_OFFSET  ( 9 + VICFG_VALS_V_OFFSET)
 
+#define AUD_OVERLAY_H_OFFSET              OVERLAY_H_OFFSET
+#define AUD_OVERLAY_V_OFFSET              OVERLAY_V_OFFSET
+#define AUD_VALS_H_OFFSET                 (21 + AUD_OVERLAY_H_OFFSET)
+#define AUD_FILTER_BYPASS_V_OFFSET        ( 2 + AUD_OVERLAY_V_OFFSET)
+#define AUD_MUTE_V_OFFSET                 ( 4 + AUD_OVERLAY_V_OFFSET)
+#define AUD_SWAP_LR_V_OFFSET              ( 5 + AUD_OVERLAY_V_OFFSET)
+#define AUD_AMP_V_OFFSET                  ( 6 + AUD_OVERLAY_V_OFFSET)
+#define AUD_SPDIF_EN_V_OFFSET             ( 8 + AUD_OVERLAY_V_OFFSET)
+
 #define MISC_OVERLAY_H_OFFSET             OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET             OVERLAY_V_OFFSET
 #define MISC_VALS_H_OFFSET                (26 + MISC_OVERLAY_H_OFFSET)
 #define MISC_VALS_V_OFFSET                VICFG_OVERLAY_V_OFFSET
-#define MISC_AUDIO_SWAP_LR_V_OFFSET       ( 1 + MISC_VALS_V_OFFSET)
-#define MISC_AUDIO_FILTER_BYPASS_V_OFFSET ( 2 + MISC_VALS_V_OFFSET)
-#define MISC_AUDIO_AMP_V_OFFSET           ( 3 + MISC_VALS_V_OFFSET)
-#define MISC_AUDIO_SPDIF_EN_V_OFFSET      ( 4 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_RESET_V_OFFSET           ( 6 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_DEBLUR_V_OFFSET          ( 7 + MISC_VALS_V_OFFSET)
-#define MISC_IGR_16BITMODE_V_OFFSET       ( 8 + MISC_VALS_V_OFFSET)
-#define MISC_RST_MASKING_V_OFFSET         ( 9 + MISC_VALS_V_OFFSET)
-#define MISC_SWAP_LED_V_OFFSET            (10 + MISC_VALS_V_OFFSET)
-#define MISC_LUCKY_1440P_V_OFFSET         (11 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_RESET_V_OFFSET           ( 2 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_DEBLUR_V_OFFSET          ( 3 + MISC_VALS_V_OFFSET)
+#define MISC_IGR_16BITMODE_V_OFFSET       ( 4 + MISC_VALS_V_OFFSET)
+#define MISC_RST_MASKING_V_OFFSET         ( 5 + MISC_VALS_V_OFFSET)
+#define MISC_SWAP_LED_V_OFFSET            ( 7 + MISC_VALS_V_OFFSET)
+#define MISC_LUCKY_1440P_V_OFFSET         ( 9 + MISC_VALS_V_OFFSET)
 
 #define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
 #define RWDATA_OVERLAY_V_OFFSET           OVERLAY_V_OFFSET
@@ -196,13 +201,14 @@
 #define MAIN2SCALER_V_OFFSET    ( 1 + MAIN_OVERLAY_V_OFFSET)
 #define MAIN2SCANLINE_V_OFFSET  ( 2 + MAIN_OVERLAY_V_OFFSET)
 #define MAIN2VIPROC_V_OFFSET    ( 3 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2MISC_V_OFFSET      ( 4 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2SAVE_V_OFFSET      ( 5 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2DEBUG_V_OFFSET     ( 6 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2ABOUT_V_OFFSET     ( 8 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2THANKS_V_OFFSET    ( 9 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2LICENSE_V_OFFSET   (10 + MAIN_OVERLAY_V_OFFSET)
-#define MAIN2NOTICE_V_OFFSET    (11 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2AUDPROC_V_OFFSET   ( 4 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2MISC_V_OFFSET      ( 5 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2SAVE_V_OFFSET      ( 6 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2DEBUG_V_OFFSET     ( 7 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2ABOUT_V_OFFSET     ( 9 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2THANKS_V_OFFSET    (10 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2LICENSE_V_OFFSET   (11 + MAIN_OVERLAY_V_OFFSET)
+#define MAIN2NOTICE_V_OFFSET    (12 + MAIN_OVERLAY_V_OFFSET)
 
 
 const alt_u8 confirm_messages_color[] = {FONTCOLOR_GREEN,FONTCOLOR_RED,FONTCOLOR_MAGENTA,FONTCOLOR_NAVAJOWHITE};
@@ -279,20 +285,28 @@ static const char *vicfg_overlay __ufmdata_section__ =
     "* 16bit mode:\n"
     "  - Power-cycle default:";
 
+static const char *audcfg_header __ufmdata_section__ =
+    "Audio-Processing";
+static const char *audcfg_overlay __ufmdata_section__ =
+    "\n* Filter Options:\n"
+    "  - Bypass filter:\n"
+    "* Output Settings:\n"
+    "  - Mute Audio:\n"
+    "  - Swap L/R:\n"
+    "  - Output gain:\n"
+    "* S/PDIF-Support:\n"
+    "  - Enable:";
+
 static const char *misc_header __ufmdata_section__ =
     "Miscellaneous";
 static const char *misc_overlay __ufmdata_section__ =
-    "* Audio settings:\n"
-    "  - Swap L/R:\n"
-    "  - Bypass filter:\n"
-    "  - Post filter gain:\n"
-    "  - Enable S/PDIF:\n"
-    "* Controller routines:\n"
+    "\n* Controller routines:\n"
     "  - Reset:\n"
     "  - VI-DeBlur:\n"
     "  - 16bit mode:\n"
     "* Reset masking:\n"
-    "* Swap R/G-LED:\n"
+    "* Menu-Variations:\n"
+    "  - Swap R/G-LED:\n\n"
     "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =
@@ -409,6 +423,7 @@ static const char *home_overlay __ufmdata_section__ =
     "[Scaler]\n"
     "[Scanlines]\n"
     "[VI-Processing]\n"
+    "[Audio-Processing]\n"
     "[Miscellaneous]\n"
     "[Save/Load/Fallback]\n"
     "[Debug-Info]\n\n"

@@ -433,6 +433,17 @@ config_t audio_fliter_bypass = {
     .val2char_func = &flag2set_func
 };
 
+config_t audio_mute = {
+    .cfg_word        = &extcfg3_word,
+    .cfg_word_offset = CFG_AUDIO_MUTE_OFFSET,
+    .cfg_type        = FLAGTXT,
+    .flag_masks      = {
+        .setflag_mask = CFG_AUDIO_MUTE_SETMASK,
+        .clrflag_mask = CFG_AUDIO_MUTE_CLRMASK
+    },
+    .val2char_func = &flag2set_func
+};
+
 config_t audio_amp = {
     .cfg_word        = &extcfg3_word,
     .cfg_word_offset = CFG_AUDIO_AMP_OFFSET,

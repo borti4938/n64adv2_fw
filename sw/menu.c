@@ -62,7 +62,7 @@ static const arrowshape_t optval_arrow = {
 alt_u16 message_cnt;
 
 menu_t home_menu, vires_screen, viscaling_screen, slcfg_opt_subscreen,
-       vicfg_screen, misc_screen, rwdata_screen, debug_screen;
+       vicfg_screen, audcfg_screen, misc_screen, rwdata_screen, debug_screen;
 #ifndef DEBUG
   menu_t about_screen, thanks_screen, license_screen, notice_screen;
 #endif
@@ -79,18 +79,19 @@ menu_t home_menu = {
     .current_selection = 0,
 #ifndef DEBUG
   #ifdef USE_NOTICE_SECTION
-    .number_selections = 11,
+    .number_selections = 12,
   #else
-    .number_selections = 10,
+    .number_selections = 11,
   #endif
 #else
-    .number_selections = 7,
+    .number_selections = 8,
 #endif
     .leaves = {
         {.id = MAIN2RES_V_OFFSET     , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &vires_screen},
         {.id = MAIN2SCALER_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &viscaling_screen},
         {.id = MAIN2SCANLINE_V_OFFSET, .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &slcfg_opt_subscreen},
         {.id = MAIN2VIPROC_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_screen},
+        {.id = MAIN2AUDPROC_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &audcfg_screen},
         {.id = MAIN2MISC_V_OFFSET    , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &misc_screen},
         {.id = MAIN2SAVE_V_OFFSET    , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
         {.id = MAIN2DEBUG_V_OFFSET   , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &debug_screen},
@@ -235,6 +236,26 @@ menu_t vicfg_screen = {
 #define M16BIT_CURRENT_SELECTION    6
 #define M16BIT_POWERCYCLE_SELECTION 7
 
+menu_t audcfg_screen = {
+    .type = CONFIG,
+    .header = &audcfg_header,
+    .body = {
+      .hoffset = AUD_OVERLAY_H_OFFSET,
+      .text = &audcfg_overlay
+    },
+    .parent = &home_menu,
+    .arrow_position = (AUD_VALS_H_OFFSET - 2),
+    .current_selection = 0,
+    .number_selections = 5,
+    .leaves = {
+        {.id = AUD_FILTER_BYPASS_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &audio_fliter_bypass},
+        {.id = AUD_MUTE_V_OFFSET         , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &audio_mute},
+        {.id = AUD_SWAP_LR_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &audio_swap_lr},
+        {.id = AUD_AMP_V_OFFSET          , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &audio_amp},
+        {.id = AUD_SPDIF_EN_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &audio_spdif_en}
+    }
+};
+
 menu_t misc_screen = {
     .type = CONFIG,
     .header = &misc_header,
@@ -245,18 +266,14 @@ menu_t misc_screen = {
     .parent = &home_menu,
     .arrow_position = (MISC_VALS_H_OFFSET - 2),
     .current_selection = 0,
-    .number_selections = 10,
+    .number_selections = 6,
     .leaves = {
-        {.id = MISC_AUDIO_SWAP_LR_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &audio_swap_lr},
-        {.id = MISC_AUDIO_FILTER_BYPASS_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &audio_fliter_bypass},
-        {.id = MISC_AUDIO_AMP_V_OFFSET           , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &audio_amp},
-        {.id = MISC_AUDIO_SPDIF_EN_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &audio_spdif_en},
-        {.id = MISC_IGR_RESET_V_OFFSET           , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_reset},
-        {.id = MISC_IGR_DEBLUR_V_OFFSET          , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_deblur},
-        {.id = MISC_IGR_16BITMODE_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_16bitmode},
-        {.id = MISC_RST_MASKING_V_OFFSET         , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &rst_masking},
-        {.id = MISC_SWAP_LED_V_OFFSET            , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &swap_led},
-        {.id = MISC_LUCKY_1440P_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = CFG_FUNC1, .cfgfct_call_1 = &cfgfct_unlock1440p}
+        {.id = MISC_IGR_RESET_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_reset},
+        {.id = MISC_IGR_DEBLUR_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_deblur},
+        {.id = MISC_IGR_16BITMODE_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_16bitmode},
+        {.id = MISC_RST_MASKING_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &rst_masking},
+        {.id = MISC_SWAP_LED_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &swap_led},
+        {.id = MISC_LUCKY_1440P_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = CFG_FUNC1, .cfgfct_call_1 = &cfgfct_unlock1440p}
     }
 };
 

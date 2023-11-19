@@ -205,7 +205,7 @@ typedef struct {
 #define EXTCFG0_GETALL_MASK   0xFFFFFE7F
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
-#define EXTCFG3_GETALL_MASK   0x000000FF
+#define EXTCFG3_GETALL_MASK   0x000003FE  // LSB is reserved for use in hardware only
 
 // internal cfg set 0
 #define CFG_LEDSWAP_OFFSET                 13
@@ -410,14 +410,18 @@ typedef struct {
 // external cfg set 3
 #define EXTCFG3_OUT_BASE  CFG_SET3_OUT_BASE
 
-#define CFG_AUDIO_FILTER_BYPASS_OFFSET  7
-#define CFG_AUDIO_AMP_OFFSET            2
-#define CFG_AUDIO_SWAP_LR_OFFSET        1
-#define CFG_AUDIO_SPDIF_EN_OFFSET       0
+#define CFG_AUDIO_FILTER_BYPASS_OFFSET  9
+#define CFG_AUDIO_MUTE_OFFSET           8
+#define CFG_AUDIO_AMP_OFFSET            3
+#define CFG_AUDIO_SWAP_LR_OFFSET        2
+#define CFG_AUDIO_SPDIF_EN_OFFSET       1
 
 #define CFG_AUDIO_FILTER_BYPASS_GETMASK   (1<<CFG_AUDIO_FILTER_BYPASS_OFFSET)
   #define CFG_AUDIO_FILTER_BYPASS_SETMASK   (1<<CFG_AUDIO_FILTER_BYPASS_OFFSET)
   #define CFG_AUDIO_FILTER_BYPASS_CLRMASK   (EXTCFG3_GETALL_MASK & ~CFG_AUDIO_FILTER_BYPASS_SETMASK)
+#define CFG_AUDIO_MUTE_GETMASK            (1<<CFG_AUDIO_MUTE_OFFSET)
+  #define CFG_AUDIO_MUTE_SETMASK            (1<<CFG_AUDIO_MUTE_OFFSET)
+  #define CFG_AUDIO_MUTE_CLRMASK            (EXTCFG3_GETALL_MASK & ~CFG_AUDIO_MUTE_SETMASK)
 #define CFG_AUDIO_AMP_GETMASK             (0x1F<<CFG_AUDIO_AMP_OFFSET)
   #define CFG_AUDIO_AMP_RSTMASK             (EXTCFG3_GETALL_MASK & ~CFG_AUDIO_AMP_GETMASK)
   #define CFG_AUDIO_AMP_CLRMASK             (EXTCFG3_GETALL_MASK & ~CFG_AUDIO_AMP_GETMASK)
@@ -567,7 +571,7 @@ extern config_t show_logo, show_osd, mute_osd_tmp,
 extern config_t sl_thickness_vert, sl_profile_vert, slhyb_str_vert, sl_str_vert,
                 sl_thickness_hori, sl_profile_hori, slhyb_str_hori, sl_str_hori,
                 sl_en_vert, sl_en_hori, sl_link_h2v, sl_calc_base;
-extern config_t audio_fliter_bypass, audio_amp, audio_swap_lr, audio_spdif_en;
+extern config_t audio_fliter_bypass, audio_mute, audio_amp, audio_swap_lr, audio_spdif_en;
 
 extern bool_t unlock_1440p;
 

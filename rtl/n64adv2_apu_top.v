@@ -75,6 +75,7 @@ output SPDIF_o;
 
 // wires
 wire audio_filter_bypass;
+wire audio_mute;
 wire [4:0] audio_level_amp;
 wire audio_swap_lr;
 wire audio_spdif_en;
@@ -117,7 +118,7 @@ register_sync #(
   .clk_en(1'b1),
   .nrst(1'b1),
   .reg_i(APUConfigSet),
-  .reg_o({audio_filter_bypass,audio_level_amp,audio_swap_lr,audio_spdif_en,audio_hdmi_en})
+  .reg_o({audio_filter_bypass,audio_mute,audio_level_amp,audio_swap_lr,audio_spdif_en,audio_hdmi_en})
 );
 
 assign nRst_int_w = nRST_i & (audio_spdif_en | audio_hdmi_en);
@@ -231,11 +232,6 @@ always @(posedge MCLK_i or negedge nRst_int_w)
 
 always @(posedge MCLK_i) begin
   case(audio_level_amp)
-//    5'd0: cfg_amp_factor <= 9'b000000100;
-//    5'd1: cfg_amp_factor <= 9'b000000100;
-//    5'd2: cfg_amp_factor <= 9'b000000101;
-//    5'd3: cfg_amp_factor <= 9'b000000101;
-//    5'd4: cfg_amp_factor <= 9'b000000110;
     5'd0: cfg_amp_factor <= 9'b000000001;
     5'd1: cfg_amp_factor <= 9'b000000010;
     5'd2: cfg_amp_factor <= 9'b000000011;
@@ -301,8 +297,8 @@ always @(posedge MCLK_i or negedge nRst_int_w)
       PDATA_MULT[0] <= PDATA_MULT_pre[0][28:5];
   end
 
-assign PDATA_OUT_left_w  = PDATA_MULT[~audio_swap_lr]; // is 0 if swapped, i.e. initially right, and 1 (left) else
-assign PDATA_OUT_right_w = PDATA_MULT[ audio_swap_lr]; // is 1 if swapped, i.e. initially left, and 0 (right) else
+assign PDATA_OUT_left_w  = audio_mute ? {24{1'b0}} : PDATA_MULT[~audio_swap_lr];  // is 0 if swapped, i.e. initially right, and 1 (left) else
+assign PDATA_OUT_right_w = audio_mute ? {24{1'b0}} : PDATA_MULT[ audio_swap_lr];  // is 1 if swapped, i.e. initially left, and 0 (right) else
 
 // generate I2S and SPDIF output
 i2s_leftjustified_tx i2s_tx_u(

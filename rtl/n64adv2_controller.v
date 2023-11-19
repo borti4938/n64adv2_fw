@@ -145,7 +145,7 @@ wire nVSYNC_CPU_w;
 wire CHIP_ID_valid_w;
 wire [63:0] CHIP_ID_pre_w, CHIP_ID_w;
 
-wire [ 7:0] SysConfigSet3;                                // general structure of ConfigSet -> see vh/n64adv2_ppuconfig.vh
+wire [15:0] SysConfigSet3;                                // general structure of ConfigSet -> see vh/n64adv2_ppuconfig.vh
 wire [31:0] SysConfigSet2, SysConfigSet1 ,SysConfigSet0;  // general structure of ConfigSet -> see vh/n64adv2_ppuconfig.vh
 
 wire [2:0] hw_info_sel;

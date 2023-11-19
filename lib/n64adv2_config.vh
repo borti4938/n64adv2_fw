@@ -35,9 +35,9 @@
 `define _n64adv2_config_vh_
 
   // configuration as defined in n64adv_controller.v (must match software)
-  //  wire [ 7:0] SysConfigSet3; (Audio)
-  //    sw: [ 7: 0] {audio_filter_bypass,audio_amp (5bits),audio_swap_lr,audio_spdif_en}
-  //    hw: [ 8: 0] {audio_filter_bypass,audio_amp (5bits),audio_swap_lr,audio_spdif_en,hdmi_en}
+  //  wire [15:0] SysConfigSet3; (Audio)
+  //    sw: [15: 0] {(6bit reserve),audio_filter_bypass,audio_mute,audio_amp (5bits),audio_swap_lr,audio_spdif_en,hw_reserved}
+  //    hw: [15: 0] {(6bit reserve),audio_filter_bypass,audio_mute,audio_amp (5bits),audio_swap_lr,audio_spdif_en,hdmi_en}
   //  wire [31:0] SysConfigSet2; (Scanlines)
   //    [31:30] {(2bits reserved)}
   //    [29:17] vertical:   {Sl_thickness (2bit),Sl_profile (2bits),Sl_hybrid_depth (5bits),Sl_str (4bits)}
@@ -73,14 +73,15 @@
   `define rst_vi_pipeline_mask_bit  26
   
   // Separation slices
-  `define cfg3_audio_config_slice    7: 0
+  `define cfg3_audio_config_slice    9: 1
   `define cfg2_scanline_slice       29: 0
   `define cfg1_ppu_config_slice     24: 0
   `define cfg0_ppu_config_slice     31: 0
   
-  // Audio config (note the 1 bit shift compared to software)
-  `define APUConfig_WordWidth        9
-  `define audio_filter_bypass_bit    8
+  // Audio config
+  `define APUConfig_WordWidth       10
+  `define audio_filter_bypass_bit    9
+  `define audio_mute_bit             8
   `define audio_amp_slice            7: 3
   `define audio_swap_lr_bit          2
   `define audio_spdif_en_bit         1
