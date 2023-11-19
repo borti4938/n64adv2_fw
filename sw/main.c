@@ -125,6 +125,27 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
   else return (NTSC_TO_240 + linex_setting);
 }
 
+void loop_sync(bool_t with_escape) {
+  alt_u8 loop_delay_cnt;
+
+  loop_delay_cnt = 8;
+  while(!get_vsync_cpu()){  /* wait for nVSYNC_CPU goes high (active OSD), but at most 18ms */
+    usleep(2000);
+    if (with_escape) {
+      if (loop_delay_cnt == 0) break; // escape after 18ms
+      loop_delay_cnt--;
+    };
+  };
+  loop_delay_cnt = 3;
+  while( get_vsync_cpu()){  /* wait for nVSYNC_CPU goes low  (inactive OSD), but at most 1.5ms */
+    usleep(500);
+    if (with_escape) {
+      if (loop_delay_cnt == 0) break; // escape after 1.5ms
+      loop_delay_cnt--;
+    }
+  };
+}
+
 int main()
 {
   // initialize menu
@@ -213,7 +234,6 @@ int main()
   bool_t changed_linex_setting = FALSE;
 
   message_cnt = 0;
-
 
   /* Event loop never exits. */
   while (1) {
@@ -442,8 +462,7 @@ int main()
       changed_linex_setting = (linex_word_pre != linex_words[palmode].config_val);
     }
 
-    while(!get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes high */
-    while( get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes low  */
+    loop_sync(keep_vout_rst);
 
     video_input_detected_pre = video_input_detected;
     palmode_pre = palmode;
