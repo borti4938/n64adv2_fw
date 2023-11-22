@@ -153,8 +153,6 @@ output reg [`VDATA_O_CO_SLICE] vdata_o;
 
 
 // parameter
-localparam resync_stages = 3;
-
 localparam hcnt_width = $clog2(`PIXEL_PER_LINE_MAX);
 localparam vcnt_width = $clog2(`TOTAL_LINES_PAL_LX1); // should be 9
 localparam hpos_width = $clog2(`ACTIVE_PIXEL_PER_LINE);
@@ -475,31 +473,27 @@ assign nVRST_o = nRST_o;
 // | input rtl |
 // +-----------+
 
-register_sync_2 #(
+register_sync #(
   .reg_width(1),
-  .reg_preset(1'b0),
-  .resync_stages(resync_stages)
+  .reg_preset(1'b0)
 ) register_sync_dram2in_u0 (
-  .nrst(async_nRST_i),
-  .clk_i(DRAM_CLK_i),
-  .clk_i_en(1'b1),
+  .clk(VCLK_i),
+  .clk_en(1'b1),
+//  .nrst(async_nRST_i),
+  .nrst(1'b1),
   .reg_i(sdram_ctrl_rdy_o & sdram_proc_en),
-  .clk_o(VCLK_i),
-  .clk_o_en(1'b1),
   .reg_o(sdram_rdy_rxclk_resynced)
 );
 
-register_sync_2 #(
+register_sync #(
   .reg_width(1),
-  .reg_preset(1'b0),
-  .resync_stages(resync_stages)
+  .reg_preset(1'b0)
 ) register_sync_out2in_u0 (
-  .nrst(async_nRST_i),
-  .clk_i(VCLK_o),
-  .clk_i_en(1'b1),
+  .clk(VCLK_i),
+  .clk_en(1'b1),
+//  .nrst(async_nRST_i),
+  .nrst(1'b1),
   .reg_i(output_proc_en),
-  .clk_o(VCLK_i),
-  .clk_o_en(1'b1),
   .reg_o(output_proc_en_rxclk_resynced)
 );
 
@@ -626,59 +620,51 @@ always @(posedge VCLK_i or negedge nRST_i)
 
 // resync register
 
-register_sync_2 #(
+register_sync #(
   .reg_width(5),
-  .reg_preset(5'd0),
-  .resync_stages(resync_stages)
+  .reg_preset(5'd0)
 ) register_sync_vclki2dram_u0 (
-  .nrst(async_nRST_i),
-  .clk_i(VCLK_i),
-  .clk_i_en(1'b1),
+  .clk(DRAM_CLK_i),
+  .clk_en(1'b1),
+//  .nrst(async_nRST_i),
+  .nrst(1'b1),
   .reg_i({datainfo_pre_sdram_buf,lineid_pre_sdram_buf}),
-  .clk_o(DRAM_CLK_i),
-  .clk_o_en(1'b1),
   .reg_o({datainfo_pre_sdram_buf_drclk_resynced,lineid_pre_sdram_buf_drclk_resynced})
 );
 
-register_sync_2 #(
+register_sync #(
   .reg_width(2+vcnt_width),
-  .reg_preset({(2+vcnt_width){1'b0}}),
-  .resync_stages(resync_stages)
+  .reg_preset({(2+vcnt_width){1'b0}})
 ) register_sync_vclki2dram_u1 (
-  .nrst(async_nRST_i),
-  .clk_i(VCLK_i),
-  .clk_i_en(1'b1),
+  .clk(DRAM_CLK_i),
+  .clk_en(1'b1),
+//  .nrst(async_nRST_i),
+  .nrst(1'b1),
   .reg_i({vdata_detected,Y_input_proc_en,Y_vcnt_i_L}),
-  .clk_o(DRAM_CLK_i),
-  .clk_o_en(1'b1),
   .reg_o({vdata_detected_drclk_resynced,input_proc_en_drclk_resynced,vcnt_i_drclk_resynced})
 );
 
-register_sync_2 #(
+register_sync #(
   .reg_width(12),
-  .reg_preset({12{1'b0}}),
-  .resync_stages(resync_stages)
+  .reg_preset({12{1'b0}})
 ) register_sync_vclko2dram_u0 (
-  .nrst(async_nRST_i),
-  .clk_i(VCLK_o),
-  .clk_i_en(1'b1),
+  .clk(DRAM_CLK_i),
+  .clk_en(1'b1),
+//  .nrst(async_nRST_i),
+  .nrst(1'b1),
   .reg_i(Y_vcnt_o_L),
-  .clk_o(DRAM_CLK_i),
-  .clk_o_en(1'b1),
   .reg_o(vcnt_o_drclk_resynced)
 );
 
-register_sync_2 #(
+register_sync #(
   .reg_width(2),
-  .reg_preset(2'b00),
-  .resync_stages(resync_stages)
+  .reg_preset(2'b00)
 ) register_sync_vclko2dram_u1 (
-  .nrst(async_nRST_i),
-  .clk_i(VCLK_o),
-  .clk_i_en(1'b1),
+  .clk(DRAM_CLK_i),
+  .clk_en(1'b1),
+//  .nrst(async_nRST_i),
+  .nrst(1'b1),
   .reg_i(rdpage_post_sdram_buf),
-  .clk_o(DRAM_CLK_i),
-  .clk_o_en(1'b1),
   .reg_o(rdpage_slbuf_drclk_resynced)
 );
 
@@ -946,17 +932,15 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
 // +------------+
 
 // resync registers
-register_sync_2 #(
+register_sync #(
   .reg_width(2),
-  .reg_preset(2'b0),
-  .resync_stages(resync_stages)
+  .reg_preset(2'b0)
 ) register_sync_input2hdmi_u0 (
-  .nrst(async_nRST_i),
-  .clk_i(VCLK_i),
-  .clk_i_en(1'b1),
+  .clk(VCLK_o),
+  .clk_en(1'b1),
+//  .nrst(async_nRST_i),
+  .nrst(1'b1),
   .reg_i({vdata_detected,Y_in2out_en}),
-  .clk_o(VCLK_o),
-  .clk_o_en(1'b1),
   .reg_o({vdata_detected_txclk_resynced,in2out_en_txclk_resynced})
 );
 

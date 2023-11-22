@@ -354,17 +354,14 @@ register_sync #(
   .reg_o({cfg_vpos_1st_rdline_resynced,cfg_deinterlacing_mode_dramclk_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
-register_sync_2 #(
+register_sync #(
   .reg_width(2),
-  .reg_preset(2'd0),
-  .resync_stages(3)
+  .reg_preset(2'd0)
 ) cfg_sync4dramlogic_u1 (
+  .clk(DRAM_CLK_i),
+  .clk_en(1'b1),
   .nrst(1'b1),
-  .clk_i(N64_CLK_i),
-  .clk_i_en(1'b1),
   .reg_i({palmode,n64_480i}),
-  .clk_o(DRAM_CLK_i),
-  .clk_o_en(1'b1),
   .reg_o({palmode_dramclk_resynced,n64_480i_dramclk_resynced})
 );
 
@@ -392,17 +389,14 @@ register_sync #(
   .reg_o({cfg_hpos_1st_rdpixel_resynced,cfg_hpixel_in_needed_resynced,cfg_hpixel_in_full_resynced,cfg_hpixels_out_resynced,cfg_h_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u1|reg_synced_1[*])
 
-register_sync_2 #(
+register_sync #(
   .reg_width(2),
-  .reg_preset(2'd0),
-  .resync_stages(3)
+  .reg_preset(2'd0)
 ) cfg_sync4txlogic_u2 (
+  .clk(VCLK_Tx),
+  .clk_en(1'b1),
   .nrst(1'b1),
-  .clk_i(N64_CLK_i),
-  .clk_i_en(1'b1),
   .reg_i({palmode,n64_480i}),
-  .clk_o(VCLK_Tx),
-  .clk_o_en(1'b1),
   .reg_o({palmode_vclk_o_resynced,n64_480i_vclk_o_resynced})
 );
 
