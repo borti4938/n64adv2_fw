@@ -66,7 +66,6 @@ module n64adv2_controller #(
   N64_CLK_i,
   N64_nVRST_i,
   nVDSYNC_i,
-  VD_VS_i,
   VD_HS_i,
 
   LED_o,
@@ -104,7 +103,6 @@ output reg [ 1:0] OSDInfo;
 input N64_CLK_i;
 input N64_nVRST_i;
 input nVDSYNC_i;
-input VD_VS_i;
 input VD_HS_i;
 
 output [ 1:0] LED_o;
@@ -136,7 +134,6 @@ wire [`PPU_State_Width-1:0] PPUState_resynced;
 wire ctrl_detected_resynced;
 wire OSD_VSync_resynced;
 
-wire nVSYNC_buf_resynced;
 wire new_ctrl_data_resynced;
 wire ctrl_data_tack, ctrl_data_tack_resynced;
 
@@ -168,7 +165,6 @@ reg FallbackMode  = 1'b0;
 reg FallbackMode_valid = 1'b0;
 
 reg [1:0] ctrl_data_tack_resynced_L = 2'b00;
-reg [1:0] nVSYNC_resynced_L = 2'b00;
 reg use_igr = 1'b0;
 
 
@@ -198,7 +194,6 @@ reg [19:0] rst_cnt = 20'b0; // ~230ms are needed to count from max downto 0 with
 
 always @(posedge N64_CLK_i)
   if (!N64_nVRST_i) begin
-    nVSYNC_buf <= 1'b0;
     nHSYNC_buf <= 2'b0;
     n64_clk_cnt <= 5'd0;
     pal_pattern <= 1'b0;
@@ -214,7 +209,6 @@ always @(posedge N64_CLK_i)
     end
     nHSYNC_buf[1] <= nHSYNC_buf[0];
     if (!nVDSYNC_i) begin
-      nVSYNC_buf    <= VD_VS_i;
       nHSYNC_buf[0] <= VD_HS_i;
     end
   end
@@ -233,14 +227,14 @@ always @(posedge N64_CLK_i)
 
 
 register_sync #(
-  .reg_width(1 + `PPU_State_Width + 5), // 1 + PPU_State_Width + 1 + 1 + 1 + 1 + 1
-  .reg_preset({(1 + `PPU_State_Width + 5){1'b0}})
+  .reg_width(1 + `PPU_State_Width + 4), // 1 + PPU_State_Width + 1 + 1 + 1 + 1
+  .reg_preset({(1 + `PPU_State_Width + 4){1'b0}})
 ) sync4cpu_u0(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ctrl_detected,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],FallbackMode,FallbackMode_valid,new_ctrl_data[1],OSD_VSync,nVSYNC_buf}),
-  .reg_o({ctrl_detected_resynced,PPUState_resynced,FallbackMode_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced,nVSYNC_buf_resynced})
+  .reg_i({ctrl_detected,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],FallbackMode,FallbackMode_valid,new_ctrl_data[1],OSD_VSync}),
+  .reg_o({ctrl_detected_resynced,PPUState_resynced,FallbackMode_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
 );
 
 chip_id chip_id_u(
@@ -282,12 +276,9 @@ system_n64adv2 system_u(
 
 
 always @(posedge SYS_CLK) begin
-  if (nVSYNC_resynced_L[1] & !nVSYNC_resynced_L[0]) begin
-    OSDInfo[1]   <= &{SysConfigSet1[`show_osd_logo_bit],SysConfigSet1[`show_osd_bit],!SysConfigSet1[`mute_osd_bit]};  // show logo only in OSD
-    OSDInfo[0]   <= SysConfigSet1[`show_osd_bit] & !SysConfigSet1[`mute_osd_bit];
-    PPUConfigSet <= {SysConfigSet2[`cfg2_scanline_slice],SysConfigSet1[`cfg1_ppu_config_slice],SysConfigSet0};
-  end
-  nVSYNC_resynced_L <= {nVSYNC_resynced_L[0],nVSYNC_buf_resynced};
+  OSDInfo[1]   <= &{SysConfigSet1[`show_osd_logo_bit],SysConfigSet1[`show_osd_bit],!SysConfigSet1[`mute_osd_bit]};  // show logo only in OSD
+  OSDInfo[0]   <= SysConfigSet1[`show_osd_bit] & !SysConfigSet1[`mute_osd_bit];
+  PPUConfigSet <= {SysConfigSet2[`cfg2_scanline_slice],SysConfigSet1[`cfg1_ppu_config_slice],SysConfigSet0};
 end
 
 always @(*) begin

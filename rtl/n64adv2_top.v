@@ -295,7 +295,6 @@ n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u(
   .N64_CLK_i(N64_CLK_w),
   .N64_nVRST_i(N64_nRST_w),
   .nVDSYNC_i(nVDSYNC_w),
-  .VD_VS_i(VD_w[3]),
   .VD_HS_i(VD_w[1]),
   .LED_o(LED_o),
   .PCB_ID_i(PCB_ID_i)
