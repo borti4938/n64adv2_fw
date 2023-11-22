@@ -459,7 +459,7 @@ always @(posedge VCLK or negedge nVRST)
       vdata_L[int_idx] <= vdata_L[int_idx-1];
     vdata_L[0] <= vdata_i;
 
-    OSD_VSync <= (Y_vcnt >= X_osd_window_vstart) && (Y_vcnt < X_osd_window_vstop);
+    OSD_VSync <= (Y_vcnt == X_osd_window_vstop);
     
     draw_osd_window[7:2] <= draw_osd_window[6:1];
     draw_osd_window[1] <= (Y_vcnt >= X_osd_window_vstart) && (Y_vcnt < X_osd_window_vstop) &&
