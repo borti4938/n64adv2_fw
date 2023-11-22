@@ -218,6 +218,8 @@ typedef enum {
   CMD_MENU_RIGHT
 } cmd_t;
 
+extern bool_t init_phase;
+
 extern alt_u8 info_sync_val;
 extern alt_u32 ctrl_data;
 extern alt_u32 n64adv_state;

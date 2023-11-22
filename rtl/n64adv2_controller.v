@@ -250,7 +250,7 @@ chip_id chip_id_u(
   .chip_id(CHIP_ID_pre_w)
 );
 
-assign nVSYNC_CPU_w = HDMI_cfg_done_o ? OSD_VSync_resynced : nVSYNC_buf_resynced;
+assign nVSYNC_CPU_w = OSD_VSync_resynced;
 assign CHIP_ID_w = CHIP_ID_valid_w ? CHIP_ID_pre_w : 64'h0;
 assign hw_info = hw_info_sel == 3'b101 ? CHIP_ID_w[63:48] :
                  hw_info_sel == 3'b100 ? CHIP_ID_w[47:32] :

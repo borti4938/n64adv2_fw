@@ -46,6 +46,9 @@
 
 #define CTRL_IGNORE_FRAMES 10
 
+#define WAIT_2MS    2000
+#define WAIT_500US  500
+
 
 typedef struct {
   bool_t si5356_i2c_up;
@@ -128,18 +131,18 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 void loop_sync(bool_t with_escape) {
   alt_u8 loop_delay_cnt;
 
-  loop_delay_cnt = 8;
-  while(!get_vsync_cpu()){  /* wait for nVSYNC_CPU goes high (active OSD), but at most 18ms */
-    usleep(2000);
+  loop_delay_cnt = 9;
+  while(!get_vsync_cpu()){  /* wait for nVSYNC_CPU goes high (active OSD) */
     if (with_escape) {
+      usleep(WAIT_2MS);
       if (loop_delay_cnt == 0) break; // escape after 18ms
       loop_delay_cnt--;
     };
   };
   loop_delay_cnt = 3;
-  while( get_vsync_cpu()){  /* wait for nVSYNC_CPU goes low  (inactive OSD), but at most 1.5ms */
-    usleep(500);
+  while( get_vsync_cpu()){  /* wait for nVSYNC_CPU goes low  (inactive OSD) */
     if (with_escape) {
+      usleep(WAIT_500US);
       if (loop_delay_cnt == 0) break; // escape after 1.5ms
       loop_delay_cnt--;
     }
@@ -155,7 +158,6 @@ int main()
   #else
     menu_t *menu = &home_menu;
   #endif
-
 
   // initialize flash and configuration
   cfg_clear_words();
@@ -434,7 +436,9 @@ int main()
       i2c_devs_ok = TRUE;
     }
 
-    keep_vout_rst = !periphal_state.si5356_locked || !periphal_state.adv7513_hdmi_up;
+    keep_vout_rst = !periphal_state.si5356_locked ||
+                    !periphal_state.adv7513_hdmi_up ||
+                    init_phase; // do not output during initial phase
     if (!keep_vout_rst) {
       periphals_set_ready_bit();
       if (menu->type != N64DEBUG) { // LEDs are not under control by Debug-Screen

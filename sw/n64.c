@@ -38,7 +38,7 @@
 #include "vd_driver.h"
 #include "si5356.h"
 
-#define VIN_BOOT_DETECTION_TIMEOUT  210
+#define VIN_BOOT_DETECTION_TIMEOUT  512
 #define VIN_DETECTION_TIMEOUT        15
 
 #define ANALOG_TH     50
@@ -64,6 +64,8 @@ typedef enum {
   HWINFO_CHIP_ID_2,
   HWINFO_CHIP_ID_3,
 } hw_info_sel_t;
+
+bool_t init_phase;
 
 alt_u8 info_sync_val;
 alt_u32 ctrl_data;
@@ -102,7 +104,7 @@ alt_u16 get_pin_state()
 void update_n64adv_state()
 {
   static bool_t boot_mask_video_input_detection = FALSE;
-  static alt_u8 vin_detection_timeout = VIN_BOOT_DETECTION_TIMEOUT;
+  static alt_u16 vin_detection_timeout = VIN_BOOT_DETECTION_TIMEOUT;
 
   n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
   video_input_detected = TRUE;
@@ -113,7 +115,10 @@ void update_n64adv_state()
     } else {
       vin_detection_timeout--;
     }
+    init_phase = FALSE;
   } else {
+    init_phase = vin_detection_timeout > VIN_DETECTION_TIMEOUT;
+    if (timeout_cnt < 65535) timeout_cnt++;
     if (vin_detection_timeout > VIN_DETECTION_TIMEOUT) boot_mask_video_input_detection = (bool_t) cfg_get_value(&debug_boot,0);
     if (vin_detection_timeout == 0) video_input_detected = boot_mask_video_input_detection;
     else vin_detection_timeout--;
