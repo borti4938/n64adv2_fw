@@ -52,47 +52,65 @@ input [reg_width-1:0] reg_i;
 output [reg_width-1:0] reg_o;
 
 
-
-reg [reg_width-1:0] reg_synced_3 = reg_preset;
-reg [reg_width-1:0] reg_synced_2 = reg_preset;
 reg [reg_width-1:0] reg_synced_1 = reg_preset;
 reg [reg_width-1:0] reg_synced_0 = reg_preset;
 
+genvar int_idx;
 
 always @(posedge clk or negedge nrst)
   if (!nrst) begin
-    reg_synced_2 <= reg_preset;
     reg_synced_1 <= reg_preset;
     reg_synced_0 <= reg_preset;
-  end else if (clk_en) begin
-    reg_synced_2 <= reg_synced_1;
-    reg_synced_1 <= reg_synced_0;
-    reg_synced_0 <= reg_i;
+  end else begin
+    if (clk_en) begin
+      reg_synced_1 <= reg_synced_0;
+      reg_synced_0 <= reg_i;
+    end
   end
 
-genvar int_idx;
-
-generate 
-  for (int_idx = 0; int_idx < reg_width; int_idx = int_idx+1) begin : gen_rtl
-    always @(posedge clk or negedge nrst)
-      if (!nrst) begin
-        reg_synced_3[int_idx] <= reg_preset[int_idx];
-      end else if (clk_en) begin
-        if (reg_synced_2[int_idx] == reg_synced_1[int_idx])
-          reg_synced_3[int_idx] <= reg_synced_2[int_idx];
-      end
+generate
+  if (resync_stages < 3) begin : reg1_gen
+    assign reg_o = reg_synced_1;
   end
 endgenerate
 
 generate
-  if (resync_stages == 4)
-    assign reg_o = reg_synced_3;
-  else if (resync_stages == 3)
+  if (resync_stages == 3) begin : reg2_gen
+    reg [reg_width-1:0] reg_synced_2 = reg_preset;
+    
+    always @(posedge clk or negedge nrst)
+      if (!nrst) begin
+        reg_synced_2 <= reg_preset;
+      end else begin
+        if (clk_en)
+          reg_synced_2 <= reg_synced_1;
+      end
+    
     assign reg_o = reg_synced_2;
-  else if (resync_stages == 1)
-    assign reg_o = reg_synced_0;
-  else
-    assign reg_o = reg_synced_1;
+  end
+endgenerate
+
+generate
+  if (resync_stages > 3) begin : reg3_gen
+    reg [reg_width-1:0] reg_synced_2 = reg_preset;
+    reg [reg_width-1:0] reg_synced_3 = reg_preset;
+    
+    for (int_idx = 0; int_idx < reg_width; int_idx = int_idx+1) begin : gate3_gen
+      always @(posedge clk or negedge nrst)
+        if (!nrst) begin
+          reg_synced_3[int_idx] <= reg_preset[int_idx];
+        reg_synced_2 <= reg_preset;
+        end else begin
+          if (clk_en) begin
+            if (reg_synced_2[int_idx] == reg_synced_1[int_idx])
+              reg_synced_3[int_idx] <= reg_synced_2[int_idx];
+            reg_synced_2 <= reg_synced_1;
+          end
+        end
+    end
+    
+    assign reg_o = reg_synced_3;
+  end
 endgenerate
 
 endmodule
