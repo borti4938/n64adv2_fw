@@ -441,7 +441,7 @@ reg [`VDATA_O_CO_SLICE] vdata_vpl_end_L;
 
 reset_generator #(
   .rst_length(8)
-) reset_scaler_input_u(
+) reset_scaler_input_u (
   .clk(VCLK_i),
   .clk_en(1'b1),
   .async_nrst_i(async_nRST_i),
@@ -450,7 +450,7 @@ reset_generator #(
 
 reset_generator #(
   .rst_length(8)
-) reset_DRAM_proc_u(
+) reset_DRAM_proc_u (
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .async_nrst_i(async_nRST_i),
@@ -459,7 +459,7 @@ reset_generator #(
 
 reset_generator #(
   .rst_length(8)
-) reset_scaler_output_u(
+) reset_scaler_output_u (
   .clk(VCLK_o),
   .clk_en(1'b1),
   .async_nrst_i(async_nRST_i),

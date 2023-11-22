@@ -472,7 +472,7 @@ end
 register_sync #(
   .reg_width(2),
   .reg_preset(2'b00)
-) sync4cpu_u(
+) sync4cpu_u (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(nVRST_Tx_i),
@@ -484,7 +484,7 @@ register_sync #(
 // get vinfo
 // =========
 
-n64_vinfo_ext get_vinfo_u(
+n64_vinfo_ext get_vinfo_u (
   .VCLK(N64_CLK_i),
   .nRST(N64_nVRST_i),
   .nVDSYNC(nVDSYNC_i),
@@ -497,7 +497,7 @@ n64_vinfo_ext get_vinfo_u(
 // video data demux
 // ================
 
-n64a_vdemux video_demux_u(
+n64a_vdemux video_demux_u (
   .VCLK(N64_CLK_i),
   .nRST(N64_nVRST_i),
   .nVDSYNC(nVDSYNC_i),
@@ -521,7 +521,7 @@ assign vdata21_pp_w = vdata_fwd_w;
 // Gamma Correction
 // ----------------
 
-gamma_module_v2 gamma_module_u(
+gamma_module_v2 gamma_module_u (
   .VCLK(N64_CLK_i),
   .nRST(N64_nVRST_i),
   .gammaparams_i(cfg_gamma),
@@ -544,7 +544,7 @@ end
 
 assign async_nRST_scaler_w = N64_nVRST_i & DRAM_nRST_i & nVRST_Tx_i & scaler_nresync_i & n_palmode_change & n_vdata_detected_change;
 
-scaler scaler_u(
+scaler scaler_u (
   .async_nRST_i(async_nRST_scaler_w),
   .VCLK_i(N64_CLK_i),
   .vinfo_i(vinfo_pass),

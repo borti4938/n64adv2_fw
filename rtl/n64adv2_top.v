@@ -207,7 +207,7 @@ wire ALRCLK_w, ASDATA_w, ASCLK_w;
 register_sync #(
   .reg_width(8),
   .reg_preset(8'h00)
-) inp_vregs_u(
+) inp_vregs_u (
   .clk(N64_CLK_w),
   .clk_en(1'b1),
   .nrst(1'b1),
@@ -218,7 +218,7 @@ register_sync #(
 register_sync #(
   .reg_width(3),
   .reg_preset(3'b000)
-) inp_aregs_u(  // just for the pincheck module
+) inp_aregs_u ( // just for the pincheck module
   .clk(N64_CLK_w),
   .clk_en(1'b1),
   .nrst(1'b1),
@@ -229,7 +229,7 @@ register_sync #(
 
 // pin checking module
 
-pincheck pincheck_u(
+pincheck pincheck_u (
   .clk_i(CLKs_controller_w[1]),
   .run_i(run_pincheck_w),
   .CLK_SYS_i(SYS_CLK_i),
@@ -248,7 +248,7 @@ pincheck pincheck_u(
 
 // housekeeping of clocks and resets
 
-n64adv2_clk_n_rst_hk clk_n_rst_hk_u(
+n64adv2_clk_n_rst_hk clk_n_rst_hk_u (
   .N64_CLK_i(N64_CLK_w),
   .N64_nRST_i(N64_nRST_io),
   .nRST_Masking_i(nRST_Masking_w),
@@ -274,7 +274,7 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u(
 
 // controller module
 
-n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u(
+n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u (
   .N64_nRST_io(N64_nRST_io),
   .nRST_Masking_o(nRST_Masking_w),
   .SCLKs(CLKs_controller_w),
@@ -306,7 +306,7 @@ n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u(
 n64adv2_ppu_top #(
   .osd_font_rom_version(osd_font_rom_version),
   .osd_window_color(osd_window_color)
-) n64adv2_ppu_u(
+) n64adv2_ppu_u (
   .N64_CLK_i(N64_CLK_w),
   .N64_nVRST_i(N64_nRST_w),
   .nVDSYNC_i(nVDSYNC_w),
@@ -366,7 +366,7 @@ assign HDMI_CLK_o = HDMI_CLK_w;
 
 // audio processing module
 
-n64adv2_apu_top n64adv2_apu_u(
+n64adv2_apu_top n64adv2_apu_u (
   .MCLK_i(AMCLK_i),
   .nRST_i(nARST_w),
   .APUConfigSet(APUConfigSet),

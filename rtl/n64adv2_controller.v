@@ -237,7 +237,7 @@ register_sync #(
   .reg_o({ctrl_detected_resynced,PPUState_resynced,FallbackMode_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
 );
 
-chip_id chip_id_u(
+chip_id chip_id_u (
   .clkin(SYS_CLK),
   .reset(~SYS_nRST),
   .data_valid(CHIP_ID_valid_w),
@@ -253,7 +253,7 @@ assign hw_info = hw_info_sel == 3'b101 ? CHIP_ID_w[63:48] :
                  hw_info_sel == 3'b001 ? pincheck_status_i :
                                          {hdl_fw,1'b0,PCB_ID_i};
 
-system_n64adv2 system_u(
+system_n64adv2 system_u (
   .clk_clk(SYS_CLK),
   .rst_reset_n(SYS_nRST),
   .i2c_scl_pad_io(I2C_SCL),
@@ -296,7 +296,7 @@ end
 register_sync #(
   .reg_width(2),
   .reg_preset(2'b00)
-) useigr2ctrlclk_u(
+) useigr2ctrlclk_u (
   .clk(CTRL_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),

@@ -125,7 +125,7 @@ assign nRst_int_w = nRST_i & (audio_spdif_en | audio_hdmi_en);
 
 // parallization
 
-n64_sample_i2s i2s_rx_u(
+n64_sample_i2s i2s_rx_u (
   .MCLK_i(MCLK_i),
   .nRST_i(nRst_int_w),
   .SCLK_i(SCLK_i),
@@ -177,7 +177,7 @@ always @(posedge MCLK_i or negedge nRst_int_w)
     endcase
   end
 
-fir_2ch_audio fir_2ch_audio_u(
+fir_2ch_audio fir_2ch_audio_u (
   .clk(MCLK_i),
   .reset_n(nRst_int_w),
   .ast_sink_data(sink_data),
@@ -301,7 +301,7 @@ assign PDATA_OUT_left_w  = audio_mute ? {24{1'b0}} : PDATA_MULT[~audio_swap_lr];
 assign PDATA_OUT_right_w = audio_mute ? {24{1'b0}} : PDATA_MULT[ audio_swap_lr];  // is 1 if swapped, i.e. initially left, and 0 (right) else
 
 // generate I2S and SPDIF output
-i2s_leftjustified_tx i2s_tx_u(
+i2s_leftjustified_tx i2s_tx_u (
   .MCLK_i(MCLK_i),
   .nRST_i(nRst_int_w),
   .PDATA_LEFT_i(PDATA_OUT_left_w),
@@ -313,7 +313,7 @@ i2s_leftjustified_tx i2s_tx_u(
   .LRCLK_o(LRCLK_o)
 );
 
-spdif_tx spdif_tx_u(
+spdif_tx spdif_tx_u (
   .MCLK_i(MCLK_i),
   .nRST_i(nRst_int_w),
   .PDATA_LEFT_i(PDATA_OUT_left_w),

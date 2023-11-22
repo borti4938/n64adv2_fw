@@ -536,7 +536,7 @@ always @(posedge VCLK or negedge nVRST) // delay font selection according to mem
 
 generate
   if (font_rom_version == "V1")
-    font_rom font_rom_u(
+    font_rom font_rom_u (
       .CLK(VCLK),
       .nRST(nVRST),
       .char_addr(font_char_select),
@@ -545,7 +545,7 @@ generate
       .rddata(font_lineword_tmp)
     );
   else
-    font_rom_v2 font_rom_u(
+    font_rom_v2 font_rom_u (
       .CLK(VCLK),
       .nRST(nVRST),
       .char_addr(font_char_select),

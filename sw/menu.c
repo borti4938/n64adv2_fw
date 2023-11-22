@@ -48,7 +48,6 @@ extern cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
 extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 //extern config_tray_t scaling_words[NUM_SCALING_MODES];
 
-
 static const arrowshape_t select_arrow = {
     .left  = EMPTY,
     .right = TRIANGLE_RIGHT
