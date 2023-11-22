@@ -492,7 +492,7 @@ const char *CopyCfg[] __ufmdata_section__ = {"NTSC  PAL","PAL  NTSC"};
 const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521","N64Adv2_20220729","N64Adv2_20231119","n.a."};
 
 const alt_u8 Nok_Ok_color[3] = {FONTCOLOR_RED,FONTCOLOR_GREEN,FONTCOLOR_YELLOW};
-const alt_u8 Nok_Ok[2] __ufmdata_section__ = {CHECKBOX_TICK,HEART};
+const alt_u8 Nok_Ok[2] = {CHECKBOX_TICK,HEART};
 const char *ClkSrc[]   __ufmdata_section__ = {"27Mhz","N64"};
 
 const char *NoCtrlDetected  __ufmdata_section__ = "No controller detected";
