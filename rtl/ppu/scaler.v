@@ -347,7 +347,7 @@ reg [`VDATA_O_CO_SLICE] vdata3_for_post_sdram_buf [0:2];
 
 // regs for output rtl
 reg Y_cfg_v_update_window;
-reg [3:0] Y_cfg_h_update_window;
+reg [2:0] Y_cfg_update_phase;
 reg X_VSYNC_active = `VSYNC_active_480p60;
 reg [10:0] X_VSYNCLEN = `VSYNCLEN_480p60;
 reg [10:0] X_VSTART = `VSYNCLEN_480p60 + `VBACKPORCH_480p60;
@@ -949,11 +949,13 @@ assign X_vpos_px_offset_w = (video_vlines_out_i < X_VACTIVE_OS) ? (X_VACTIVE_OS 
 assign X_hpos_px_offset_w = (video_hpixel_out_i < X_HACTIVE_OS) ? (X_HACTIVE_OS - video_hpixel_out_i)/2 : 12'd0;
 
 always @(posedge VCLK_o)
-  if (Y_cfg_v_update_window) begin
-    if (Y_cfg_h_update_window == 4'h0) begin
+  if (Y_cfg_v_update_window) begin  // Y_cfg_v_update_window generated below
+    if (Y_cfg_update_phase == 3'b000) begin
       setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VSTART_OS,X_VACTIVE_OS,X_VSTOP_OS,X_VTOTAL);
       setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HSTART_OS,X_HACTIVE_OS,X_HSTOP_OS,X_HTOTAL);
-    end else if (Y_cfg_h_update_window == 4'h4) begin
+    end
+    
+    if (Y_cfg_update_phase == 3'b010) begin
       X_VSTART_px <= X_VSTART_OS + X_vpos_px_offset_w;
       X_VSTOP_px <= X_VSTOP_OS - X_vpos_px_offset_w;
       X_HSTART_px <= X_HSTART_OS + X_hpos_px_offset_w;
@@ -977,7 +979,9 @@ always @(posedge VCLK_o)
       hpos_1st_rdpixel_decr <= video_hpos_1st_rdpixel_i;
       hpos_1st_rdpixel_main <= 8'h00;
       hpos_1st_rdpixel_sub <= 2'b00;
-    end else begin
+    end
+    
+    if (Y_cfg_update_phase == 3'b100) begin
       if (|hpos_1st_rdpixel_decr) begin
         hpos_1st_rdpixel_decr <= hpos_1st_rdpixel_decr - 1'b1;
         if (X_pix_hpixel_addr_mult2) begin
@@ -1000,6 +1004,12 @@ always @(posedge VCLK_o)
         X_hpos_1st_rdpixel_sub <= hpos_1st_rdpixel_sub;
       end
     end
+    
+    if (!nRST_o) Y_cfg_update_phase <= 3'b000;
+    else if (Y_cfg_update_phase == 3'b100) Y_cfg_update_phase <= Y_cfg_update_phase;
+    else Y_cfg_update_phase <= Y_cfg_update_phase + 3'b001;
+  end else begin
+    Y_cfg_update_phase <= 3'b000;
   end
 
 // read pixel data from post sdram buffer into pre-fetch buffer for interpolation
@@ -1147,7 +1157,6 @@ always @(posedge VCLK_o or negedge nRST_o)
     output_proc_en <= 1'b0;
     
     Y_cfg_v_update_window <= 1'b1;
-    Y_cfg_h_update_window <= 4'h0;
     
     hcnt_o_L <= 0;
     Y_vcnt_o_L <= 0;
@@ -1194,10 +1203,8 @@ always @(posedge VCLK_o or negedge nRST_o)
     // generate sync
     if (!vdata_detected_txclk_resynced | in2out_en_txclk_resynced) begin
       if (hcnt_o_L < X_HTOTAL - 1) begin
-        Y_cfg_h_update_window <= &Y_cfg_h_update_window ? Y_cfg_h_update_window : Y_cfg_h_update_window + 4'h1;
         hcnt_o_L <= hcnt_o_L + 1;
       end else begin
-        Y_cfg_h_update_window <= 4'h0;
         hcnt_o_L <= 0;
       end
       if ((hcnt_o_L == X_HSTART-1) || (hcnt_o_L == X_HSTOP-1))        // next clock cycle either hcnt_o_L == X_HSTART or hcnt_o_L == X_HSTOP
@@ -1219,7 +1226,6 @@ always @(posedge VCLK_o or negedge nRST_o)
       end
     end else begin
       Y_cfg_v_update_window <= 1'b1;
-      Y_cfg_h_update_window <= 4'h0;
       Y_vcnt_o_L <= 0;
       hcnt_o_L <= 0;
       Y_v_active_de <= 1'b0;
