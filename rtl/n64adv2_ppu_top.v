@@ -62,7 +62,8 @@ module n64adv2_ppu_top #(
 
   // VCLK for video output
   VCLK_Tx,
-  nVRST_Tx,
+  nVRST_Tx_i,
+  nVRST_Tx_o,
 
   // Video Output to ADV7513
   VSYNC_o,
@@ -109,7 +110,8 @@ input [ 1:0] OSDInfo;
 input scaler_nresync_i;
 
 input VCLK_Tx;
-input nVRST_Tx;
+input nVRST_Tx_i;
+output nVRST_Tx_o;
 
 output reg VSYNC_o = 1'b0;
 output reg HSYNC_o = 1'b0;
@@ -180,7 +182,7 @@ wire vdata_valid_pp_w[0:1], vdata_valid_pp_dummy_w_4;
 wire [`VDATA_I_FU_SLICE] vdata21_pp_w;
 wire [`VDATA_O_FU_SLICE] vdata24_pp_w[1:5];
 
-wire async_nRST_scaler_w;
+wire async_nRST_scaler_w, nVRST_post_scaler;
 wire [7:0] sl_vpos_rel_w, sl_hpos_rel_w;
 
 wire [1:0] OSDInfo_resynced;
@@ -479,7 +481,7 @@ register_sync #(
 ) sync4cpu_u(
   .clk(VCLK_Tx),
   .clk_en(1'b1),
-  .nrst(nVRST_Tx),
+  .nrst(nVRST_Tx_i),
   .reg_i(OSDInfo),
   .reg_o(OSDInfo_resynced)
 );
@@ -571,6 +573,7 @@ scaler scaler_u(
   .video_deinterlacing_mode_i(cfg_deinterlacing_mode_dramclk_resynced),
   .video_vpos_1st_rdline_i(cfg_vpos_1st_rdline_resynced),
   .VCLK_o(VCLK_Tx),
+  .nVRST_o(nVRST_post_scaler),
   .vinfo_txsynced_i({palmode_vclk_o_resynced,n64_480i_vclk_o_resynced}),
   .video_config_i(cfg_videomode),
   .video_llm_i(cfg_lowlatencymode_resynced),
@@ -601,7 +604,7 @@ scaler scaler_u(
 
 scanline_emu vertical_scanline_emu_u (
   .VCLK_i(VCLK_Tx),
-  .nVRST_i(nVRST_Tx),
+  .nVRST_i(nVRST_post_scaler),
   .HSYNC_i(vdata24_pp_w[2][3*color_width_o+1]),
   .VSYNC_i(vdata24_pp_w[2][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[2][3*color_width_o+2]),
@@ -621,7 +624,7 @@ scanline_emu vertical_scanline_emu_u (
 
 scanline_emu horizontal_scanline_emu_u (
   .VCLK_i(VCLK_Tx),
-  .nVRST_i(nVRST_Tx),
+  .nVRST_i(nVRST_post_scaler),
   .HSYNC_i(vdata24_pp_w[3][3*color_width_o+1]),
   .VSYNC_i(vdata24_pp_w[3][3*color_width_o+3]),
   .DE_i(vdata24_pp_w[3][3*color_width_o+2]),
@@ -656,7 +659,7 @@ osd_injection #(
   .OSDWrVector(OSDWrVector),
   .OSDInfo(OSDInfo_resynced),
   .VCLK(VCLK_Tx),
-  .nVRST(nVRST_Tx),
+  .nVRST(nVRST_post_scaler),
   .osd_vscale(cfg_osd_vscale),
   .osd_hscale(cfg_osd_hscale),
   .osd_voffset(cfg_osd_voffset),
@@ -672,6 +675,8 @@ osd_injection #(
 
 // set final outputs
 // =================
+
+assign nVRST_Tx_o = nVRST_post_scaler;
 
 always @(*) begin
   VSYNC_o <= vdata24_pp_w[5][3*color_width_o+3];

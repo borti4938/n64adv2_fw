@@ -58,7 +58,8 @@ module scaler(
   video_deinterlacing_mode_i,
   video_vpos_1st_rdline_i,
 
-  VCLK_o,
+  VCLK_o,   // actually an input, the _o indicates that this is the clock for the outputting process
+  nVRST_o,  // this is an output
   
   vinfo_txsynced_i,
   video_config_i,
@@ -121,6 +122,7 @@ input [1:0] video_deinterlacing_mode_i;
 input [9:0] video_vpos_1st_rdline_i;  // first line to read (needed if scaling factor is so high such that not all lines are needed)
 
 input VCLK_o;
+output nVRST_o;
 
 input [1:0] vinfo_txsynced_i;
 input [`VID_CFG_W-1:0] video_config_i;
@@ -465,6 +467,8 @@ reset_generator #(
   .async_nrst_i(async_nRST_i),
   .rst_o(nRST_o)
 );
+
+assign nVRST_o = nRST_o;
 
 
 // +-----------+

@@ -164,7 +164,7 @@ wire [1:0] nRST_Masking_w;
 
 wire N64_nRST_w;
 wire HDMI_CLK_w;
-wire HDMI_nRST_w;
+wire HDMI_nRST_w, HDMI_nRST_pp_w;
 wire [1:0] DRAM_CLKs_w;
 wire DRAM_nRST_w;
 wire [1:0] CLKs_controller_w, nSRST_w;
@@ -319,7 +319,8 @@ n64adv2_ppu_top #(
   .OSDInfo(OSDInfo_w),
   .scaler_nresync_i(HDMI_cfg_done_w),
   .VCLK_Tx(HDMI_CLK_w),
-  .nVRST_Tx(HDMI_nRST_w),
+  .nVRST_Tx_i(HDMI_nRST_w),
+  .nVRST_Tx_o(HDMI_nRST_pp_w),
   .VSYNC_o(VSYNC_o_w),
   .HSYNC_o(HSYNC_o_w),
   .DE_o(DE_o_w),
@@ -341,8 +342,8 @@ assign DRAM_CLK = DRAM_CLKs_w[1];
 assign HDMI_CLK_o = HDMI_CLK_w;
 
 `ifdef VIDEO_USE_FAST_OUTPUT_REGs
-  always @(posedge HDMI_CLK_w or negedge HDMI_nRST_w)
-    if (!HDMI_nRST_w) begin
+  always @(posedge HDMI_CLK_w or negedge HDMI_nRST_pp_w)
+    if (!HDMI_nRST_pp_w) begin
       VSYNC_o <= 1'b0;
       HSYNC_o <= 1'b0;
          DE_o <= 1'b0;
