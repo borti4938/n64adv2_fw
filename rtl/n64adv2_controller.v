@@ -154,7 +154,6 @@ wire ctrl_negedge, ctrl_posedge;
 wire ctrl_bit;
 
 // registers
-reg nVSYNC_buf = 1'b0;
 reg [1:0] nHSYNC_buf = 2'b0;
 
 reg [4:0] n64_clk_cnt = 5'd0;

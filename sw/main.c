@@ -30,7 +30,6 @@
 #include <string.h>
 #include <unistd.h>
 #include "alt_types.h"
-#include <sys/alt_sys_init.h>
 #include "i2c_opencores.h"
 #include "system.h"
 #include "app_cfg.h"
