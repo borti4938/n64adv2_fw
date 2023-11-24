@@ -118,7 +118,6 @@ void update_n64adv_state()
     init_phase = FALSE;
   } else {
     init_phase = vin_detection_timeout > VIN_DETECTION_TIMEOUT;
-    if (timeout_cnt < 65535) timeout_cnt++;
     if (vin_detection_timeout > VIN_DETECTION_TIMEOUT) boot_mask_video_input_detection = (bool_t) cfg_get_value(&debug_boot,0);
     if (vin_detection_timeout == 0) video_input_detected = boot_mask_video_input_detection;
     else vin_detection_timeout--;
