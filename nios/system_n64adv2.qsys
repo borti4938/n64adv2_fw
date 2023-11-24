@@ -496,7 +496,7 @@
   <parameter name="edgeType" value="RISING" />
   <parameter name="generateIRQ" value="false" />
   <parameter name="irqType" value="LEVEL" />
-  <parameter name="resetValue" value="2265620484" />
+  <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="32" />
@@ -514,7 +514,7 @@
   <parameter name="edgeType" value="RISING" />
   <parameter name="generateIRQ" value="false" />
   <parameter name="irqType" value="LEVEL" />
-  <parameter name="resetValue" value="10232064" />
+  <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="32" />
@@ -550,7 +550,7 @@
   <parameter name="edgeType" value="RISING" />
   <parameter name="generateIRQ" value="false" />
   <parameter name="irqType" value="LEVEL" />
-  <parameter name="resetValue" value="152" />
+  <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="16" />
