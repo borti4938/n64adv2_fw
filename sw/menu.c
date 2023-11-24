@@ -429,7 +429,7 @@ void print_current_timing_mode()
   alt_u16 hscale = cfg_get_value(&hor_scale,0);
   alt_u16 vscale = cfg_get_value(&vert_scale,0);
 
-  sprintf(szText,"(%d x %d)",hscale,vscale);
+  sprintf(szText,"(%dx%d)",hscale,vscale);
   szText[6-(hscale<1000)] = (char) CHECKBOX_TICK;
   vd_print_string(VD_INFO,hoffset + 1,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }

@@ -72,20 +72,20 @@ input nvideblur_i;
 
 input [`VID_CFG_W-1:0] video_config_i;
 
-input [10:0] vlines_out_i;
+input [11:0] vlines_out_i;
 input [11:0] hpixels_out_i;
 
 output reg [9:0] vpos_1st_rdline_o;   // first line to read (needed if scaling factor is so high such that not all lines are needed)
 output reg [9:0] vlines_in_needed_o;  // number of lines needed to scale for active lines
 output reg [9:0] vlines_in_full_o;    // number of lines at input (either 240 in NTSC or 288 in PAL (or doubled for interlaced with weave and fully buffered deinterlacing))
-output reg [10:0] vlines_out_o;       // number of lines after scaling (max. 2047)
+output reg [11:0] vlines_out_o;       // number of lines after scaling (max. 4095)
 output reg [17:0] v_interp_factor_o;  // factor needed to determine actual position during interpolation
 output reg v_allow_slemu_o;           // a flag that allows vertical scanline emulation
 
 output reg [9:0] hpos_1st_rdpixel_o;  // first horizontal pixel to read (needed if scaling factor is so high such that not all pixels are needed)
 output reg [9:0] hpixels_in_needed_o; // number of horizontal pixel needed to scale for active lines
 output reg [9:0] hpixels_in_full_o;   // number of horizontal pixel at input (should be 320 or 640)
-output reg [11:0] hpixels_out_o;      // number of horizontal pixel after scaling (max. 4093)
+output reg [11:0] hpixels_out_o;      // number of horizontal pixel after scaling (max. 4095)
 output reg [17:0] h_interp_factor_o;  // factor needed to determine actual position during interpolation
 output reg h_allow_slemu_o;           // a flag that allows horizontal scanline emulation
 
@@ -125,8 +125,8 @@ reg [1:0] v_cfggen_phase = ST_CFGGEN_RDY;
 reg [2:0] v_cfggen_phase_wait_cnt;
 
 reg v_divide_cmd_LL;
-reg [10:0] v_divisor_L, v_divisor_LL;
-reg [10:0] vactive_LL, vactive_L;
+reg [11:0] v_divisor_L, v_divisor_LL;
+reg [11:0] vactive_LL, vactive_L;
 reg [26:0] inv_vscale_L;
 reg [36:0] vlines_in_resmax_full_L;
 reg [10:0] vlines_in_resmax_L;
@@ -197,7 +197,7 @@ always @(posedge SYS_CLK) begin
   v_divisor_L <= vlines_out_i;
   inv_vscale_L <= inv_vscale_w;
   vlines_in_resmax_full_L <= vlines_in_resmax_full_w;
-  vlines_in_resmax_L <= vlines_in_resmax_full_L[34:24] + vlines_in_resmax_full_L[23];
+  vlines_in_resmax_L <= vlines_in_resmax_full_L[33:23] + vlines_in_resmax_full_L[22];
   vlines_in_needed_L <= (vlines_in_resmax_L < {1'b0,n64_vlines_w}) ? vlines_in_resmax_L[9:0] : n64_vlines_w;
   vlines_in_full_L <= n64_vlines_w;
   vpos_1st_rdline_L <= !(palmode_L & palmode_boxed_L) ? vpos_1st_rdline_normal_w : vpos_1st_rdline_pal_boxed_w;
@@ -223,7 +223,7 @@ always @(posedge SYS_CLK) begin
       vlines_in_full_o <= vlines_in_full_L;
       vlines_out_o <= v_divisor_LL;
       v_interp_factor_o <= v_appr_mult_factor_w;
-      h_allow_slemu_o <= v_divisor_LL >= {vlines_in_full_L,1'b0};
+      h_allow_slemu_o <= v_divisor_LL >= {1'b0,vlines_in_full_L,1'b0};
     end
     default: begin  // ST_CFGGEN_RDY
         if (((tgl_trigger_v_cfggen_phases_o != tgl_trigger_v_cfggen_phases_i) |
@@ -285,7 +285,7 @@ end
 
 serial_divide #(
   .DIVIDEND_WIDTH(dividend_length),
-  .DIVISOR_WIDTH(11)
+  .DIVISOR_WIDTH(12)
 ) v_serial_divide_u (
   .clk_i(SYS_CLK),
   .nrst_i(1'b1),

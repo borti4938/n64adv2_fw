@@ -52,9 +52,9 @@
   //    [18: 9] {LineX V-Shift (5bits),LineX H-Shift (5bits)}
   //    [ 8: 0] {De-Interlace Mode (2 bit),(1bit reserve),Vert. Interpolation Mode (2 bits),(1bit reserve),Horiz. Interpolation Mode (2 bits),PAL boxed mode (1 bit)}
   //  wire [31:0] SysConfigSet0; (Scaler)
-  //    [31:21] {LineX V-Scale Target (11bits)}
-  //    [20: 9] {LineX H-Scale Target (12bits)}
-  //    [ 8: 0] {(2bits reserve),Force 50Hz/60Hz (2bits),LowLatencyMode (1bit),UseVGAfor480p (1bit),TargetResolution (3bits)}
+  //    [31:20] {LineX V-Scale Target (12bits)}
+  //    [19: 8] {LineX H-Scale Target (12bits)}
+  //    [ 7: 0] {(1bit reserve),Force 50Hz/60Hz (2bits),LowLatencyMode (1bit),UseVGAfor480p (1bit),TargetResolution (3bits)}
 
   
   
@@ -120,8 +120,8 @@
   `define h_interpolation_mode_slice   2 + `SysCfg1_PPUCfg_Offset :  1 + `SysCfg1_PPUCfg_Offset
   `define pal_boxed_scale_bit          0 + `SysCfg1_PPUCfg_Offset
   
-  `define target_vlines_slice       31 + `SysCfg0_PPUCfg_Offset : 21 + `SysCfg0_PPUCfg_Offset
-  `define target_hpixels_slice      20 + `SysCfg0_PPUCfg_Offset :  9 + `SysCfg0_PPUCfg_Offset
+  `define target_vlines_slice       31 + `SysCfg0_PPUCfg_Offset : 20 + `SysCfg0_PPUCfg_Offset
+  `define target_hpixels_slice      19 + `SysCfg0_PPUCfg_Offset :  8 + `SysCfg0_PPUCfg_Offset
   `define force_5060_slice           6 + `SysCfg0_PPUCfg_Offset :  5 + `SysCfg0_PPUCfg_Offset
   `define force50hz_bit              6 + `SysCfg0_PPUCfg_Offset
   `define force60hz_bit              5 + `SysCfg0_PPUCfg_Offset

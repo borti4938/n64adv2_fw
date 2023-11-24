@@ -144,7 +144,7 @@ wire [9:0] cfg_hvshift;
 wire [1:0] cfg_deinterlacing_mode_pre, cfg_deinterlacing_mode;
 
 wire [`VID_CFG_W-1:0] sys_vmode_ntsc_w, sys_vmode_pal_w;
-wire [10:0] vlines_set_w;
+wire [11:0] vlines_set_w;
 wire [11:0] hpixels_set_w;
 
 wire palmode_sysclk_resynced, n64_480i_sysclk_resynced;
@@ -156,7 +156,7 @@ wire palmode_dramclk_resynced, n64_480i_dramclk_resynced;
 
 wire cfg_lowlatencymode_resynced;
 wire [9:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_resynced;
-wire [10:0] cfg_vlines_out_w, cfg_vlines_out_resynced;
+wire [11:0] cfg_vlines_out_w, cfg_vlines_out_resynced;
 wire [17:0] cfg_v_interp_factor_w, cfg_v_interp_factor_resynced;
 wire [9:0] cfg_vlines_in_needed_w, cfg_vlines_in_needed_resynced;
 wire [9:0] cfg_vlines_in_full_w, cfg_vlines_in_full_resynced;
@@ -368,8 +368,8 @@ register_sync #(
 
 // ... in VCLK_Tx clock domain
 register_sync #(
-  .reg_width(50), // 1 + 10 + 10 + 11 + 18
-  .reg_preset(50'd0)
+  .reg_width(51), // 1 + 10 + 10 + 12 + 18
+  .reg_preset(51'd0)
 ) cfg_sync4txlogic_u0 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),

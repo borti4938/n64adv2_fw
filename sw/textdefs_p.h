@@ -479,10 +479,12 @@ const char *PredefScaleSteps[]     __ufmdata_section__ = {"(2.00x)","(2.25x)","(
                                                           "(4.00x)","(4.25x)","(4.50x)","(4.75x)",
                                                           "(5.00x)","(5.25x)","(5.50x)","(5.75x)",
                                                           "(6.00x)","(6.25x)","(6.50x)","(6.75x)",
-                                                          "(7.00x)"};
+                                                          "(7.00x)","(7.25x)","(7.50x)","(7.75x)",
+                                                          "(8.00x)"};
 const char *PredefScaleStepsHalf[] __ufmdata_section__ = {"(1.00x)","(1.25x)","(1.50x)","(1.75x)",
                                                           "(2.00x)","(2.25x)","(2.50x)","(2.75x)",
-                                                          "(3.00x)","(3.25x)","(3.50x)"};
+                                                          "(3.00x)","(3.25x)","(3.50x)","(3.75x)",
+                                                          "(4.00x)"};
 const char *ScaleVHLink[] __ufmdata_section__ = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open"};
 
 const char *ColorSpace[] __ufmdata_section__ = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
