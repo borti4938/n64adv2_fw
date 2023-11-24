@@ -385,13 +385,22 @@ void val2txt_5b_binaryoffset_func(alt_u16 v) { if (v & 0x10) sprintf(szText," %2
 void val2txt_scale_sel_func(alt_u16 v) {
   if (v == PPU_SCALING_CURRENT) {
     sprintf(szText,NTSCPAL_SEL[PPU_REGION_CURRENT]);
+  } else if (v > PPU_SCALING_CURRENT) {
+    v = v - PPU_SCALING_CURRENT - 1;
+    if (v > NTSC_LAST_SCALING_MODE) {
+      sprintf(szText,"PAL.%s  ",scanmode == INTERLACED ? "i" : "p");
+      sprintf(&szText[8],Resolutions[v - PAL_TO_288]);
+    } else {
+      sprintf(szText,"NTSC.%s  ",scanmode == INTERLACED ? "i" : "p");
+      sprintf(&szText[9],Resolutions[v - NTSC_TO_240]);
+    }
   } else {
     if (v > NTSC_LAST_SCALING_MODE) {
-      sprintf(szText,"PAL.%s to ",scanmode == INTERLACED ? "i" : "p");
-      sprintf(&szText[9],Resolutions[v - PAL_TO_288]);
+      sprintf(szText,"PAL  ");
+      sprintf(&szText[6],Resolutions[v - PAL_TO_288]);
     } else {
-      sprintf(szText,"NTSC.%s to ",scanmode == INTERLACED ? "i" : "p");
-      sprintf(&szText[10],Resolutions[v - NTSC_TO_240]);
+      sprintf(szText,"NTSC  ");
+      sprintf(&szText[7],Resolutions[v - NTSC_TO_240]);
     }
   }
 };
@@ -422,14 +431,14 @@ bool_t apply_sl_vert_negoffset(menu_t* current_menu) {
 void print_current_timing_mode()
 {
   vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
-  val2txt_scale_sel_func(scaling_n64adv);
+  val2txt_scale_sel_func(scaling_n64adv+PPU_SCALING_CURRENT+1); // addition is a function hack to actually get .p and .i indicators
   vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 
   alt_u8 hoffset = strlen(&szText[0]);
   alt_u16 hscale = cfg_get_value(&hor_scale,0);
   alt_u16 vscale = cfg_get_value(&vert_scale,0);
 
-  sprintf(szText,"(%dx%d)",hscale,vscale);
+  sprintf(szText,"(%d x %d)",hscale,vscale);
   szText[6-(hscale<1000)] = (char) CHECKBOX_TICK;
   vd_print_string(VD_INFO,hoffset + 1,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 }

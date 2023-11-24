@@ -449,7 +449,7 @@ const char *not_available __ufmdata_section__ = "-----";
 const char *Global        __ufmdata_section__ = "Global";
 
 const char *OffOn[]                 __ufmdata_section__ = {"Off","On"};
-const char *NTSCPAL_SEL[]           __ufmdata_section__ = {"NTSC  ","PAL   ","Current"};
+const char *NTSCPAL_SEL[]           __ufmdata_section__ = {"NTSC","PAL","Current"};
 const char *Force5060[]             __ufmdata_section__ = {"Off (N64 Auto)","60Hz","50Hz"};
 const char *Resolutions[]           __ufmdata_section__ = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p","1440p w."};
 const char *FallbackRes[]           __ufmdata_section__ = {"1080p","240p/288p","480p/576p"};
