@@ -245,6 +245,7 @@ void cfg_scale_v2h_update() {
     default:
       return;
   }
+  if (hscale > CFG_HORSCALE_MAX_VALUE) hscale = CFG_HORSCALE_MAX_VALUE; // max out horizontal scale (overflow may appear on PAL @ 8.00x)
   cfg_set_value(&hor_scale,hscale);
 }
 
@@ -256,6 +257,7 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
     alt_u8 idx, idx_min;
     bool_t use_240p_288p = ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288));
     bool_t use_1440Wp = ((scaling_menu == NTSC_TO_1440W) || (scaling_menu == PAL_TO_1440W));
+    bool_t use_pal_limit = (scaling_menu > NTSC_TO_1440W);
     alt_u16 scale_max, scale_min;
     alt_u8 scale_inc = 1;
     if (use_240p_288p) {
@@ -267,7 +269,8 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
         scale_min = predef_scaling_vals[2][0];
       }
     } else {
-      scale_max = use_vertical ? CFG_VERTSCALE_MAX_VALUE : CFG_HORSCALE_MAX_VALUE;
+      scale_max = !use_vertical ? CFG_HORSCALE_MAX_VALUE :
+                  use_pal_limit ? CFG_VERTSCALE_PAL_MAX_VALUE : CFG_VERTSCALE_NTSC_MAX_VALUE;
       scale_min = use_1440Wp ? 2*predef_scaling_vals[jdx][0] : predef_scaling_vals[jdx][0];
       scale_inc = use_1440Wp ? 2 : 1;
     }
