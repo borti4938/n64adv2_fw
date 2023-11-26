@@ -310,9 +310,9 @@ set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files/10m25sae144dev
 
 
 # debug
-set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name ENABLE_SIGNALTAP ON
 
-set_global_assignment -name USE_SIGNALTAP_FILE debug/stp_scaler_2.stp
+set_global_assignment -name USE_SIGNALTAP_FILE stp2.stp
 set_global_assignment -name SIGNALTAP_FILE debug/stp_scaler.stp
 set_global_assignment -name SIGNALTAP_FILE debug/stp_scaler_2.stp
 
@@ -341,9 +341,11 @@ set_global_assignment -name AUTO_ROM_RECOGNITION OFF
 set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name SYNTH_PROTECT_SDC_CONSTRAINT ON
 
-set_global_assignment -name QII_AUTO_PACKED_REGISTERS NORMAL
-set_global_assignment -name FITTER_EFFORT "AUTO FIT"
-set_global_assignment -name SEED 41
+set_global_assignment -name QII_AUTO_PACKED_REGISTERS "SPARSE AUTO"
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name SEED 1
+#set_global_assignment -name SEED 46
+#set_global_assignment -name SEED 7
 set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
 set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
@@ -352,7 +354,7 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
 set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 16
-set_global_assignment -name ROUTER_EFFORT_MULTIPLIER 8
+set_global_assignment -name ROUTER_EFFORT_MULTIPLIER 16
 set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
 
 
@@ -370,4 +372,6 @@ set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
 set_global_assignment -name FORCE_CONFIGURATION_VCCIO ON
 set_global_assignment -name VCCA_USER_VOLTAGE 3.3V
 set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
+set_global_assignment -name SIGNALTAP_FILE stp2.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name SLD_FILE db/stp2_auto_stripped.stp

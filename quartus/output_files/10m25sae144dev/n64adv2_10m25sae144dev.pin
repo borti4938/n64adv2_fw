@@ -188,7 +188,7 @@ VCC_ONE                      : 115       : power  :                   : 3.0V/3.3
 GND                          : 116       : gnd    :                   :         :           :                
 VCCIO7                       : 117       : power  :                   : 2.5V    : 7         :                
 DRAM_ADDR[4]                 : 118       : output : 2.5 V             :         : 7         : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : 119       :        :                   :         : 7         :                
+PCB_ID_i[2]                  : 119       : input  : 3.3-V LVTTL       :         : 7         : Y              
 CTRL_i                       : 120       : input  : 3.3-V LVTTL       :         : 8         : Y              
 ASCLK_i                      : 121       : input  : 3.3-V LVTTL       :         : 8         : Y              
 ASDATA_i                     : 122       : input  : 3.3-V LVTTL       :         : 8         : Y              

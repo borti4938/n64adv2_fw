@@ -19,14 +19,15 @@
 #
 # Quartus Prime
 # Version 22.1std.2 Build 922 07/20/2023 SC Lite Edition
-# Date created = 23:53:06  September 18, 2023
+# Date created = 18:37:59  November 26, 2023
 #
 # -------------------------------------------------------------------------- #
 
 QUARTUS_VERSION = "22.1"
-DATE = "23:53:06  September 18, 2023"
+DATE = "18:37:59  November 26, 2023"
 
 # Revisions
 
-PROJECT_REVISION = "n64adv2_10m25sae144dev"
 PROJECT_REVISION = "n64adv2_10m16sae144"
+PROJECT_REVISION = "n64adv2_10m25sae144dev"
+PROJECT_REVISION = "n64adv2_10cl016ye144"
