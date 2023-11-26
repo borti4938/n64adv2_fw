@@ -57,7 +57,7 @@ config_t vert_scale = {
     .cfg_word_offset = CFG_VERTSCALE_OFFSET,
     .cfg_type        = NUMVALUE,
     .value_details   = {
-        .max_value     = CFG_VERTSCALE_MAX_VALUE,
+        .max_value     = CFG_VERTSCALE_PAL_MAX_VALUE,
         .getvalue_mask = CFG_VERTSCALE_GETMASK
     },
     .val2char_func = &val2txt_func
