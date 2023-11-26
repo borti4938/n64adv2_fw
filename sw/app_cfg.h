@@ -30,10 +30,10 @@
 #define APP_CFG_H_
 
 #define SW_FW_MAIN  2
-#define SW_FW_SUB   14
+#define SW_FW_SUB   15
 
 #define CFG_FW_MAIN SW_FW_MAIN
-#define CFG_FW_SUB  05
+#define CFG_FW_SUB  06
 
 #ifndef DEBUG
   #define db_printf(...)
