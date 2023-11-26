@@ -270,18 +270,16 @@ system_n64adv2 system_u (
   .cfg_set0_out_export(SysConfigSet0),
   .info_sync_out_export({HDMI_cfg_done_o,hw_info_sel,run_pincheck_o,ctrl_data_tack}),
   .led_out_export(LED_o),
-  .hw_info_in_export(hw_info)
+  .hw_info_in_export(hw_info)//,
+//  .test_pio_0_export(test_wire_0),
+//  .test_pio_1_export(test_wire_1)
 );
 
-
-always @(posedge SYS_CLK) begin
+always @(*) begin
   OSDInfo[1]   <= &{SysConfigSet1[`show_osd_logo_bit],SysConfigSet1[`show_osd_bit],!SysConfigSet1[`mute_osd_bit]};  // show logo only in OSD
   OSDInfo[0]   <= SysConfigSet1[`show_osd_bit] & !SysConfigSet1[`mute_osd_bit];
-  PPUConfigSet <= {SysConfigSet2[`cfg2_scanline_slice],SysConfigSet1[`cfg1_ppu_config_slice],SysConfigSet0};
-end
-
-always @(*) begin
   OSDWrVector    <= {vd_wrctrl_w,vd_wrdata_w};
+  PPUConfigSet <= {SysConfigSet2[`cfg2_scanline_slice],SysConfigSet1[`cfg1_ppu_config_slice],SysConfigSet0};
   APUConfigSet   <= {SysConfigSet3[`cfg3_audio_config_slice],HDMI_cfg_done_o};
   use_igr        <= SysConfigSet1[`igr_reset_enable_bit];
   nRST_Masking_o <= SysConfigSet1[`rst_masks_slice];
