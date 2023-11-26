@@ -258,13 +258,13 @@ set_global_assignment -name QIP_FILE ../ip/system_pll.qip
 set_global_assignment -name QIP_FILE ../ip/chip_id.qip
 
 #qsys-ip
-set_global_assignment -name QIP_FILE ../ip/altclkctrl/synthesis/altclkctrl.qip
-set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
-set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio.qip
+#set_global_assignment -name QIP_FILE ../ip/altclkctrl/synthesis/altclkctrl.qip
+#set_global_assignment -name QIP_FILE ../nios/system_n64adv2/synthesis/system_n64adv2.qip
+#set_global_assignment -name QIP_FILE ../ip/fir_2ch_audio/synthesis/fir_2ch_audio.qip
 
-#set_global_assignment -name QSYS_FILE ../ip/altclkctrl.qsys
-#set_global_assignment -name QSYS_FILE ../ip/fir_2ch_audio.qsys
-#set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
+set_global_assignment -name QSYS_FILE ../ip/altclkctrl.qsys
+set_global_assignment -name QSYS_FILE ../ip/fir_2ch_audio.qsys
+set_global_assignment -name QSYS_FILE ../nios/system_n64adv2.qsys
 
 #rtl
 set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_top.v
