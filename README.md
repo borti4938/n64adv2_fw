@@ -34,8 +34,10 @@ The menu always open in the top level, where you have following options availabl
   Scanlines settings (not available in 240p/288p mode)
 - **\[VI-Processing\]**  
   Some video interface processing stuff other than resolution and scaling
+- **\[Audio-Processing\]**  
+  Some audio interface processing stuff
 - **\[Miscellaneous\]**  
-  Audio settings, in-game routines settings
+  In-game routines settings, reset behavior, and so on
 - **\[Save/Load/Fallback\]**  
   Save your current settings, load from settings or defaults
 - **\[Debug-Info\]**  
@@ -64,8 +66,10 @@ An empty default value means that this value is not affected by loading defaults
 
 #### Resolution
 
-Any change on the configuration in this menu needs you to confirm the new setting.
+Any change on the configuration in this menu needs you to confirm the new setting if applied to current input mode.
 If you do not do so within a few seconds, the setting will switch back to the previous one.
+Configuration changes on non-native input mode (i.e. NTSC while running a PAL game and vice versa) are directly applied without confirmation.
+Only change something here if you are sure what you are doing.
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
@@ -148,22 +152,29 @@ If you do not do so within a few seconds, the setting will switch back to the pr
 \[11\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
 \[12\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
 
+#### Audio-Processing
+
+| Entry | Default | Description |
+|:------|:--------|:------------|
+| **Filter Options - Bypass filter** | Off | Bypasses the reconstruction audio filter. Only use this option if you are facing any issues with the fillter enabled. |
+| **Output Settings - Mute audio** | Off | Mutes output audio |
+| **Output Settings - Swap L/R** | Off | Swaps left and right audio channel |
+| **Audio settings - output gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
+| **S/PDIF support - Enabled** | Off | Enables the S/PDIF audio output. |
+
 #### Miscellaneous
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Audio settings - Swap L/R** | Off | Swaps left and right audio channel |
-| **Audio settings - Bypass filter** | Off | Bypasses the reconstruction audio filter. Only use this option if you are facing any issues with the fillter enabled. |
-| **Audio settings - Post filter gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
-| **Audio settings - S/PDIF enabled** | Off | Enables the S/PDIF audio output. |
 | **Controller routines - Reset** | On | Enables _reset via controller_<br>- Button combination: **Start + Z + R + A + B** |
 | **Controller routines - VI-DeBlur** | Off | Allows switching _low. res. deblur_ (see description above) **on** and **off** via controller<br>- Button combination **On**: **Start + Z + R + C-ri**<br>- Button combination **Off**: **Start + Z + R + C-le** |
 | **Controller routines - 16bit mode** | Off | Allows switching _16bit mode_ (see description above) **on** and **off** via controller<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
 | **Reset masking** | VI + Audio | User can opt to not reset video interface pipeline (**VI pipeline**) and/or **Audio** processing if the console is being reset |
-| **Swap LED** | Off | Swap use of LED D1 and D2 (usually D1 is NOK / red and D2 is OK / green). Useful if D1 and D2 have opposite color on hardware. |
-| **Unlock lucky 1440p** \[12\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
+| **Menu variations - Swap R/G-LED** | Off | Swap use of LED D1 and D2 (usually D1 is NOK / red and D2 is OK / green). Useful if D1 and D2 have opposite color on hardware. |
+| **Menu variations - Boot to debug** | Debug at no vi-input | If no video input is being detected at the N64 video interface input, the N64Adv2 boots into _Debug-Info_ screen.<br> This behavior can be switched off if setting is at _Normal boot_. |
+| **Unlock lucky 1440p** \[13\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
-\[12\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
+\[13\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
 
 #### Save/Load/Fallback
 
@@ -171,14 +182,13 @@ If you do not do so within a few seconds, the setting will switch back to the pr
 |:------|:--------|:------------|
 | **Save - Autosave** | | Saves your current configuration every time you close the menu if enabled |
 | **Save - Configuration now** | | Saves your current configuration |
-| **Load - Last Configuration** | | Loads your last saved configuration |
-| **Load - 480p Defaults** | | Loads 480p/576p defaulted configuration |
-| **Load - 1080p Defaults** | | Loads 1080p defaulted configuration |
+| **Load - Last configuration** | | Loads your last saved configuration |
+| **Load - Fallback defaults** | | Loads fallback configuration |
 | **Copy - Direction** | NTSC->PAL | Determines which config is copied _from_->_to_ |
-| **Copy - Copy config now** | | Copies the actual config. \[13\] | 
+| **Copy - Copy config now** | | Copies the actual config. \[14\] | 
 | **Fallback config** | 1080p | Determines the fallback defaults (240p, 480p or 1080p) |
 
-\[13\] A copy from _NTSC->PAL_ also enables **Use PAL in 240p box** option. 240p/288p configurations stay unaffected.
+\[14\] A copy from _NTSC->PAL_ also enables **Use PAL in 240p box** option. 240p/288p configurations stay unaffected.
 
 Note that all unsaved configuration entries in the menu are shown in yellow color.
 As soon as the configuration is saved, every entry should appear in white or grey if unavailable.
@@ -195,9 +205,9 @@ As soon as the configuration is saved, every entry should appear in white or gre
 | **Pin check - VI** | Shows pin check results for video interface<br>- Sync: Data sync signal<br>- Data: data lines D6 down to D0 (left to right) |
 | **Pin check - Audio** | Shows pin check results for audio interface<br>- ALRC: audio left/right clock<br>- ASD: audio serial data<br>- ASC: audio serial clock |
 | **Re-sync VI pipeline**| Resets the video pipeline and resyncs input (i.e. video from N64) and output video<br>Might be useful in _frame locked mode_ if number of buffered scanlines does not stay constant, i.e. increase or decrease constantly |
-| **Lock menu (ctrl. test)**| Locks menu inputs for testing your controller.<br>Value of the controller test \[14\] is shown in the bottom line. |
+| **Lock menu (ctrl. test)**| Locks menu inputs for testing your controller.<br>Value of the controller test \[15\] is shown in the bottom line. |
 
-\[14\] Section [Work with the Debug-Info Page](https://github.com/borti4938/n64adv2_fw#work-with-the-debug-info-page) shows how to interpret those values
+\[15\] Section [Work with the Debug-Info Page](https://github.com/borti4938/n64adv2_fw#work-with-the-debug-info-page) shows how to interpret those values
 
 ### Default Configuration
 
