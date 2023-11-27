@@ -5,11 +5,11 @@
  version="1.0"
  fabric="QSYS">
  <!-- Format version 22.1 922 (Future versions may contain additional information.) -->
- <!-- 2023.11.26.18:38:21 -->
+ <!-- 2023.11.27.20:53:43 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1701020301</value>
+  <value>1701114823</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -36,7 +36,7 @@
  </parameter>
  <parameter name="AUTO_DEVICE">
   <type>java.lang.String</type>
-  <value>10M16SAE144C8G</value>
+  <value>10M25SAE144C8G</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -12138,7 +12138,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="AUTO_DEVICE">
    <type>java.lang.String</type>
-   <value>10M16SAE144C8G</value>
+   <value>10M25SAE144C8G</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -14203,7 +14203,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="PART_NAME">
    <type>java.lang.String</type>
-   <value>10M16SAE144C8G</value>
+   <value>10M25SAE144C8G</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -14222,7 +14222,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="DEVICE_ID">
    <type>java.lang.String</type>
-   <value>16</value>
+   <value>25</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>

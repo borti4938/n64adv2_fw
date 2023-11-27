@@ -289,13 +289,13 @@ static const char *vicfg_overlay __ufmdata_section__ =
 static const char *audcfg_header __ufmdata_section__ =
     "Audio-Processing";
 static const char *audcfg_overlay __ufmdata_section__ =
-    "\n* Filter Options:\n"
+    "\n* Filter options:\n"
     "  - Bypass filter:\n"
-    "* Output Settings:\n"
-    "  - Mute Audio:\n"
+    "* Output settings:\n"
+    "  - Mute audio:\n"
     "  - Swap L/R:\n"
     "  - Output gain:\n"
-    "* S/PDIF-Support:\n"
+    "* S/PDIF support:\n"
     "  - Enable:";
 
 static const char *misc_header __ufmdata_section__ =
@@ -306,9 +306,9 @@ static const char *misc_overlay __ufmdata_section__ =
     "  - VI-DeBlur:\n"
     "  - 16bit mode:\n"
     "* Reset masking:\n"
-    "* Menu-Variations:\n"
+    "* Menu variations:\n"
     "  - Swap R/G-LED:\n"
-    "  - Debug-Boot:\n"
+    "  - Boot to debug:\n"
     "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =
