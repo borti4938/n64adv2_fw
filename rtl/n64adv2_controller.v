@@ -112,6 +112,8 @@ input [ 2:0] PCB_ID_i;
 // start of rtl
 
 // misc stuff
+integer idx;
+
 wire SYS_CLK = SCLKs[1];
 wire CTRL_CLK = SCLKs[0];
 
@@ -120,22 +122,27 @@ wire CTRL_nRST = nSRSTs[0];
 
 
 // parameters
-localparam ST_WAIT4N64 = 2'b00; // wait for N64 sending request to controller
-localparam ST_N64_RD   = 2'b01; // N64 request sniffing
-localparam ST_CTRL_RD  = 2'b10; // controller response
+localparam ST_WAIT4N64  = 2'b00; // wait for N64 sending request to controller
+localparam ST_N64_RD    = 2'b01; // N64 request sniffing
+localparam ST_CTRL_RD   = 2'b10; // controller response
+localparam ST_GAMEID_RD = 2'b11; // N64 game id
+
+localparam VIRT_CTRL_NEGEDGE_WAIT_TH = 8'h20; // trigger a virtual negedge after 8us
 
 // wires
 
 wire        vd_wrctrl_w;
 wire [19:0] vd_wrdata_w;
 
-wire FallbackMode_resynced, FallbackMode_valid_resynced;
+wire FallbackMode_valid_resynced;
 wire [`PPU_State_Width-1:0] PPUState_resynced;
 wire ctrl_detected_resynced;
 wire OSD_VSync_resynced;
 
 wire new_ctrl_data_resynced;
 wire ctrl_data_tack, ctrl_data_tack_resynced;
+
+wire game_id_valid_resynced;
 
 wire nVSYNC_CPU_w;
 
@@ -145,12 +152,12 @@ wire [63:0] CHIP_ID_pre_w, CHIP_ID_w;
 wire [15:0] SysConfigSet3;                                // general structure of ConfigSet -> see vh/n64adv2_ppuconfig.vh
 wire [31:0] SysConfigSet2, SysConfigSet1 ,SysConfigSet0;  // general structure of ConfigSet -> see vh/n64adv2_ppuconfig.vh
 
-wire [2:0] hw_info_sel;
-wire [15:0] hw_info;
+wire [2:0] ext_info_sel;
+wire [31:0] ext_info;
 
 wire use_igr_resynced;
 
-wire ctrl_negedge, ctrl_posedge;
+wire ctrl_negedge_virt, ctrl_negedge_th, ctrl_negedge, ctrl_posedge;
 wire ctrl_bit;
 
 // registers
@@ -169,20 +176,29 @@ reg use_igr = 1'b0;
 
 reg [1:0] rd_state = 2'b0; // state machine
 
-reg [7:0] wait_cnt  = 8'h0; // counter for wait state (needs appr. 48us at CTRL_CLK = 4MHz clock to fill up from 0 to 255)
+reg last_ctrl_edge = 1'b0;
+reg [7:0] wait_cnt  = 8'h0; // counter for wait state (needs appr. 64us at CTRL_CLK = 4MHz clock to fill up from 0 to 255)
 reg [2:0] ctrl_hist = 3'h7;
 
 reg [7:0] ctrl_low_cnt = 8'h0;
 reg [31:0] serial_data[0:2];
 initial begin
-  serial_data[2] <= 32'h0;
-  serial_data[1] <= 32'h0;
   serial_data[0] <= 32'h0;
+  serial_data[1] <= 32'h0;
+  serial_data[2] <= 32'h0;
 end
-reg [ 4:0] ctrl_data_cnt    = 5'h0;
-reg [ 1:0] new_ctrl_data    = 2'b00;
+reg [ 6:0] ctrl_data_cnt = 7'd0;
+reg [ 1:0] new_ctrl_data = 2'b00;
 
 reg ctrl_detected = 1'b0;
+
+reg [79:0] game_id_buffer = 80'h0;
+reg [7:0] game_id[0:9];
+initial begin
+  for (idx = 0; idx < 10; idx = idx+1)
+    game_id[idx] <= 8'h0;
+end
+reg game_id_valid = 1'b0;
 
 reg initiate_nrst = 1'b0;
 reg       drv_rst =  1'b0;
@@ -232,8 +248,8 @@ register_sync #(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ctrl_detected,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],FallbackMode,FallbackMode_valid,new_ctrl_data[1],OSD_VSync}),
-  .reg_o({ctrl_detected_resynced,PPUState_resynced,FallbackMode_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
+  .reg_i({ctrl_detected,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],game_id_valid,FallbackMode_valid,new_ctrl_data[1],OSD_VSync}),
+  .reg_o({ctrl_detected_resynced,PPUState_resynced,game_id_valid_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
 );
 
 chip_id chip_id_u (
@@ -245,12 +261,12 @@ chip_id chip_id_u (
 
 assign nVSYNC_CPU_w = OSD_VSync_resynced;
 assign CHIP_ID_w = CHIP_ID_valid_w ? CHIP_ID_pre_w : 64'h0;
-assign hw_info = hw_info_sel == 3'b101 ? CHIP_ID_w[63:48] :
-                 hw_info_sel == 3'b100 ? CHIP_ID_w[47:32] :
-                 hw_info_sel == 3'b011 ? CHIP_ID_w[31:16] :
-                 hw_info_sel == 3'b010 ? CHIP_ID_w[15: 0] :
-                 hw_info_sel == 3'b001 ? pincheck_status_i :
-                                         {hdl_fw,1'b0,PCB_ID_i};
+assign ext_info = ext_info_sel == 3'b110 ? {     8'h00,     8'h00,game_id[0],game_id[1]} :
+                  ext_info_sel == 3'b101 ? {game_id[2],game_id[3],game_id[4],game_id[5]} :
+                  ext_info_sel == 3'b100 ? {game_id[6],game_id[7],game_id[8],game_id[9]} :
+                  ext_info_sel == 3'b011 ? CHIP_ID_w[63:32] :
+                  ext_info_sel == 3'b010 ? CHIP_ID_w[31: 0] :
+                                           {pincheck_status_i,1'b0,PCB_ID_i,hdl_fw};
 
 system_n64adv2 system_u (
   .clk_clk(SYS_CLK),
@@ -258,21 +274,19 @@ system_n64adv2 system_u (
   .i2c_scl_pad_io(I2C_SCL),
   .i2c_sda_pad_io(I2C_SDA),
   .interrupts_n_export(~Interrupt_i),
-  .sync_in_export({new_ctrl_data_resynced,nVSYNC_CPU_w}),
+  .sync_in_export({game_id_valid_resynced,new_ctrl_data_resynced,nVSYNC_CPU_w}),
   .vd_wrctrl_export(vd_wrctrl_w),
   .vd_wrdata_export(vd_wrdata_w),
   .ctrl_data_in_export(serial_data[2]),
   .n64adv_state_in_export({ctrl_detected_resynced,PPUState_resynced}),
-  .fallback_in_export({FallbackMode_resynced,FallbackMode_valid_resynced}),
+  .fallback_in_export({FallbackMode,FallbackMode_valid_resynced}),
   .cfg_set3_out_export(SysConfigSet3),
   .cfg_set2_out_export(SysConfigSet2),
   .cfg_set1_out_export(SysConfigSet1),
   .cfg_set0_out_export(SysConfigSet0),
-  .info_sync_out_export({HDMI_cfg_done_o,hw_info_sel,run_pincheck_o,ctrl_data_tack}),
+  .info_sync_out_export({HDMI_cfg_done_o,ext_info_sel,run_pincheck_o,ctrl_data_tack}),
   .led_out_export(LED_o),
-  .hw_info_in_export(hw_info)//,
-//  .test_pio_0_export(test_wire_0),
-//  .test_pio_1_export(test_wire_1)
+  .ext_info_in_export(ext_info)
 );
 
 always @(*) begin
@@ -301,7 +315,9 @@ register_sync #(
   .reg_o({use_igr_resynced,ctrl_data_tack_resynced})
 );
 
-assign ctrl_negedge =  ctrl_hist[2] & !ctrl_hist[1];
+assign ctrl_negedge_virt = last_ctrl_edge & (wait_cnt == VIRT_CTRL_NEGEDGE_WAIT_TH);
+assign ctrl_negedge_th   =  ctrl_negedge & (wait_cnt < VIRT_CTRL_NEGEDGE_WAIT_TH);
+assign ctrl_negedge      =  ctrl_hist[2] & !ctrl_hist[1];
 assign ctrl_posedge = !ctrl_hist[2] &  ctrl_hist[1];
 
 assign ctrl_bit = ctrl_low_cnt < wait_cnt;
@@ -318,16 +334,21 @@ assign ctrl_bit = ctrl_low_cnt < wait_cnt;
 always @(posedge CTRL_CLK or negedge CTRL_nRST)
   if (!CTRL_nRST) begin
     rd_state       <= ST_WAIT4N64;
-    wait_cnt        <=  8'h0;
-    ctrl_hist       <=  3'h7;
-    ctrl_low_cnt    <=  8'h0;
-    serial_data[2]  <= 32'h0;
-    serial_data[1]  <= 32'h0;
-    serial_data[0]  <= 32'h0;
-    ctrl_data_cnt   <=  5'h0;
-    new_ctrl_data   <=  2'b0;
-    ctrl_detected   <=  1'b0;
-    initiate_nrst   <=  1'b0;
+    last_ctrl_edge <= 1'b0;
+    wait_cnt       <=  8'h0;
+    ctrl_hist      <=  3'h7;
+    ctrl_low_cnt   <=  8'h0;
+    serial_data[2] <= 32'h0;
+    serial_data[1] <= 32'h0;
+    serial_data[0] <= 32'h0;
+    game_id_buffer <= 80'h0;
+    for (idx = 0; idx < 10; idx = idx+1)
+      game_id[idx] <= 8'h0;
+    game_id_valid  <=  1'b0;
+    ctrl_data_cnt  <=  7'd0;
+    new_ctrl_data  <=  2'b0;
+    ctrl_detected  <=  1'b0;
+    initiate_nrst  <=  1'b0;
     ctrl_data_tack_resynced_L <= 2'b00;
   end else begin
     case (rd_state)
@@ -335,36 +356,77 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
         if (&wait_cnt & ctrl_negedge) begin // waiting duration ends (exit wait state only if CTRL was high for a certain duration)
           rd_state       <= ST_N64_RD;
           serial_data[0] <= 32'h0;
-          ctrl_data_cnt  <=  5'h0;
+          ctrl_data_cnt  <=  7'd0;
         end
       ST_N64_RD: begin
-        if (ctrl_posedge)       // sample data part 1
+        if (ctrl_posedge) begin   // sample data part 1
           ctrl_low_cnt <= wait_cnt;
-        if (ctrl_negedge) begin // sample data part 2
-          if (!ctrl_data_cnt[3]) begin  // eight bits not read yet
-            serial_data[0][29:22] <= {ctrl_bit,serial_data[0][29:23]};
-            ctrl_data_cnt         <=  ctrl_data_cnt + 1'b1;
-          end else if (serial_data[0][29:22] == 8'b10000000) begin // check command
-            rd_state       <= ST_CTRL_RD;
+        end
+        if (ctrl_negedge_virt | ctrl_negedge_th) begin // sample data part 2
+          if (!ctrl_data_cnt[3]) begin  // eight bits not read yet and it was not a negedge
+            serial_data[0][ctrl_data_cnt[2:0]] <= ctrl_bit;
+            ctrl_data_cnt <=  ctrl_data_cnt + 7'd1;
+          end else if (serial_data[0][7:0] == 8'h80) begin // check command for controller reading (reversed bit order to 0x01)
+            rd_state <= ST_CTRL_RD;
             serial_data[0] <= 32'h0;
-            ctrl_data_cnt  <=  5'h0;
+            ctrl_data_cnt <=  7'd0;
+          end else if (serial_data[0][7:0] == 8'hB8) begin // check command for game id reading (reversed bit order to 0x1D)
+            rd_state <= ST_GAMEID_RD;
+            game_id_buffer[0] <= ctrl_bit;  // first bit for game id already read
+            game_id_valid <= 1'b0;
+            ctrl_data_cnt <= 7'd1;
           end else begin
             rd_state <= ST_WAIT4N64;
           end
         end
       end
       ST_CTRL_RD: begin
-        if (ctrl_posedge)       // sample data part 1
+        if (ctrl_posedge) begin   // sample data part 1
           ctrl_low_cnt <= wait_cnt;
-        if (ctrl_negedge) begin // sample data part 2
-          if (~&ctrl_data_cnt) begin  // still reading
-            serial_data[0] <= {ctrl_bit,serial_data[0][31:1]};
-            ctrl_data_cnt  <=  ctrl_data_cnt + 1'b1;
+        end
+        if (ctrl_negedge_virt | ctrl_negedge_th) begin // sample data part 2
+          if (!ctrl_data_cnt[5]) begin  // 32 bits not read yet
+            serial_data[0][ctrl_data_cnt] <= ctrl_bit;
+            ctrl_data_cnt  <=  ctrl_data_cnt + 7'd1;
           end else begin  // thirtytwo bits read
-            rd_state         <= ST_WAIT4N64;
-            serial_data[1]   <= {ctrl_bit,serial_data[0][31:1]};
-            new_ctrl_data[0] <= 1'b1;  // signalling new controller data available
-            ctrl_detected    <= 1'b1;
+            rd_state <= ST_WAIT4N64;
+            if (ctrl_bit) begin // stop bit ok
+              serial_data[1] <= serial_data[0];
+              new_ctrl_data[0] <= 1'b1;  // signalling new controller data available
+              ctrl_detected <= 1'b1;
+            end else begin
+              ctrl_detected <= 1'b0;
+            end
+          end
+        end
+      end
+      ST_GAMEID_RD: begin
+        if (ctrl_posedge) begin   // sample data part 1
+          ctrl_low_cnt <= wait_cnt;
+        end
+        if (ctrl_negedge_virt | ctrl_negedge_th) begin // sample data part 2
+          if (ctrl_data_cnt < 7'd80) begin  // still reading
+            game_id_buffer[ctrl_data_cnt] <= ctrl_bit;
+            ctrl_data_cnt  <=  ctrl_data_cnt + 7'd1;
+          end else begin  // eighty bits read
+            rd_state <= ST_WAIT4N64;
+            if (ctrl_bit) begin // stop bit ok
+              for (idx = 0; idx < 8; idx = idx + 1) begin
+                game_id[0][idx] <= game_id_buffer[ 7 - idx];
+                game_id[1][idx] <= game_id_buffer[15 - idx];
+                game_id[2][idx] <= game_id_buffer[23 - idx];
+                game_id[3][idx] <= game_id_buffer[31 - idx];
+                game_id[4][idx] <= game_id_buffer[39 - idx];
+                game_id[5][idx] <= game_id_buffer[47 - idx];
+                game_id[6][idx] <= game_id_buffer[55 - idx];
+                game_id[7][idx] <= game_id_buffer[63 - idx];
+                game_id[8][idx] <= game_id_buffer[71 - idx];
+                game_id[9][idx] <= game_id_buffer[79 - idx];
+              end
+              game_id_valid <= |game_id_buffer;
+            end else begin
+              game_id_valid <= 1'b0;
+            end
           end
         end
       end
@@ -372,6 +434,11 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
         rd_state <= ST_WAIT4N64;
       end
     endcase
+    
+    if (ctrl_posedge)
+      last_ctrl_edge <= 1'b1;
+    else if (ctrl_negedge)
+      last_ctrl_edge <= 1'b0;
 
     if (ctrl_negedge | ctrl_posedge) begin // counter reset
       wait_cnt <= 8'h0;

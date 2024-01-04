@@ -49,21 +49,21 @@
 
 #define HOLD_CNT_REP	2
 
-#define SET_HWINFO_SEL(x) (info_sync_val = (info_sync_val & HW_INFO_CLR_MASK) | ((x & 0x7) << HW_INFO_SEL_OFFSET))
+#define SET_EXTINFO_SEL(x) (info_sync_val = (info_sync_val & EXT_INFO_CLR_MASK) | ((x & 0x7) << EXT_INFO_SEL_OFFSET))
 
-#define HDL_FW_OFFSET     4
-#define GET_HDL_FW_MASK   0x0FFF0
-#define PCB_REV_OFFSET    0
-#define GET_PCB_REV_MASK  0x00003
+#define PIN_STATE_OFFSET    16
+#define GET_PIN_STATE_MASK  0xFFFF0000
+#define GET_HW_VERSION_MASK 0x00007FFF
 
 typedef enum {
-  HDL_FW_N_PCB_ID = 0,
-  HW_PINCHECK_STATUS,
-  HWINFO_CHIP_ID_0,
-  HWINFO_CHIP_ID_1,
-  HWINFO_CHIP_ID_2,
-  HWINFO_CHIP_ID_3,
-} hw_info_sel_t;
+  HW_INFO = 0,
+  UNUSED,
+  CHIP_ID_0,
+  CHIP_ID_1,
+  GAME_ID_0,
+  GAME_ID_1,
+  GAME_ID_2
+} ext_info_sel_t;
 
 bool_t init_phase;
 
@@ -75,6 +75,8 @@ cfg_pal_pattern_t pal_pattern;
 vmode_t palmode;
 scanmode_t scanmode;
 bool_t hor_hires;
+
+alt_u8 game_id[10];
 
 
 void periphals_clr_ready_bit() {
@@ -96,9 +98,9 @@ void run_pin_state(bool_t enable)
 
 alt_u16 get_pin_state()
 {
-  SET_HWINFO_SEL(HW_PINCHECK_STATUS);
+  SET_EXTINFO_SEL(HW_INFO);
   IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-  return IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE);
+  return (IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE) >> PIN_STATE_OFFSET);
 }
 
 void update_n64adv_state()
@@ -284,12 +286,14 @@ int resync_vi_pipeline()
   return 0;
 }
 
+bool_t is_game_id_valid()
 {
+  return ((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & GAME_ID_VALID_IN_MASK) == GAME_ID_VALID_IN_MASK);
 };
 
 bool_t new_ctrl_available()
 {
-  return (IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NEW_CTRL_DATA_IN_MASK);
+  return ((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NEW_CTRL_DATA_IN_MASK) == NEW_CTRL_DATA_IN_MASK);
 };
 
 bool_t get_fallback_mode()
@@ -302,37 +306,50 @@ bool_t is_fallback_mode_valid()
   return (IORD_ALTERA_AVALON_PIO_DATA(FALLBACK_IN_BASE) & FALLBACKMODE_VALID_GETMASK);
 };
 
-alt_u8 get_pcb_version()
-{
-  SET_HWINFO_SEL(HDL_FW_N_PCB_ID);
-  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-  return (IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE) & GET_PCB_REV_MASK);
-};
-
 alt_u32 get_chip_id(cfg_offon_t msb_select)
 {
-  alt_u32 chip_id_xsb = 0;
   if (msb_select) {
-      SET_HWINFO_SEL(HWINFO_CHIP_ID_2);
+      SET_EXTINFO_SEL(CHIP_ID_1);
       IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-      chip_id_xsb |= IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE);
-      SET_HWINFO_SEL(HWINFO_CHIP_ID_3);
-      IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-      chip_id_xsb |= (IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE) << 16);
+      return IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
   } else {
-      SET_HWINFO_SEL(HWINFO_CHIP_ID_0);
+      SET_EXTINFO_SEL(CHIP_ID_0);
       IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-      chip_id_xsb |= IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE);
-      SET_HWINFO_SEL(HWINFO_CHIP_ID_1);
-      IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-      chip_id_xsb |= (IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE) << 16);
+      return IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
   }
-  return chip_id_xsb;
-}
+};
 
-alt_u16 get_hdl_version()
+void get_game_id()
 {
-  SET_HWINFO_SEL(HDL_FW_N_PCB_ID);
+  alt_u32 buf;
+
+  SET_EXTINFO_SEL(GAME_ID_2);
   IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-  return ((IORD_ALTERA_AVALON_PIO_DATA(HW_INFO_IN_BASE) & GET_HDL_FW_MASK) >> HDL_FW_OFFSET);
+  buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+  game_id[0] = buf >> 8;
+  game_id[1] = buf;
+
+  SET_EXTINFO_SEL(GAME_ID_1);
+  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+  buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+  game_id[2] = buf >> 24;
+  game_id[3] = buf >> 16;
+  game_id[4] = buf >>  8;
+  game_id[5] = buf;
+
+  SET_EXTINFO_SEL(GAME_ID_0);
+  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+  buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+  game_id[6] = buf >> 24;
+  game_id[7] = buf >> 16;
+  game_id[8] = buf >>  8;
+  game_id[9] = buf;
+
+};
+
+alt_u16 get_hw_version()
+{
+  SET_EXTINFO_SEL(HW_INFO);
+  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+  return (IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE) & GET_HW_VERSION_MASK);
 };

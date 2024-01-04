@@ -212,6 +212,7 @@ int main()
 
   /* Event loop never exits. */
   while (1) {
+    if (is_game_id_valid()) get_game_id();
     if (new_ctrl_available() && !ctrl_ignore) {
       update_ctrl_data();
       command = ctrl_data_to_cmd(0);

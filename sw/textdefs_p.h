@@ -497,6 +497,7 @@ const alt_u8 Nok_Ok_color[3] = {FONTCOLOR_RED,FONTCOLOR_GREEN,FONTCOLOR_YELLOW};
 const alt_u8 Nok_Ok[2] = {CHECKBOX_TICK,HEART};
 const char *ClkSrc[]   __ufmdata_section__ = {"27Mhz","N64"};
 
+const char *NoGameIDDetected  __ufmdata_section__ = "(No game id detected)";
 const char *NoCtrlDetected  __ufmdata_section__ = "No controller detected";
 const char *NoVideoDetected __ufmdata_section__ = "No video input detected";
 

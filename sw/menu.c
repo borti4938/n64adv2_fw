@@ -371,6 +371,8 @@ static inline bool_t is_vicfg_h2v_sl_are_linked ()
   {  return (bool_t) cfg_get_value(&sl_link_h2v,0); }
 static inline bool_t is_vicfg_screen (menu_t *menu)
   {  return (menu == &vicfg_screen); }
+static inline bool_t is_rwdata_screen (menu_t *menu)
+  {  return (menu == &rwdata_screen); }
 #ifndef DEBUG
   static inline bool_t is_about_screen (menu_t *menu)
     {  return (menu == &about_screen); }
@@ -471,21 +473,39 @@ void print_cr_info() {
   vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,copyright_note);
 }
 
-void print_fw_version()
+//void print_fw_info() {
+//  vd_clear_info_area(COPYRIGHT_H_OFFSET,VD_WIDTH-1,0,0);
+//  vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,copyright_note);
+//}
+
+void print_hw_version()
 {
-  alt_u16 ext_fw = (alt_u16) get_pcb_version();
-  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET,FONTCOLOR_WHITE,pcb_rev[ext_fw]);
+  alt_u16 ext_fw = (alt_u16) get_hw_version();
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET,FONTCOLOR_WHITE,pcb_rev[(ext_fw & GET_PCB_REV_MASK) >> PCB_REV_OFFSET]);
 
   sprintf(szText,"0x%08x%08x",(uint) get_chip_id(1),(uint) get_chip_id(0));
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,FONTCOLOR_WHITE,&szText[0]);
 
-  ext_fw = get_hdl_version();
+  ext_fw = (ext_fw & GET_HDL_FW_MASK) >> HDL_FW_OFFSET;
   sprintf(szText,"%1d.%02d",((ext_fw & HDL_FW_GETMAIN_MASK) >> HDL_FW_MAIN_OFFSET),
                             ((ext_fw & HDL_FW_GETSUB_MASK) >> HDL_FW_SUB_OFFSET));
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+2,FONTCOLOR_WHITE,&szText[0]);
 
   sprintf(szText,"%1d.%02d",SW_FW_MAIN,SW_FW_SUB);
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+3,FONTCOLOR_WHITE,&szText[0]);
+}
+
+void print_game_id()
+{
+  if (is_game_id_valid()) {
+    sprintf(szText,"Game ID: %02x%02x%02x%02x-%02x%02x%02x%02x-%02x:%02x",
+            game_id[0],game_id[1],game_id[2],game_id[3],
+            game_id[4],game_id[5],game_id[6],game_id[7],
+            game_id[8],game_id[9]);
+    vd_print_string(VD_TEXT,16,VD_TXT_HEIGHT-1,FONTCOLOR_WHITE,&szText[0]);
+  } else {
+    vd_print_string(VD_TEXT,27,VD_TXT_HEIGHT-1,FONTCOLOR_GREY,NoGameIDDetected);
+  }
 }
 
 void update_vmode_menu()
@@ -722,9 +742,10 @@ void print_overlay(menu_t* current_menu)
   if (current_menu->header) vd_wr_hdr(FONTCOLOR_DARKORANGE,*current_menu->header);
   vd_print_string(VD_TEXT,current_menu->body.hoffset,0,FONTCOLOR_WHITE,*current_menu->body.text);
 
+  if (is_rwdata_screen(current_menu)) print_game_id();
 
   #ifndef DEBUG
-    if (is_about_screen(current_menu)) print_fw_version();
+    if (is_about_screen(current_menu)) print_hw_version();
   #endif
 }
 

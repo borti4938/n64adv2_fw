@@ -174,23 +174,29 @@
 #define FALLBACKMODE_GETMASK        (1<<FALLBACKMODE_OFFSET)
 #define FALLBACKMODE_VALID_GETMASK  (1<<FALLBACKMODE_VALID_OFFSET)
 
+#define GAME_ID_VALID_IN_MASK       0x04
 #define NEW_CTRL_DATA_IN_MASK       0x02
 #define NVSYNC_IN_MASK              0x01
 
 #define PERIPHALS_CFG_RDY_OFFSET     5
-#define HW_INFO_SEL_OFFSET           2
+#define EXT_INFO_SEL_OFFSET          2
 #define RUN_PINCHECK_OFFSET          1
 #define CTRL_TACK_BIT_OFFSET         0
 
 #define SYNC_INFO_OUT_ALL_MASK      0x3F
 #define PERIPHALS_CFG_RDY_SET_MASK  (1 << PERIPHALS_CFG_RDY_OFFSET)
 #define PERIPHALS_CFG_RDY_CLR_MASK  (~PERIPHALS_CFG_RDY_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
-#define HW_INFO_GET_MASK            (0x7 << HW_INFO_SEL_OFFSET)
-#define HW_INFO_CLR_MASK            (~HW_INFO_GET_MASK & SYNC_INFO_OUT_ALL_MASK)
+#define EXT_INFO_GET_MASK           (0x7 << EXT_INFO_SEL_OFFSET)
+#define EXT_INFO_CLR_MASK           (~EXT_INFO_GET_MASK & SYNC_INFO_OUT_ALL_MASK)
 #define RUN_PINCHECK_SET_MASK       (1 << RUN_PINCHECK_OFFSET)
 #define RUN_PINCHECK_CLR_MASK       (~RUN_PINCHECK_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
 #define CTRL_TACK_BIT_SET_MASK      (1 << CTRL_TACK_BIT_OFFSET)
 #define CTRL_TACK_BIT_CLR_MASK      (~CTRL_TACK_BIT_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
+
+#define PCB_REV_OFFSET      12
+#define GET_PCB_REV_MASK    0x3000
+#define HDL_FW_OFFSET       0
+#define GET_HDL_FW_MASK     0x0FFF
 
 #define HDL_FW_MAIN_OFFSET  8
 #define HDL_FW_SUB_OFFSET   0
@@ -235,6 +241,8 @@ extern vmode_t palmode;
 extern scanmode_t scanmode;
 extern bool_t hor_hires;
 
+extern alt_u8 game_id[10];
+
 void periphals_clr_ready_bit(void);
 void periphals_set_ready_bit(void);
 void update_n64adv_state(void);
@@ -244,11 +252,12 @@ void update_ctrl_data(void);
 cmd_t ctrl_data_to_cmd(bool_t no_fast_skip);
 void loop_sync(bool_t with_escape);
 int resync_vi_pipeline(void);
+bool_t is_game_id_valid(void);
 bool_t new_ctrl_available(void);
 bool_t get_fallback_mode(void);
 bool_t is_fallback_mode_valid(void);
-alt_u8 get_pcb_version(void);
+void get_game_id(void);
 alt_u32 get_chip_id(cfg_offon_t msb_select);
-alt_u16 get_hdl_version(void);
+alt_u16 get_hw_version(void);
 
 #endif /* N64_H_ */
