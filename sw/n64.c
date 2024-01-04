@@ -247,6 +247,32 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
   return CMD_NON;
 }
 
+bool_t get_vsync_cpu()
+{
+  return (IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NVSYNC_IN_MASK);
+};
+
+void loop_sync(bool_t with_escape) {
+  alt_u8 loop_delay_cnt;
+
+  loop_delay_cnt = 9;
+  while(!get_vsync_cpu()){  /* wait for nVSYNC_CPU goes high (active OSD) */
+    if (with_escape) {
+      usleep(WAIT_2MS);
+      if (loop_delay_cnt == 0) break; // escape after 18ms
+      loop_delay_cnt--;
+    };
+  };
+  loop_delay_cnt = 3;
+  while( get_vsync_cpu()){  /* wait for nVSYNC_CPU goes low  (inactive OSD) */
+    if (with_escape) {
+      usleep(WAIT_500US);
+      if (loop_delay_cnt == 0) break; // escape after 1.5ms
+      loop_delay_cnt--;
+    }
+  };
+}
+
 int resync_vi_pipeline()
 {
   if (!confirmation_routine(0)) return -CFG_RESYNC_ABORT; // does not return ok
@@ -258,9 +284,7 @@ int resync_vi_pipeline()
   return 0;
 }
 
-bool_t get_vsync_cpu()
 {
-  return (IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NVSYNC_IN_MASK);
 };
 
 bool_t new_ctrl_available()

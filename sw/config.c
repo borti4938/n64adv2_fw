@@ -320,8 +320,7 @@ bool_t confirmation_routine(bool_t question_type)
   }
 
   while(1) {
-    while(!get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes high */
-    while( get_vsync_cpu()){};  /* wait for nVSYNC_CPU goes low  */
+    loop_sync(0);
 
     if ( new_ctrl_available()) {
       update_ctrl_data();

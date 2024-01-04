@@ -43,12 +43,6 @@
 #include "led.h"
 
 
-#define CTRL_IGNORE_FRAMES 10
-
-#define WAIT_2MS    2000
-#define WAIT_500US  500
-
-
 typedef struct {
   bool_t si5356_i2c_up;
   bool_t si5356_locked;
@@ -125,27 +119,6 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 
   if (palmode_tmp) return (PAL_TO_288 + linex_setting);
   else return (NTSC_TO_240 + linex_setting);
-}
-
-void loop_sync(bool_t with_escape) {
-  alt_u8 loop_delay_cnt;
-
-  loop_delay_cnt = 9;
-  while(!get_vsync_cpu()){  /* wait for nVSYNC_CPU goes high (active OSD) */
-    if (with_escape) {
-      usleep(WAIT_2MS);
-      if (loop_delay_cnt == 0) break; // escape after 18ms
-      loop_delay_cnt--;
-    };
-  };
-  loop_delay_cnt = 3;
-  while( get_vsync_cpu()){  /* wait for nVSYNC_CPU goes low  (inactive OSD) */
-    if (with_escape) {
-      usleep(WAIT_500US);
-      if (loop_delay_cnt == 0) break; // escape after 1.5ms
-      loop_delay_cnt--;
-    }
-  };
 }
 
 int main()
@@ -414,7 +387,6 @@ int main()
           i2c_devs_ok = FALSE;
           periphal_state.adv7513_hdmi_up = init_adv7513();
       } else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
-//      } else if (!ADV_MONITOR_SENSE_STATE()) {
         i2c_devs_ok = FALSE;
         periphal_state.adv7513_hdmi_up = FALSE;
       } else if ((palmode_pre != palmode) || (todo == NEW_CONF_VALUE)) {

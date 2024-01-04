@@ -198,6 +198,12 @@
   #define HDL_FW_GETMAIN_MASK (0xF << HDL_FW_MAIN_OFFSET)
   #define HDL_FW_GETSUB_MASK  (0x0FF << HDL_FW_SUB_OFFSET)
 
+#define CTRL_IGNORE_FRAMES 10
+
+#define WAIT_2MS    2000
+#define WAIT_500US  500
+
+
 typedef enum {
   CMD_NON = 0,
   CMD_OPEN_MENU,
@@ -236,8 +242,8 @@ void run_pin_state(bool_t enable);
 alt_u16 get_pin_state(void);
 void update_ctrl_data(void);
 cmd_t ctrl_data_to_cmd(bool_t no_fast_skip);
+void loop_sync(bool_t with_escape);
 int resync_vi_pipeline(void);
-bool_t get_vsync_cpu(void);
 bool_t new_ctrl_available(void);
 bool_t get_fallback_mode(void);
 bool_t is_fallback_mode_valid(void);
