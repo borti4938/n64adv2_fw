@@ -206,6 +206,7 @@ int main()
 
   alt_u8 linex_word_pre;
   bool_t changed_linex_setting = FALSE;
+  bool_t undo_changed_linex_setting = FALSE;
 
   message_cnt = 0;
 
@@ -389,7 +390,7 @@ int main()
       } else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
         i2c_devs_ok = FALSE;
         periphal_state.adv7513_hdmi_up = FALSE;
-      } else if ((palmode_pre != palmode) || (todo == NEW_CONF_VALUE)) {
+      } else if ((palmode_pre != palmode) || (undo_changed_linex_setting) || (todo == NEW_CONF_VALUE)) {
         i2c_devs_ok = FALSE;
         set_cfg_adv7513();
       }
@@ -422,11 +423,14 @@ int main()
       }
     }
 
+    if (undo_changed_linex_setting) undo_changed_linex_setting = FALSE;
+
     if (changed_linex_setting) {  // important to check this flag in that order
                                   // as program cycles 1x through menu after change to set also the scaling correctly
       if (!confirmation_routine(1)) {  // change was not ok
         print_confirm_info(CONFIRM_ABORTED-CONFIRM_OK);
         linex_words[vmode_n64adv].config_val = linex_word_pre;
+        undo_changed_linex_setting = TRUE;
         message_cnt = CONFIRM_SHOW_CNT_LONG;
       } else {
         print_confirm_info(CONFIRM_OK-CONFIRM_OK);
