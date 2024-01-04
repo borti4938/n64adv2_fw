@@ -274,7 +274,6 @@ int main()
           break;
         case NEW_OVERLAY:
           print_overlay(menu);
-          print_selection_arrow(menu);
           message_cnt = 0;
           /* no break */
         case NEW_SELECTION:
