@@ -350,7 +350,7 @@ register_sync #(
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({cfg_vpos_1st_rdline_w       ,ConfigSet_w[`deinterlacing_mode_slice]}),
+  .reg_i({cfg_vpos_1st_rdline_w       ,cfg_deinterlacing_mode_pre}),
   .reg_o({cfg_vpos_1st_rdline_resynced,cfg_deinterlacing_mode_dramclk_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
