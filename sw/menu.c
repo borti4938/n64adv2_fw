@@ -374,8 +374,6 @@ static inline bool_t is_vicfg_screen (menu_t *menu)
 #ifndef DEBUG
   static inline bool_t is_about_screen (menu_t *menu)
     {  return (menu == &about_screen); }
-//  static inline bool_t is_license_screen (menu_t *menu)
-//    {  return (menu == &license_screen); }
 #endif
 
 

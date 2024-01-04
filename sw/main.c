@@ -221,9 +221,9 @@ int main()
 
     vmode_n64adv = palmode;
     update_vmode_menu();
-    scaling_n64adv = get_target_scaler(palmode);
+    scaling_n64adv = get_target_scaler(vmode_n64adv);
     update_scaling_menu();
-    if (palmode)
+    if (vmode_n64adv)
       timing_n64adv = scanmode ? PAL_INTERLACED : PAL_PROGRESSIVE;
     else
       timing_n64adv = scanmode ? NTSC_INTERLACED : NTSC_PROGRESSIVE;
@@ -232,7 +232,7 @@ int main()
     else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
 
     if (!changed_linex_setting) // important to check this flag as program cycles 1x through menu after change to set also the scaling correctly
-      linex_word_pre = linex_words[palmode].config_val;
+      linex_word_pre = linex_words[vmode_n64adv].config_val;
 
     if(cfg_get_value(&show_osd,0) && !keep_vout_rst) {
       cfg_load_linex_word(vmode_menu);
@@ -426,7 +426,7 @@ int main()
                                   // as program cycles 1x through menu after change to set also the scaling correctly
       if (!confirmation_routine(1)) {  // change was not ok
         print_confirm_info(CONFIRM_ABORTED-CONFIRM_OK);
-        linex_words[palmode].config_val = linex_word_pre;
+        linex_words[vmode_n64adv].config_val = linex_word_pre;
         message_cnt = CONFIRM_SHOW_CNT_LONG;
       } else {
         print_confirm_info(CONFIRM_OK-CONFIRM_OK);
@@ -434,7 +434,7 @@ int main()
       }
       changed_linex_setting = FALSE;
     } else if (menu == &vires_screen) {
-      changed_linex_setting = (linex_word_pre != linex_words[palmode].config_val);
+      changed_linex_setting = (linex_word_pre != linex_words[vmode_n64adv].config_val);
     }
 
     loop_sync(keep_vout_rst);
