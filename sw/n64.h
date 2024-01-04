@@ -252,11 +252,10 @@ void update_ctrl_data(void);
 cmd_t ctrl_data_to_cmd(bool_t no_fast_skip);
 void loop_sync(bool_t with_escape);
 int resync_vi_pipeline(void);
-bool_t is_game_id_valid(void);
 bool_t new_ctrl_available(void);
 bool_t get_fallback_mode(void);
 bool_t is_fallback_mode_valid(void);
-void get_game_id(void);
+bool_t get_game_id(void);
 alt_u32 get_chip_id(cfg_offon_t msb_select);
 alt_u16 get_hw_version(void);
 

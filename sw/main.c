@@ -208,11 +208,13 @@ int main()
   bool_t changed_linex_setting = FALSE;
   bool_t undo_changed_linex_setting = FALSE;
 
+  bool_t game_id_txed = FALSE;
+
   message_cnt = 0;
 
   /* Event loop never exits. */
   while (1) {
-    if (is_game_id_valid()) get_game_id();
+
     if (new_ctrl_available() && !ctrl_ignore) {
       update_ctrl_data();
       command = ctrl_data_to_cmd(0);
@@ -394,6 +396,13 @@ int main()
       } else if ((palmode_pre != palmode) || (undo_changed_linex_setting) || (todo == NEW_CONF_VALUE)) {
         i2c_devs_ok = FALSE;
         set_cfg_adv7513();
+      }
+      if (get_game_id()) {
+        if (!game_id_txed) set_vsif(1);
+        game_id_txed = TRUE;
+      } else {
+        set_vsif(0);
+        game_id_txed = FALSE;
       }
     }
 

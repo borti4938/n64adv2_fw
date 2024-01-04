@@ -45,6 +45,58 @@
 #define adv7513_readreg(regaddr)          i2c_readreg(ADV7513_I2C_BASE,regaddr)
 #define adv7513_writereg(regaddr,data)    i2c_writereg(ADV7513_I2C_BASE,regaddr,data)
 
+#define adv7513_packetmem_reg_bitset(regaddr,bit)   i2c_reg_bitset(ADV7513_PACKETMEM_I2C_BASE,regaddr,bit)
+#define adv7513_packetmem_reg_bitclear(regaddr,bit) i2c_reg_bitclear(ADV7513_PACKETMEM_I2C_BASE,regaddr,bit)
+#define adv7513_packetmem_readreg(regaddr)          i2c_readreg(ADV7513_PACKETMEM_I2C_BASE,regaddr)
+#define adv7513_packetmem_writereg(regaddr,data)    i2c_writereg(ADV7513_PACKETMEM_I2C_BASE,regaddr,data)
+
+#define IEEE_OUI_MIMIC_0  0x55
+#define IEEE_OUI_MIMIC_1  0x55
+#define IEEE_OUI_MIMIC_2  0x55
+
+
+void set_vsif(bool_t enable) {
+  if (!enable) {
+    adv7513_reg_bitclear(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPARE_PACKET1_ENABLE_BIT);
+    return;
+  }
+
+  adv7513_reg_bitset(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPARE_PACKET1_ENABLE_BIT);
+
+  // format as suggested by PixelFx: https://docs.pixelfx.co/VSIF-metadata.html
+  alt_u8 idx = 0;
+  alt_u8 crc = 0;
+
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1_UPDATE,ADV7513_SPARE_PACKET_UPDATE_START_VAL);
+
+  // write header
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(0),0x81);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(1),0x01);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(2),0x1B);
+  // write IEEE OUI
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(4),IEEE_OUI_MIMIC_2);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(5),IEEE_OUI_MIMIC_1);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(6),IEEE_OUI_MIMIC_0);
+  // write Vendor Type and Game-ID type
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(7),0x01);  // vendor
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(8),0x03);  // N64
+
+  crc = 0x81 + 0x01 + 0x1B +
+      IEEE_OUI_MIMIC_2 + IEEE_OUI_MIMIC_1 + IEEE_OUI_MIMIC_0 +
+      0x01 + 0x03; // CRC up to this point
+  for (idx = 0; idx < 10; idx++) {  // write 10 bytes for the game id
+    adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(9+idx),game_id[idx]);
+    crc += game_id[idx];
+  }
+  // ensure that remaining bytes stay zero
+//  for (idx = 19; idx < SPARE_PACKET_MAX_SIZE; idx++)
+//    adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(idx),0x00);
+  // calculate final CRC and write CRC
+  crc = ~crc + 0x01;
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(3),crc);
+
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1_UPDATE,ADV7513_SPARE_PACKET_UPDATE_DONE_VAL);
+}
 
 void set_color_format(color_format_t color_format) {
   adv7513_reg_bitset(ADV7513_REG_CSC_UPDATE,ADV7513_CSC_UPDATE_BIT);

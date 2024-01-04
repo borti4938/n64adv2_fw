@@ -293,11 +293,6 @@ int resync_vi_pipeline()
   return 0;
 }
 
-bool_t is_game_id_valid()
-{
-  return ((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & GAME_ID_VALID_IN_MASK) == GAME_ID_VALID_IN_MASK);
-};
-
 bool_t new_ctrl_available()
 {
   return ((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NEW_CTRL_DATA_IN_MASK) == NEW_CTRL_DATA_IN_MASK);
@@ -326,32 +321,39 @@ alt_u32 get_chip_id(cfg_offon_t msb_select)
   }
 };
 
-void get_game_id()
+bool_t get_game_id()
 {
+  static bool_t game_id_valid = FALSE;
+  alt_u8 idx;
   alt_u32 buf;
 
-  SET_EXTINFO_SEL(GAME_ID_2);
-  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-  buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
-  game_id[0] = buf >> 8;
-  game_id[1] = buf;
+  if (!((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & GAME_ID_VALID_IN_MASK) == GAME_ID_VALID_IN_MASK)) {  // game-id in hw not valid
+    for (idx = 0; idx < 10; idx++)
+      game_id[idx] = 0xFF;
+    game_id_valid = FALSE;
+    return game_id_valid;
+  } else if (!game_id_valid) {  // only capture game-id if not already captured / valid
+    SET_EXTINFO_SEL(GAME_ID_2);
+    IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+    buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+    for (idx = 0; idx < 2; idx++)
+      game_id[idx] = buf >> 8*(1-idx);
 
-  SET_EXTINFO_SEL(GAME_ID_1);
-  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-  buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
-  game_id[2] = buf >> 24;
-  game_id[3] = buf >> 16;
-  game_id[4] = buf >>  8;
-  game_id[5] = buf;
+    SET_EXTINFO_SEL(GAME_ID_1);
+    IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+    buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+    for (idx = 0; idx < 4; idx++)
+      game_id[2+idx] = buf >> 8*(3-idx);
 
-  SET_EXTINFO_SEL(GAME_ID_0);
-  IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-  buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
-  game_id[6] = buf >> 24;
-  game_id[7] = buf >> 16;
-  game_id[8] = buf >>  8;
-  game_id[9] = buf;
+    SET_EXTINFO_SEL(GAME_ID_0);
+    IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
+    buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+    for (idx = 0; idx < 4; idx++)
+      game_id[6+idx] = buf >> 8*(3-idx);
 
+    game_id_valid = TRUE;
+  }
+  return game_id_valid;
 };
 
 alt_u16 get_hw_version()

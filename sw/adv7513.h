@@ -61,6 +61,7 @@ typedef enum {
 } pr_mode_t;
 
 
+void set_vsif(bool_t enable);
 void set_cfg_adv7513(void);
 int check_adv7513(void);
 bool_t init_adv7513(void);

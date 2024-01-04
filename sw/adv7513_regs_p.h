@@ -72,6 +72,8 @@
 #define ADV7513_REG_VIC_DETECTED              0x3e
 #define ADV7513_REG_AUX_VIC_DETECTED          0x3f
 #define ADV7513_REG_PACKET_ENABLE0            0x40
+  #define ADV7513_SPARE_PACKET1_ENABLE_BIT      0
+  #define ADV7513_SPARE_PACKET2_ENABLE_BIT      1
 #define ADV7513_REG_POWER                     0x41
 #define ADV7513_REG_EDID_I2C_ADDR             0x43
 #define ADV7513_REG_PACKET_ENABLE1            0x44
@@ -144,5 +146,18 @@ const alt_u8 csc_reg_vals[MAX_COLOR_FORMATS+1][2*CSC_COEFFICIENTS] __ufmdata_sec
 // Reg 0x18 bit 6:5 is CSC mode and considered in register definition
 // Reg 0x1A bit 5 is update method -> coefficients consider buffer mode (bit must set before and cleared after register writes
 // Coefficients were calculated by hand and not taken from programming manual
+
+
+// Packetmemory
+
+#define ADV7513_REG_SPARE_PACKET1(x)          (0xc0 + (x)) /* 0xc0 - 0xde */
+#define ADV7513_REG_SPARE_PACKET1_UPDATE      0xdf
+#define ADV7513_REG_SPARE_PACKET2(x)          (0xe0 + (x)) /* 0xe0 - 0xfe */
+#define ADV7513_REG_SPARE_PACKET2_UPDATE      0xff
+
+#define ADV7513_SPARE_PACKET_UPDATE_START_VAL 0x80
+#define ADV7513_SPARE_PACKET_UPDATE_DONE_VAL  0x00
+
+#define SPARE_PACKET_MAX_SIZE                 (3 + 28)
 
 #endif /* ADV7513_REGS_P_H_ */
