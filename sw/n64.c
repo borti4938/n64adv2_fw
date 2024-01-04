@@ -144,6 +144,7 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
   cmd_t cmd_new = CMD_NON;
   static cmd_t cmd_pre_int = CMD_NON, cmd_pre = CMD_NON;
 
+  static alt_u8 simple_btn_cmb_timeout = HOLD_CNT_LOW;
   static alt_u8 rep_cnt = 0, hold_cnt = HOLD_CNT_HIGH;
 
   if (cfg_get_value(&lock_menu,0)) {
@@ -174,17 +175,21 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
         cmd_new = CMD_16BIT_QUICK_OFF;
         break;
       case BTN_MENU_ENTER:
-        cmd_new = CMD_MENU_ENTER;
+        if (simple_btn_cmb_timeout == 0) cmd_new = CMD_MENU_ENTER;
+        else simple_btn_cmb_timeout--;
         break;
       case BTN_MENU_BACK:
-        cmd_new = CMD_MENU_BACK;
+        if (simple_btn_cmb_timeout == 0) cmd_new = CMD_MENU_BACK;
+        else simple_btn_cmb_timeout--;
         break;
       case CTRL_R_SETMASK:
-        cmd_new = CMD_MENU_PAGE_RIGHT;
+        if (simple_btn_cmb_timeout == 0) cmd_new = CMD_MENU_PAGE_RIGHT;
+        else simple_btn_cmb_timeout--;
         break;
       case CTRL_L_SETMASK:
       case CTRL_Z_SETMASK:
-        cmd_new = CMD_MENU_PAGE_LEFT;
+        if (simple_btn_cmb_timeout == 0) cmd_new = CMD_MENU_PAGE_LEFT;
+        else simple_btn_cmb_timeout--;
         break;
       case CTRL_DU_SETMASK:
       case CTRL_CU_SETMASK:
@@ -202,6 +207,8 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
       case CTRL_CR_SETMASK:
         cmd_new = CMD_MENU_RIGHT;
         break;
+      default:
+        simple_btn_cmb_timeout = HOLD_CNT_LOW;
     };
 
     if (cmd_new == CMD_NON) {
