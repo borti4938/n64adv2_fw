@@ -127,14 +127,17 @@ int main()
   #ifdef DEBUG
     home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
     menu_t *menu = &debug_screen;
+
+    cfg_clear_words();
+    bool_t load_n64_defaults = 1;
   #else
     menu_t *menu = &home_menu;
-  #endif
 
-  // initialize flash and configuration
-  cfg_clear_words();
-  init_flash();
-  bool_t load_n64_defaults = (cfg_load_from_flash(0) != 0);
+    // initialize flash and configuration
+    cfg_clear_words();
+    init_flash();
+    bool_t load_n64_defaults = (cfg_load_from_flash(0) != 0);
+  #endif
 
   while (is_fallback_mode_valid() == FALSE) {};
   fallback_vmodes_t use_fallback = (fallback_vmodes_t) get_fallback_mode(); // returns either 0 or 1 (not associated to 1080p, 240p and 480p Fallback mode)

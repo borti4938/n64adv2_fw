@@ -287,6 +287,7 @@ menu_t rwdata_screen = {
     .parent = &home_menu,
     .arrow_position = (RWDATA_VALS_H_OFFSET - 2),
     .current_selection = 0,
+#ifndef DEBUG
     .number_selections = 7,
     .leaves = {
         {.id = RWDATA_AUTOSAVE_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &autosave},
@@ -298,6 +299,13 @@ menu_t rwdata_screen = {
         {.id = RWDATA_FALLBACK_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallbackmode},
 //        {.id = RWDATA_UPDATE_V_OFFSET          , .arrowshape = &optval_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0 = &fw_update}
     }
+#else
+    .number_selections = 2,
+    .leaves = {
+        {.id = RWDATA_LOAD_FBDEFAULTS_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC2, .sys_fun_2 = &cfg_load_defaults},
+        {.id = RWDATA_FALLBACK_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallbackmode}
+    }
+#endif
 };
 
 menu_t debug_screen = {

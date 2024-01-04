@@ -313,17 +313,31 @@ static const char *misc_overlay __ufmdata_section__ =
 
 static const char *rwdata_header __ufmdata_section__ =
     "Save/Load";
-static const char *rwdata_overlay __ufmdata_section__ =
-    "* Save\n"
-    "  - Autosave:\n"
-    "  - Configuration now:\n"
-    "* Load\n"
-    "  - Last configuration:\n"
-    "  - Fallback defaults:\n"
-    "* Copy:\n"
-    "  - Direction:\n"
-    "  - Copy config now:\n"
-    "* Fallback config:";
+#ifndef DEBUG
+  static const char *rwdata_overlay __ufmdata_section__ =
+      "* Save\n"
+      "  - Autosave:\n"
+      "  - Configuration now:\n"
+      "* Load\n"
+      "  - Last configuration:\n"
+      "  - Fallback defaults:\n"
+      "* Copy:\n"
+      "  - Direction:\n"
+      "  - Copy config now:\n"
+      "* Fallback config:";
+#else
+  static const char *rwdata_overlay __ufmdata_section__ =
+      "* Save\n"
+      "  - Autosave:              (n.a.)\n"
+      "  - Configuration now:     (n.a.)\n"
+      "* Load\n"
+      "  - Last configuration:    (n.a.)\n"
+      "  - Fallback defaults:\n"
+      "* Copy:\n"
+      "  - Direction:             (n.a.)\n"
+      "  - Copy config now:       (n.a.)\n"
+      "* Fallback config:";
+#endif
 
 static const char *n64debug_header __ufmdata_section__ =
     "Debug-Info";
