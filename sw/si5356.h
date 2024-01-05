@@ -57,41 +57,6 @@ typedef enum {
 } si_clk_src_t;
 #define NUM_CLK_SOURCES 2
 
-typedef enum {
-  NTSC_N64_VGA = 0,
-  NTSC_N64_240p,
-  NTSC_N64_480p,
-  NTSC_N64_720p,
-  NTSC_N64_960p,
-  NTSC_N64_1080p,
-  NTSC_N64_1200p,
-  NTSC_N64_1440p,
-  NTSC_N64_1440Wp,
-  PAL0_N64_288p,
-  PAL0_N64_576p,
-  PAL0_N64_720p,
-  PAL0_N64_960p,
-  PAL0_N64_1080p,
-  PAL0_N64_1200p,
-  PAL0_N64_1440p,
-  PAL0_N64_1440Wp,
-  PAL1_N64_288p,
-  PAL1_N64_576p,
-  PAL1_N64_720p,
-  PAL1_N64_960p,
-  PAL1_N64_1080p,
-  PAL1_N64_1200p,
-  PAL1_N64_1440p,
-  PAL1_N64_1440Wp,
-  FREE_240p_288p, // use only CLK0/1
-  FREE_480p_VGA,
-  FREE_576p,
-  FREE_720p_960p,
-  FREE_1080p_1200p,
-  FREE_1440p
-} clk_config_t;
-#define NUM_SUPPORTED_CONFIGS (FREE_1440p+1)
-
 #define SI5356_PLL_LOCKSTATUS() ((i2c_readreg(SI5356_I2C_BASE,PLL_LOSSLOCK_REG) & (1<<PLL_LOSSLOCK_BIT)) == 0x00)
 
 int check_si5356(void);

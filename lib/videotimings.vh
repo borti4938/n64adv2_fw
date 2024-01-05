@@ -54,22 +54,22 @@
   `define VOVERSCAN_MAX_240p60  `VFRONTPORCH_240p60
   `define VTOTAL_240p60         263
 
-  // VGA (640x480), 4:3
+  // VGA-60 (640x480), 4:3
   `define USE_VGAp60            5'b00001
-  `define HSYNC_active_VGA      1'b0
-  `define HFRONTPORCH_VGA       16
-  `define HSYNCLEN_VGA          96
-  `define HBACKPORCH_VGA        48
-  `define HACTIVE_VGA           640
-  `define HOVERSCAN_MAX_VGA     `HFRONTPORCH_VGA
-  `define HTOTAL_VGA            800
-  `define VSYNC_active_VGA      1'b0
-  `define VFRONTPORCH_VGA       10
-  `define VSYNCLEN_VGA          2
-  `define VBACKPORCH_VGA        33
-  `define VACTIVE_VGA           480
-  `define VOVERSCAN_MAX_VGA    `VFRONTPORCH_VGA
-  `define VTOTAL_VGA            525
+  `define HSYNC_active_VGAp60   1'b0
+  `define HFRONTPORCH_VGAp60    16
+  `define HSYNCLEN_VGAp60       96
+  `define HBACKPORCH_VGAp60     48
+  `define HACTIVE_VGAp60        640
+  `define HOVERSCAN_MAX_VGAp60  `HFRONTPORCH_VGAp60
+  `define HTOTAL_VGAp60         800
+  `define VSYNC_active_VGAp60   1'b0
+  `define VFRONTPORCH_VGAp60    10
+  `define VSYNCLEN_VGAp60       2
+  `define VBACKPORCH_VGAp60     33
+  `define VACTIVE_VGAp60        480
+  `define VOVERSCAN_MAX_VGAp60 `VFRONTPORCH_VGAp60
+  `define VTOTAL_VGAp60         525
   
   // 480p-60, 4:3 / 16:9
   `define USE_480p60            5'b00010
@@ -206,6 +206,23 @@
   `define VACTIVE_288p50        288
   `define VOVERSCAN_MAX_288p50 `VFRONTPORCH_288p50
   `define VTOTAL_288p50         313
+  
+  // VGA-50 (640x576), 4:3
+  `define USE_VGAp50            5'b10001
+  `define HSYNC_active_VGAp50   1'b0
+  `define HFRONTPORCH_VGAp50    12
+  `define HSYNCLEN_VGAp50       98
+  `define HBACKPORCH_VGAp50     56
+  `define HACTIVE_VGAp50        640
+  `define HOVERSCAN_MAX_VGAp50 `HFRONTPORCH_VGAp50
+  `define HTOTAL_VGAp50         806
+  `define VSYNC_active_VGAp50   1'b0
+  `define VFRONTPORCH_VGAp50    6
+  `define VSYNCLEN_VGAp50       2
+  `define VBACKPORCH_VGAp50     41
+  `define VACTIVE_VGAp50        576
+  `define VOVERSCAN_MAX_VGAp50 `VFRONTPORCH_VGAp50
+  `define VTOTAL_VGAp50         625
   
   // 576p-50, 4:3 / 16:9
   `define USE_576p50            5'b10010

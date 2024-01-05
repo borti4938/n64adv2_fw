@@ -76,16 +76,16 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
 {
   if (video_input_detected) {
     alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
+    alt_u8 not_vga = 1 - ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == LineX2);
+    alt_u8 case_val = (pal_pattern_tmp << 1 | palmode_tmp);
     if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
-      alt_u8 case_val = (pal_pattern_tmp << 1 | palmode_tmp);
       switch (case_val) {
         case 3:
-          return PAL1_N64_288p + linex_setting;
+          return PAL1_N64_VGA + not_vga*(1 + linex_setting);
         case 1:
-          return PAL0_N64_288p + linex_setting;
+          return PAL0_N64_VGA + not_vga*(1 + linex_setting);
         default:
-          if ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == LineX2)  return NTSC_N64_VGA;
-          else return NTSC_N64_240p + linex_setting;
+          return NTSC_N64_VGA + not_vga*(1 + linex_setting);
       }
     } else {
       switch (linex_setting) {
@@ -94,10 +94,10 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
         case LineX2:
           if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
             if (palmode_tmp == NTSC) return FREE_480p_VGA;
-            else                     return FREE_576p;
+            else                     return FREE_576p_VGA;
           } else {
             if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) return FREE_480p_VGA;
-            else return FREE_576p;
+            else return FREE_576p_VGA;
           }
         case LineX3:
         case LineX4:

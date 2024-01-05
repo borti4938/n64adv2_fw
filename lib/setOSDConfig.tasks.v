@@ -52,10 +52,18 @@ task setOSDConfig;
       `USE_VGAp60: begin
           cfg_osd_vscale <= 3'b001;
           cfg_osd_hscale <= 2'b00;
-          cfg_osd_voffset <=  35;   // (`VSYNCLEN_VGA + `VBACKPORCH_VGA + (`VACTIVE_VGA - 2*`OSD_WINDOW_VACTIVE)/2)/2
+          cfg_osd_voffset <=  35;   // (`VSYNCLEN_VGAp60 + `VBACKPORCH_VGAp60 + (`VACTIVE_VGAp60 - 2*`OSD_WINDOW_VACTIVE)/2)/2
                                     // = (2 + 33 +(480 - 2*205)/2)/2 = 35
-          cfg_osd_hoffset <=  264;  // `HSYNCLEN_VGA + `HBACKPORCH_VGA + (`HACTIVE_VGA - `OSD_WINDOW_HACTIVE)/2
+          cfg_osd_hoffset <=  264;  // `HSYNCLEN_VGAp60 + `HBACKPORCH_VGAp60 + (`HACTIVE_VGAp60 - `OSD_WINDOW_HACTIVE)/2
                                     // = 96 + 48 + (640-399)/2 = 264,5
+         end
+      `USE_480p60: begin
+          cfg_osd_vscale <= 3'b001;
+          cfg_osd_hscale <= 2'b00;
+          cfg_osd_voffset <= 35;  // (`VSYNCLEN_480p60 + `VBACKPORCH_480p60 + (`VACTIVE_480p60 - 2*`OSD_WINDOW_VACTIVE)/2)/2
+                                  // = (6 + 30 + (480 - 2*205)/2)/2 = 35,5
+          cfg_osd_hoffset <= 282; // `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + (`HACTIVE_480p60 - `OSD_WINDOW_HACTIVE)/2
+                                  // = 62 + 60 + (720 - 399)/2 = 282,5
          end
       `USE_720p60: begin
           cfg_osd_vscale <= 3'b010;
@@ -73,14 +81,14 @@ task setOSDConfig;
           cfg_osd_hoffset <= 176; // (`HSYNCLEN_960p60 + `HBACKPORCH_960p60 + (`HACTIVE_960P60 - 2*`OSD_WINDOW_HACTIVE)/2)/2
                                   // = (32 + 80 + (1280 - 2*399)/2)/2 = 176,5
          end
-      `USE_1080p60: begin
-          cfg_osd_vscale <= 3'b100;
-          cfg_osd_hscale <= 2'b10;
-          cfg_osd_voffset <= 14;  // (`VSYNCLEN_1080p60 + `VBACKPORCH_1080p60 + (`VACTIVE_1080P60 - 5*`OSD_WINDOW_VACTIVE)/2)/5
-                                  // = (5 + 36 + (1080 - 5*205)/2)/5 = 13,7
-          cfg_osd_hoffset <= 184; // (`HSYNCLEN_1080p60 + `HBACKPORCH_1080p60 + (`HACTIVE_1080P60 - 3*`OSD_WINDOW_HACTIVE)/2)/3
-                                  // = (44 + 148 + (1920 - 3*399)/2)/3 = 184,5
-         end
+//      `USE_1080p60: begin
+//          cfg_osd_vscale <= 3'b100;
+//          cfg_osd_hscale <= 2'b10;
+//          cfg_osd_voffset <= 14;  // (`VSYNCLEN_1080p60 + `VBACKPORCH_1080p60 + (`VACTIVE_1080P60 - 5*`OSD_WINDOW_VACTIVE)/2)/5
+//                                  // = (5 + 36 + (1080 - 5*205)/2)/5 = 13,7
+//          cfg_osd_hoffset <= 184; // (`HSYNCLEN_1080p60 + `HBACKPORCH_1080p60 + (`HACTIVE_1080P60 - 3*`OSD_WINDOW_HACTIVE)/2)/3
+//                                  // = (44 + 148 + (1920 - 3*399)/2)/3 = 184,5
+//         end
       `USE_1200p60: begin
           cfg_osd_vscale <= 3'b100;
           cfg_osd_hscale <= 2'b10;
@@ -112,6 +120,22 @@ task setOSDConfig;
                                     // = (3 + 19 + (288 - 205)/2) = 63,5
           cfg_osd_hoffset <=  292;  // `HSYNCLEN_288p50 + `HBACKPORCH_288p50 + (`HACTIVE_288p50 - `OSD_WINDOW_HACTIVE)/2
                                     // = (63 + 69 + (720-399)/2) = 292,5
+         end
+      `USE_VGAp50: begin
+          cfg_osd_vscale <= 3'b001;
+          cfg_osd_hscale <= 2'b00;
+          cfg_osd_voffset <=  63;   // (`VSYNCLEN_VGAp50 + `VBACKPORCH_VGAp50 + (`VACTIVE_VGAp50 - 2*`OSD_WINDOW_VACTIVE)/2)/2
+                                    // = (2 + 41 +(576 - 2*205)/2)/2 = 63
+          cfg_osd_hoffset <=  272;  // `HSYNCLEN_VGAp50 + `HBACKPORCH_VGAp50 + (`HACTIVE_VGAp50 - `OSD_WINDOW_HACTIVE)/2
+                                    // = 96 + 56 + (640-399)/2 = 272,5
+         end
+      `USE_576p50: begin
+          cfg_osd_vscale <= 3'b001;
+          cfg_osd_hscale <= 2'b00;
+          cfg_osd_voffset <= 64;  // (`VSYNCLEN_576p50 + `VBACKPORCH_576p50 + (`VACTIVE_576p50 - 2*`OSD_WINDOW_VACTIVE)/2)/2
+                                  // = (5 + 39 + (576 - 2*205)/2)/2 = 63,5
+          cfg_osd_hoffset <= 292; // `HSYNCLEN_576p50 + `HBACKPORCH_576p50 + (`HACTIVE_576p50 - `OSD_WINDOW_HACTIVE)/2
+                                  // = 64 + 68 + (720 - 399)/2 = 292,5
          end
       `USE_720p50: begin
           cfg_osd_vscale <= 3'b010;
@@ -162,19 +186,12 @@ task setOSDConfig;
                                   // = (16 + 40 + (1280 - 2*399)/2)/2 = 148,5
          end
       default: begin
-          cfg_osd_vscale <= 3'b001;
-          cfg_osd_hscale <= 2'b00;
-          if (cfg_videomode[`VID_CFG_50HZ_BIT]) begin
-            cfg_osd_voffset <= 64;  // (`VSYNCLEN_576p50 + `VBACKPORCH_576p50 + (`VACTIVE_576p50 - 2*`OSD_WINDOW_VACTIVE)/2)/2
-                                    // = (5 + 39 + (576 - 2*205)/2)/2 = 63,5
-            cfg_osd_hoffset <= 292; // `HSYNCLEN_576p50 + `HBACKPORCH_576p50 + (`HACTIVE_576p50 - `OSD_WINDOW_HACTIVE)/2
-                                    // = 64 + 68 + (720 - 399)/2 = 292,5
-          end else begin
-            cfg_osd_voffset <= 35;  // (`VSYNCLEN_480p60 + `VBACKPORCH_480p60 + (`VACTIVE_480p60 - 2*`OSD_WINDOW_VACTIVE)/2)/2
-                                    // = (6 + 30 + (480 - 2*205)/2)/2 = 35,5
-            cfg_osd_hoffset <= 282; // `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + (`HACTIVE_480p60 - `OSD_WINDOW_HACTIVE)/2
-                                    // = 62 + 60 + (720 - 399)/2 = 282,5
-          end
+          cfg_osd_vscale <= 3'b100;
+          cfg_osd_hscale <= 2'b10;
+          cfg_osd_voffset <= 14;  // (`VSYNCLEN_1080p60 + `VBACKPORCH_1080p60 + (`VACTIVE_1080P60 - 5*`OSD_WINDOW_VACTIVE)/2)/5
+                                  // = (5 + 36 + (1080 - 5*205)/2)/5 = 13,7
+          cfg_osd_hoffset <= 184; // (`HSYNCLEN_1080p60 + `HBACKPORCH_1080p60 + (`HACTIVE_1080P60 - 3*`OSD_WINDOW_HACTIVE)/2)/3
+                                  // = (44 + 148 + (1920 - 3*399)/2)/3 = 184,5
         end
     endcase
   end

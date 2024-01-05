@@ -71,7 +71,7 @@
 
 #define RESCFG_OVERLAY_H_OFFSET     OVERLAY_H_OFFSET
 #define RESCFG_OVERLAY_V_OFFSET     OVERLAY_V_OFFSET
-#define RESCFG_VALS_H_OFFSET        (29 + OVERLAY_H_OFFSET)
+#define RESCFG_VALS_H_OFFSET        (31 + OVERLAY_H_OFFSET)
 #define RESCFG_VALS_V_OFFSET        OVERLAY_V_OFFSET
 #define RESCFG_INPUT_V_OFFSET       ( 0 + RESCFG_VALS_V_OFFSET)
 #define RESCFG_240P_V_OFFSET        ( 2 + RESCFG_VALS_V_OFFSET)
@@ -234,9 +234,9 @@ static const char *resolution_overlay __ufmdata_section__ =
     "  -     1200p ( 4:3):\n"
     "  -     1440p ( 4:3):\n"
     "  -     1440p (16:9):\n"
-    "* Use VGA instead of 480p:\n"
+    "* Use VGA-flag at 480p/576p:\n"
     "* Frame-Locked mode:\n"
-    "* Force 50/60:";
+    "* Force 50Hz/60Hz:";
 
 static const char *scaler_header __ufmdata_section__ =
     "Scaler";
