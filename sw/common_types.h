@@ -2,7 +2,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2023 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2024 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,29 +19,46 @@
  *
  *********************************************************************************
  *
- * i2c.h
+ * common_types.h
  *
- *  Created on: 02.12.2022
+ *  Created on: 05.01.2024
  *      Author: Peter Bartmann
  *
  ********************************************************************************/
 
-#ifndef I2C_H_
-#define I2C_H_
+#ifndef COMMON_TYPES_H_
+#define COMMON_TYPES_H_
 
 
-#include "system.h"
-#include "alt_types.h"
-#include "common_types.h"
+typedef enum {
+  FALSE = 0,
+  TRUE
+} bool_t;
+typedef bool_t boolean_t;
 
-#define ADV7513_I2C_BASE            (0x72>>1)
-#define ADV7513_PACKETMEM_I2C_BASE  (0x70>>1)
-#define SI5356_I2C_BASE             (0xE0>>1)
+typedef enum {
+  PPU_NTSC = 0,
+  PPU_PAL,
+  PPU_REGION_CURRENT
+} cfg_region_sel_type_t;
+#define NUM_REGION_MODES  PPU_REGION_CURRENT
 
-void i2c_reg_bitset(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit);
-void i2c_reg_bitclear(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 bit);
-alt_u8 i2c_readreg(alt_u8 i2c_dev, alt_u8 regaddr);
-void i2c_writereg(alt_u8 i2c_dev, alt_u8 regaddr, alt_u8 data);
+typedef enum {
+  NTSC = 0,
+  PAL
+} vmode_t;
+#define LINEX_TYPES 2
+
+typedef enum {
+  PROGRESSIVE = 0,
+  INTERLACED
+} scanmode_t;
+
+typedef enum {
+  AUTO_HZ = 0,
+  FORCE_60HZ,
+  FORCE_50HZ
+} vsync_mode_t;
 
 
-#endif /* I2C_H_ */
+#endif /* COMMON_TYPES_H_ */

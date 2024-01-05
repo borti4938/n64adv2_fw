@@ -30,6 +30,7 @@
 
 #include "unistd.h"
 #include "alt_types.h"
+#include "common_types.h"
 #include "i2c_opencores.h"
 #include "system.h"
 #include "altera_avalon_pio_regs.h"
@@ -37,7 +38,6 @@
 #include "si5356.h"
 #include "si5356_regs_p.h"
 #include "i2c.h"
-#include "config.h"
 #include "n64.h"
 #include "led.h"
 

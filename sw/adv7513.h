@@ -32,7 +32,7 @@
 
 #include "system.h"
 #include "alt_types.h"
-#include "config.h"
+#include "common_types.h"
 #include "i2c.h"
 
 #define ADV7513_CHIP_ID     0x13

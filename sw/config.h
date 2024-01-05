@@ -28,6 +28,7 @@
 
 #include <string.h>
 #include "alt_types.h"
+#include "common_types.h"
 #include "altera_avalon_pio_regs.h"
 #include "system.h"
 
@@ -45,23 +46,7 @@ typedef enum {
 
 #define NUM_CFG_B32WORDS    5
 
-typedef enum {
-  NTSC = 0,
-  PAL
-} vmode_t;
-#define LINEX_TYPES 2
 
-typedef enum {
-  PROGRESSIVE = 0,
-  INTERLACED
-} scanmode_t;
-
-typedef enum {
-  PPU_NTSC = 0,
-  PPU_PAL,
-  PPU_REGION_CURRENT
-} cfg_region_sel_type_t;
-#define NUM_REGION_MODES  PPU_REGION_CURRENT
 
 typedef enum {
   NTSC_PROGRESSIVE = 0,
@@ -121,12 +106,6 @@ typedef enum {
   OFF = 0,
   ON
 } cfg_offon_t;
-
-typedef enum {
-  FALSE = 0,
-  TRUE
-} bool_t;
-typedef bool_t boolean_t;
 
 typedef struct {
   const alt_u32 cfg_word_mask;

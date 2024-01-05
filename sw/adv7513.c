@@ -28,6 +28,7 @@
 
 
 #include "alt_types.h"
+#include "common_types.h"
 #include "i2c_opencores.h"
 #include "system.h"
 #include "altera_avalon_pio_regs.h"
