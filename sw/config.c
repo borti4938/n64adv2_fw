@@ -342,8 +342,9 @@ bool_t confirmation_routine(bool_t question_type)
 
 int cfg_save_to_flash(bool_t need_confirm)
 {
-//  if (!use_flash) return -CFG_FLASH_NOT_USED;
-
+#ifdef DEBUG
+  return 0;
+#else
   if (need_confirm) {
     if (!confirmation_routine(0)) return -CFG_FLASH_SAVE_ABORT; // does not return ok
   }
@@ -380,12 +381,14 @@ int cfg_save_to_flash(bool_t need_confirm)
     cfg_update_reference(); // leave power cycle values for deblur and 16bit mode in reference
 
   return retval;
+#endif
 }
 
 int cfg_load_from_flash(bool_t need_confirm)
 {
-//  if (!use_flash) return -CFG_FLASH_NOT_USED;
-
+#ifdef DEBUG
+  return 0;
+#else
   if (need_confirm) {
     if (!confirmation_routine(0)) return -CFG_FLASH_LOAD_ABORT; // does not return ok
   }
@@ -453,6 +456,7 @@ int cfg_load_from_flash(bool_t need_confirm)
     unlock_1440p = FALSE;
 
   return retval;
+#endif
 }
 
 void cfg_reset_selections() {

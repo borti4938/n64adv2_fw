@@ -68,9 +68,14 @@ bool_t configure_clk_si5356(clk_config_t target_cfg) {
   si5356_writereg(OEB_REG,OEB_REG_VAL_OFF); // disable outputs
   
   si_clk_src_t clk_src = target_cfg < FREE_240p_288p;
-  for (i=0; i<NUM_INPSW_REGS; i++)
-    if (inpsw_regs[i].reg_mask == 0xFF) si5356_writereg(inpsw_regs[i].reg_addr,inpsw_regs[i].reg_val[clk_src]);
-    else                                si5356_writereg(inpsw_regs[i].reg_addr,(inpsw_regs[i].reg_val[clk_src] & inpsw_regs[i].reg_mask) | (si5356_readreg(inpsw_regs[i].reg_addr) & ~inpsw_regs[i].reg_mask));
+  for (i=0; i<NUM_INPSW_REGS; i++) {
+    #ifndef DEBUG
+      if (inpsw_regs[i].reg_mask == 0xFF) si5356_writereg(inpsw_regs[i].reg_addr,inpsw_regs[i].reg_val[clk_src]);
+      else                                si5356_writereg(inpsw_regs[i].reg_addr,(inpsw_regs[i].reg_val[clk_src] & inpsw_regs[i].reg_mask) | (si5356_readreg(inpsw_regs[i].reg_addr) & ~inpsw_regs[i].reg_mask));
+    #else
+      si5356_writereg(inpsw_regs[i].reg_addr,inpsw_regs[i].reg_val[clk_src]);
+    #endif
+  }
   
   for (i=0; i<NUM_CFG_MODE_REGS; i++)
     si5356_writereg(si_mode_regs[i].reg_addr,si_mode_regs[i].reg_val[target_cfg]);
@@ -99,9 +104,14 @@ bool_t init_si5356(clk_config_t target_cfg) {
   si5356_writereg(OEB_REG,OEB_REG_VAL_OFF);     // disable outputs
   si5356_writereg(DIS_LOL_REG,DIS_LOL_REG_VAL); // write needed for proper operation
 
-  for (i=0; i<NUM_INIT_REGS; i++)
-    if (init_regs[i].reg_mask == 0xFF) si5356_writereg(init_regs[i].reg_addr,init_regs[i].reg_val);
-    else                               si5356_writereg(init_regs[i].reg_addr,(init_regs[i].reg_val & init_regs[i].reg_mask) | (si5356_readreg(init_regs[i].reg_addr) & ~init_regs[i].reg_mask));
+  for (i=0; i<NUM_INIT_REGS; i++) {
+    #ifndef DEBUG
+      if (init_regs[i].reg_mask == 0xFF) si5356_writereg(init_regs[i].reg_addr,init_regs[i].reg_val);
+      else                               si5356_writereg(init_regs[i].reg_addr,(init_regs[i].reg_val & init_regs[i].reg_mask) | (si5356_readreg(init_regs[i].reg_addr) & ~init_regs[i].reg_mask));
+    #else
+      si5356_writereg(init_regs[i].reg_addr,init_regs[i].reg_val);
+    #endif
+  }
 
   return configure_clk_si5356(target_cfg);
 }
