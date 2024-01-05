@@ -82,9 +82,9 @@ void set_vsif(bool_t enable) {
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(7),0x01);  // vendor
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(8),0x03);  // N64
 
-  crc = 0x81 + 0x01 + 0x1B +
+  crc = (alt_u8) (0x81 + 0x01 + 0x1B +
       IEEE_OUI_MIMIC_2 + IEEE_OUI_MIMIC_1 + IEEE_OUI_MIMIC_0 +
-      0x01 + 0x03; // CRC up to this point
+      0x01 + 0x03); // CRC up to this point
   for (idx = 0; idx < 10; idx++) {  // write 10 bytes for the game id
     adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(9+idx),game_id[idx]);
     crc += game_id[idx];
