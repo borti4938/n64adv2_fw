@@ -517,16 +517,22 @@ void cfg_reset_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   if (scaling_word_select == PPU_SCALING_CURRENT || scaling_word_select > NUM_SCALING_MODES) return;
 
-  scaling_words[scaling_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETSCALING_MASK);
-  scaling_words[scaling_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETSCALING_MASK);
+  scaling_words[scaling_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETSCALING_MASK) |
+                                                  (sysconfig.cfg_word_def[INTCFG0]->cfg_word_val & CFG_LINK_HV_SCALE_GETMASK);
+  scaling_words[scaling_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETSCALING_MASK) |
+                                                      (sysconfig.cfg_word_def[INTCFG0]->cfg_ref_word_val & CFG_LINK_HV_SCALE_GETMASK);
 }
 
 void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   if (scaling_word_select == PPU_SCALING_CURRENT || scaling_word_select > NUM_SCALING_MODES) return;
 
+  sysconfig.cfg_word_def[INTCFG0]->cfg_word_val &= CFG_LINK_HV_SCALE_CLRMASK;
+  sysconfig.cfg_word_def[INTCFG0]->cfg_word_val |= (scaling_words[scaling_word_select].config_val & CFG_LINK_HV_SCALE_GETMASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= (scaling_words[scaling_word_select].config_val & CFG_EXTCFG0_GETSCALING_MASK);
 
+  sysconfig.cfg_word_def[INTCFG0]->cfg_ref_word_val &= CFG_LINK_HV_SCALE_CLRMASK;
+  sysconfig.cfg_word_def[INTCFG0]->cfg_ref_word_val |= (scaling_words[scaling_word_select].config_ref_val & CFG_LINK_HV_SCALE_GETMASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= (scaling_words[scaling_word_select].config_ref_val & CFG_EXTCFG0_GETSCALING_MASK);
 }

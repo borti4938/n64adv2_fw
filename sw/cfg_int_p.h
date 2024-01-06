@@ -78,17 +78,6 @@ config_t limited_colorspace = {
     .val2char_func = &flag2set_func
 };
 
-config_t link_hv_scale = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_LINK_HV_SCALE_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_LINK_HV_SCALE_MAX_VALUE,
-        .getvalue_mask = CFG_LINK_HV_SCALE_GETMASK
-    },
-    .value_string = (const char **) &ScaleVHLink
-};
-
 config_t deblur_mode_powercycle = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_DEBLUR_PC_DEFAULT_OFFSET,
@@ -131,6 +120,17 @@ config_t igr_16bitmode = {
         .clrflag_mask = CFG_MODE16BIT_IGR_CLRMASK
     },
     .val2char_func = &flag2set_func
+};
+
+config_t link_hv_scale = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_LINK_HV_SCALE_OFFSET,
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_LINK_HV_SCALE_MAX_VALUE,
+        .getvalue_mask = CFG_LINK_HV_SCALE_GETMASK
+    },
+    .value_string = (const char **) &ScaleVHLink
 };
 
 config_t fallbackmode = {

@@ -92,9 +92,9 @@
 #define SCALERCFG_VALS_V_OFFSET         OVERLAY_V_OFFSET
 #define SCALERCFG_V_INTERP_V_OFFSET     ( 0 + SCALERCFG_VALS_V_OFFSET)
 #define SCALERCFG_H_INTERP_V_OFFSET     ( 1 + SCALERCFG_VALS_V_OFFSET)
-#define SCALERCFG_IN2OUT_V_OFFSET       ( 3 + SCALERCFG_VALS_V_OFFSET)
-#define SCALERCFG_LINKVH_V_OFFSET       ( 4 + SCALERCFG_VALS_V_OFFSET)
-#define SCALERCFG_VHSTEPS_V_OFFSET      ( 5 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_VHSTEPS_V_OFFSET      ( 3 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_IN2OUT_V_OFFSET       ( 4 + SCALERCFG_VALS_V_OFFSET)
+#define SCALERCFG_LINKVH_V_OFFSET       ( 5 + SCALERCFG_VALS_V_OFFSET)
 #define SCALERCFG_VERTSCALE_V_OFFSET    ( 6 + SCALERCFG_VALS_V_OFFSET)
 #define SCALERCFG_HORISCALE_V_OFFSET    ( 7 + SCALERCFG_VALS_V_OFFSET)
 #define SCALERCFG_PALBOXED_V_OFFSET     ( 8 + SCALERCFG_VALS_V_OFFSET)
@@ -244,9 +244,9 @@ static const char *scaler_overlay __ufmdata_section__ =
     "* Vertical interpolation:\n"
     "* Horizontal interpolation:\n"
     "* Scaling:\n"
+    "  - V/h scaling steps:\n"
     "  - Settings for:\n"
     "  - Link v/h factors:\n"
-    "  - V/h scaling steps:\n"
     "  - Vertical scale value:\n"
     "  - Horizontal scale value:\n"
     "* Use PAL in 240p box:\n"
@@ -499,7 +499,7 @@ const char *PredefScaleStepsHalf[] __ufmdata_section__ = {"(1.00x)","(1.25x)","(
                                                           "(2.00x)","(2.25x)","(2.50x)","(2.75x)",
                                                           "(3.00x)","(3.25x)","(3.50x)","(3.75x)",
                                                           "(4.00x)"};
-const char *ScaleVHLink[] __ufmdata_section__ = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open"};
+const char *ScaleVHLink[] __ufmdata_section__ = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open","10:9"};
 
 const char *ColorSpace[] __ufmdata_section__ = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
 
