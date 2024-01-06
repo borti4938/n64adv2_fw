@@ -313,8 +313,7 @@ scaler_cfggen scaler_cfggen_u(
 // setup config in different clock domains ...
 
 // ... in N64_CLK_i
-assign cfg_deinterlacing_mode_pre[1] = ConfigSet_w[`deinterlacing_mode_bit1] & (ConfigSet_w[`target_resolution_slice] != `HDMI_TARGET_240P); // do not use waeve deinterlacing in 240p/288p mode
-assign cfg_deinterlacing_mode_pre[0] = ConfigSet_w[`deinterlacing_mode_bit0];
+assign cfg_deinterlacing_mode_pre = ((ConfigSet_w[`deinterlacing_mode_slice] == `DEINTERLACING_WEAVE) & (ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P)) ? `DEINTERLACING_FRAME_DROP : ConfigSet_w[`deinterlacing_mode_slice]; // do not use waeve deinterlacing in 240p/288p mode
 
 register_sync #(
   .reg_width(18), // 4 + 1 + 10 + 2 + 1
@@ -428,8 +427,8 @@ always @(posedge VCLK_Tx) begin
   end
   
   cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
-  cfg_v_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`v_interpolation_mode_slice];
-  cfg_h_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? 2'b00 : ConfigSet_resynced[`h_interpolation_mode_slice];
+  cfg_v_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? `INTERPOLATION_NEAREST : ConfigSet_resynced[`v_interpolation_mode_slice];
+  cfg_h_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? `INTERPOLATION_NEAREST : ConfigSet_resynced[`h_interpolation_mode_slice];
   
   cfg_hSL_thickness <= ConfigSet_resynced[`hSL_thickness_slice];
   cfg_hSL_profile   <= ConfigSet_resynced[`hSL_profile_slice];
@@ -549,7 +548,7 @@ scaler scaler_u (
   .DRAM_nRAS(DRAM_nRAS),
   .DRAM_nWE(DRAM_nWE),
   .vinfo_dramsynced_i({palmode_dramclk_resynced,n64_480i_dramclk_resynced}),
-  .video_deinterlacing_mode_i(cfg_deinterlacing_mode_dramclk_resynced),
+  .video_deinterlacing_mode_dramsynced_i(cfg_deinterlacing_mode_dramclk_resynced),
   .video_vpos_1st_rdline_i(cfg_vpos_1st_rdline_resynced),
   .VCLK_o(VCLK_Tx),
   .nVRST_o(nVRST_post_scaler),

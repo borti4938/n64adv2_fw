@@ -129,9 +129,25 @@
   `define use_vga_for_480p_bit       3 + `SysCfg0_PPUCfg_Offset
   `define target_resolution_slice    2 + `SysCfg0_PPUCfg_Offset :  0 + `SysCfg0_PPUCfg_Offset
   
-  // Tables
   
+  // deinterlacing modes
+  `define DEINTERLACING_FRAME_DROP  2'b00
+  `define DEINTERLACING_BOB         2'b01
+  `define DEINTERLACING_WEAVE       2'b10
+  
+  // Interpolation modes
+  `define INTERPOLATION_NEAREST       2'b00
+  `define INTERPOLATION_NEAREST_SOFT  2'b01
+  `define INTERPOLATION_BILINEAR_wTH  2'b10
+  `define INTERPOLATION_BILINEAR      2'b11
+  
+  `define INTERPOLATION_BIT_BILINEAR  1
+  `define INTERPOLATION_BIT_SOFTMODE  0
+  
+  // Tables
   `define GAMMA_TABLE_OFF     4'b0101
+  
+  // Target output modes
   `define HDMI_TARGET_240P    3'b000
   `define HDMI_TARGET_288P    3'b000
   `define HDMI_TARGET_480P    3'b001
