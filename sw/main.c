@@ -301,6 +301,10 @@ int main()
       if (menu->type == N64DEBUG) update_debug_screen(menu);
       else run_pin_state(0);
 
+      cfg_load_linex_word(vmode_n64adv);
+      cfg_load_timing_word(timing_n64adv);
+      cfg_load_scaling_word(scaling_n64adv);
+
       if (message_cnt == 0) {
         print_cr_info();
         if (menu->type == N64DEBUG) print_ctrl_data();
@@ -351,10 +355,6 @@ int main()
           }
 
     } /* END OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
-
-    cfg_load_linex_word(vmode_n64adv);
-    cfg_load_timing_word(timing_n64adv);
-    cfg_load_scaling_word(scaling_n64adv);
 
     if (cfg_get_value(&lock_menu,0)) {
       if (!lock_menu_pre) igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
