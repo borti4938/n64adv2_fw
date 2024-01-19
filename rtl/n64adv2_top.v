@@ -253,7 +253,7 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u (
   .N64_nRST_i(N64_nRST_io),
   .nRST_Masking_i(nRST_Masking_w),
   .SYS_CLK_i(SYS_CLK_i),
-  .N64_nRST_o(N64_nRST_w),
+  .PPU_nRST_o(PPU_nRST_w),
   .N64_palmode(PPUState_w[`PPU_input_pal_bit]),
   .N64_interlaced(PPUState_w[`PPU_input_interlaced_bit]),
   .lowlatencymode(PPUConfigSet_w[`lowlatencymode_bit]),
@@ -293,7 +293,7 @@ n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u (
   .OSDWrVector(OSDWrVector_w),
   .OSDInfo(OSDInfo_w),
   .N64_CLK_i(N64_CLK_w),
-  .N64_nVRST_i(N64_nRST_w),
+  .PPU_nRST_i(PPU_nRST_w),
   .nVDSYNC_i(nVDSYNC_w),
   .VD_HS_i(VD_w[1]),
   .LED_o(LED_o),
@@ -308,7 +308,7 @@ n64adv2_ppu_top #(
   .osd_window_color(osd_window_color)
 ) n64adv2_ppu_u (
   .N64_CLK_i(N64_CLK_w),
-  .N64_nVRST_i(N64_nRST_w),
+  .PPU_nRST_i(PPU_nRST_w),
   .nVDSYNC_i(nVDSYNC_w),
   .VD_i(VD_w),
   .PPUState(PPUState_w),

@@ -64,7 +64,7 @@ module n64adv2_controller #(
   OSDInfo,
 
   N64_CLK_i,
-  N64_nVRST_i,
+  PPU_nRST_i,
   nVDSYNC_i,
   VD_HS_i,
 
@@ -101,7 +101,7 @@ output reg [20:0] OSDWrVector;
 output reg [ 1:0] OSDInfo;
 
 input N64_CLK_i;
-input N64_nVRST_i;
+input PPU_nRST_i;
 input nVDSYNC_i;
 input VD_HS_i;
 
@@ -208,7 +208,7 @@ reg [19:0] rst_cnt = 20'b0; // ~230ms are needed to count from max downto 0 with
 // logic
 
 always @(posedge N64_CLK_i)
-  if (!N64_nVRST_i) begin
+  if (!PPU_nRST_i) begin
     nHSYNC_buf <= 2'b0;
     n64_clk_cnt <= 5'd0;
     pal_pattern <= 1'b0;
@@ -234,7 +234,7 @@ always @(posedge N64_CLK_i)
 always @(posedge N64_CLK_i)
   if (!FallbackMode_valid) begin
     if (~|time_out) begin
-      FallbackMode <= ~N64_nVRST_i;
+      FallbackMode <= ~PPU_nRST_i;
       FallbackMode_valid <= 1'b1;
     end
     time_out <= time_out - 10'd1;

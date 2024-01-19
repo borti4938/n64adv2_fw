@@ -38,7 +38,7 @@ module n64adv2_clk_n_rst_hk(
   
   SYS_CLK_i,
   
-  N64_nRST_o,
+  PPU_nRST_o,
   
   N64_palmode,
   N64_interlaced,
@@ -72,7 +72,7 @@ input [1:0] nRST_Masking_i;
 
 input SYS_CLK_i;
 
-output N64_nRST_o;
+output PPU_nRST_o;
 
 input N64_palmode;
 input N64_interlaced;
@@ -119,7 +119,7 @@ reset_generator #(
 //  .clk_en(1'b1),
   .clk_en(n64_en),
   .async_nrst_i(nRST_video_masked_w),
-  .rst_o(N64_nRST_o)
+  .rst_o(PPU_nRST_o)
 );
 
 

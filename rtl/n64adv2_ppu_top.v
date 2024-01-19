@@ -43,7 +43,7 @@ module n64adv2_ppu_top #(
 ) (
   // N64 Video Input
   N64_CLK_i,
-  N64_nVRST_i,
+  PPU_nRST_i,
   nVDSYNC_i,
   VD_i,
 
@@ -94,7 +94,7 @@ module n64adv2_ppu_top #(
 `include "../lib/setOSDConfig.tasks.v"
 
 input N64_CLK_i;
-input N64_nVRST_i;
+input PPU_nRST_i;
 input nVDSYNC_i;
 input [color_width_i-1:0] VD_i;
 
@@ -470,7 +470,7 @@ register_sync #(
 
 n64_vinfo_ext get_vinfo_u (
   .VCLK(N64_CLK_i),
-  .nRST(N64_nVRST_i),
+  .nRST(PPU_nRST_i),
   .nVDSYNC(nVDSYNC_i),
   .Sync_pre(vdata_bwd_sy_w),
   .Sync_cur(VD_i[3:0]),
@@ -483,7 +483,7 @@ n64_vinfo_ext get_vinfo_u (
 
 n64a_vdemux video_demux_u (
   .VCLK(N64_CLK_i),
-  .nRST(N64_nVRST_i),
+  .nRST(PPU_nRST_i),
   .nVDSYNC(nVDSYNC_i),
   .VD_i(VD_i),
   .demuxparams_i({palmode,cfg_nvideblur,cfg_n16bit_mode}),
@@ -507,7 +507,7 @@ assign vdata21_pp_w = vdata_fwd_w;
 
 gamma_module_v2 gamma_module_u (
   .VCLK(N64_CLK_i),
-  .nRST(N64_nVRST_i),
+  .nRST(PPU_nRST_i),
   .gammaparams_i(cfg_gamma),
   .vdata_valid_i(vdata_valid_pp_w[0]),
   .vdata_i(vdata21_pp_w),
@@ -526,7 +526,7 @@ always @(posedge N64_CLK_i) begin
   vdata_detected_buf <= {vdata_detected_buf[0],vdata_detected};
 end
 
-assign async_nRST_scaler_w = N64_nVRST_i & DRAM_nRST_i & nVRST_Tx_i & scaler_nresync_i & n_palmode_change & n_vdata_detected_change;
+assign async_nRST_scaler_w = PPU_nRST_i & DRAM_nRST_i & nVRST_Tx_i & scaler_nresync_i & n_palmode_change & n_vdata_detected_change;
 
 scaler scaler_u (
   .async_nRST_i(async_nRST_scaler_w),
