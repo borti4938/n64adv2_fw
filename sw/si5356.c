@@ -67,7 +67,7 @@ bool_t configure_clk_si5356(clk_config_t target_cfg) {
   int i;
   si5356_writereg(OEB_REG,OEB_REG_VAL_OFF); // disable outputs
   
-  si_clk_src_t clk_src = target_cfg < FREE_240p_288p;
+  si_clk_src_t clk_src = target_cfg <= PAL1_N64_1440Wp;
   for (i=0; i<NUM_INPSW_REGS; i++) {
     #ifndef DEBUG
       if (inpsw_regs[i].reg_mask == 0xFF) si5356_writereg(inpsw_regs[i].reg_addr,inpsw_regs[i].reg_val[clk_src]);
@@ -77,15 +77,19 @@ bool_t configure_clk_si5356(clk_config_t target_cfg) {
     #endif
   }
   
-  for (i=0; i<NUM_CFG_MODE_REGS; i++)
-    si5356_writereg(si_mode_regs[i].reg_addr,si_mode_regs[i].reg_val[target_cfg]);
+  for (i=0; i<MS_REGVALS_USED; i++)
+    si5356_writereg(MSA_Px_REGS(i),msa_data[target_cfg][i]);
+
+  if (clk_src)  // frame locked - use also msb
+    for (i=0; i<MS_REGVALS_USED; i++)
+      si5356_writereg(MSB_Px_REGS(i),msb_data[target_cfg][i]);
 
 //  si5356_reg_bitset(SOFT_RST_REG,SOFT_RST_BIT);   // soft reset
   si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT));  // soft reset
-  if (target_cfg == FREE_240p_288p)
-    si5356_writereg(OEB_REG,OEB_REG_VAL_SINGLE_ON); // enable outputs
-  else
+  if (clk_src)
     si5356_writereg(OEB_REG,OEB_REG_VAL_ALL_ON);    // enable outputs
+  else
+    si5356_writereg(OEB_REG,OEB_REG_VAL_SINGLE_ON); // enable outputs
   
   i = PLL_LOCK_MAXWAIT_US;
   while (!SI5356_PLL_LOCKSTATUS()) {  // wait for PLL lock

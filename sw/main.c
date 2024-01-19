@@ -74,44 +74,49 @@ void open_osd_main(menu_t **menu)
 
 clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t palmode_tmp)
 {
+  clk_config_t retval = FREE_480p;
   if (video_input_detected) {
     alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
     alt_u8 not_vga = 1 - ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == LineX2);
     alt_u8 case_val = (pal_pattern_tmp << 1 | palmode_tmp);
-    if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
+    if (linex_setting == DIRECT) {
+        switch (case_val) {
+          case 3:
+            retval = PAL1_N64_DIRECT;
+            break;
+          case 1:
+            retval = PAL1_N64_DIRECT;
+            break;
+          default:
+            retval = PAL1_N64_DIRECT;
+        }
+    } else if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
+      alt_u8 linex_offset = not_vga*linex_setting;
       switch (case_val) {
         case 3:
-          return PAL1_N64_VGA + not_vga*(1 + linex_setting);
+          retval = PAL1_N64_VGA + linex_offset;
+          break;
         case 1:
-          return PAL0_N64_VGA + not_vga*(1 + linex_setting);
+          retval = PAL0_N64_VGA + linex_offset;
+          break;
         default:
-          return NTSC_N64_VGA + not_vga*(1 + linex_setting);
+          retval = NTSC_N64_VGA + linex_offset;
       }
     } else {
-      switch (linex_setting) {
-        case PASSTHROUGH:
-          return FREE_240p_288p;
-        case LineX2:
-          if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
-            if (palmode_tmp == NTSC) return FREE_480p_VGA;
-            else                     return FREE_576p_VGA;
-          } else {
-            if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) return FREE_480p_VGA;
-            else return FREE_576p_VGA;
-          }
-        case LineX3:
-        case LineX4:
-          return FREE_720p_960p;
-        case LineX4p5:
-        case LineX5:
-          return FREE_1080p_1200p;
-        case LineX6:
-        case LineX6W:
-          return FREE_1440p;
+      if (linex_setting == LineX2) {
+        if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
+          if (palmode_tmp == NTSC) retval = FREE_VGA60 + 2*not_vga;
+          else                     retval = FREE_VGA50 + 2*not_vga;
+        } else {
+          if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) retval = FREE_VGA60 + 2*not_vga;
+          else                                                  retval = FREE_VGA50 + 2*not_vga;
+        }
+      } else {
+        retval = FREE_480p + linex_setting;
       }
     }
   }
-  return FREE_480p_VGA; // should only happen if no video input is being detected
+  return retval;
 }
 
 cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)

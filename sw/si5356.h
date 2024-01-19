@@ -39,6 +39,10 @@
 #define SI5356_INIT_FAILED_0 140 // ToDo: move codes into separate header file?
 #define SI5356_INIT_FAILED_1 141
 
+#define MSA_Px_REGS(x)        (53 + x) // max. x is 9
+#define MSB_Px_REGS(x)        (64 + x) // max. x is 9
+#define MSC_Px_REGS(x)        (75 + x) // max. x is 9
+#define MSD_Px_REGS(x)        (86 + x) // max. x is 9
 #define PLL_LOSSLOCK_REG      218
   #define PLL_LOSSLOCK_BIT      4
 #define OEB_REG               230

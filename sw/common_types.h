@@ -61,8 +61,8 @@ typedef enum {
 } vsync_mode_t;
 
 typedef enum {
-  NTSC_N64_VGA = 0,
-  NTSC_N64_240p,
+  NTSC_N64_DIRECT = 0,
+  NTSC_N64_VGA,
   NTSC_N64_480p,
   NTSC_N64_720p,
   NTSC_N64_960p,
@@ -70,8 +70,8 @@ typedef enum {
   NTSC_N64_1200p,
   NTSC_N64_1440p,
   NTSC_N64_1440Wp,
+  PAL0_N64_DIRECT,
   PAL0_N64_VGA,
-  PAL0_N64_288p,
   PAL0_N64_576p,
   PAL0_N64_720p,
   PAL0_N64_960p,
@@ -79,8 +79,8 @@ typedef enum {
   PAL0_N64_1200p,
   PAL0_N64_1440p,
   PAL0_N64_1440Wp,
+  PAL1_N64_DIRECT,
   PAL1_N64_VGA,
-  PAL1_N64_288p,
   PAL1_N64_576p,
   PAL1_N64_720p,
   PAL1_N64_960p,
@@ -88,14 +88,19 @@ typedef enum {
   PAL1_N64_1200p,
   PAL1_N64_1440p,
   PAL1_N64_1440Wp,
-  FREE_240p_288p, // use only CLK0/1
-  FREE_480p_VGA,
-  FREE_576p_VGA,
-  FREE_720p_960p,
-  FREE_1080p_1200p,
-  FREE_1440p
+  FREE_VGA60, // use only CLK0/1 from here on
+  FREE_VGA50,
+  FREE_480p,
+  FREE_576p,
+  FREE_720p,
+  FREE_960p,
+  FREE_1080p,
+  FREE_1200p,
+  FREE_1440p,
+  FREE_1440Wp
 } clk_config_t;
-#define NUM_SUPPORTED_CONFIGS (FREE_1440p+1)
+#define NUM_SUPPORTED_CONFIGS (FREE_1440Wp+1)
+#define NUM_SUPPORTED_CONFIGS_WITH_INTERLACED_CLOCKS (PAL1_N64_1440Wp+1)
 
 
 #endif /* COMMON_TYPES_H_ */

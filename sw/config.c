@@ -230,7 +230,7 @@ alt_u8 cfg_scale_is_predefined(alt_u16 value, bool_t use_vertical) {
 }
 
 void cfg_scale_v2h_update() {
-  if (cfg_get_value(&linex_resolution,0) == PASSTHROUGH) return;
+  if (cfg_get_value(&linex_resolution,0) == DIRECT) return;
   alt_u8 hv_scale_link = cfg_get_value(&link_hv_scale,0);
   alt_u32 hscale = cfg_get_value(&vert_scale,0);
   switch (hv_scale_link) {
