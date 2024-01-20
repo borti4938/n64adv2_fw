@@ -256,7 +256,7 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u (
   .PPU_nRST_o(PPU_nRST_w),
   .N64_palmode(PPUState_w[`PPU_input_pal_bit]),
   .N64_interlaced(PPUState_w[`PPU_input_interlaced_bit]),
-  .lowlatencymode(PPUConfigSet_w[`lowlatencymode_bit]),
+  .lowlatencymode(PPUState_w[`PPU_output_lowlatencymode_bit]),
   .use_vga_for_480p(PPUConfigSet_w[`use_vga_for_480p_bit]),
   .target_resolution(PPUConfigSet_w[`target_resolution_slice]),
   .HDMI_cfg_done_i(HDMI_cfg_done_w),

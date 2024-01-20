@@ -171,6 +171,7 @@ wire v_allow_slemu_w, h_allow_slemu_w;
 
 wire palmode_vclk_o_resynced, n64_480i_vclk_o_resynced;
 wire [`VID_CFG_W-1:0] videomode_pre_w;
+wire llm_w;
 
 wire [`PPUConfig_WordWidth-1:0] ConfigSet_w, ConfigSet_resynced;
 
@@ -235,7 +236,7 @@ assign PPUState[`PPU_input_interlaced_bit]      = n64_480i;
 assign PPUState[`PPU_output_f5060_slice]        = {ConfigSet_resynced[`force50hz_bit],ConfigSet_resynced[`force60hz_bit]};
 assign PPUState[`PPU_output_vga_for_480p_bit]   = ConfigSet_resynced[`use_vga_for_480p_bit];
 assign PPUState[`PPU_output_resolution_slice]   = ConfigSet_resynced[`target_resolution_slice];
-assign PPUState[`PPU_output_lowlatencymode_bit] = ConfigSet_resynced[`lowlatencymode_bit];
+assign PPUState[`PPU_output_lowlatencymode_bit] = llm_w;
 assign PPUState[`PPU_240p_deblur_bit]           = ~cfg_nvideblur;
 assign PPUState[`PPU_color_16bit_mode_bit]      = ~cfg_n16bit_mode;
 assign PPUState[`PPU_gamma_table_slice]         = cfg_gamma;
@@ -413,9 +414,11 @@ assign videomode_pre_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_T
                          ConfigSet_resynced[`use_vga_for_480p_bit]                           ? `USE_VGAp60   :
                                                                                                `USE_480p60   ;
 
+assign llm_w = ConfigSet_resynced[`lowlatencymode_bit] | ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P;  // force low latency mode in 240p / 288p
+
 always @(posedge VCLK_Tx) begin
   cfg_videomode <= sys_vmode_pre_w;
-  if (ConfigSet_resynced[`lowlatencymode_bit] | ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P) begin  // do not allow forcing non-native Hz-mode in llm or in 240p/288p mode
+  if (llm_w) begin  // do not allow forcing non-native Hz-mode in llm
     cfg_videomode[`VID_CFG_50HZ_BIT] <= palmode;
   end else begin
     if (ConfigSet_resynced[`force60hz_bit])  // force 60Hz
