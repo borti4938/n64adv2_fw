@@ -80,16 +80,22 @@ bool_t configure_clk_si5356(clk_config_t target_cfg) {
   for (i=0; i<MS_REGVALS_USED; i++)
     si5356_writereg(MSA_Px_REGS(i),msa_data[target_cfg][i]);
 
-  if (clk_src)  // frame locked - use also msb
+  if (clk_src) { // frame locked - use also msb
     for (i=0; i<MS_REGVALS_USED; i++)
       si5356_writereg(MSB_Px_REGS(i),msb_data[target_cfg][i]);
+    si5356_writereg(CLKx_PWD_REG(1),(si5356_readreg(CLKx_PWD_REG(1)) & 0xFC)); // use clock A and B, so power up B
+  } else {
+    si5356_writereg(CLKx_PWD_REG(1),(si5356_readreg(CLKx_PWD_REG(1)) | 0x03)); // only clock A used, so power down B for power saving
+  }
 
 //  si5356_reg_bitset(SOFT_RST_REG,SOFT_RST_BIT);   // soft reset
   si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT));  // soft reset
-  if (clk_src)
-    si5356_writereg(OEB_REG,OEB_REG_VAL_ALL_ON);    // enable outputs
-  else
-    si5356_writereg(OEB_REG,OEB_REG_VAL_SINGLE_ON); // enable outputs
+
+  if (clk_src) {
+    si5356_writereg(OEB_REG,OEB_REG_VAL_AB_ON);  // enable CLKA and CLKB output
+  } else {
+    si5356_writereg(OEB_REG,OEB_REG_VAL_A_ON);  // enable CLKA output
+  }
   
   i = PLL_LOCK_MAXWAIT_US;
   while (!SI5356_PLL_LOCKSTATUS()) {  // wait for PLL lock
