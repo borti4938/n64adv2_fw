@@ -85,10 +85,10 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
             retval = PAL1_N64_DIRECT;
             break;
           case 1:
-            retval = PAL1_N64_DIRECT;
+            retval = PAL0_N64_DIRECT;
             break;
           default:
-            retval = PAL1_N64_DIRECT;
+            retval = NTSC_N64_DIRECT;
         }
     } else if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
       alt_u8 linex_offset = not_vga*linex_setting;
