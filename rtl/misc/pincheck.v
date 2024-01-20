@@ -127,8 +127,8 @@ generate
     ) run2sys_u(
       .clk(CLK_SYS_i),
       .clk_en(1'b1),
-      .nrst(1'b1),
-      .reg_i(run_i),
+      .nrst(run_i),
+      .reg_i(1'b1),
       .reg_o(run_clk_sys_w)
     );
   
@@ -138,8 +138,8 @@ generate
     ) run2aud_u(
       .clk(CLK_AUD_i),
       .clk_en(1'b1),
-      .nrst(1'b1),
-      .reg_i(run_i),
+      .nrst(run_i),
+      .reg_i(1'b1),
       .reg_o(run_clk_aud_w)
     );
     
@@ -149,8 +149,8 @@ generate
     ) run2pll1_u(
       .clk(CLK_ePLL1_i),
       .clk_en(1'b1),
-      .nrst(1'b1),
-      .reg_i(run_i),
+      .nrst(run_i),
+      .reg_i(1'b1),
       .reg_o(run_clk_epll1_w)
     );
   
@@ -160,8 +160,8 @@ generate
     ) run2pll0_u(
       .clk(CLK_ePLL0_i),
       .clk_en(1'b1),
-      .nrst(1'b1),
-      .reg_i(run_i),
+      .nrst(run_i),
+      .reg_i(1'b1),
       .reg_o(run_clk_epll0_w)
     );
     
@@ -171,8 +171,8 @@ generate
     ) run2n64_u(
       .clk(N64_CLK_i),
       .clk_en(1'b1),
-      .nrst(1'b1),
-      .reg_i(run_i),
+      .nrst(run_i),
+      .reg_i(1'b1),
       .reg_o(run_n64_clk_w)
     );
   end else begin
@@ -186,7 +186,7 @@ endgenerate
 
 
 // check clocks
-always @(posedge CLK_SYS_i)
+always @(posedge CLK_SYS_i or negedge run_clk_sys_w)
   if (!run_clk_sys_w) begin
     clk_sys_cnt <= 4'h0;
     clk_sys_ok <= 1'b0;
@@ -197,7 +197,7 @@ always @(posedge CLK_SYS_i)
       clk_sys_cnt <= clk_sys_cnt + 4'h1;
   end
 
-always @(posedge CLK_AUD_i)
+always @(posedge CLK_AUD_i or negedge run_clk_aud_w)
   if (!run_clk_aud_w) begin
     clk_aud_cnt <= 4'h0;
     clk_aud_ok <= 1'b0;
@@ -208,7 +208,7 @@ always @(posedge CLK_AUD_i)
       clk_aud_cnt <= clk_aud_cnt + 4'h1;
   end
 
-always @(posedge CLK_ePLL1_i)
+always @(posedge CLK_ePLL1_i or negedge run_clk_epll1_w)
   if (!run_clk_epll1_w) begin
     clk_epll1_cnt <= 4'h0;
     clk_epll1_ok <= 1'b0;
@@ -219,7 +219,7 @@ always @(posedge CLK_ePLL1_i)
       clk_epll1_cnt <= clk_epll1_cnt + 4'h1;
   end
 
-always @(posedge CLK_ePLL0_i)
+always @(posedge CLK_ePLL0_i or negedge run_clk_epll0_w)
   if (!run_clk_epll0_w) begin
     clk_epll0_cnt <= 4'h0;
     clk_epll0_ok <= 1'b0;
@@ -230,7 +230,7 @@ always @(posedge CLK_ePLL0_i)
       clk_epll0_cnt <= clk_epll0_cnt + 4'h1;
   end
 
-always @(posedge N64_CLK_i)
+always @(posedge N64_CLK_i or negedge run_n64_clk_w)
   if (!run_n64_clk_w) begin
     clk_n64_cnt <= 4'h0;
     clk_n64_ok <= 1'b0;
@@ -255,7 +255,7 @@ register_sync #(
 );
 
 // check pins
-always @(posedge N64_CLK_i)
+always @(posedge N64_CLK_i or negedge run_n64_clk_w)
   if (!run_n64_clk_w) begin
     pin25to24_ok <= 2'b00;
     pin24to23_ok <= 2'b00;
