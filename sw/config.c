@@ -229,25 +229,53 @@ alt_u8 cfg_scale_is_predefined(alt_u16 value, bool_t use_vertical) {
   return PREDEFINED_SCALE_STEPS;
 }
 
-void cfg_scale_v2h_update() {
+void cfg_scale_v2h_update(bool_t direction_vh) {
   if (cfg_get_value(&linex_resolution,0) == DIRECT) return;
+
   alt_u8 hv_scale_link = cfg_get_value(&link_hv_scale,0);
-  alt_u32 hscale = cfg_get_value(&vert_scale,0);
-  switch (hv_scale_link) {
-    case 0: // 4:3
-      hscale = 4*hscale/3;
-      break;
-    case 1: // CRT (160:119)
-      hscale = 160*hscale/119;
-      break;
-    case 2: // 16:9
-      hscale = 16*hscale/9;
-      break;
-    default:
-      return;
+  if (hv_scale_link == CFG_LINK_HV_SCALE_OPEN_VALUE) return;
+
+  alt_u32 scale;
+  if (direction_vh) {
+    scale = cfg_get_value(&vert_scale,0);
+    switch (hv_scale_link) {
+      case CFG_LINK_HV_SCALE_4R3_VALUE: // 4:3
+        scale = 4*scale/3;
+        break;
+      case CFG_LINK_HV_SCALE_CRT_VALUE: // CRT (160:119)
+        scale = 160*scale/119;
+        break;
+      case CFG_LINK_HV_SCALE_16R9_VALUE: // 16:9
+        scale = 16*scale/9;
+        break;
+      case CFG_LINK_HV_SCALE_10R9_VALUE: // 10:9
+        scale = 10*scale/9;
+        break;
+      default:
+        return;
+    }
+    if (scale > CFG_HORSCALE_MAX_VALUE) scale = CFG_HORSCALE_MAX_VALUE; // max out horizontal scale (overflow may appear on PAL @ 8.00x)
+    cfg_set_value(&hor_scale,scale);
+  } else {
+    scale = cfg_get_value(&hor_scale,0);
+    switch (hv_scale_link) {
+      case CFG_LINK_HV_SCALE_4R3_VALUE: // 4:3
+        scale = 3*scale/4;
+        break;
+      case CFG_LINK_HV_SCALE_CRT_VALUE: // CRT (160:119)
+        scale = 119*scale/160;
+        break;
+      case CFG_LINK_HV_SCALE_16R9_VALUE: // 16:9
+        scale = 9*scale/16;
+        break;
+      case CFG_LINK_HV_SCALE_10R9_VALUE: // 10:9
+        scale = 9*scale/10;
+        break;
+      default:
+        return;
+    }
+    cfg_set_value(&vert_scale,scale);
   }
-  if (hscale > CFG_HORSCALE_MAX_VALUE) hscale = CFG_HORSCALE_MAX_VALUE; // max out horizontal scale (overflow may appear on PAL @ 8.00x)
-  cfg_set_value(&hor_scale,hscale);
 }
 
 alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, bool_t ret_reference)
@@ -601,7 +629,6 @@ void cfg_apply_to_logic()
 {
   if ((scaling_n64adv == PAL_TO_288) && ((bool_t) cfg_get_value(&pal_boxed_mode,0) == FALSE) && (cfg_get_value(&vert_scale,0) < CFG_VERTSCALE_PAL_MIN))
     cfg_set_value(&vert_scale,288);
-  cfg_scale_v2h_update();
   alt_u32 cfg0_word_val = sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val;
   if (!video_input_detected)
     cfg0_word_val = (cfg0_word_val & (CFG_RESOLUTION_RSTMASK & CFG_FORCE_5060_RSTMASK)) | CFG_RESOLUTION_480_SETMASK | CFG_FORCE_60_SETMASK; // set to 480p60 if no video input is being detected

@@ -499,7 +499,7 @@ const char *PredefScaleStepsHalf[] __ufmdata_section__ = {"(1.00x)","(1.25x)","(
                                                           "(2.00x)","(2.25x)","(2.50x)","(2.75x)",
                                                           "(3.00x)","(3.25x)","(3.50x)","(3.75x)",
                                                           "(4.00x)"};
-const char *ScaleVHLink[] __ufmdata_section__ = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open","10:9"};
+const char *ScaleVHLink[] __ufmdata_section__ = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open","10:9","Fixed"};
 
 const char *ColorSpace[] __ufmdata_section__ = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
 

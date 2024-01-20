@@ -435,6 +435,11 @@ typedef struct {
 
 // some max values
 #define CFG_COLORSPACE_MAX_VALUE         2
+#define CFG_LINK_HV_SCALE_4R3_VALUE      0
+#define CFG_LINK_HV_SCALE_CRT_VALUE      1
+#define CFG_LINK_HV_SCALE_16R9_VALUE     2
+#define CFG_LINK_HV_SCALE_OPEN_VALUE     3
+#define CFG_LINK_HV_SCALE_10R9_VALUE     4
 #define CFG_LINK_HV_SCALE_MAX_VALUE      4
 #define CFG_FALLBACK_MAX_VALUE           2
 #define CFG_DEBUGBOOT_MAX_VALUE          2
@@ -583,7 +588,7 @@ void cfg_set_value(config_t* cfg_data, alt_u16 value);
 alt_u16 cfgfct_linex(alt_u16 value, bool_t set_value, bool_t ret_reference);
 void cfgfct_unlock1440p(bool_t set_value);
 alt_u8 cfg_scale_is_predefined(alt_u16 value,bool_t use_vertical);
-void cfg_scale_v2h_update(void);
+void cfg_scale_v2h_update(bool_t direction_vh);
 alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t get_reference);
 bool_t confirmation_routine(bool_t question_type);
 int cfg_save_to_flash(bool_t need_confirm);
