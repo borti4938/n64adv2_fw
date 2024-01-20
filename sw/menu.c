@@ -961,9 +961,11 @@ int update_debug_screen(menu_t* current_menu)
   // Pin state
   run_pin_state(TRUE);
   alt_u16 pin_state = get_pin_state();
-  if (pin_state == PIN_STATE_GETALL_MASK) {
+  alt_u16 pin_state_cmp_val = PIN_STATE_GETALL_MASK;
+  if (!is_lowlatency_mode) pin_state_cmp_val &= PIN_STATE_NOCLK1_PINS_GETMASK;
+  if (pin_state == pin_state_cmp_val) {
     idx = 1;
-  } else if ((pin_state & PIN_STATE_NOAUDIO_PINS_GETMASK) == PIN_STATE_NOAUDIO_PINS_GETMASK) {
+  } else if ((pin_state & PIN_STATE_NOAUDIO_PINS_GETMASK) == (pin_state_cmp_val & PIN_STATE_NOAUDIO_PINS_GETMASK)) {
     idx = 2;
     show_led_nok = TRUE;
   } else {
@@ -996,6 +998,10 @@ int update_debug_screen(menu_t* current_menu)
     nok_ok_val = ((pin_state & (1<<idx)) >> idx);
     szText[0] = (char) Nok_Ok[nok_ok_val];
     vd_print_string(VD_TEXT,hoffsets[idx],voffsets[idx],Nok_Ok_color[nok_ok_val],&szText[0]);
+  }
+  if (!is_lowlatency_mode) {
+    sprintf(szText,"-");
+    vd_print_string(VD_TEXT,N64DEBUG_PIN_CLK_PLL1_H_OFFSET,N64DEBUG_PIN_CLK_LINE0_V_OFFSET,FONTCOLOR_GREY,&szText[0]);
   }
 
   vd_clear_lineend(VD_TEXT,N64DEBUG_PIN_PLL_SRC_H_OFFSET,N64DEBUG_PIN_CLK_LINE0_V_OFFSET);
