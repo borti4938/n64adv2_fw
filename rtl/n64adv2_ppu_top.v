@@ -429,9 +429,15 @@ always @(posedge VCLK_Tx) begin
       cfg_videomode[`VID_CFG_50HZ_BIT] <= palmode;
   end
   
-  cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
-  cfg_v_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? `INTERPOLATION_NEAREST : ConfigSet_resynced[`v_interpolation_mode_slice];
-  cfg_h_interpolation_mode <= ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P ? `INTERPOLATION_NEAREST : ConfigSet_resynced[`h_interpolation_mode_slice];
+  if (ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P) begin  // mask some settings in direct mode
+    cfg_pal_boxed <= 1'b0;
+    cfg_v_interpolation_mode <= `INTERPOLATION_NEAREST;
+    cfg_h_interpolation_mode <= `INTERPOLATION_NEAREST;
+  end else begin
+    cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
+    cfg_v_interpolation_mode <= ConfigSet_resynced[`v_interpolation_mode_slice];
+    cfg_h_interpolation_mode <= ConfigSet_resynced[`h_interpolation_mode_slice];
+  end
   
   cfg_hSL_thickness <= ConfigSet_resynced[`hSL_thickness_slice];
   cfg_hSL_profile   <= ConfigSet_resynced[`hSL_profile_slice];
