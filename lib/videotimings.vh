@@ -41,11 +41,11 @@
   `define USE_240p60            5'b00000
   `define HSYNC_active_240p60   1'b0
   `define HFRONTPORCH_240p60    19
-  `define HSYNCLEN_240p60       62
-  `define HBACKPORCH_240p60     57
-  `define HACTIVE_240p60        720
+  `define HSYNCLEN_240p60       96
+  `define HBACKPORCH_240p60     45
+  `define HACTIVE_240p60        640
   `define HOVERSCAN_MAX_240p60  `HFRONTPORCH_240p60
-  `define HTOTAL_240p60         858
+  `define HTOTAL_240p60         800
   `define VSYNC_active_240p60   1'b0
   `define VFRONTPORCH_240p60    5
   `define VSYNCLEN_240p60       3
@@ -194,11 +194,11 @@
   `define USE_288p50            5'b10000
   `define HSYNC_active_288p50   1'b0
   `define HFRONTPORCH_288p50    12
-  `define HSYNCLEN_288p50       63
-  `define HBACKPORCH_288p50     69
-  `define HACTIVE_288p50        720
+  `define HSYNCLEN_288p50       98
+  `define HBACKPORCH_288p50     56
+  `define HACTIVE_288p50        640
   `define HOVERSCAN_MAX_288p50 `HFRONTPORCH_288p50
-  `define HTOTAL_288p50         864
+  `define HTOTAL_288p50         806
   `define VSYNC_active_288p50   1'b0
   `define VFRONTPORCH_288p50    3
   `define VSYNCLEN_288p50       3
