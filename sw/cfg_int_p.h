@@ -158,10 +158,10 @@ config_t autosave = {
 config_t debug_boot = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_DEBUGBOOT_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_DEBUGBOOT_MAX_VALUE,
-        .getvalue_mask = CFG_DEBUGBOOT_GETMASK
+    .cfg_type        = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_DEBUGBOOT_SETMASK,
+        .clrflag_mask = CFG_DEBUGBOOT_CLRMASK
     },
     .value_string = (const char **) &DebugBoot
 };
