@@ -136,6 +136,7 @@ menu_t vires_screen = {
 #define RES_FUNCTIONS_OFFSET   1
 #define RES_1440P_SELECTION    7
 #define RES_1440WP_SELECTION   8
+#define LLMODE_SELECTION      10
 #define FORCE5060_SELECTION   11
 
 menu_t viscaling_screen = {
@@ -668,8 +669,9 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     if (is_vires_screen(*current_menu)) {
       if ((unlock_1440p == FALSE) && ((current_sel == RES_1440P_SELECTION) || (current_sel == RES_1440WP_SELECTION)))
         (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? RES_1440WP_SELECTION + 1 : RES_1440P_SELECTION - 1;
-      if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == DIRECT) && (current_sel == FORCE5060_SELECTION))
-        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : FORCE5060_SELECTION - 1;
+      if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == DIRECT) &&
+          ((current_sel == FORCE5060_SELECTION) || (current_sel == LLMODE_SELECTION))                  )
+        (*current_menu)->current_selection = (command == CMD_MENU_DOWN) ? 0 : LLMODE_SELECTION - 1;
     }
 
     if (is_viscaling_screen(*current_menu)) {
@@ -820,8 +822,9 @@ int update_cfg_screen(menu_t* current_menu)
 
         // check res screen
         if (is_vires_screen(current_menu)) {
-          if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == DIRECT) && v_run == FORCE5060_SELECTION) {
-            val_select = 0;
+          if ((cfg_get_value(&low_latency_mode,0) == ON || cfg_get_value(&linex_resolution,0) == DIRECT)  &&
+              ((v_run == FORCE5060_SELECTION) || (v_run == LLMODE_SELECTION))                              ) {
+            val_select = (v_run == LLMODE_SELECTION);
             font_color = FONTCOLOR_GREY;
           }
         }
