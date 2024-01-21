@@ -171,12 +171,12 @@ always @(posedge VCLK_i or negedge nVRST_i)
 always @(posedge VCLK_i or negedge nVRST_i)
   if (!nVRST_i) begin
     RpB_L <= {(color_width_o+1){1'b0}};
-    Rref_L[1] = {(color_width_o+1){1'b0}};
-    Gref_L[1] = {(color_width_o+1){1'b0}};
-    Bref_L[1] = {(color_width_o+1){1'b0}};
-    Rref_L[2] = {(color_width_o+1){1'b0}};
-    Gref_L[2] = {(color_width_o+1){1'b0}};
-    Bref_L[2] = {(color_width_o+1){1'b0}};
+    Rref_L[1] <= {(color_width_o+1){1'b0}};
+    Gref_L[1] <= {(color_width_o+1){1'b0}};
+    Bref_L[1] <= {(color_width_o+1){1'b0}};
+    Rref_L[2] <= {(color_width_o+1){1'b0}};
+    Gref_L[2] <= {(color_width_o+1){1'b0}};
+    Bref_L[2] <= {(color_width_o+1){1'b0}};
   end else begin
     RpB_L <= {1'b0,red_i_w} + {1'b0,blue_i_w};  // to pp-stage [0]
     

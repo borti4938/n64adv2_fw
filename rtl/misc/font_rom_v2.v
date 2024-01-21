@@ -66,10 +66,10 @@ reg           rden_r = 1'b0;
 always @(posedge CLK or negedge nRST)
   if (!nRST) begin
     rddata <= 8'h0;
-    rddata_opt[0] = 8'h0;
-    rddata_opt[1] = 8'h0;
-    rddata_opt[2] = 8'h0;
-    rddata_opt[3] = 8'h0;
+    rddata_opt[0] <= 8'h0;
+    rddata_opt[1] <= 8'h0;
+    rddata_opt[2] <= 8'h0;
+    rddata_opt[3] <= 8'h0;
     lsb_addr_r <= 2'h00;
     rden_r <= 1'b0;
   end else begin

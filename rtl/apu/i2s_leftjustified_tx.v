@@ -132,8 +132,8 @@ always @(posedge MCLK_i or negedge nRST_i)
 
     if (&cnt_256x) begin
       if (!ch_o_sel) begin
-        audio_lr_o_tmp[1] = {audio_lr_i[1],{8{audio_lr_i[1][0]}}};
-        audio_lr_o_tmp[0] = {audio_lr_i[0],{8{audio_lr_i[0][0]}}};
+        audio_lr_o_tmp[1] <= {audio_lr_i[1],{8{audio_lr_i[1][0]}}};
+        audio_lr_o_tmp[0] <= {audio_lr_i[0],{8{audio_lr_i[0][0]}}};
       end
       ch_o_sel <= ~ch_o_sel;
       bit_o_sel <= 5'd31;
@@ -145,8 +145,8 @@ always @(posedge MCLK_i or negedge nRST_i)
       init_begin <= 1'b0;
       cnt_256x <= 8'h00;
 
-      audio_lr_o_tmp[1] = {audio_lr_i[1],{8{audio_lr_i[1][0]}}};
-      audio_lr_o_tmp[0] = {audio_lr_i[0],{8{audio_lr_i[0][0]}}};
+      audio_lr_o_tmp[1] <= {audio_lr_i[1],{8{audio_lr_i[1][0]}}};
+      audio_lr_o_tmp[0] <= {audio_lr_i[0],{8{audio_lr_i[0][0]}}};
       ch_o_sel <= 1'b1;
       bit_o_sel <= 5'd31;
 

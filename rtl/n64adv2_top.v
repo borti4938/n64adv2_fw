@@ -160,9 +160,14 @@ input [2:0] PCB_ID_i;
 
 
 // connection wires
+wire N64_CLK_w;
+wire nVDSYNC_w;
+wire [6:0] VD_w, VD_dummies_w;
+wire ALRCLK_w, ASDATA_w, ASCLK_w;
+
 wire [1:0] nRST_Masking_w;
 
-wire N64_nRST_w;
+wire PPU_nRST_w;
 wire HDMI_CLK_w;
 wire HDMI_nRST_w, HDMI_nRST_pp_w;
 wire [1:0] DRAM_CLKs_w;
@@ -191,18 +196,18 @@ wire DRAM_ADDR12_dummy;
 wire [3:0] DRAM_DQ_dummy;
 
 
-// feedback
+// clocks
 
+assign N64_CLK_w = N64_CLK_i;
 assign N64_CLK_o = N64_CLK_i;
+
+
+// deblur output for RGB mods
+
 assign nViDeblur_o = ~PPUConfigSet_w[`videblur_bit];
 
 
 // input registering
-
-wire N64_CLK_w = N64_CLK_i;
-wire nVDSYNC_w;
-wire [6:0] VD_w;
-wire ALRCLK_w, ASDATA_w, ASCLK_w;
 
 register_sync #(
   .reg_width(8),

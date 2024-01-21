@@ -580,7 +580,7 @@ always @(posedge VCLK or negedge nVRST)
     font_pixel_select_4x <= {font_hcnt_width+2{1'b0}};
     font_lineword <= {(`OSD_FONT_WIDTH+1){1'b0}};
     act_char_px <= 1'b0;
-    txt_color = font_color_default;
+    txt_color <= font_color_default;
   end else begin
     if (en_fontrd[6]) begin
       font_pixel_select_4x <= init_font_pixel_select_4x_w;

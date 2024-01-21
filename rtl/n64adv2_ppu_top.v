@@ -369,8 +369,8 @@ register_sync #(
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ConfigSet_w[`lowlatencymode_bit],cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
-  .reg_o({cfg_lowlatencymode_resynced     ,cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
+  .reg_i({sys_llm_w                  ,cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
+  .reg_o({cfg_lowlatencymode_resynced,cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
 
 register_sync #(
@@ -420,7 +420,7 @@ assign videomode_pre_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_T
 assign vid_llm_w = ConfigSet_resynced[`lowlatencymode_bit] | ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P; // force low latency mode in 240p / 288p
 
 always @(posedge VCLK_Tx) begin
-  cfg_videomode <= sys_vmode_pre_w;
+  cfg_videomode <= videomode_pre_w;
   if (vid_llm_w) begin  // do not allow forcing non-native Hz-mode in llm
     cfg_videomode[`VID_CFG_50HZ_BIT] <= palmode;
   end else begin
