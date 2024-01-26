@@ -179,9 +179,9 @@ config_t scaling_steps = {
 config_t region_selection = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = PPU_REGION_CURRENT,
+    .cfg_value    = NTSC,
     .value_details = {
-      .max_value = NUM_REGION_MODES,
+      .max_value = PAL,
     },
     .value_string = (const char **) &NTSCPAL_SEL
 };
@@ -189,9 +189,9 @@ config_t region_selection = {
 config_t timing_selection = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = PPU_TIMING_CURRENT,
+    .cfg_value    = NTSC_PROGRESSIVE,
     .value_details = {
-      .max_value = NUM_TIMING_MODES,
+      .max_value = PAL_INTERLACED,
     },
     .value_string = (const char **) &VTimingSel
 };
@@ -199,9 +199,9 @@ config_t timing_selection = {
 config_t scaling_selection = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = NUMVALUE, // treat as numvalue for modifying function
-    .cfg_value    = PPU_SCALING_CURRENT,
+    .cfg_value    = NTSC_TO_1080,
     .value_details = {
-      .max_value = NUM_SCALING_MODES,
+      .max_value = PAL_TO_1440W,
     },
     .val2char_func = &val2txt_scale_sel_func
 };

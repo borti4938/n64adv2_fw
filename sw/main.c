@@ -52,9 +52,9 @@ typedef struct {
 } periphal_state_t;
 
 //bool_t use_flash;
-cfg_region_sel_type_t vmode_menu, vmode_n64adv, vmode_scaling_menu;
-cfg_timing_model_sel_type_t timing_menu, timing_n64adv;
-cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
+vmode_t vmode_n64adv, vmode_menu, vmode_scaling_menu;
+cfg_timing_model_sel_type_t timing_n64adv, timing_menu;
+cfg_scaler_in2out_sel_type_t scaling_n64adv, scaling_menu;
 
 
 /* ToDo's:
@@ -127,6 +127,26 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
   else return (NTSC_TO_240 + linex_setting);
 }
 
+void load_value_trays(bool_t for_n64adv)
+{
+  if (for_n64adv) {
+    cfg_load_linex_word(vmode_n64adv);
+    cfg_load_timing_word(timing_n64adv);
+    cfg_load_scaling_word(scaling_n64adv);
+  } else {
+    cfg_load_linex_word(vmode_menu);
+    cfg_load_timing_word(timing_menu);
+    cfg_load_scaling_word(scaling_menu);
+  }
+}
+
+void store_value_trays()
+{
+  cfg_store_linex_word(vmode_menu);
+  cfg_store_timing_word(timing_menu);
+  cfg_store_scaling_word(scaling_menu);
+}
+
 int main()
 {
   // initialize menu
@@ -170,10 +190,11 @@ int main()
   }
 
 
-  // setup target resolution and apply config to FPGA
-  cfg_load_linex_word(NTSC);
-  cfg_load_timing_word(NTSC_PROGRESSIVE);
-  cfg_load_scaling_word(get_target_scaler(NTSC));
+  // setup initial target resolution and apply config to FPGA
+  vmode_n64adv = NTSC;
+  timing_n64adv = NTSC_PROGRESSIVE;
+  scaling_n64adv = get_target_scaler(NTSC);
+  load_value_trays(1);
 
   clk_config_t target_resolution, target_resolution_pre;
   target_resolution = get_target_resolution(PAL_PAT0,NTSC);
@@ -232,26 +253,27 @@ int main()
       command = CMD_NON;
     }
 
-    vmode_n64adv = palmode;
-    update_vmode_menu();
-    scaling_n64adv = get_target_scaler(vmode_n64adv);
-    update_scaling_menu();
+
+    // update correct config set for FPGA
+    if (!changed_linex_setting) { // important to check this flag as program cycles 1x through menu after change to set also the scaling correctly
+      linex_word_pre = linex_words[palmode].config_val;
+      vmode_n64adv = palmode; // update only if there is no change in linex config
+    }
     if (vmode_n64adv)
       timing_n64adv = scanmode ? PAL_INTERLACED : PAL_PROGRESSIVE;
     else
       timing_n64adv = scanmode ? NTSC_INTERLACED : NTSC_PROGRESSIVE;
-    update_timing_menu();
+    scaling_n64adv = get_target_scaler(vmode_n64adv);
+
+    // update correct config set for menu
+    vmode_menu = cfg_get_value(&region_selection,0);
     if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
     else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
+    timing_menu = cfg_get_value(&timing_selection,0);
+    scaling_menu = cfg_get_value(&scaling_selection,0);
 
-    if (!changed_linex_setting) // important to check this flag as program cycles 1x through menu after change to set also the scaling correctly
-      linex_word_pre = linex_words[vmode_n64adv].config_val;
 
     if(cfg_get_value(&show_osd,0) && !keep_vout_rst) {
-      cfg_load_linex_word(vmode_menu);
-      cfg_load_timing_word(timing_menu);
-      cfg_load_scaling_word(scaling_menu);
-
       if (message_cnt > 0) {
         if (command != CMD_NON) {
           command = CMD_NON;
@@ -259,6 +281,9 @@ int main()
         }
         message_cnt--;
       }
+
+      // load settings to display correct values for menu
+      load_value_trays(0);
 
       if (video_input_detected_pre && !video_input_detected) {  // go directly to debug screen if no video input is being detected and if not already there
         home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
@@ -279,6 +304,9 @@ int main()
           cfg_clear_flag(&mute_osd_tmp);
           break;
         case NEW_OVERLAY:
+          cfg_set_value(&region_selection,palmode);
+          cfg_set_value(&scaling_selection,scaling_n64adv);
+          cfg_set_value(&timing_selection,timing_n64adv);
           print_overlay(menu);
           message_cnt = 0;
           /* no break */
@@ -297,18 +325,12 @@ int main()
 
       update_cfg_screen(menu);
 
-      if (menu->type == CONFIG) {
-        cfg_store_linex_word(vmode_menu);
-        cfg_store_timing_word(timing_menu);
-        cfg_store_scaling_word(scaling_menu);
-      }
+      if (menu->type == CONFIG) store_value_trays(); // and store everything in case there was a change
 
       if (menu->type == N64DEBUG) update_debug_screen(menu);
       else run_pin_state(0);
 
-      cfg_load_linex_word(vmode_n64adv);
-      cfg_load_timing_word(timing_n64adv);
-      cfg_load_scaling_word(scaling_n64adv);
+      load_value_trays(1); // load settings for FPGA before leaving loop
 
       if (message_cnt == 0) {
         print_cr_info();

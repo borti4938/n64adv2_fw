@@ -52,10 +52,9 @@ typedef enum {
   NTSC_PROGRESSIVE = 0,
   NTSC_INTERLACED,
   PAL_PROGRESSIVE,
-  PAL_INTERLACED,
-  PPU_TIMING_CURRENT
+  PAL_INTERLACED
 } cfg_timing_model_sel_type_t;
-#define NUM_TIMING_MODES  PPU_TIMING_CURRENT
+#define NUM_TIMING_MODES  (PAL_INTERLACED+1)
 
 typedef enum {
   NTSC_TO_240 = 0,
@@ -73,11 +72,10 @@ typedef enum {
   PAL_TO_1080,
   PAL_TO_1200,
   PAL_TO_1440,
-  PAL_TO_1440W,
-  PPU_SCALING_CURRENT
+  PAL_TO_1440W
 } cfg_scaler_in2out_sel_type_t;
 #define NTSC_LAST_SCALING_MODE  NTSC_TO_1440W
-#define NUM_SCALING_MODES       PPU_SCALING_CURRENT
+#define NUM_SCALING_MODES       (PAL_TO_1440W+1)
 
 typedef enum {
   DIRECT = 0,
@@ -592,9 +590,8 @@ alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t
 bool_t confirmation_routine(bool_t question_type);
 int cfg_save_to_flash(bool_t need_confirm);
 int cfg_load_from_flash(bool_t need_confirm);
-void cfg_reset_selections(void);
-void cfg_store_linex_word(cfg_region_sel_type_t palmode_select);
-void cfg_load_linex_word(cfg_region_sel_type_t palmode_select);
+void cfg_store_linex_word(vmode_t palmode_select);
+void cfg_load_linex_word(vmode_t palmode_select);
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);

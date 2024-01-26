@@ -149,10 +149,6 @@ void print_confirm_info(alt_u8 type);
 void print_1440p_unlock_info(void);
 void print_cr_info(void);
 
-void update_vmode_menu(void);
-void update_scaling_menu(void);
-void update_timing_menu(void);
-
 updateaction_t modify_menu(cmd_t command, menu_t** current_menu);
 void print_overlay(menu_t* current_menu);
 void print_selection_arrow(menu_t* current_menu);

@@ -37,17 +37,10 @@ typedef enum {
 typedef bool_t boolean_t;
 
 typedef enum {
-  PPU_NTSC = 0,
-  PPU_PAL,
-  PPU_REGION_CURRENT
-} cfg_region_sel_type_t;
-#define NUM_REGION_MODES  PPU_REGION_CURRENT
-
-typedef enum {
   NTSC = 0,
   PAL
 } vmode_t;
-#define LINEX_TYPES 2
+#define LINEX_MODES (PAL+1)
 
 typedef enum {
   PROGRESSIVE = 0,
