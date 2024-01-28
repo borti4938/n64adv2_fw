@@ -487,9 +487,8 @@ const char *PredefScaleStepsHalf[] __ufmdata_section__ = {"(1.00x)","(1.25x)","(
                                                           "(4.00x)"};
 const char *ScaleVHLink[] __ufmdata_section__ = {"4:3 (PAR 1:1)","CRT (PAR 120:119)","16:9 (PAR 4:3)","Open","10:9","Fixed"};
 
-const char *ColorSpace[] __ufmdata_section__ = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)",};
+const char *ColorSpace[] __ufmdata_section__ = {"RGB","YCbCr (ITU601/SD)","YCbCr (ITU709/HD)","n.a."};
 
-//const char *CopyCfg[] __ufmdata_section__ = {"NTSC->PAL","PAL->NTSC"};
 const char *CopyCfg[] __ufmdata_section__ = {"NTSC  PAL","PAL  NTSC"};
 const char *pcb_rev[] __ufmdata_section__ = {"N64Adv2_20210521","N64Adv2_20220729","N64Adv2_20231119","n.a."};
 
@@ -498,7 +497,7 @@ const alt_u8 Nok_Ok[2] = {CHECKBOX_TICK,HEART};
 const char *ClkSrc[]   __ufmdata_section__ = {"27Mhz","N64"};
 
 const char *NoGameIDDetected  __ufmdata_section__ = "(No game id detected)";
-const char *NoCtrlDetected  __ufmdata_section__ = "No controller detected";
-const char *NoVideoDetected __ufmdata_section__ = "No video input detected";
+const char *NoCtrlDetected    __ufmdata_section__ = "No controller detected";
+const char *NoVideoDetected   __ufmdata_section__ = "No video input detected";
 
 #endif /* MENU_TEXT_TEXTDEFS_P_H_ */

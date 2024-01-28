@@ -156,8 +156,6 @@ int main()
   #ifdef DEBUG
     home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
     menu_t *menu = &debug_screen;
-
-    cfg_clear_words();
     bool_t load_n64_defaults = 1;
   #else
     menu_t *menu = &home_menu;
