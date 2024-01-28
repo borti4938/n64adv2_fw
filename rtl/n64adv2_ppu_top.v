@@ -532,9 +532,9 @@ gamma_module_v2 gamma_module_u (
 // ------
 
 always @(posedge N64_CLK_i) begin
-  n_palmode_change <= ~^palmode_buf;
+  n_palmode_change <= ~^{palmode_buf[1],palmode};
   palmode_buf <= {palmode_buf[0],palmode};
-  n_vdata_detected_change <= ~^vdata_detected_buf;
+  n_vdata_detected_change <= ~^{vdata_detected_buf[1],vdata_detected};
   vdata_detected_buf <= {vdata_detected_buf[0],vdata_detected};
 end
 
