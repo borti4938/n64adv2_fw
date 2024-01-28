@@ -435,10 +435,14 @@ bool_t apply_sl_vert_negoffset(menu_t* current_menu) {
   return (is_slcfg_screen(current_menu) && is_vicfg_h2v_sl_are_linked());
 }
 
+void print_cr_info() {
+  vd_clear_info();
+  vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,copyright_note);
+}
 
 void print_current_timing_mode()
 {
-  vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
+  print_cr_info();
   val2txt_scale_sel_func(scaling_n64adv+NUM_SCALING_MODES); // addition is a hack to trigger .p and .i print
   vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
 
@@ -452,7 +456,7 @@ void print_current_timing_mode()
 }
 
 void print_ctrl_data() {
-  vd_clear_info_area(0,COPYRIGHT_H_OFFSET-1,0,0);
+  print_cr_info();
   if ((n64adv_state & N64ADV_INPUT_CTRL_DETECTED_GETMASK) >> N64ADV_INPUT_CTRL_DETECTED_OFFSET) {
     sprintf(szText,"Ctrl. data: 0x%08x",(uint) ctrl_data);
     vd_print_string(VD_INFO,0,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
@@ -512,11 +516,6 @@ void print_linex_settings() {
 void print_1440p_unlock_info() {
   vd_clear_info();
   vd_print_string(VD_INFO,VD_WIDTH - UNLOCK1140P_H_LENGTH,0,confirm_messages_color[0],Unlock_1440p_Message);;
-}
-
-void print_cr_info() {
-  vd_clear_info_area(COPYRIGHT_H_OFFSET,VD_WIDTH-1,0,0);
-  vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,copyright_note);
 }
 
 //void print_fw_info() {
@@ -763,6 +762,7 @@ void print_selection_arrow(menu_t* current_menu)
 {
   alt_u8 h_l_offset = current_menu->arrow_position;
   alt_u8 v_run, v_offset;
+  const char *clear = "  ";
 
   for (v_run = 0; v_run < current_menu->number_selections; v_run++)
     if (current_menu->leaves[v_run].arrowshape != NULL) {
@@ -771,7 +771,7 @@ void print_selection_arrow(menu_t* current_menu)
         vd_print_char(VD_TEXT,h_l_offset  ,v_offset,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrowshape->left);
         vd_print_char(VD_TEXT,h_l_offset+1,v_offset,FONTCOLOR_WHITE,(char) current_menu->leaves[v_run].arrowshape->right);
       } else {
-        vd_clear_txt_area(h_l_offset,h_l_offset+1,v_offset,v_offset);
+        vd_print_string(VD_TEXT,h_l_offset  ,v_offset,FONTCOLOR_WHITE,clear);
       }
     }
 }

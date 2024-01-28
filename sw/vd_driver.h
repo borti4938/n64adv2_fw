@@ -112,8 +112,6 @@ int vd_print_string(vd_area_t vd_area,alt_u8 horiz_offset,alt_u8 vert_offset,alt
 void vd_clear_hdr(void);
 void vd_wr_hdr(alt_u8 color,const char *string);
 void vd_clear_txt(void);
-void vd_clear_txt_area(alt_u8 horiz_offset_start,alt_u8 horiz_offset_stop,alt_u8 vert_offset_start,alt_u8 vert_offset_stop);
 void vd_clear_info(void);
-void vd_clear_info_area(alt_u8 horiz_offset_start,alt_u8 horiz_offset_stop,alt_u8 vert_offset_start,alt_u8 vert_offset_stop);
 
 #endif /* VD_DRIVER_H_ */

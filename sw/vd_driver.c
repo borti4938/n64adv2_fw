@@ -37,7 +37,7 @@
 #include "config.h"
 
 
-#define EMPTY               0x20
+#define EMPTY 0x20  // just an empty character in menu
 
 const alt_u8 vd_overall_width = VD_WIDTH;
 const alt_u8 vd_overall_height = (VD_HDR_HEIGHT + VD_TXT_HEIGHT + VD_INFO_HEIGHT);
@@ -88,16 +88,6 @@ int vd_print_string_local(alt_u8 horiz_offset, alt_u8 vert_offset, alt_u8 color,
   }
   return 0;
 }
-
-//void vd_mute()
-//{
-//  // ToDo
-//}
-//
-//void vd_unmute()
-//{
-//  // ToDo
-//}
 
 int vd_clear_lineend(vd_area_t vd_area,alt_u8 horiz_offset_start, alt_u8 vert_offset)
 {
@@ -195,23 +185,8 @@ void vd_clear_txt()
   vd_clear_area_local(0,vd_overall_width-1,VD_TXT_AREA_VOFFSET,VD_TXT_AREA_VOFFSET+VD_TXT_HEIGHT-1);
 };
 
-void vd_clear_txt_area(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop)
-{
-  // make sure that area to be cleaned is not part of the info area
-  if (vert_offset_start > VD_TXT_HEIGHT-1) return;
-  alt_u8 tmp_vert_offset_stop = vert_offset_stop;
-  if (vert_offset_stop > VD_TXT_HEIGHT-1) tmp_vert_offset_stop = VD_TXT_HEIGHT-1;
-  // now - go on
-  vd_clear_area_local(horiz_offset_start,horiz_offset_stop,vert_offset_start+VD_TXT_AREA_VOFFSET,tmp_vert_offset_stop+VD_TXT_AREA_VOFFSET);
-};
-
 void vd_clear_info()
 {
   vd_clear_area_local(0,vd_overall_width-1,VD_INFO_AREA_VOFFSET,VD_INFO_AREA_VOFFSET+VD_INFO_HEIGHT-1);
-};
-
-void vd_clear_info_area(alt_u8 horiz_offset_start, alt_u8 horiz_offset_stop, alt_u8 vert_offset_start, alt_u8 vert_offset_stop)
-{
-  vd_clear_area_local(horiz_offset_start,horiz_offset_stop,vert_offset_start+VD_INFO_AREA_VOFFSET,vert_offset_stop+VD_INFO_AREA_VOFFSET);
 };
 

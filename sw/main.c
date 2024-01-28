@@ -337,7 +337,6 @@ int main()
       load_value_trays(1); // load settings for FPGA before leaving loop
 
       if (message_cnt == 0) {
-        print_cr_info();
         if (menu->type == N64DEBUG) print_ctrl_data();
         else print_current_timing_mode();
       }
