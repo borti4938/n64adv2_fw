@@ -72,8 +72,8 @@ typedef enum {
 typedef enum {
   ICONFIG = 0,
   ISUBMENU,
+  CFG_FUNC0,
   CFG_FUNC1,
-  CFG_FUNC3,
   CFG_FUNC4,
   INFO_RET_FUNC0,
   INFO_RET_FUNC1,
@@ -85,13 +85,14 @@ typedef struct {
   alt_u8 right;
 } arrowshape_t;
 
+typedef void    (*cfgfct_call_type_0)(void);
+typedef void    (*cfgfct_call_type_1)(bool_t);
+typedef alt_u16 (*cfgfct_call_type_4)(alt_u16,bool_t,bool_t,bool_t);
+
 typedef int (*sys_call_type_0)(void);
 typedef int (*sys_call_type_1)(bool_t);
 typedef int (*sys_call_type_2)(fallback_vmodes_t,bool_t);
 
-typedef void    (*cfgfct_call_type_1)(bool_t);
-typedef alt_u16 (*cfgfct_call_type_3)(alt_u16,bool_t,bool_t);
-typedef alt_u16 (*cfgfct_call_type_4)(alt_u16,bool_t,bool_t,bool_t);
 
 typedef struct {
   alt_u8              id;
@@ -100,12 +101,12 @@ typedef struct {
   union {
     struct menu         *submenu;
     config_t            *config_value;
+    cfgfct_call_type_0  cfgfct_call_0;
+    cfgfct_call_type_1  cfgfct_call_1;
+    cfgfct_call_type_4  cfgfct_call_4;
     sys_call_type_0     sys_fun_0;
     sys_call_type_1     sys_fun_1;
     sys_call_type_2     sys_fun_2;
-    cfgfct_call_type_1  cfgfct_call_1;
-    cfgfct_call_type_3  cfgfct_call_3;
-    cfgfct_call_type_4  cfgfct_call_4;
   };
 } leaves_t;
 

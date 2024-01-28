@@ -547,7 +547,7 @@ typedef struct {
 
 extern configuration_t sysconfig;
 
-extern config_tray_u8_t linex_words[2];
+extern config_tray_u8_t linex_words[LINEX_MODES+1];
 
 extern config_t swap_led, color_space, limited_colorspace,
                 deblur_mode_powercycle, mode16bit_powercycle, igr_deblur, igr_16bitmode,
@@ -582,7 +582,7 @@ void cfg_inc_value(config_t* cfg_data);
 void cfg_dec_value(config_t* cfg_data);
 alt_u16 cfg_get_value(config_t* cfg_data,cfg_offon_t get_reference);
 void cfg_set_value(config_t* cfg_data, alt_u16 value);
-alt_u16 cfgfct_linex(alt_u16 value, bool_t set_value, bool_t ret_reference);
+void cfg_apply_new_linex(void);
 void cfgfct_unlock1440p(bool_t set_value);
 alt_u8 cfg_scale_is_predefined(alt_u16 value,bool_t use_vertical);
 void cfg_scale_v2h_update(bool_t direction_vh);
@@ -590,8 +590,8 @@ alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t
 bool_t confirmation_routine(bool_t question_type);
 int cfg_save_to_flash(bool_t need_confirm);
 int cfg_load_from_flash(bool_t need_confirm);
-void cfg_store_linex_word(vmode_t palmode_select);
-void cfg_load_linex_word(vmode_t palmode_select);
+void cfg_store_linex_word(vmode_t palmode_select,bool_t skip_extcfg0);
+void cfg_load_linex_word(vmode_t palmode_select,bool_t for_n64adv);
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);

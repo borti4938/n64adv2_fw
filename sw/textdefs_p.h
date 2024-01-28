@@ -69,22 +69,19 @@
 #define CONFIRM_BTN_H_LENGTH  23
 #define UNLOCK1140P_H_LENGTH 41
 
-#define RESCFG_OVERLAY_H_OFFSET     OVERLAY_H_OFFSET
-#define RESCFG_OVERLAY_V_OFFSET     OVERLAY_V_OFFSET
-#define RESCFG_VALS_H_OFFSET        (31 + OVERLAY_H_OFFSET)
-#define RESCFG_VALS_V_OFFSET        OVERLAY_V_OFFSET
-#define RESCFG_INPUT_V_OFFSET       ( 0 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_240P_V_OFFSET        ( 2 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_480P_V_OFFSET        ( 3 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_720P_V_OFFSET        ( 4 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_960P_V_OFFSET        ( 5 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_1080P_V_OFFSET       ( 6 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_1200P_V_OFFSET       ( 7 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_1440P_V_OFFSET       ( 8 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_1440WP_V_OFFSET      ( 9 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_USE_VGA_RES_V_OFFSET (10 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_USE_SRCSYNC_V_OFFSET (11 + RESCFG_VALS_V_OFFSET)
-#define RESCFG_FORCE_5060_V_OFFSET  (12 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_OVERLAY_H_OFFSET             OVERLAY_H_OFFSET
+#define RESCFG_OVERLAY_V_OFFSET             OVERLAY_V_OFFSET
+#define RESCFG_VALS_H_OFFSET                (28 + OVERLAY_H_OFFSET)
+#define RESCFG_VALS_V_OFFSET                OVERLAY_V_OFFSET
+#define RESCFG_INPUT_V_OFFSET               ( 0 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_RESOLUTION_V_OFFSET          ( 2 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_USE_VGA_RES_V_OFFSET         ( 3 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_USE_SRCSYNC_V_OFFSET         ( 4 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_FORCE_5060_V_OFFSET          ( 5 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_TEST_N_APPLY_V_OFFSET        ( 6 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_CURRENT_RESOLUTION_V_OFFSET  ( 9 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_CURRENT_SRCSYNC_V_OFFSET     (10 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_CURRENT_5060_V_OFFSET        (11 + RESCFG_VALS_V_OFFSET)
 
 #define SCALERCFG_OVERLAY_H_OFFSET      OVERLAY_H_OFFSET
 #define SCALERCFG_OVERLAY_V_OFFSET      OVERLAY_V_OFFSET
@@ -225,18 +222,16 @@ static const char *resolution_header __ufmdata_section__ =
     "Resolution";
 static const char *resolution_overlay __ufmdata_section__ =
     "* Input mode:\n"
-    "* Output resolution:\n"
-    "  - 240p/288p ( 4:3):\n"
-    "  - 480p/576p ( 4:3):\n"
-    "  -      720p (16:9):\n"
-    "  -      960p ( 4:3):\n"
-    "  -     1080p (16:9):\n"
-    "  -     1200p ( 4:3):\n"
-    "  -     1440p ( 4:3):\n"
-    "  -     1440p (16:9):\n"
-    "* Use VGA-flag at 480p/576p:\n"
-    "* Frame-Locked mode:\n"
-    "* Force 50Hz/60Hz:";
+    "* New settings:\n"
+    "  - Output resolution:\n"
+    "  - Use VGA-flag in 480p:\n"
+    "  - Frame-locked mode:\n"
+    "  - Force 50Hz/60Hz:\n"
+    "  - Test and apply:\n\n"
+    "* Current settings:\n"
+    "  - Output:\n"
+    "  - Frame-locked mode:\n"
+    "  - Force 50Hz/60Hz:\n\n";
 
 static const char *scaler_header __ufmdata_section__ =
     "Scaler";
@@ -459,33 +454,24 @@ static const char *home_overlay __ufmdata_section__ =
 
 const char *EnterSubMenu  __ufmdata_section__ = "[Enter ...]";
 const char *RunFunction   __ufmdata_section__ = "[Run ...]";
-const char *not_available __ufmdata_section__ = "-----";
-const char *Global        __ufmdata_section__ = "Global";
 
-const char *OffOn[]                 __ufmdata_section__ = {"Off","On"};
-const char *NTSCPAL_SEL[]           __ufmdata_section__ = {"NTSC","PAL"};
-const char *Force5060[]             __ufmdata_section__ = {"Off (N64 Auto)","60Hz","50Hz"};
-const char *Resolutions[]           __ufmdata_section__ = {"240p/288p","480p/576p","720p","960p","1080p","1200p","1440p","1440p w."};
-const char *FallbackRes[]           __ufmdata_section__ = {"1080p","240p/288p","480p/576p"};
-const char *DeInterModes[]          __ufmdata_section__ = {"Frame Drop","Bob","Weave"};
-const char *InterpModes[]           __ufmdata_section__ = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};
-const char *VTimingSel[]            __ufmdata_section__ = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
-const char *ScanlinesCalcBase[]     __ufmdata_section__ = {"Per color based","Luma based"};
-const char *ScanlinesThickness[]    __ufmdata_section__ = {"Adaptive","Thin","Normal","Thick"};
-const char *ScanlinesScaleProfile[] __ufmdata_section__ = {"Hanning","Gaussian","Rectangular"};
+const char *OffOn[]                   __ufmdata_section__ = {"Off","On"};
+const char *NTSCPAL_SEL[]             __ufmdata_section__ = {"NTSC","PAL"};
+const char *Force5060[]               __ufmdata_section__ = {"Off (N64 Auto)","60Hz","50Hz"};
+const char *Resolutions[]             __ufmdata_section__ = {"Direct","480p","720p","960p","1080p","1200p","1440p","1440p w."};
+const char *Resolution576pReplacement __ufmdata_section__ = "576p";
+const char *VGAFLAG[]                 __ufmdata_section__ = {"(Std.)","(VGA)"};
+const char *FallbackRes[]             __ufmdata_section__ = {"1080p","Direct","480p/576p"};
+const char *DeInterModes[]            __ufmdata_section__ = {"Frame Drop","Bob","Weave"};
+const char *InterpModes[]             __ufmdata_section__ = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};
+const char *VTimingSel[]              __ufmdata_section__ = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};
+const char *ScanlinesCalcBase[]       __ufmdata_section__ = {"Per color based","Luma based"};
+const char *ScanlinesThickness[]      __ufmdata_section__ = {"Adaptive","Thin","Normal","Thick"};
+const char *ScanlinesScaleProfile[]   __ufmdata_section__ = {"Hanning","Gaussian","Rectangular"};
 
 const char *RstMasking[] __ufmdata_section__ = {"None","VI pipeline","Audio","VI + Audio"};
 
 const char *DebugBoot[] __ufmdata_section__ = {"Debug at no vi-input","Normal boot"};
-
-const char *VideoMode[]  __ufmdata_section__ = {"240p","480i","288p","576i"};
-const char *VRefresh[]   __ufmdata_section__ = {"@ 60Hz","@ 50Hz"};
-const char *VideoColor[] __ufmdata_section__ = {"21bit (7/7/7)","16bit (5/6/5)"};
-
-const char *ResolutionVGA        __ufmdata_section__ = "VGA (640x480)";
-const char *Resolution240p480p[] __ufmdata_section__ = {"240p","480p"};
-const char *Resolution288p576p[] __ufmdata_section__ = {"288p","576p"};
-const char *text_480i_576i_br    __ufmdata_section__ = "(480i/576i)";
 
 const char *ScaleSteps[]           __ufmdata_section__ = {"0.25x","Pixelwise"};
 const char *PredefScaleSteps[]     __ufmdata_section__ = {"(2.00x)","(2.25x)","(2.50x)","(2.75x)",

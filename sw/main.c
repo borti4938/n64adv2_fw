@@ -52,7 +52,7 @@ typedef struct {
 } periphal_state_t;
 
 //bool_t use_flash;
-vmode_t vmode_n64adv, vmode_menu, vmode_scaling_menu;
+vmode_t vmode_n64adv, vmode_menu, vmode_menu_pre, vmode_scaling_menu;
 cfg_timing_model_sel_type_t timing_n64adv, timing_menu;
 cfg_scaler_in2out_sel_type_t scaling_n64adv, scaling_menu;
 
@@ -129,12 +129,15 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 
 void load_value_trays(bool_t for_n64adv)
 {
+  if (vmode_menu_pre != vmode_menu)
+    linex_words[PAL+1] = linex_words[vmode_menu];
+  vmode_menu_pre = vmode_menu;
   if (for_n64adv) {
-    cfg_load_linex_word(vmode_n64adv);
+    cfg_load_linex_word(vmode_n64adv,for_n64adv);
     cfg_load_timing_word(timing_n64adv);
     cfg_load_scaling_word(scaling_n64adv);
   } else {
-    cfg_load_linex_word(vmode_menu);
+    cfg_load_linex_word(vmode_menu,for_n64adv);
     cfg_load_timing_word(timing_menu);
     cfg_load_scaling_word(scaling_menu);
   }
@@ -142,7 +145,7 @@ void load_value_trays(bool_t for_n64adv)
 
 void store_value_trays()
 {
-  cfg_store_linex_word(vmode_menu);
+  cfg_store_linex_word(vmode_menu,1);
   cfg_store_timing_word(timing_menu);
   cfg_store_scaling_word(scaling_menu);
 }
@@ -305,8 +308,10 @@ int main()
           break;
         case NEW_OVERLAY:
           cfg_set_value(&region_selection,palmode);
+          vmode_menu_pre = (palmode == NTSC); // make sure that we load setting next loop correctly
           cfg_set_value(&scaling_selection,scaling_n64adv);
           cfg_set_value(&timing_selection,timing_n64adv);
+          load_value_trays(0);  // reload needed
           print_overlay(menu);
           message_cnt = 0;
           /* no break */
@@ -330,6 +335,7 @@ int main()
       if (menu->type == N64DEBUG) update_debug_screen(menu);
       else run_pin_state(0);
 
+      linex_words[PAL+1].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);  // save current menu settings
       load_value_trays(1); // load settings for FPGA before leaving loop
 
       if (message_cnt == 0) {

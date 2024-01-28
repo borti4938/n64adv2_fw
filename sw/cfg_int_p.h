@@ -166,6 +166,7 @@ config_t debug_boot = {
     .value_string = (const char **) &DebugBoot
 };
 
+// values without reference values
 config_t scaling_steps = {
     // .cfg_b32word_t* must be NULL to show that this is a local value without reference
     .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function

@@ -115,7 +115,7 @@ config_t linex_resolution = {
         .max_value     = CFG_RESOLUTION_MAX_VALUE,
         .getvalue_mask = CFG_RESOLUTION_GETMASK
     },
-//    .value_string = &Resolutions
+    .value_string = (const char **) &Resolutions
 };
 
 // osd, igr and vi-processing
