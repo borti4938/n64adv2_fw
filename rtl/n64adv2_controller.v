@@ -51,6 +51,7 @@ module n64adv2_controller #(
   I2C_SDA,
   Interrupt_i,
   HDMI_cfg_done_o,
+  HDMI_CLK_ok_i,
 
   run_pincheck_o,
   pincheck_status_i,
@@ -88,6 +89,7 @@ inout       I2C_SCL;
 inout       I2C_SDA;
 input [1:0] Interrupt_i;
 output      HDMI_cfg_done_o;
+input       HDMI_CLK_ok_i;
 
 output run_pincheck_o;
 input [15:0] pincheck_status_i;
@@ -136,6 +138,7 @@ wire [19:0] vd_wrdata_w;
 
 wire FallbackMode_valid_resynced;
 wire [`PPU_State_Width-1:0] PPUState_resynced;
+wire HDMI_CLK_ok_resynced;
 wire ctrl_detected_resynced;
 wire OSD_VSync_resynced;
 
@@ -242,14 +245,14 @@ always @(posedge N64_CLK_i)
 
 
 register_sync #(
-  .reg_width(1 + `PPU_State_Width + 4), // 1 + PPU_State_Width + 1 + 1 + 1 + 1
-  .reg_preset({(1 + `PPU_State_Width + 4){1'b0}})
+  .reg_width(2 + `PPU_State_Width + 4), // 1 + 1 + PPU_State_Width + 1 + 1 + 1 + 1
+  .reg_preset({(2 + `PPU_State_Width + 4){1'b0}})
 ) sync4cpu_u0(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ctrl_detected,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],game_id_valid,FallbackMode_valid,new_ctrl_data[1],OSD_VSync}),
-  .reg_o({ctrl_detected_resynced,PPUState_resynced,game_id_valid_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
+  .reg_i({ctrl_detected,HDMI_CLK_ok_i,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],game_id_valid,FallbackMode_valid,new_ctrl_data[1],OSD_VSync}),
+  .reg_o({ctrl_detected_resynced,HDMI_CLK_ok_resynced,PPUState_resynced,game_id_valid_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
 );
 
 chip_id chip_id_u (
@@ -278,7 +281,7 @@ system_n64adv2 system_u (
   .vd_wrctrl_export(vd_wrctrl_w),
   .vd_wrdata_export(vd_wrdata_w),
   .ctrl_data_in_export(serial_data[2]),
-  .n64adv_state_in_export({ctrl_detected_resynced,PPUState_resynced}),
+  .n64adv_state_in_export({ctrl_detected_resynced,HDMI_CLK_ok_resynced,PPUState_resynced}),
   .fallback_in_export({FallbackMode,FallbackMode_valid_resynced}),
   .cfg_set3_out_export(SysConfigSet3),
   .cfg_set2_out_export(SysConfigSet2),

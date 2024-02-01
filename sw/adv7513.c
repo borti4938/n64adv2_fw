@@ -222,8 +222,6 @@ int check_adv7513()
 }
 
 bool_t init_adv7513() {
-  led_drive(LED_NOK, LED_ON); // LED must be cleared from outside
-  periphals_clr_ready_bit();  // must be set again from external
   if (!ADV_POWER_RDY()) return FALSE;
 
   adv7513_writereg(ADV7513_REG_POWER, 0x10);

@@ -168,6 +168,7 @@ wire ALRCLK_w, ASDATA_w, ASCLK_w;
 wire [1:0] nRST_Masking_w;
 
 wire PPU_nRST_w;
+wire HDMI_CLK_ok_w;
 wire HDMI_CLK_w;
 wire HDMI_nRST_w, HDMI_nRST_pp_w;
 wire [1:0] DRAM_CLKs_w;
@@ -267,6 +268,7 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u (
   .HDMI_cfg_done_i(HDMI_cfg_done_w),
   .HDMI_CLKsub_i(HDMI_CLKsub_i),
   .HDMI_CLKmain_i(HDMI_CLKmain_i),
+  .HDMI_CLK_ok_o(HDMI_CLK_ok_w),
   .HDMI_CLK_o(HDMI_CLK_w),
   .HDMI_nRST_o(HDMI_nRST_w),
   .DRAM_CLKs_o(DRAM_CLKs_w),
@@ -289,6 +291,7 @@ n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u (
   .I2C_SDA(I2C_SDA),
   .Interrupt_i({INT_ADV7513,INT_SI5356}),
   .HDMI_cfg_done_o(HDMI_cfg_done_w),
+  .HDMI_CLK_ok_i(HDMI_CLK_ok_w),
   .run_pincheck_o(run_pincheck_w),
   .pincheck_status_i(pincheck_status_w),
   .APUConfigSet(APUConfigSet),

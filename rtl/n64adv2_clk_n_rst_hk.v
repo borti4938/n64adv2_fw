@@ -49,6 +49,7 @@ module n64adv2_clk_n_rst_hk(
   HDMI_cfg_done_i,
   HDMI_CLKsub_i,
   HDMI_CLKmain_i,
+  HDMI_CLK_ok_o,
   HDMI_CLK_o,
   HDMI_nRST_o,
   
@@ -84,6 +85,7 @@ input HDMI_cfg_done_i;
 input HDMI_CLKsub_i;
 input HDMI_CLKmain_i;
 
+output HDMI_CLK_ok_o;
 output HDMI_CLK_o;
 output HDMI_nRST_o;
 
@@ -150,6 +152,17 @@ reset_generator reset_hdmiclk_u(
   .clk_en(HDMI_clk_en_w),
   .async_nrst_i(HDMI_async_nRST_w),
   .rst_o(HDMI_nRST_o)
+);
+
+register_sync #(
+  .reg_width(1),
+  .reg_preset(1'b0)
+) hdmiclk_ok_u(
+  .clk(HDMI_CLK_w),
+  .clk_en(1'b1),
+  .nrst(HDMI_nRST_o),
+  .reg_i(1'b1),
+  .reg_o(HDMI_CLK_ok_o)
 );
 
 assign HDMI_CLK_o = HDMI_CLK_w;

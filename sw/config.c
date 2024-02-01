@@ -348,7 +348,7 @@ bool_t confirmation_routine(bool_t question_type)
   }
 
   while(1) {
-    loop_sync(0);
+    loop_sync(1); // if we are in this routine, vsync is always running
 
     if ( new_ctrl_available()) {
       update_ctrl_data();

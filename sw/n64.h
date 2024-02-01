@@ -101,7 +101,8 @@
 #define BTN_MENU_ENTER  CTRL_A_SETMASK
 #define BTN_MENU_BACK   CTRL_B_SETMASK
 
-#define N64ADV_INPUT_CTRL_DETECTED_OFFSET     26
+#define N64ADV_INPUT_CTRL_DETECTED_OFFSET     27
+#define N64ADV_HDMI_CLK_OK_OFFSET             26
 #define N64ADV_INPUT_VDATA_DETECTED_OFFSET    25
 #define N64ADV_INPUT_PALPATTERN_OFFSET        24
 #define N64ADV_INPUT_PALMODE_OFFSET           23
@@ -115,8 +116,9 @@
 #define N64ADV_COLOR_16BIT_MODE_OFFSET         4
 #define N64ADV_GAMMA_TABLE_OFFSET              0
 
-#define N64ADV_FEEDBACK_GETALL_MASK           0x7FFFFFF
+#define N64ADV_FEEDBACK_GETALL_MASK           0xFFFFFFF
 #define N64ADV_INPUT_CTRL_DETECTED_GETMASK    (1<<N64ADV_INPUT_CTRL_DETECTED_OFFSET)
+#define N64ADV_HDMI_CLK_OK_GETMASK            (1<<N64ADV_HDMI_CLK_OK_OFFSET)
 #define N64ADV_INPUT_VDATA_DETECTED_GETMASK   (1<<N64ADV_INPUT_VDATA_DETECTED_OFFSET)
 #define N64ADV_INPUT_PALPATTERN_GETMASK       (1<<N64ADV_INPUT_PALPATTERN_OFFSET)
 #define N64ADV_INPUT_PALMODE_GETMASK          (1<<N64ADV_INPUT_PALMODE_OFFSET)
@@ -186,6 +188,7 @@
 #define CTRL_TACK_BIT_OFFSET         0
 
 #define SYNC_INFO_OUT_ALL_MASK      0x3F
+#define PERIPHALS_CFG_RDY_GET_MASK  (1 << PERIPHALS_CFG_RDY_OFFSET)
 #define PERIPHALS_CFG_RDY_SET_MASK  (1 << PERIPHALS_CFG_RDY_OFFSET)
 #define PERIPHALS_CFG_RDY_CLR_MASK  (~PERIPHALS_CFG_RDY_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
 #define EXT_INFO_GET_MASK           (0x7 << EXT_INFO_SEL_OFFSET)
@@ -207,9 +210,6 @@
   #define HDL_FW_GETSUB_MASK  (0x0FF << HDL_FW_SUB_OFFSET)
 
 #define CTRL_IGNORE_FRAMES 10
-
-#define WAIT_2MS    2000
-#define WAIT_500US  500
 
 
 typedef enum {
@@ -242,8 +242,10 @@ extern cfg_pal_pattern_t pal_pattern;
 extern vmode_t palmode;
 extern scanmode_t scanmode;
 extern bool_t hor_hires;
+extern bool_t hdmi_clk_ok;
 
 extern alt_u8 game_id[10];
+
 
 void periphals_clr_ready_bit(void);
 void periphals_set_ready_bit(void);
@@ -255,8 +257,7 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip);
 void loop_sync(bool_t with_escape);
 int resync_vi_pipeline(void);
 bool_t new_ctrl_available(void);
-bool_t get_fallback_mode(void);
-bool_t is_fallback_mode_valid(void);
+alt_u8 get_fallback_mode(void);
 bool_t get_game_id(void);
 alt_u32 get_chip_id(cfg_offon_t msb_select);
 alt_u16 get_hw_version(void);

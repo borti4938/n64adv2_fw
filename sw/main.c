@@ -56,6 +56,7 @@ vmode_t vmode_n64adv, vmode_menu, vmode_menu_pre, vmode_scaling_menu;
 cfg_timing_model_sel_type_t timing_n64adv, timing_menu;
 cfg_scaler_in2out_sel_type_t scaling_n64adv, scaling_menu;
 
+extern alt_u8 info_sync_val;
 
 /* ToDo's:
  * - Display warning messages
@@ -168,7 +169,7 @@ int main()
   #ifdef DEBUG
     home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
     menu_t *menu = &debug_screen;
-    bool_t load_n64_defaults = 1;
+    bool_t load_n64_defaults = TRUE;
   #else
     menu_t *menu = &home_menu;
 
@@ -178,17 +179,19 @@ int main()
     bool_t load_n64_defaults = (cfg_load_from_flash(0) != 0);
   #endif
 
-  while (is_fallback_mode_valid() == FALSE) {};
-  fallback_vmodes_t use_fallback = (fallback_vmodes_t) get_fallback_mode(); // returns either 0 or 1 (not associated to 1080p, 240p and 480p Fallback mode)
+  alt_u8 use_fallback;
+  do {
+    use_fallback = get_fallback_mode();
+  } while (use_fallback == 0);
 
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
-    cfg_load_defaults(2*use_fallback,0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
+    cfg_load_defaults((use_fallback & 0x2),0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
     cfg_set_flag(&igr_reset); // handle a bit different from other defaults
     cfg_update_reference();
     open_osd_main(&menu);
   } else {
-    if (use_fallback > 0) {
+    if (use_fallback > 1) {
       cfg_load_defaults(cfg_get_value(&fallbackmode,0),0);  // load the desired default settings
       open_osd_main(&menu);
     } else {
@@ -215,13 +218,14 @@ int main()
 
   cfg_apply_to_logic();
 
-
-  // update N64Adv2 state
-  bool_t video_input_detected_pre = TRUE;
-  update_n64adv_state(); // also update commonly used ppu states (video_input_detected, palmode, scanmode, linemult_mode)
+  // N64Adv2 state variable
+  bool_t video_input_detected_pre;
   vmode_t palmode_pre = palmode;
   bool_t unlock_1440p_pre = unlock_1440p;
 
+  // set LEDs
+  led_drive(LED_OK, LED_OFF);
+  led_drive(LED_NOK, LED_ON);
 
   // initialize I2C and periphal states
   // periphal devices will be initialized during event loop
@@ -230,18 +234,22 @@ int main()
   periphal_state_t periphal_state = {FALSE,FALSE,FALSE,FALSE};
   periphals_clr_ready_bit();
 
+  // check for I2C devices
+  do {
+    periphal_state.si5356_i2c_up = check_si5356() == 0;
+  } while(!periphal_state.si5356_i2c_up);
+  init_si5356();
 
-  // set LEDs
-  led_drive(LED_OK, LED_OFF);
-  led_drive(LED_NOK, LED_ON);
+  do {
+    periphal_state.adv7513_i2c_up = check_adv7513() == 0;
+  } while(!periphal_state.adv7513_i2c_up);
 
 
   // define some variables for housekeeping
   cmd_t command;
   updateaction_t todo = NON;
 
-  bool_t i2c_devs_ok = FALSE;
-  bool_t keep_vout_rst = TRUE;
+  info_sync_val = 0;
   bool_t ctrl_ignore = 0;
 
   bool_t igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
@@ -251,12 +259,22 @@ int main()
   bool_t changed_linex_setting = FALSE;
   bool_t undo_changed_linex_setting = FALSE;
 
+  bool_t led_set_ok = FALSE;
   bool_t game_id_txed = FALSE;
 
+  // set some basic variables for operation
   message_cnt = 0;
 
   /* Event loop never exits. */
   while (1) {
+    video_input_detected_pre = video_input_detected;
+    palmode_pre = palmode;
+    target_resolution_pre = target_resolution;
+    unlock_1440p_pre = unlock_1440p;
+    update_n64adv_state(); // also update commonly used ppu states (video_input_detected, palmode, scanmode, linemult_mode)
+
+    loop_sync(hdmi_clk_ok); // as soon as we have an hdmi clock (i2c devices are ready then),
+                            // the FPGA will produces sync signal, no matter we have an input signal detected or not
 
     if (new_ctrl_available() && !ctrl_ignore) {
       update_ctrl_data();
@@ -280,13 +298,13 @@ int main()
 
     // update correct config set for menu
     vmode_menu = cfg_get_value(&region_selection,0);
-    if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
-    else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
     timing_menu = cfg_get_value(&timing_selection,0);
     scaling_menu = cfg_get_value(&scaling_selection,0);
+    if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
+    else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
 
 
-    if(cfg_get_value(&show_osd,0) && !keep_vout_rst) {
+    if(cfg_get_value(&show_osd,0) && hdmi_clk_ok) {
       if (message_cnt > 0) {
         if (command != CMD_NON) {
           command = CMD_NON;
@@ -309,6 +327,7 @@ int main()
       switch (todo) {
         case MENU_CLOSE:
           cfg_clear_flag(&show_osd);
+          if (cfg_get_value(&autosave,0)) cfg_save_to_flash(0);
           break;
         case MENU_MUTE:
           cfg_set_flag(&mute_osd_tmp);
@@ -356,7 +375,7 @@ int main()
     } else { /* ELSE OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
       todo = NON;
 
-      if (!keep_vout_rst) {
+      if (hdmi_clk_ok) {
         if (video_input_detected_pre && !video_input_detected) {  // open menu in debug screen if no video input is being detected
           command = CMD_OPEN_MENU;
           home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
@@ -396,7 +415,7 @@ int main()
               break;
           }
 
-    } /* END OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
+    } /* END OF if(cfg_get_value(&show_osd,0) && hdmi_clk_ok) */
 
     if (cfg_get_value(&lock_menu,0)) {
       if (!lock_menu_pre) igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
@@ -409,38 +428,31 @@ int main()
 
     cfg_apply_to_logic();
 
-    if ((todo == MENU_CLOSE) && cfg_get_value(&autosave,0))
-      cfg_save_to_flash(0);
-
-    if (!periphal_state.si5356_i2c_up)
-      periphal_state.si5356_i2c_up = check_si5356() == 0;
-    else
-      periphal_state.si5356_locked = SI5356_PLL_LOCKSTATUS();
-
     target_resolution = get_target_resolution(pal_pattern,palmode);
 
-    if (!periphal_state.si5356_locked) {
-      i2c_devs_ok = FALSE;
-      periphal_state.si5356_locked = init_si5356(target_resolution);
-    } else if (target_resolution_pre != target_resolution) {
-      i2c_devs_ok = FALSE;
-      configure_clk_si5356(target_resolution);
+    // check up routines for si5356
+    if (!SI5356_PLL_LOCKSTATUS() || (target_resolution_pre != target_resolution)) {
+      led_drive(LED_NOK, LED_ON);
+      periphals_clr_ready_bit();
+      led_set_ok = FALSE;
+      periphal_state.si5356_locked = configure_clk_si5356(target_resolution);
     }
 
+    // check up routines for adv7513
+    if (periphal_state.adv7513_hdmi_up) {
+      periphal_state.adv7513_hdmi_up = (ADV_HPD_STATE() && ADV_MONITOR_SENSE_STATE());
+    }
+    if (!periphal_state.adv7513_hdmi_up) {
+      led_drive(LED_NOK, LED_ON);
+      periphals_clr_ready_bit();
+      led_set_ok = FALSE;
+      periphal_state.adv7513_hdmi_up = init_adv7513();
+    }
 
-    if (!periphal_state.adv7513_i2c_up)
-      periphal_state.adv7513_i2c_up = check_adv7513() == 0;
-
-    if (periphal_state.adv7513_i2c_up) {
-      if (!periphal_state.adv7513_hdmi_up) {
-          i2c_devs_ok = FALSE;
-          periphal_state.adv7513_hdmi_up = init_adv7513();
-      } else if (!ADV_HPD_STATE() || !ADV_MONITOR_SENSE_STATE()) {
-        i2c_devs_ok = FALSE;
-        periphal_state.adv7513_hdmi_up = FALSE;
-      } else if ((palmode_pre != palmode) || (undo_changed_linex_setting) || (todo == NEW_CONF_VALUE)) {
-        i2c_devs_ok = FALSE;
+    if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) { // all ok let's setup register settings in adv and  game-idperiphals_set_ready_bit();
+      if (!led_set_ok || (palmode_pre != palmode) || (undo_changed_linex_setting) || (todo == NEW_CONF_VALUE)) {
         set_cfg_adv7513();
+        led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
       if (get_game_id()) {
         if (!game_id_txed) set_vsif(1);
@@ -449,6 +461,12 @@ int main()
         set_vsif(0);
         game_id_txed = FALSE;
       }
+
+      periphals_set_ready_bit();
+      if (!led_set_ok) led_drive(LED_OK,LED_ON);
+      if (get_led_timout(LED_OK) == 0) led_drive(LED_OK,LED_OFF);
+      else dec_led_timeout(LED_OK);
+      led_set_ok = TRUE;
     }
 
     if ((unlock_1440p_pre != unlock_1440p) && (unlock_1440p == TRUE)) {
@@ -456,20 +474,9 @@ int main()
       message_cnt = CONFIRM_SHOW_CNT_MID;
     }
 
-    if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) {
-      if (!i2c_devs_ok) led_drive(LED_OK,LED_ON);
-      if (get_led_timout(LED_OK) == 0) led_drive(LED_OK,LED_OFF);
-      else dec_led_timeout(LED_OK);
-      i2c_devs_ok = TRUE;
-    }
-
-    keep_vout_rst = !periphal_state.si5356_locked ||
-                    !periphal_state.adv7513_hdmi_up ||
-                    init_phase; // do not output during initial phase
-    if (!keep_vout_rst) {
-      periphals_set_ready_bit();
+    if (hdmi_clk_ok) {
       if (menu->type != N64DEBUG) { // LEDs are not under control by Debug-Screen
-        if (video_input_detected) {
+        if (video_input_detected & led_set_ok) {
           clear_led_timeout(LED_NOK);
           led_drive(LED_NOK,LED_OFF);
         } else {
@@ -496,13 +503,7 @@ int main()
       changed_linex_setting = (linex_word_pre != linex_words[vmode_n64adv].config_val);
     }
 
-    loop_sync(keep_vout_rst);
 
-    video_input_detected_pre = video_input_detected;
-    palmode_pre = palmode;
-    target_resolution_pre = target_resolution;
-    unlock_1440p_pre = unlock_1440p;
-    update_n64adv_state();
   }
 
   return 0;

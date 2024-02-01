@@ -39,10 +39,13 @@
 #include "vd_driver.h"
 #include "si5356.h"
 
-#define VIN_BOOT_DETECTION_TIMEOUT  512
+#define VIN_MIN_INIT_LENGTH           5
+#define VIN_BOOT_DETECTION_TIMEOUT  255
 #define VIN_DETECTION_TIMEOUT        15
 
-#define ANALOG_TH     50
+#define WAIT_20MS   20000
+
+#define ANALOG_TH   50
 
 #define HOLD_CNT_LOW	3
 #define HOLD_CNT_MID	7
@@ -67,7 +70,6 @@ typedef enum {
 } ext_info_sel_t;
 
 bool_t init_phase;
-
 alt_u8 info_sync_val;
 alt_u32 ctrl_data;
 alt_u32 n64adv_state;
@@ -76,6 +78,7 @@ cfg_pal_pattern_t pal_pattern;
 vmode_t palmode;
 scanmode_t scanmode;
 bool_t hor_hires;
+bool_t hdmi_clk_ok;
 
 alt_u8 game_id[10];
 
@@ -107,21 +110,22 @@ alt_u16 get_pin_state()
 void update_n64adv_state()
 {
   static bool_t boot_mask_video_input_detection = FALSE;
-  static alt_u16 vin_detection_timeout = VIN_BOOT_DETECTION_TIMEOUT;
+  static alt_u8 vin_detection_timeout = VIN_BOOT_DETECTION_TIMEOUT;
 
   n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
   video_input_detected = TRUE;
   if ((n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET) {
+    init_phase = vin_detection_timeout > VIN_BOOT_DETECTION_TIMEOUT-VIN_MIN_INIT_LENGTH;  // need some main loop cycles with init_phase being enabled. Otherwise program will deadlock
+//    init_phase = FALSE;  // need some main loop cycles with init_phase being enabled. Otherwise program will deadlock
     if (vin_detection_timeout < VIN_DETECTION_TIMEOUT) {
       vin_detection_timeout = VIN_DETECTION_TIMEOUT;
       boot_mask_video_input_detection = FALSE;
     } else {
       vin_detection_timeout--;
     }
-    init_phase = FALSE;
   } else {
     init_phase = vin_detection_timeout > VIN_DETECTION_TIMEOUT;
-    if (vin_detection_timeout > VIN_DETECTION_TIMEOUT) boot_mask_video_input_detection = (bool_t) cfg_get_value(&debug_boot,0);
+    if (init_phase) boot_mask_video_input_detection = (bool_t) cfg_get_value(&debug_boot,0);
     if (vin_detection_timeout == 0) video_input_detected = boot_mask_video_input_detection;
     else vin_detection_timeout--;
   }
@@ -129,6 +133,8 @@ void update_n64adv_state()
   palmode = ((n64adv_state & N64ADV_INPUT_PALMODE_GETMASK) >> N64ADV_INPUT_PALMODE_OFFSET);
   scanmode = ((n64adv_state & N64ADV_INPUT_INTERLACED_GETMASK) >> N64ADV_INPUT_INTERLACED_OFFSET);
   hor_hires = (scanmode == INTERLACED) || ((n64adv_state & N64ADV_240P_DEBLUR_GETMASK) == 0);
+
+  hdmi_clk_ok = ((n64adv_state & N64ADV_HDMI_CLK_OK_GETMASK) >> N64ADV_HDMI_CLK_OK_OFFSET);
 }
 
 void update_ctrl_data()
@@ -257,30 +263,18 @@ cmd_t ctrl_data_to_cmd(bool_t no_fast_skip)
   return CMD_NON;
 }
 
-bool_t get_vsync_cpu()
+inline bool_t get_vsync_cpu()
 {
   return (IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NVSYNC_IN_MASK);
 };
 
-void loop_sync(bool_t with_escape) {
-  alt_u8 loop_delay_cnt;
-
-  loop_delay_cnt = 9;
-  while(!get_vsync_cpu()){  /* wait for nVSYNC_CPU goes high (active OSD) */
-    if (with_escape) {
-      usleep(WAIT_2MS);
-      if (loop_delay_cnt == 0) break; // escape after 18ms
-      loop_delay_cnt--;
-    };
-  };
-  loop_delay_cnt = 3;
-  while( get_vsync_cpu()){  /* wait for nVSYNC_CPU goes low  (inactive OSD) */
-    if (with_escape) {
-      usleep(WAIT_500US);
-      if (loop_delay_cnt == 0) break; // escape after 1.5ms
-      loop_delay_cnt--;
-    }
-  };
+void loop_sync(bool_t use_vsync) {
+  if (use_vsync) {
+    while(!get_vsync_cpu()){}  /* wait for nVSYNC_CPU goes high (active OSD) */
+    while( get_vsync_cpu()){}  /* wait for nVSYNC_CPU goes low  (inactive OSD) */
+  } else {
+    usleep(WAIT_20MS);
+  }
 }
 
 int resync_vi_pipeline()
@@ -299,14 +293,9 @@ bool_t new_ctrl_available()
   return ((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & NEW_CTRL_DATA_IN_MASK) == NEW_CTRL_DATA_IN_MASK);
 };
 
-bool_t get_fallback_mode()
+alt_u8 get_fallback_mode()
 {
-  return ((IORD_ALTERA_AVALON_PIO_DATA(FALLBACK_IN_BASE) & FALLBACK_GETALL_MASK) >> FALLBACKMODE_OFFSET);
-};
-
-bool_t is_fallback_mode_valid()
-{
-  return (IORD_ALTERA_AVALON_PIO_DATA(FALLBACK_IN_BASE) & FALLBACKMODE_VALID_GETMASK);
+  return (IORD_ALTERA_AVALON_PIO_DATA(FALLBACK_IN_BASE) & FALLBACK_GETALL_MASK);
 };
 
 alt_u32 get_chip_id(cfg_offon_t msb_select)
