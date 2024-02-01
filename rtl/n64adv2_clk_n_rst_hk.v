@@ -93,8 +93,6 @@ output nARST_o;
 
 // PPU Input Reset
 // ===============
-wire nRST_video_masked_w = nRST_Masking_i[0] | N64_nRST_i;
-
 reg n64_en = 1'b0;
 reg [7:0] n64boot_delay = 8'hff;
 
@@ -104,12 +102,12 @@ always @(posedge N64_CLK_i)
     n64boot_delay <= n64boot_delay - 4'h1;
   end
 
+wire nRST_video_masked_w = n64_en & (nRST_Masking_i[0] | N64_nRST_i);
 reset_generator #(
   .rst_length(4)
 ) reset_n64clk_u(
   .clk(N64_CLK_i),
-//  .clk_en(1'b1),
-  .clk_en(n64_en),
+  .clk_en(1'b1),
   .async_nrst_i(nRST_video_masked_w),
   .rst_o(PPU_nRST_o)
 );
@@ -132,7 +130,7 @@ altclkctrl altclkctrl_u (
 
 reset_generator reset_hdmiclk_u(
   .clk(HDMI_CLK_w),
-  .clk_en(HDMI_clk_en_w),
+  .clk_en(1'b1),
   .async_nrst_i(HDMI_async_nRST_w),
   .rst_o(HDMI_nRST_o)
 );
@@ -176,13 +174,13 @@ system_pll sys_pll_u(
 // DRAM
 // ----
 
-wire DRAM_async_nRST_w = n64_en;
+wire DRAM_async_nRST_w = n64_en & SYS_PLL_LOCKED_w;
 
 assign DRAM_CLKs_o = {DRAM_CLK_w,DRAM_CLK_int_w};
 
 reset_generator reset_dramclk_u(
   .clk(DRAM_CLK_w),
-  .clk_en(SYS_PLL_LOCKED_w),
+  .clk_en(1'b1),
   .async_nrst_i(DRAM_async_nRST_w),
   .rst_o(DRAM_nRST_o)
 );
@@ -202,16 +200,18 @@ always @(posedge SYS_CLK_i)
     end
   end
 
+wire nRST_sys_masked_w = n64_en & sys_en & SYS_PLL_LOCKED_w;
+
 reset_generator reset_sys_60M_u(
   .clk(SYS_CLK_1_w),
-  .clk_en(SYS_PLL_LOCKED_w),
-  .async_nrst_i(sys_en),      // special situation here; this reset is only used for soft-CPU (NIOS II), which only resets on power cycle
+  .clk_en(1'b1),
+  .async_nrst_i(nRST_sys_masked_w),
   .rst_o(nSRST_o[1])
 );
 
 reset_generator reset_sys_4M_u(
   .clk(SYS_CLK_0_w),
-  .clk_en(n64_en),
+  .clk_en(1'b1),
   .async_nrst_i(N64_nRST_i),
   .rst_o(nSRST_o[0])
 );
@@ -223,11 +223,11 @@ assign CLKs_controller_o = {SYS_CLK_1_w,SYS_CLK_0_w};
 // Audio
 // =====
 
-wire nRST_audio_masked_w = nRST_Masking_i[1] | N64_nRST_i;
+wire nRST_audio_masked_w = n64_en & (nRST_Masking_i[1] | N64_nRST_i);
 
 reset_generator reset_aclk_u(
   .clk(AMCLK_i),
-  .clk_en(n64_en),
+  .clk_en(1'b1),
   .async_nrst_i(nRST_audio_masked_w),
   .rst_o(nARST_o)
 );

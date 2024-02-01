@@ -81,7 +81,7 @@ wire audio_swap_lr;
 wire audio_spdif_en;
 wire audio_hdmi_en;
 
-wire nRst_int_w;
+wire nARst_int_w, nRst_int_w;
 
 wire signed [15:0] PDATA [0:1];
 wire PDATA_VALID;
@@ -121,7 +121,14 @@ register_sync #(
   .reg_o({audio_filter_bypass,audio_mute,audio_level_amp,audio_swap_lr,audio_spdif_en,audio_hdmi_en})
 );
 
-assign nRst_int_w = nRST_i & (audio_spdif_en | audio_hdmi_en);
+assign nARst_int_w = nRST_i & (audio_spdif_en | audio_hdmi_en);
+
+reset_generator reset_aclk_u(
+  .clk(MCLK_i),
+  .clk_en(1'b1),
+  .async_nrst_i(nARst_int_w),
+  .rst_o(nRst_int_w)
+);
 
 // parallization
 
