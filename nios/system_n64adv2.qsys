@@ -663,7 +663,7 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="2" />
  </module>
- <module name="i2c_master" kind="i2c_opencores" version="21.1" enabled="1" />
+ <module name="i2c_master" kind="i2c_opencores" version="22.1" enabled="1" />
  <module
    name="info_sync_out"
    kind="altera_avalon_pio"

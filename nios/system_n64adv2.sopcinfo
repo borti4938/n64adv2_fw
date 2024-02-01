@@ -6666,7 +6666,7 @@ parameters are a RESULT of the module parameters. -->
  <module
    name="i2c_master"
    kind="i2c_opencores"
-   version="21.1"
+   version="22.1"
    path="i2c_master">
   <!-- Describes a single module. Module parameters are
 the requested settings for a module instance. -->
@@ -21662,7 +21662,7 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
   <displayName>I2C Master (opencores.org)</displayName>
-  <version>21.1</version>
+  <version>22.1</version>
  </plugin>
  <plugin>
   <instanceCount>3</instanceCount>
