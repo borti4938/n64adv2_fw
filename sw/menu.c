@@ -1020,6 +1020,11 @@ int update_debug_screen(menu_t* current_menu)
   sprintf(szText,"(Source: %s)",ClkSrc[cfg_get_value(&low_latency_mode,0)]);
   vd_print_string(VD_TEXT,N64DEBUG_PIN_PLL_SRC_H_OFFSET,N64DEBUG_PIN_CLK_LINE0_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
+  #ifdef DEBUG
+    sprintf(szText,"(Vid. timeout cnt.: %u)",vid_timeout_cnt);
+    vd_print_string(VD_TEXT,VD_WIDTH - strlen(&szText[0]),N64DEBUG_FUNC_V_OFFSET+2,FONTCOLOR_WHITE,&szText[0]);
+  #endif
+
 //  // for testing, if positions are right
 //  alt_u8 position_to_test = PIN_STATE_SYSCLK_OFFSET;
 //  sprintf(szText,"-");

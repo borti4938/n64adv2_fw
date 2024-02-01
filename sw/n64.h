@@ -232,6 +232,9 @@ typedef enum {
 } cmd_t;
 
 extern bool_t init_phase;
+#ifdef DEBUG
+  extern alt_u16 vid_timeout_cnt;
+#endif
 
 extern alt_u8 info_sync_val;
 extern alt_u32 ctrl_data;

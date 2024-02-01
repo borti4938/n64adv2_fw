@@ -82,6 +82,9 @@ bool_t hdmi_clk_ok;
 
 alt_u8 game_id[10];
 
+#ifdef DEBUG
+  alt_u16 vid_timeout_cnt;
+#endif
 
 void periphals_clr_ready_bit() {
   info_sync_val = info_sync_val & PERIPHALS_CFG_RDY_CLR_MASK;
@@ -128,6 +131,9 @@ void update_n64adv_state()
     if (init_phase) boot_mask_video_input_detection = (bool_t) cfg_get_value(&debug_boot,0);
     if (vin_detection_timeout == 0) video_input_detected = boot_mask_video_input_detection;
     else vin_detection_timeout--;
+    #ifdef DEBUG
+      vid_timeout_cnt++;
+    #endif
   }
   pal_pattern = ((n64adv_state & N64ADV_INPUT_PALPATTERN_GETMASK) >> N64ADV_INPUT_PALPATTERN_OFFSET);
   palmode = ((n64adv_state & N64ADV_INPUT_PALMODE_GETMASK) >> N64ADV_INPUT_PALMODE_OFFSET);

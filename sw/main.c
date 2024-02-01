@@ -264,6 +264,9 @@ int main()
 
   // set some basic variables for operation
   message_cnt = 0;
+#ifdef DEBUG
+  vid_timeout_cnt = 0;
+#endif
 
   /* Event loop never exits. */
   while (1) {
