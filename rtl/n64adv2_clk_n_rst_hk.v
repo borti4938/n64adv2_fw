@@ -40,15 +40,10 @@ module n64adv2_clk_n_rst_hk(
   
   PPU_nRST_o,
   
-  N64_palmode,
-  N64_interlaced,
-  lowlatencymode,
-  use_vga_for_480p,
-  target_resolution,
-  
   HDMI_cfg_done_i,
   HDMI_CLKsub_i,
   HDMI_CLKmain_i,
+  HDMI_CLK_sel_i,
   HDMI_CLK_ok_o,
   HDMI_CLK_o,
   HDMI_nRST_o,
@@ -75,15 +70,10 @@ input SYS_CLK_i;
 
 output PPU_nRST_o;
 
-input N64_palmode;
-input N64_interlaced;
-input lowlatencymode;
-input use_vga_for_480p;
-input [2:0] target_resolution;
-
 input HDMI_cfg_done_i;
 input HDMI_CLKsub_i;
 input HDMI_CLKmain_i;
+input HDMI_CLK_sel_i;
 
 output HDMI_CLK_ok_o;
 output HDMI_CLK_o;
@@ -125,25 +115,18 @@ reset_generator #(
 );
 
 
+
 // HDMI
 // ====
 
-reg HDMI_CLK_sel_cmb;
-wire HDMI_clk_en_w = n64_en & HDMI_cfg_done_i;
 wire HDMI_async_nRST_w = nRST_video_masked_w & HDMI_cfg_done_i;
 wire HDMI_CLK_w;
-
-always @(*) begin
-  if (lowlatencymode) // in low latency mode, N64_interlaced determines the clock selection
-    HDMI_CLK_sel_cmb <= N64_interlaced;
-  else
-    HDMI_CLK_sel_cmb <= 1'b0;
-end
 
 altclkctrl altclkctrl_u (
   .inclk0x(HDMI_CLKsub_i),
   .inclk1x(HDMI_CLKmain_i),
-  .clkselect(~HDMI_CLK_sel_cmb),
+  .clkselect(~HDMI_CLK_sel_i),
+  .ena(HDMI_cfg_done_i),
   .outclk(HDMI_CLK_w)
 );
 

@@ -168,6 +168,7 @@ wire ALRCLK_w, ASDATA_w, ASCLK_w;
 wire [1:0] nRST_Masking_w;
 
 wire PPU_nRST_w;
+wire HDMI_CLK_sel_w;
 wire HDMI_CLK_ok_w;
 wire HDMI_CLK_w;
 wire HDMI_nRST_w, HDMI_nRST_pp_w;
@@ -260,14 +261,10 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u (
   .nRST_Masking_i(nRST_Masking_w),
   .SYS_CLK_i(SYS_CLK_i),
   .PPU_nRST_o(PPU_nRST_w),
-  .N64_palmode(PPUState_w[`PPU_input_pal_bit]),
-  .N64_interlaced(PPUState_w[`PPU_input_interlaced_bit]),
-  .lowlatencymode(PPUState_w[`PPU_output_lowlatencymode_bit]),
-  .use_vga_for_480p(PPUConfigSet_w[`use_vga_for_480p_bit]),
-  .target_resolution(PPUConfigSet_w[`target_resolution_slice]),
   .HDMI_cfg_done_i(HDMI_cfg_done_w),
   .HDMI_CLKsub_i(HDMI_CLKsub_i),
   .HDMI_CLKmain_i(HDMI_CLKmain_i),
+  .HDMI_CLK_sel_i(HDMI_CLK_sel_w),
   .HDMI_CLK_ok_o(HDMI_CLK_ok_w),
   .HDMI_CLK_o(HDMI_CLK_w),
   .HDMI_nRST_o(HDMI_nRST_w),
@@ -278,6 +275,7 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u (
   .AMCLK_i(AMCLK_i),
   .nARST_o(nARST_w)
 );
+
 
 // controller module
 
@@ -326,6 +324,7 @@ n64adv2_ppu_top #(
   .OSDWrVector(OSDWrVector_w),
   .OSDInfo(OSDInfo_w),
   .scaler_nresync_i(HDMI_cfg_done_w),
+  .VCLK_sel_o(HDMI_CLK_sel_w),
   .VCLK_Tx(HDMI_CLK_w),
   .nVRST_Tx_i(HDMI_nRST_w),
   .nVRST_Tx_o(HDMI_nRST_pp_w),
@@ -370,7 +369,6 @@ assign HDMI_CLK_o = HDMI_CLK_w;
        VD_o <= VD_o_w;
   end
 `endif
-
 
 // audio processing module
 

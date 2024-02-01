@@ -61,6 +61,7 @@ module n64adv2_ppu_top #(
   scaler_nresync_i,
 
   // VCLK for video output
+  VCLK_sel_o,
   VCLK_Tx,
   nVRST_Tx_i,
   nVRST_Tx_o,
@@ -109,6 +110,7 @@ input [ 1:0] OSDInfo;
 
 input scaler_nresync_i;
 
+output VCLK_sel_o;
 input VCLK_Tx;
 input nVRST_Tx_i;
 output nVRST_Tx_o;
@@ -241,6 +243,13 @@ assign PPUState[`PPU_output_lowlatencymode_bit] = sys_llm_w;
 assign PPUState[`PPU_240p_deblur_bit]           = ~cfg_nvideblur;
 assign PPUState[`PPU_color_16bit_mode_bit]      = ~cfg_n16bit_mode;
 assign PPUState[`PPU_gamma_table_slice]         = cfg_gamma;
+
+assign VCLK_sel_o = sys_llm_w ? n64_480i :
+                    ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440P ? 1'b0 :
+                    ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1080P ? 1'b0 :
+                    ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_720P  ? 1'b0 :
+                    ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_480P  ? ~ConfigSet_w[`use_vga_for_480p_bit] :
+                                                                                  1'b1;
 
 
 // write configuration register
