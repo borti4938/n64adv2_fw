@@ -39,17 +39,17 @@
 #include "si5356_regs_p.h"
 #include "i2c.h"
 #include "n64.h"
-#include "led.h"
+
 
 #define PLL_LOCK_MAXWAIT_US         1000
-#define PLL_LOCK_2_FPGA_TIMEOUT_US  150
-
+#define PLL_LOCK_2_FPGA_TIMEOUT_US  250
 
 #define si5356_reg_bitset(regaddr,bit)   i2c_reg_bitset(SI5356_I2C_BASE,regaddr,bit)
 #define si5356_reg_bitclear(regaddr,bit) i2c_reg_bitclear(SI5356_I2C_BASE,regaddr,bit)
 #define si5356_readreg(regaddr)          i2c_readreg(SI5356_I2C_BASE,regaddr)
 #define si5356_writereg(regaddr,data)    i2c_writereg(SI5356_I2C_BASE,regaddr,data)
 
+#define FREE_DEFAULT (LAST_LLM_CLOCK_CONFIG+1)
 
 int check_si5356()
 {
@@ -61,13 +61,10 @@ int check_si5356()
 }
 
 bool_t configure_clk_si5356(clk_config_t target_cfg) {
-  led_drive(LED_NOK, LED_ON); // LED must be cleared from outside
-  periphals_clr_ready_bit();  // must be set again from external
-  
   int i;
   si5356_writereg(OEB_REG,OEB_REG_VAL_OFF); // disable outputs
   
-  si_clk_src_t clk_src = target_cfg <= PAL1_N64_1440Wp;
+  si_clk_src_t clk_src = target_cfg <= LAST_LLM_CLOCK_CONFIG;
   for (i=0; i<NUM_INPSW_REGS; i++) {
     #ifndef DEBUG
       if (inpsw_regs[i].reg_mask == 0xFF) si5356_writereg(inpsw_regs[i].reg_addr,inpsw_regs[i].reg_val[clk_src]);
@@ -77,25 +74,11 @@ bool_t configure_clk_si5356(clk_config_t target_cfg) {
     #endif
   }
   
-  for (i=0; i<MS_REGVALS_USED; i++)
-    si5356_writereg(MSA_Px_REGS(i),msa_data[target_cfg][i]);
+  for (i=0; i<NUM_VARIABLE_MSx_REGS; i++)
+    si5356_writereg(msx_reg_addr[i],msx_reg_vals[target_cfg][i]);
 
-  if (clk_src) { // frame locked - use also msb
-    for (i=0; i<MS_REGVALS_USED; i++)
-      si5356_writereg(MSB_Px_REGS(i),msb_data[target_cfg][i]);
-    si5356_writereg(CLKx_PWD_REG(1),(si5356_readreg(CLKx_PWD_REG(1)) & 0xFC)); // use clock A and B, so power up B
-  } else {
-    si5356_writereg(CLKx_PWD_REG(1),(si5356_readreg(CLKx_PWD_REG(1)) | 0x03)); // only clock A used, so power down B for power saving
-  }
-
-//  si5356_reg_bitset(SOFT_RST_REG,SOFT_RST_BIT);   // soft reset
   si5356_writereg(SOFT_RST_REG,(1<<SOFT_RST_BIT));  // soft reset
-
-  if (clk_src) {
-    si5356_writereg(OEB_REG,OEB_REG_VAL_AB_ON);  // enable CLKA and CLKB output
-  } else {
-    si5356_writereg(OEB_REG,OEB_REG_VAL_A_ON);  // enable CLKA output
-  }
+  si5356_writereg(OEB_REG,OEB_REG_VAL_ALL_ON);      // enable outputs (clock C and D are powered down anyway)
   
   i = PLL_LOCK_MAXWAIT_US;
   while (!SI5356_PLL_LOCKSTATUS()) {  // wait for PLL lock
@@ -107,8 +90,7 @@ bool_t configure_clk_si5356(clk_config_t target_cfg) {
   return TRUE;
 }
 
-bool_t init_si5356(clk_config_t target_cfg) {
-  periphals_clr_ready_bit();  // must be set again from external
+void init_si5356(void) {
   int i;
 
   si5356_writereg(OEB_REG,OEB_REG_VAL_OFF);     // disable outputs
@@ -122,6 +104,4 @@ bool_t init_si5356(clk_config_t target_cfg) {
       si5356_writereg(init_regs[i].reg_addr,init_regs[i].reg_val);
     #endif
   }
-
-  return configure_clk_si5356(target_cfg);
 }

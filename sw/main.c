@@ -74,7 +74,7 @@ void open_osd_main(menu_t **menu)
 
 clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t palmode_tmp)
 {
-  clk_config_t retval = FREE_480p;
+  clk_config_t retval = FREE_VGA60_480p;
   if (video_input_detected) {
     alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
     alt_u8 not_vga = 1 - ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == LineX2);
@@ -93,26 +93,38 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
     } else if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
       alt_u8 linex_offset = not_vga*linex_setting;
       switch (case_val) {
-        case 3:
+        case 0b11:
           retval = PAL1_N64_VGA + linex_offset;
           break;
-        case 1:
+        case 0b01:
           retval = PAL0_N64_VGA + linex_offset;
           break;
         default:
           retval = NTSC_N64_VGA + linex_offset;
       }
     } else {
-      if (linex_setting == LineX2) {
-        if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 0) {
-          if (palmode_tmp == NTSC) retval = FREE_VGA60 + 2*not_vga;
-          else                     retval = FREE_VGA50 + 2*not_vga;
-        } else {
-          if ((alt_u8) cfg_get_value(&linex_force_5060,0) == 1) retval = FREE_VGA60 + 2*not_vga;
-          else                                                  retval = FREE_VGA50 + 2*not_vga;
-        }
-      } else {
-        retval = FREE_480p + linex_setting;
+      switch (linex_setting) {
+        case LineX2:
+          if ((alt_u8) cfg_get_value(&linex_force_5060,0) == AUTO_HZ) {
+            if (palmode_tmp == NTSC) retval = FREE_VGA60_480p;
+            else                     retval = FREE_VGA50_576p;
+          } else {
+            if ((alt_u8) cfg_get_value(&linex_force_5060,0) == FORCE_60HZ) retval = FREE_VGA60_480p;
+            else                                                           retval = FREE_VGA50_576p;
+          }
+          break;
+        case LineX3:
+        case LineX4:
+          retval = FREE_720p_960p;
+          break;
+        case LineX4p5:
+        case LineX5:
+          retval = FREE_1080p_1200p;
+          break;
+        case LineX6:
+        case LineX6W:
+        default:
+          retval = FREE_1440p;
       }
     }
   }
