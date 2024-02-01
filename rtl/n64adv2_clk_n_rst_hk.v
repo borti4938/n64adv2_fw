@@ -99,7 +99,7 @@ reg [7:0] n64boot_delay = 8'hff;
 always @(posedge N64_CLK_i)
   if (!n64_en) begin
     n64_en <= ~|n64boot_delay;
-    n64boot_delay <= n64boot_delay - 4'h1;
+    n64boot_delay <= n64boot_delay - 8'h1;
   end
 
 wire nRST_video_masked_w = n64_en & (nRST_Masking_i[0] | N64_nRST_i);
