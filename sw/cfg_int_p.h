@@ -56,6 +56,19 @@ config_t swap_led = {
     .val2char_func = &flag2set_func
 };
 
+#ifdef HDR_TESTING
+  config_t hdr10_injection = {
+      .cfg_word        = &intcfg0_word,
+      .cfg_word_offset = CFG_HDR10INJ_OFFSET,
+      .cfg_type        = FLAGTXT,
+      .flag_masks      = {
+          .setflag_mask = CFG_HDR10INJ_SETMASK,
+          .clrflag_mask = CFG_HDR10INJ_CLRMASK
+      },
+      .val2char_func = &flag2set_func
+  };
+#endif
+
 config_t color_space = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_COLORSPACE_OFFSET,

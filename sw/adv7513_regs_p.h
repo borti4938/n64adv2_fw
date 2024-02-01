@@ -159,5 +159,16 @@ const alt_u8 csc_reg_vals[MAX_COLOR_FORMATS+1][2*CSC_COEFFICIENTS] __ufmdata_sec
 #define ADV7513_SPARE_PACKET_UPDATE_DONE_VAL  0x00
 
 #define SPARE_PACKET_MAX_SIZE                 (3 + 28)
+#define HDR_SPARE_PACKET_SIZE                 (SPARE_PACKET_MAX_SIZE - 1)
+
+#ifdef HDR_TESTING
+  const alt_u8 hdr_data[HDR_SPARE_PACKET_SIZE] __ufmdata_section__ = {
+    0x87,0x01,0x1a,                           // header bytes
+    0x74,0x02,0x00,0xc2,0x33,0xc4,0x86,0x4c,  // data bytes  0 -  7
+    0x1d,0xb8,0x0b,0xd0,0x84,0x80,0x3e,0x13,  // data bytes  8 - 15
+    0x3d,0x42,0x40,0xe8,0x03,0x32,0x00,0xe8,  // data bytes 16 - 23
+    0x03,0x90,0x01                            // data bytes 24 - 26
+  };
+#endif
 
 #endif /* ADV7513_REGS_P_H_ */

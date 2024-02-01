@@ -43,6 +43,7 @@
   #define __ufmdata_section__
 #endif
 
+//#define HDR_TESTING
 //#define USE_NOTICE_SECTION
 
 

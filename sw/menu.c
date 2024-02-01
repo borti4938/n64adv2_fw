@@ -210,12 +210,19 @@ menu_t vicfg_screen = {
     .parent = &home_menu,
     .arrow_position = (VICFG_VALS_H_OFFSET - 2),
     .current_selection = 0,
+#ifdef HDR_TESTING
+    .number_selections = 9,
+#else
     .number_selections = 8,
+#endif
     .leaves = {
         {.id = VICFG_DEINTERL_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deinterlace_mode},
         {.id = VICFG_GAMMA_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &gamma_lut},
         {.id = VICFG_COLORSPACE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &color_space},
         {.id = VICFG_LIMITEDRANGE_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &limited_colorspace},
+#ifdef HDR_TESTING
+        {.id = VICFG_HDR10INJ_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &hdr10_injection},
+#endif
         {.id = VICFG_DEBLUR_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode},
         {.id = VICFG_PCDEBLUR_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode_powercycle},
         {.id = VICFG_16BITMODE_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &mode16bit},
@@ -224,10 +231,18 @@ menu_t vicfg_screen = {
 };
 
 #define DEINTERLACE_SELECTION       0
-#define DEBLUR_CURRENT_SELECTION    4
-#define DEBLUR_POWERCYCLE_SELECTION 5
-#define M16BIT_CURRENT_SELECTION    6
-#define M16BIT_POWERCYCLE_SELECTION 7
+#ifdef HDR_TESTING
+  #define DEBLUR_CURRENT_SELECTION    5
+  #define DEBLUR_POWERCYCLE_SELECTION 6
+  #define M16BIT_CURRENT_SELECTION    7
+  #define M16BIT_POWERCYCLE_SELECTION 8
+#else
+  #define DEBLUR_CURRENT_SELECTION    4
+  #define DEBLUR_POWERCYCLE_SELECTION 5
+  #define M16BIT_CURRENT_SELECTION    6
+  #define M16BIT_POWERCYCLE_SELECTION 7
+#endif
+
 
 menu_t audcfg_screen = {
     .type = CONFIG,

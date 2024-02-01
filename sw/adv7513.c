@@ -99,6 +99,27 @@ void set_vsif(bool_t enable) {
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1_UPDATE,ADV7513_SPARE_PACKET_UPDATE_DONE_VAL);
 }
 
+#ifdef HDR_TESTING
+  void set_hdr(bool_t enable) {
+    if (!enable) {
+      adv7513_reg_bitclear(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPARE_PACKET2_ENABLE_BIT);
+      return;
+    }
+
+    adv7513_reg_bitset(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPARE_PACKET2_ENABLE_BIT);
+
+    alt_u8 idx = 0;
+
+    adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET2_UPDATE,ADV7513_SPARE_PACKET_UPDATE_START_VAL);
+
+    for (idx = 0; idx < HDR_SPARE_PACKET_SIZE; idx++)
+      if (!enable) adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET2(idx),0x00);
+      else         adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET2(idx),hdr_data[idx]);
+
+    adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET2_UPDATE,ADV7513_SPARE_PACKET_UPDATE_DONE_VAL);
+  }
+#endif
+
 void set_color_format(color_format_t color_format) {
   adv7513_reg_bitset(ADV7513_REG_CSC_UPDATE,ADV7513_CSC_UPDATE_BIT);
 
@@ -208,6 +229,9 @@ void set_cfg_adv7513(void) {
 //  if (use_limited_colorspace) adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x04); // [3:2] Quantization range: 01 = limited range
 //  else adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08); // [3:2] Quantization range: 10 = full range
   adv7513_writereg(ADV7513_REG_AVI_INFOFRAME(2), 0x08 >> use_limited_colorspace); // [3:2] Quantization range: 10 = full range, 01 = limited range
+#ifdef HDR_TESTING
+  set_hdr(cfg_get_value(&hdr10_injection,0));
+#endif
 
   adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0x80); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
                                                         // [6] AVI Packet Update: 0 = AVI Packet I2C update inactive

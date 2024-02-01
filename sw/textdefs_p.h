@@ -125,10 +125,18 @@
 #define VICFG_GAMMA_V_OFFSET        ( 2 + VICFG_VALS_V_OFFSET)
 #define VICFG_COLORSPACE_V_OFFSET   ( 4 + VICFG_VALS_V_OFFSET)
 #define VICFG_LIMITEDRANGE_V_OFFSET ( 5 + VICFG_VALS_V_OFFSET)
-#define VICFG_DEBLUR_V_OFFSET       ( 6 + VICFG_VALS_V_OFFSET)
-#define VICFG_PCDEBLUR_V_OFFSET     ( 7 + VICFG_VALS_V_OFFSET)
-#define VICFG_16BITMODE_V_OFFSET    ( 8 + VICFG_VALS_V_OFFSET)
-#define VICFG_PC16BITMODE_V_OFFSET  ( 9 + VICFG_VALS_V_OFFSET)
+#define VICFG_HDR10INJ_V_OFFSET     ( 6 + VICFG_VALS_V_OFFSET)
+#ifdef HDR_TESTING
+  #define VICFG_DEBLUR_V_OFFSET       ( 7 + VICFG_VALS_V_OFFSET)
+  #define VICFG_PCDEBLUR_V_OFFSET     ( 8 + VICFG_VALS_V_OFFSET)
+  #define VICFG_16BITMODE_V_OFFSET    ( 9 + VICFG_VALS_V_OFFSET)
+  #define VICFG_PC16BITMODE_V_OFFSET  (10 + VICFG_VALS_V_OFFSET)
+#else
+  #define VICFG_DEBLUR_V_OFFSET       ( 6 + VICFG_VALS_V_OFFSET)
+  #define VICFG_PCDEBLUR_V_OFFSET     ( 7 + VICFG_VALS_V_OFFSET)
+  #define VICFG_16BITMODE_V_OFFSET    ( 8 + VICFG_VALS_V_OFFSET)
+  #define VICFG_PC16BITMODE_V_OFFSET  ( 9 + VICFG_VALS_V_OFFSET)
+#endif
 
 #define AUD_OVERLAY_H_OFFSET              OVERLAY_H_OFFSET
 #define AUD_OVERLAY_V_OFFSET              OVERLAY_V_OFFSET
@@ -276,6 +284,9 @@ static const char *vicfg_overlay __ufmdata_section__ =
     "* Color space:\n"
     "  - Format:\n"
     "  - Limited range:\n"
+#ifdef HDR_TESTING
+    "  - HDR10 (8bit) Inj.:\n"
+#endif
     "* LowRes.-DeBlur:\n"
     "  - Power-cycle default:\n"
     "* 16bit mode:\n"

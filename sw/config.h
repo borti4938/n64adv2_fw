@@ -201,6 +201,9 @@ typedef struct {
 #define CFG_LEDSWAP_GETMASK                 (1<<CFG_LEDSWAP_OFFSET)
   #define CFG_LEDSWAP_SETMASK                 (1<<CFG_LEDSWAP_OFFSET)
   #define CFG_LEDSWAP_CLRMASK                 (INTCFG0_GETALL_MASK & ~CFG_LEDSWAP_GETMASK)
+#define CFG_HDR10INJ_GETMASK                (1<<CFG_HDR10INJ_OFFSET)
+  #define CFG_HDR10INJ_SETMASK                (1<<CFG_HDR10INJ_OFFSET)
+  #define CFG_HDR10INJ_CLRMASK                (INTCFG0_GETALL_MASK & ~CFG_HDR10INJ_GETMASK)
 #define CFG_COLORSPACE_GETMASK              (3<<CFG_COLORSPACE_OFFSET)
   #define CFG_COLORSPACE_RSTMASK              (INTCFG0_GETALL_MASK & ~CFG_COLORSPACE_GETMASK)
   #define CFG_COLORSPACE_CLRMASK              (INTCFG0_GETALL_MASK & ~CFG_COLORSPACE_GETMASK)
@@ -549,6 +552,9 @@ extern configuration_t sysconfig;
 
 extern config_tray_u8_t linex_words[LINEX_MODES+1];
 
+#ifdef HDR_TESTING
+  extern config_t hdr10_injection;
+#endif
 extern config_t swap_led, color_space, limited_colorspace,
                 deblur_mode_powercycle, mode16bit_powercycle, igr_deblur, igr_16bitmode,
                 link_hv_scale, fallbackmode, autosave, debug_boot;
