@@ -231,7 +231,6 @@ typedef enum {
   CMD_MENU_RIGHT
 } cmd_t;
 
-extern bool_t init_phase;
 #ifdef DEBUG
   extern alt_u16 vid_timeout_cnt;
 #endif

@@ -38,7 +38,6 @@
 #include "i2c.h"
 #include "n64.h"
 #include "config.h"
-#include "led.h"
 
 
 #define adv7513_reg_bitset(regaddr,bit)   i2c_reg_bitset(ADV7513_I2C_BASE,regaddr,bit)

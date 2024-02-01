@@ -69,7 +69,6 @@ typedef enum {
   GAME_ID_2
 } ext_info_sel_t;
 
-bool_t init_phase;
 alt_u8 info_sync_val;
 alt_u32 ctrl_data;
 alt_u32 n64adv_state;
@@ -114,6 +113,7 @@ void update_n64adv_state()
 {
   static bool_t boot_mask_video_input_detection = FALSE;
   static alt_u8 vin_detection_timeout = VIN_BOOT_DETECTION_TIMEOUT;
+  static bool_t init_phase = TRUE;
 
   n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
   video_input_detected = TRUE;
