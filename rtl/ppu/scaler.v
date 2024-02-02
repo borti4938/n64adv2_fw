@@ -89,7 +89,6 @@ module scaler(
 );
 
 
-`include "../../lib/n64adv2_config.vh"
 `include "../../lib/n64adv_vparams.vh"
 `include "../../lib/videotimings.vh"
 
@@ -129,6 +128,7 @@ input [`VID_CFG_W-1:0] video_config_i;
 input video_llm_i;
 input video_pal_boxed_i;
 
+
 input [1:0] video_v_interpolation_mode_i;
 input [9:0] video_vlines_in_needed_i; // number of lines needed to scale for active lines
 input [9:0] video_vlines_in_full_i;   // number of lines at input (either 240 in NTSC or 288 in PAL or x2 if interlaced processed as weave/fully buffered)
@@ -156,8 +156,17 @@ localparam hcnt_width = $clog2(`PIXEL_PER_LINE_MAX);
 localparam vcnt_width = $clog2(`TOTAL_LINES_PAL_LX1); // should be 9
 localparam hpos_width = $clog2(`ACTIVE_PIXEL_PER_LINE);
 
+localparam pre_lines_ntsc_fast = `VSTART_NTSC_LX1+3;
+localparam pre_lines_pal_fast  = `VSTART_PAL_LX1+3;
 localparam pre_lines_ntsc = `TOTAL_LINES_NTSC_LX1/4;
 localparam pre_lines_pal  = `TOTAL_LINES_PAL_LX1/4;
+
+localparam FIELD_EVEN = 1'b0;
+localparam FIELD_ODD = 1'b1;
+
+localparam INPUT_PROCESSING_NORMAL = 2'b00;
+localparam INPUT_PROCESSING_FRAME_DROP = 2'b01;
+localparam INPUT_PROCESSING_FIELD_ALTERNATING = 2'b10;
 
 localparam FILT_AX_SHARP_TH = 8'hC0;
 
@@ -217,6 +226,7 @@ wire nHS_i, nVS_i;
 wire negedge_nHSYNC, negedge_nVSYNC;
 
 wire input_proc_en_w;
+wire [1:0] vdata_input_processing_w;
 
 // wires for sdram rtl
 wire [3:0] datainfo_pre_sdram_buf_drclk_resynced;
@@ -284,6 +294,7 @@ reg [`VDATA_O_CO_SLICE] vdata_pixel_buf_p1 [0:2]  /* synthesis ramstyle = "logic
 reg [`VDATA_O_CO_SLICE] vdata_pixel_buf_p2 [0:2]  /* synthesis ramstyle = "logic" */; // pixel buffer to work with during interpolation
 
 // regs for input rtl
+reg vdata_valid_i_L = 1'b0;
 reg nHS_i_L = 1'b0;
 reg nVS_i_L = 1'b0;
 reg [hcnt_width-1:0] hcnt_i_L = {hcnt_width{1'b0}};
@@ -291,9 +302,6 @@ reg [vcnt_width-1:0] Y_vcnt_i_L = {vcnt_width{1'b0}};
 reg [`VDATA_O_CO_SLICE] vdata_i_L = {(3*color_width_o){1'b0}};
 
 reg [hcnt_width-1:0] X_hstart_i = `HSTART_NTSC;
-//reg [hcnt_width-1:0] X_hstop_i  = `HSTOP_NTSC;
-//reg [vcnt_width-2:0] X_vstart_i = `VSTART_NTSC_LX1;
-//reg [vcnt_width-2:0] X_vstop_i  = `VSTOP_NTSC_LX1;
 reg [vcnt_width-1:0] X_vstart_i = `VSTART_NTSC_LX1;
 reg [vcnt_width-1:0] X_vstop_i  = `VSTOP_NTSC_LX1;
 
@@ -330,8 +338,6 @@ reg [9:0] vdata_pre_sdram_buf_out_cnt;
 
 reg sdram_rd_alternating_fields_out;
 reg [1:0] sdram_bank_rdy4out_odd, sdram_bank_rdy4out_even;
-reg sdram_wr_lastest_frame_id;  // latest frame id written to SDRAM
-reg sdram_rd_lastest_frame_id;  // latest frame id read from SDRAM
 reg [1:0] sdram_rd_bank_sel_current, sdram_rd_bank_sel_odd, sdram_rd_bank_sel_even;
 reg [vcnt_width  :0] sdram_rd_vcnt;
 reg [hpos_width-1:0] sdram_rd_hcnt;
@@ -504,9 +510,13 @@ assign negedge_nHSYNC =  nHS_i_L & !nHS_i;
 assign negedge_nVSYNC =  nVS_i_L & !nVS_i;
 
 assign input_proc_en_w = sdram_rdy_rxclk_resynced & output_proc_en_rxclk_resynced;
+assign vdata_input_processing_w = interlaced & vdata_deinterlacing_mode_i == `DEINTERLACING_FRAME_DROP ? INPUT_PROCESSING_FRAME_DROP        :  // frame drop deinterlacing
+                                  interlaced & vdata_deinterlacing_mode_i == `DEINTERLACING_WEAVE      ? INPUT_PROCESSING_FIELD_ALTERNATING :  // standard deinterlacing (weave)
+                                                                                                         INPUT_PROCESSING_NORMAL            ;  // normal mode (progressive input or bob deinterlacing)
 
 always @(posedge VCLK_i or negedge nRST_i)
   if (!nRST_i) begin
+    vdata_valid_i_L <= 1'b0;
     nHS_i_L <= 1'b0;
     nVS_i_L <= 1'b0;
     hcnt_i_L <= {hcnt_width{1'b0}};
@@ -514,7 +524,6 @@ always @(posedge VCLK_i or negedge nRST_i)
     vdata_i_L <= {(3*color_width_o){1'b0}};
     
     X_hstart_i <= `HSTART_NTSC;
-//    X_hstop_i  <= `HSTOP_NTSC;
     X_vstart_i <= `VSTART_NTSC_LX1;
     X_vstop_i  <= `VSTOP_NTSC_LX1;
     
@@ -524,6 +533,7 @@ always @(posedge VCLK_i or negedge nRST_i)
     Y_in2out_en <= 1'b0;
     Y_field_rdy4out <= 1'b0;
   end else begin
+    vdata_valid_i_L <= vdata_valid_i;
     if (vdata_valid_i) begin
       nHS_i_L <= nHS_i;
       nVS_i_L <= nVS_i;
@@ -534,35 +544,49 @@ always @(posedge VCLK_i or negedge nRST_i)
           hcnt_i_L <= 10'd0;
           Y_vcnt_i_L <= Y_vcnt_i_L + 1'b1;
           if (((Y_vcnt_i_L == pre_lines_ntsc) && !palmode) ||
-              ((Y_vcnt_i_L == pre_lines_pal)  &&  palmode) )
+              ((Y_vcnt_i_L == pre_lines_pal)  &&  palmode) ) begin
             Y_field_rdy4out <= 1'b1;
-          else
+            Y_in2out_en <= 1'b1;
+          end else begin
             Y_field_rdy4out <= 1'b0;
-          Y_in2out_en <= Y_in2out_en | Y_field_rdy4out;
+            Y_in2out_en <= Y_in2out_en;
+          end
         end else begin
           hcnt_i_L <= hcnt_i_L + 1'b1;
         end
+      end else begin
+        hcnt_i_L <= 10'd0;
+        Y_vcnt_i_L <= {vcnt_width{1'b0}};
       end
 
       if (negedge_nVSYNC) begin
         // set new info
         if (palmode) begin
           X_hstart_i <= !hshift_direction ? `HSTART_PAL + hshift : `HSTART_PAL - hshift;
-//          X_hstop_i  <= !hshift_direction ? `HSTOP_PAL  + hshift : `HSTOP_PAL  - hshift;
           X_vstart_i <=  vshift_direction ? `VSTART_PAL_LX1 + vshift : `VSTART_PAL_LX1 - vshift;
           X_vstop_i  <=  vshift_direction ? `VSTOP_PAL_LX1  + vshift : `VSTOP_PAL_LX1  - vshift;
         end else begin
           X_hstart_i <= !hshift_direction ? `HSTART_NTSC + hshift : `HSTART_NTSC - hshift;
-//          X_hstop_i  <= !hshift_direction ? `HSTOP_NTSC  + hshift : `HSTOP_NTSC  - hshift;
           X_vstart_i <=  vshift_direction ? `VSTART_NTSC_LX1 + vshift : `VSTART_NTSC_LX1 - vshift;
           X_vstop_i  <=  vshift_direction ? `VSTOP_NTSC_LX1  + vshift : `VSTOP_NTSC_LX1  - vshift;
         end
-        if (vdata_deinterlacing_mode_i == `DEINTERLACING_FRAME_DROP)
-          Y_input_proc_en <= (negedge_nHSYNC & input_proc_en_w); // stop capturing of even frames in frame dropmode
-        else
-          Y_input_proc_en <= input_proc_en_w;
-        Y_field_id_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
-        Y_field_cnt_i  <= negedge_nHSYNC ? Y_field_cnt_i + 1'b1 : Y_field_cnt_i;
+        case (vdata_input_processing_w)
+          INPUT_PROCESSING_FRAME_DROP: begin
+              Y_input_proc_en <= (negedge_nHSYNC & input_proc_en_w); // stop capturing of even frames in frame dropmode (ToDo: not really needed, or?)
+              Y_field_id_i <= FIELD_ODD;
+              Y_field_cnt_i <= Y_field_cnt_i + negedge_nHSYNC;
+            end
+          INPUT_PROCESSING_FIELD_ALTERNATING: begin
+              Y_input_proc_en <= input_proc_en_w;
+              Y_field_id_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
+              Y_field_cnt_i  <= negedge_nHSYNC ? Y_field_cnt_i + 1'b1 : Y_field_cnt_i;
+            end
+          default: begin // normal mode
+              Y_input_proc_en <= input_proc_en_w;
+              Y_field_id_i <= FIELD_ODD;
+              Y_field_cnt_i <= Y_field_cnt_i + 1'b1;
+            end
+        endcase
         Y_vcnt_i_L <= {vcnt_width{1'b0}};
       end
     end
@@ -576,8 +600,8 @@ always @(posedge VCLK_i or negedge nRST_i)
     datainfo_pre_sdram_buf <= 4'h0;
     datainfo_rdy <= 1'b0;
   end else begin
-    if (vdata_valid_i) begin
-      if (Y_input_proc_en & ((Y_vcnt_i_L >= X_vstart_i && Y_vcnt_i_L < X_vstop_i))) begin
+    if (vdata_valid_i_L) begin
+      if (Y_input_proc_en && (Y_vcnt_i_L >= X_vstart_i && Y_vcnt_i_L < X_vstop_i)) begin
         if (hcnt_i_L >= X_hstart_i) begin
           if (hcnt_pre_sdram_buf < `ACTIVE_PIXEL_PER_LINE) begin
             vdata_pre_sdram_buf[vdata_pre_sdram_buf_in_cnt] <= vdata_i_L;
@@ -585,16 +609,16 @@ always @(posedge VCLK_i or negedge nRST_i)
           end
           hcnt_pre_sdram_buf <= hcnt_pre_sdram_buf + 1'b1;
         end else begin
-          hcnt_pre_sdram_buf <= 0;
+          hcnt_pre_sdram_buf <= {hpos_width{1'b0}};
         end
         if (hcnt_pre_sdram_buf == `ACTIVE_PIXEL_PER_LINE - 51) begin // write page info early
           datainfo_pre_sdram_buf <= {Y_field_id_i,Y_field_cnt_i,Y_field_rdy4out};
           datainfo_rdy <= 1'b1;
         end
-      end
-      if (datainfo_rdy) begin // change page delayed to page info write to avoid racing conditions to SDRAM clock domain
-        lineid_pre_sdram_buf <= ~lineid_pre_sdram_buf;
-        datainfo_rdy <= 1'b00;
+        if (datainfo_rdy) begin // change page delayed to page info write to avoid racing conditions to SDRAM clock domain
+          lineid_pre_sdram_buf <= ~lineid_pre_sdram_buf;
+          datainfo_rdy <= 1'b0;
+        end
       end
     end
   end
@@ -760,8 +784,6 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
     sdram_rd_alternating_fields_out <= 1'b0;
     sdram_bank_rdy4out_odd <= 2'b00;
     sdram_bank_rdy4out_even <= 2'b00;
-    sdram_wr_lastest_frame_id <= 1'b0;
-    sdram_rd_lastest_frame_id <= 1'b0;
     sdram_rd_bank_sel_current <= 2'b00;
     sdram_rd_bank_sel_odd <= 2'b00;
     sdram_rd_bank_sel_even <= 2'b00;
@@ -784,40 +806,36 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
       ST_SDRAM_WAIT: begin
           sdram_proc_en <= 1'b1;
           if (sdram_wr_lineid ^ lineid_pre_sdram_buf_drclk_resynced) begin  // new input line -> store elements in SDRAM
-            if (datainfo_pre_sdram_buf_field_id_w) begin  // odd input frame
-              if (datainfo_pre_sdram_buf_bank_sel_w  != sdram_wr_bank_sel_odd) begin
-                sdram_wr_bank_sel_odd  <= datainfo_pre_sdram_buf_bank_sel_w;  // set new bank for odd frame
+            if (datainfo_pre_sdram_buf_field_id_w) begin
+              if (datainfo_pre_sdram_buf_bank_sel_w  != sdram_wr_bank_sel_odd) begin  // new frame page condition
+                sdram_wr_bank_sel_odd  <= datainfo_pre_sdram_buf_bank_sel_w;  // set new bank for frame
                 sdram_wr_vcnt <= {vcnt_width{1'b0}};                          // reset vertical position
                 sdram_addr_i[22:21] <= datainfo_pre_sdram_buf_bank_sel_w;     // use new bank for frame
-                sdram_addr_i[19:10] <= {{vcnt_width{1'b0}},1'b1};             // use vertical position zero
+                sdram_addr_i[19:10] <= {{vcnt_width{1'b0}},FIELD_ODD};        // use vertical position zero
               end else begin
-                sdram_addr_i[22:21] <= sdram_wr_bank_sel_odd; // set bank for frame
-                sdram_addr_i[19:10] <= {sdram_wr_vcnt,1'b1};  // set vertical position
+                sdram_addr_i[22:21] <= sdram_wr_bank_sel_odd;     // set bank for frame
+                sdram_addr_i[19:10] <= {sdram_wr_vcnt,FIELD_ODD}; // set vertical position
               end
-              if (datainfo_pre_sdram_buf_field_rdy4out_w) begin // update output field if current input field is fairly ahead
+              if (datainfo_pre_sdram_buf_field_rdy4out_w) // update output field if current input field is fairly ahead
                 sdram_bank_rdy4out_odd  <= sdram_wr_bank_sel_odd;
-                sdram_wr_lastest_frame_id <= 1'b1;
-              end
-            end else begin  // even input frame
-              if (datainfo_pre_sdram_buf_bank_sel_w != sdram_wr_bank_sel_even) begin
-                sdram_wr_bank_sel_even  <= datainfo_pre_sdram_buf_bank_sel_w; // set new bank for even frame
+            end else begin
+              if (datainfo_pre_sdram_buf_bank_sel_w != sdram_wr_bank_sel_even) begin  // new frame page condition
+                sdram_wr_bank_sel_even  <= datainfo_pre_sdram_buf_bank_sel_w; // set new bank for frame
                 sdram_wr_vcnt <= {vcnt_width{1'b0}};                          // reset vertical position
                 sdram_addr_i[22:21] <= datainfo_pre_sdram_buf_bank_sel_w;     // use new bank for frame
-                sdram_addr_i[19:10] <= {{vcnt_width{1'b0}},1'b0};             // use vertical position zero
+                sdram_addr_i[19:10] <= {{vcnt_width{1'b0}},FIELD_EVEN};       // use vertical position zero
               end else begin
-                sdram_addr_i[22:21] <= sdram_wr_bank_sel_even;  // set bank for frame
-                sdram_addr_i[19:10] <= {sdram_wr_vcnt,1'b0};    // set vertical position
+                sdram_addr_i[22:21] <= sdram_wr_bank_sel_even;      // set bank for frame
+                sdram_addr_i[19:10] <= {sdram_wr_vcnt,FIELD_EVEN};  // set vertical position
               end
-              if (datainfo_pre_sdram_buf_field_rdy4out_w) begin // update output field if current input field is fairly ahead
+              if (datainfo_pre_sdram_buf_field_rdy4out_w) // update output field if current input field is fairly ahead
                 sdram_bank_rdy4out_even <= sdram_wr_bank_sel_even;
-                sdram_wr_lastest_frame_id <= 1'b0;
-              end
             end
             sdram_addr_i[20   ] <= 1'b0;                // unused
             sdram_addr_i[ 9: 0] <= {hpos_width{1'b0}};  // horizontal position
             sdram_wr_hcnt <= {hpos_width{1'b0}};
             sdram_ctrl_state <= ST_SDRAM_FIFO2RAM0;
-          end else if (vcnt_o_drclk_resynced == 1) begin // all set up at output: fetch first line to read
+          end else if (vcnt_o_drclk_resynced == 1) begin // fetch first line to read
             if (input_proc_en_drclk_resynced)
               Z_vinfo_llm_slbuf_fb_L <= video_llm_i ? vcnt_i_drclk_resynced : 9'd0; // provide feedback
             
@@ -827,9 +845,8 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
               sdram_rd_vcnt <= X_vpos_1st_rdline;
             end else begin  // handle frame drop and bob deinterlacing as non-deinterlacing
               sdram_rd_alternating_fields_out <= 1'b0;
-              sdram_rd_bank_sel_current <= sdram_wr_lastest_frame_id ? sdram_bank_rdy4out_odd : sdram_bank_rdy4out_even;
-              sdram_rd_lastest_frame_id <= sdram_wr_lastest_frame_id;
-              sdram_rd_vcnt <= {X_vpos_1st_rdline[vcnt_width-1:0],sdram_wr_lastest_frame_id};  // select start address according to frame id
+              sdram_rd_bank_sel_current <= sdram_bank_rdy4out_odd;
+              sdram_rd_vcnt <= {X_vpos_1st_rdline[vcnt_width-1:0],FIELD_ODD}; // in bob deinterlacing and progressive in we only use every odd sdram_rd_vcnt value, so shift X_vpos_1st_rdline
             end
             sdram_rd_bank_sel_odd  <= sdram_bank_rdy4out_odd;
             sdram_rd_bank_sel_even <= sdram_bank_rdy4out_even;
@@ -842,10 +859,11 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
           end else if (vcnt_o_drclk_resynced > 1 &&
                        wrpage_post_sdram_buf_cmb != rdpage_slbuf_drclk_resynced ) begin  // fetch concurrent lines on demand
             if (sdram_rd_alternating_fields_out) begin
-              sdram_rd_bank_sel_current <= sdram_rd_vcnt[0] ? sdram_rd_bank_sel_even : sdram_rd_bank_sel_odd; // toggle between even and odd field bank
+              sdram_rd_bank_sel_current <= sdram_rd_vcnt[0] == FIELD_ODD ? sdram_rd_bank_sel_even : // last field line was odd , so use even field bank
+                                                                           sdram_rd_bank_sel_odd;   //                 was even, so use odd  field bank
               sdram_rd_vcnt <= sdram_rd_vcnt + 1'b1;
             end else begin
-              sdram_rd_bank_sel_current <= sdram_rd_lastest_frame_id ? sdram_rd_bank_sel_odd : sdram_rd_bank_sel_even;  // use the current active field
+              sdram_rd_bank_sel_current <= sdram_rd_bank_sel_current; // stay at same bank for reading
               sdram_rd_vcnt <= sdram_rd_vcnt + 2'b10;
             end
             sdram_rd_hcnt <= {hpos_width{1'b0}};
