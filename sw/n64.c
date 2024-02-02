@@ -41,7 +41,7 @@
 
 #define VIN_MIN_INIT_LENGTH           5
 #define VIN_BOOT_DETECTION_TIMEOUT  255
-#define VIN_DETECTION_TIMEOUT        15
+#define VIN_DETECTION_TIMEOUT       127
 
 #define WAIT_20MS   20000
 
