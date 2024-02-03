@@ -82,8 +82,8 @@ always @(posedge VCLK or negedge nRST)
   end else begin
     vdata_detected <= &vdata_detection_flags[3:0];
     
-    // manage detection flags
-    if (&dsclk_cnt) // vdsync not detected - probably no video input running
+    // manage detection flags (flag for dsync managed in counter section)
+    if (dsclk_cnt[2]) // vdsync not detected - probably no video input running
       vdata_detection_flags[3] <= 1'b0;
     else
       vdata_detection_flags[3] <= 1'b1;

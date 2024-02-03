@@ -128,7 +128,6 @@ input [`VID_CFG_W-1:0] video_config_i;
 input video_llm_i;
 input video_pal_boxed_i;
 
-
 input [1:0] video_v_interpolation_mode_i;
 input [9:0] video_vlines_in_needed_i; // number of lines needed to scale for active lines
 input [9:0] video_vlines_in_full_i;   // number of lines at input (either 240 in NTSC or 288 in PAL or x2 if interlaced processed as weave/fully buffered)

@@ -91,7 +91,7 @@ reg clk_epll0_ok = 1'b0;
 reg [3:0] clk_n64_cnt = 4'h0;
 reg clk_n64_ok = 1'b0;
 
-reg [1:0] pin25to24_ok = 2'b00;
+reg [1:0] pin25to24_ok = 2'b00; // check pin 25 against 26 technically not possible
 reg [1:0] pin24to23_ok = 2'b00;
 reg pin23toVcc_ok = 1'b0;
 reg pin20toGND_ok = 1'b0;
