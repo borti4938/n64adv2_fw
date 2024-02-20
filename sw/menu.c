@@ -43,10 +43,8 @@
 #include "led.h"
 
 char szText[VD_WIDTH];
-//extern bool_t use_flash;
 extern vmode_t vmode_menu;
 extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
-//extern config_tray_t scaling_words[NUM_SCALING_MODES];
 extern config_tray_u8_t linex_words[LINEX_MODES+1];
 
 static const arrowshape_t select_arrow = {
@@ -630,7 +628,6 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
           cfg_dec_value(&scaling_selection);
           todo = NEW_SELECTION;
         }
-//        if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION && (*current_menu)->current_selection <= HORSHIFT_SELECTION) {
         if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION) {
           cfg_dec_value(&timing_selection);
           todo = NEW_SELECTION;
@@ -823,20 +820,11 @@ int update_cfg_screen(menu_t* current_menu)
     switch (current_menu->leaves[v_run].leavetype) {
       case ICONFIG:
         val_select = cfg_get_value(current_menu->leaves[v_run].config_value,0);
-//        ref_val_select = cfg_get_value(current_menu->leaves[v_run].config_value,use_flash);
         ref_val_select = cfg_get_value(current_menu->leaves[v_run].config_value,1);
         if (is_vicfg_screen(current_menu)){
           if (v_run == DEBLUR_CURRENT_SELECTION    || v_run == M16BIT_CURRENT_SELECTION   ) ref_val_select = val_select;
-//          if (v_run == DEBLUR_POWERCYCLE_SELECTION || v_run == M16BIT_POWERCYCLE_SELECTION) ref_val_select = cfg_get_value(current_menu->leaves[v_run-1].config_value,use_flash);
           if (v_run == DEBLUR_POWERCYCLE_SELECTION || v_run == M16BIT_POWERCYCLE_SELECTION) ref_val_select = cfg_get_value(current_menu->leaves[v_run-1].config_value,1);
         }
-//        if (current_menu->current_selection == v_run) {
-//          background_color = OPT_WINDOWCOLOR_BG;
-//          font_color = OPT_WINDOWCOLOR_FONT;
-//        } else {
-//          background_color = BACKGROUNDCOLOR_STANDARD;
-//          font_color = (val_select == ref_val_select) ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
-//        }
 
 
         val_is_ref = (val_select == ref_val_select);
@@ -861,14 +849,6 @@ int update_cfg_screen(menu_t* current_menu)
             font_color = FONTCOLOR_GREY;
           }
         }
-//
-//        // check scanline screen
-//        if (is_slcfg_screen(current_menu)) {
-//          if (((cfg_get_value(&sl_en,0) == OFF) && v_run > SL_EN_SELECTION && v_run < SL_INPUT_480I_SELECTION)        ||
-//              ((cfg_get_value(&sl_en_480i,0) == OFF) && v_run > SL_EN_480I_SELECTION )                                ||
-//              (use_sl_linked_vals && v_run_offset == 0 && (cfg_get_value(&sl_en,0) == OFF) && v_run > SL_EN_SELECTION) )
-//            font_color = val_is_ref ? FONTCOLOR_GREY : FONTCOLOR_NAVAJOWHITE;
-//        }
 
         // check scaling menu
         if (is_viscaling_screen(current_menu) && use_240p_288p) {
@@ -884,11 +864,6 @@ int update_cfg_screen(menu_t* current_menu)
             font_color = FONTCOLOR_GREY;
           }
         }
-        if (is_vicfg_screen(current_menu) && v_run == DEINTERLACE_SELECTION && use_240p_288p) {
-          val_select = val_select & 1;
-        }
-
-//        if (v_run == current_menu->current_selection)
 
         if (current_menu->leaves[v_run].config_value->cfg_type == FLAGTXT ||
             current_menu->leaves[v_run].config_value->cfg_type == NUMVALUE ) {
