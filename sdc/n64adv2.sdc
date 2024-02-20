@@ -198,9 +198,6 @@ set_input_delay -clock altera_reserved_tck 20 [get_ports altera_reserved_tms]
 
 
 
-
-
-
 #**************************************************************
 # Set Output Delay for HDMI output
 #**************************************************************
@@ -214,47 +211,14 @@ set adv_out_dly_min [expr -$adv_vth - $adv_pcb_data2clk_skew_max]
 
 set adv_vid_ports [get_ports {VD_o* VSYNC_o HSYNC_o DE_o}]
 
-set_output_delay -clock {HDMI_240P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports
-set_output_delay -clock {HDMI_240P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports
-set_output_delay -clock {HDMI_VGA_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_VGA_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_480P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_480P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_720P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_720P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_960P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_960P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_1080P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_1080P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_1200P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_1200P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_1440P_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_1440P_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_1440WP_CLK0_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_1440WP_CLK0_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_240P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_240P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_VGA_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_VGA_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_480P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_480P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_720P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_720P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_960P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_960P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_1080P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_1080P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_1200P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_1200P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_1440P_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_1440P_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
-set_output_delay -clock {HDMI_1440WP_CLK1_out} -max $adv_out_dly_max $adv_vid_ports -add
-set_output_delay -clock {HDMI_1440WP_CLK1_out} -min $adv_out_dly_min $adv_vid_ports -add
+foreach_in_collection clk_o [get_clocks HDMI_*_CLK*_out] {
+  set_output_delay -clock $clk_o -max $adv_out_dly_max $adv_vid_ports -add_delay
+  set_output_delay -clock $clk_o -min $adv_out_dly_min $adv_vid_ports -add_delay
+}
+
 
 set_output_delay -clock {AMCLK} -max 1 [get_ports {ASCLK_o ASDATA_o ALRCLK_o}]
 set_output_delay -clock {AMCLK} -min -1 [get_ports {ASCLK_o ASDATA_o ALRCLK_o}]
-
-set_output_delay -clock altera_reserved_tck 20 [get_ports altera_reserved_tdo]
 
 
 
@@ -293,6 +257,12 @@ set_multicycle_path -from [get_clocks {DRAM_CLK_out}] -to [get_clocks {DRAM_CLK_
 set_multicycle_path -from [get_clocks {DRAM_CLK_int}] -to [get_clocks {DRAM_CLK_out}] -setup 2
 set_multicycle_path -from [get_clocks {DRAM_CLK_int}] -to [get_clocks {DRAM_CLK_out}] -hold 1
 
+
+#**************************************************************
+# Set Output Delay for JTAG
+#**************************************************************
+
+set_output_delay -clock altera_reserved_tck 20 [get_ports altera_reserved_tdo]
 
 
 #**************************************************************
