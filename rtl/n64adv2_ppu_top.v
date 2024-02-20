@@ -561,6 +561,7 @@ scaler scaler_u (
   .vdata_i(vdata24_pp_w[1]),
   .vdata_valid_i(vdata_valid_pp_w[1]),
   .vdata_hvshift_i(cfg_hvshift),
+  .vdata_direct_mode_i(cfg_direct_mode_i),
   .vdata_deinterlacing_mode_i(cfg_deinterlacing_mode),
   .DRAM_CLK_i(DRAM_CLK_i),
   .DRAM_nRST_i(DRAM_nRST_i),

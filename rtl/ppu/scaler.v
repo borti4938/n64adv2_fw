@@ -39,6 +39,7 @@ module scaler(
   vdata_i,
   vdata_valid_i,
   vdata_hvshift_i,
+  vdata_direct_mode_i,
   vdata_deinterlacing_mode_i,
   
   DRAM_CLK_i,
@@ -101,6 +102,7 @@ input [2:0] vinfo_i;
 input vdata_valid_i;
 input [`VDATA_O_FU_SLICE] vdata_i;
 input [9:0] vdata_hvshift_i;
+input vdata_direct_mode_i;
 input [1:0] vdata_deinterlacing_mode_i;
 
 input         DRAM_CLK_i;
@@ -154,11 +156,6 @@ output reg [`VDATA_O_CO_SLICE] vdata_o;
 localparam hcnt_width = $clog2(`PIXEL_PER_LINE_MAX);
 localparam vcnt_width = $clog2(`TOTAL_LINES_PAL_LX1); // should be 9
 localparam hpos_width = $clog2(`ACTIVE_PIXEL_PER_LINE);
-
-localparam pre_lines_ntsc_fast = `VSTART_NTSC_LX1+3;
-localparam pre_lines_pal_fast  = `VSTART_PAL_LX1+3;
-localparam pre_lines_ntsc = `TOTAL_LINES_NTSC_LX1/4;
-localparam pre_lines_pal  = `TOTAL_LINES_PAL_LX1/4;
 
 localparam FIELD_EVEN = 1'b0;
 localparam FIELD_ODD = 1'b1;
@@ -268,6 +265,8 @@ wire [color_width_o-1:0] red_h_interp_out, gr_h_interp_out, bl_h_interp_out;
 
 
 // cmb regs
+reg [vcnt_width-1:0] num_prefetched_lines_cmb;
+
 reg [1:0] wrpage_post_sdram_buf_cmb, rdpage_post_sdram_buf_cmb;
 reg [7:0] wraddr_post_sdram_buf_main_next_cmb;
 reg [1:0] wraddr_post_sdram_buf_sub_next_cmb;
@@ -513,6 +512,20 @@ assign vdata_input_processing_w = interlaced & vdata_deinterlacing_mode_i == `DE
                                   interlaced & vdata_deinterlacing_mode_i == `DEINTERLACING_WEAVE      ? INPUT_PROCESSING_FIELD_ALTERNATING :  // standard deinterlacing (weave)
                                                                                                          INPUT_PROCESSING_NORMAL            ;  // normal mode (progressive input or bob deinterlacing)
 
+
+always @(*)
+  if (vdata_direct_mode_i) begin
+    if (palmode)
+      num_prefetched_lines_cmb <= `VSTART_PAL_LX1+3;
+    else
+      num_prefetched_lines_cmb <= `VSTART_NTSC_LX1+3;
+  end else begin
+    if (palmode)
+      num_prefetched_lines_cmb <= `TOTAL_LINES_PAL_LX1/4;
+    else
+      num_prefetched_lines_cmb <= `TOTAL_LINES_NTSC_LX1/4;
+  end
+
 always @(posedge VCLK_i or negedge nRST_i)
   if (!nRST_i) begin
     vdata_valid_i_L <= 1'b0;
@@ -542,8 +555,7 @@ always @(posedge VCLK_i or negedge nRST_i)
         if (negedge_nHSYNC) begin
           hcnt_i_L <= 10'd0;
           Y_vcnt_i_L <= Y_vcnt_i_L + 1'b1;
-          if (((Y_vcnt_i_L == pre_lines_ntsc) && !palmode) ||
-              ((Y_vcnt_i_L == pre_lines_pal)  &&  palmode) ) begin
+          if (Y_vcnt_i_L == num_prefetched_lines_cmb) begin
             Y_field_rdy4out <= 1'b1;
             Y_in2out_en <= 1'b1;
           end else begin
