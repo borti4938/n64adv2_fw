@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="altclkctrl" kind="altclkctrl" version="1.0" fabric="QSYS">
- <!-- Format version 22.1 915 (Future versions may contain additional information.) -->
- <!-- 2022.11.28.20:38:03 -->
+ <!-- Format version 22.1 922 (Future versions may contain additional information.) -->
+ <!-- 2024.02.19.08:22:19 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1669664283</value>
+  <value>1708327339</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -107,7 +107,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="GUI_USE_ENA">
    <type>boolean</type>
-   <value>false</value>
+   <value>true</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -197,6 +197,12 @@ parameters are a RESULT of the module parameters. -->
     <width>1</width>
     <role>clkselect</role>
    </port>
+   <port>
+    <name>ena</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>ena</role>
+   </port>
   </interface>
   <interface name="altclkctrl_output" kind="conduit_end" version="22.1">
    <!-- The connection points exposed by a module instance for the
@@ -264,6 +270,6 @@ parameters are a RESULT of the module parameters. -->
   <displayName>Conduit</displayName>
   <version>22.1</version>
  </plugin>
- <reportVersion>22.1 915</reportVersion>
+ <reportVersion>22.1 922</reportVersion>
  <uniqueIdentifier></uniqueIdentifier>
 </EnsembleReport>

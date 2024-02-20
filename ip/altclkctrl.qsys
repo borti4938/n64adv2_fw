@@ -46,6 +46,7 @@
   <port name="inclk1x" internal="inclk1x" />
   <port name="inclk0x" internal="inclk0x" />
   <port name="clkselect" internal="clkselect" />
+  <port name="ena" internal="ena" />
  </interface>
  <interface
    name="altclkctrl_output"
@@ -63,7 +64,7 @@
   <parameter name="CLOCK_TYPE" value="1" />
   <parameter name="DEVICE_FAMILY" value="MAX 10" />
   <parameter name="ENA_REGISTER_MODE" value="1" />
-  <parameter name="GUI_USE_ENA" value="false" />
+  <parameter name="GUI_USE_ENA" value="true" />
   <parameter name="NUMBER_OF_CLOCKS" value="2" />
   <parameter name="USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION" value="true" />
  </module>
