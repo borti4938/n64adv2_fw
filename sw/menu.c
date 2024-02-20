@@ -683,7 +683,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     if (is_vires_screen(*current_menu)) {
       if ((cfg_get_value(&linex_resolution,0) == DIRECT) && ((current_sel == FORCE5060_SELECTION) || (current_sel == LLMODE_SELECTION)))
           (*current_menu)->current_selection = (command == CMD_MENU_UP) ? LLMODE_SELECTION - 1 : FORCE5060_SELECTION + 1;
-      if ((cfg_get_value(&low_latency_mode,0) == ON) && (current_sel == FORCE5060_SELECTION))
+      else if ((cfg_get_value(&low_latency_mode,0) == ON) && (current_sel == FORCE5060_SELECTION))
         (*current_menu)->current_selection = (command == CMD_MENU_UP) ? FORCE5060_SELECTION - 1 : FORCE5060_SELECTION + 1;
     }
 
