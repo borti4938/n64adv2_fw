@@ -144,9 +144,10 @@ wire [ 3:0] cfg_gamma;
 wire cfg_nvideblur_pre, cfg_n16bit_mode;
 wire [9:0] cfg_hvshift;
 wire [1:0] cfg_deinterlacing_mode_pre, cfg_deinterlacing_mode;
+wire cfg_direct_mode_i;
 
 wire [`VID_CFG_W-1:0] sys_vmode_pre_w;
-wire sys_llm_w;
+wire sys_direct_mode_w, sys_llm_w;
 wire [11:0] vlines_set_w;
 wire [11:0] hpixels_set_w;
 
@@ -174,7 +175,7 @@ wire v_allow_slemu_w, h_allow_slemu_w;
 
 wire palmode_vclk_o_resynced, n64_480i_vclk_o_resynced;
 wire [`VID_CFG_W-1:0] videomode_pre_w;
-wire vid_llm_w;
+wire vid_direct_mode_w, vid_llm_w;
 
 wire [`PPUConfig_WordWidth-1:0] ConfigSet_w, ConfigSet_resynced;
 
@@ -279,7 +280,8 @@ assign sys_vmode_pre_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1
                          ConfigSet_w[`use_vga_for_480p_bit]                           ? `USE_VGAp60   :
                                                                                         `USE_480p60   ;
 
-assign sys_llm_w = ConfigSet_w[`lowlatencymode_bit] | ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P;  // force low latency mode in 240p / 288p
+assign sys_direct_mode_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P;
+assign sys_llm_w = ConfigSet_w[`lowlatencymode_bit] | sys_direct_mode_w;  // force low latency mode in 240p / 288p
 
 always @(posedge SYS_CLK) begin
   sys_videomode <= sys_vmode_pre_w;
@@ -298,7 +300,8 @@ end
 assign vlines_set_w = ConfigSet_w[`target_vlines_slice];
 assign hpixels_set_w = (ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP) ? ConfigSet_w[`target_hpixels_slice] >> 1 :
                                                                                         ConfigSet_w[`target_hpixels_slice];
-assign use_interlaced_full_w = n64_480i_sysclk_resynced & ConfigSet_w[`deinterlacing_mode_bit1] & (ConfigSet_w[`target_resolution_slice] != `HDMI_TARGET_240P);  // do not use waeve deinterlacing in 240p/288p mode
+assign use_interlaced_full_w = sys_direct_mode_w ? 1'b0                                                              :  // do not full lines in interlacing on direct mode
+                                                   (n64_480i_sysclk_resynced & ConfigSet_w[`deinterlacing_mode_bit1]);  // bit 1 in its config is weave -> so use full lines if set
 
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
@@ -326,17 +329,18 @@ scaler_cfggen scaler_cfggen_u(
 // setup config in different clock domains ...
 
 // ... in N64_CLK_i
-assign cfg_deinterlacing_mode_pre = ((ConfigSet_w[`deinterlacing_mode_slice] == `DEINTERLACING_WEAVE) & (ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P)) ? `DEINTERLACING_FRAME_DROP : ConfigSet_w[`deinterlacing_mode_slice]; // do not use waeve deinterlacing in 240p/288p mode
+assign cfg_deinterlacing_mode_pre = sys_direct_mode_w ? `DEINTERLACING_BOB                     :  // signalling bob deinterlacing on direct mode as this outputs frame by frame
+                                                         ConfigSet_w[`deinterlacing_mode_slice];  // otherwise output what is already set
 
 register_sync #(
-  .reg_width(18), // 4 + 1 + 10 + 2 + 1
-  .reg_preset(18'd0)
+  .reg_width(19), // 4 + 1 + 10 + 1 + 2 + 1
+  .reg_preset(19'd0)
 ) cfg_sync4n64clk_u0 (
   .clk(N64_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ConfigSet_w[`gamma_slice],~ConfigSet_w[`n16bit_mode_bit],ConfigSet_w[`hshift_slice],ConfigSet_w[`vshift_slice],cfg_deinterlacing_mode_pre,~ConfigSet_w[`videblur_bit]}),
-  .reg_o({cfg_gamma                ,cfg_n16bit_mode               ,cfg_hvshift                                          ,cfg_deinterlacing_mode    ,cfg_nvideblur_pre})
+  .reg_i({ConfigSet_w[`gamma_slice],~ConfigSet_w[`n16bit_mode_bit],ConfigSet_w[`hshift_slice],ConfigSet_w[`vshift_slice],sys_direct_mode_w,cfg_deinterlacing_mode_pre,~ConfigSet_w[`videblur_bit]}),
+  .reg_o({cfg_gamma                ,cfg_n16bit_mode               ,cfg_hvshift                                          ,cfg_direct_mode_i,cfg_deinterlacing_mode    ,cfg_nvideblur_pre})
 ); // Note: add output reg as false path in sdc (cfg_sync4n64clk_u0|reg_synced_1[*])
 
 always @(*)
@@ -426,7 +430,8 @@ assign videomode_pre_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_T
                          ConfigSet_resynced[`use_vga_for_480p_bit]                           ? `USE_VGAp60   :
                                                                                                `USE_480p60   ;
 
-assign vid_llm_w = ConfigSet_resynced[`lowlatencymode_bit] | ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P; // force low latency mode in 240p / 288p
+assign vid_direct_mode_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P;
+assign vid_llm_w = ConfigSet_resynced[`lowlatencymode_bit] | vid_direct_mode_w; // force low latency mode in 240p / 288p
 
 always @(posedge VCLK_Tx) begin
   cfg_videomode <= videomode_pre_w;
