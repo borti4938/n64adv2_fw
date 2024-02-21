@@ -267,6 +267,9 @@ wire [color_width_o-1:0] red_h_interp_out, gr_h_interp_out, bl_h_interp_out;
 // cmb regs
 reg [vcnt_width-1:0] num_prefetched_lines_cmb;
 
+reg VSYNC_cmb, VSYNC_odd_cmb, VSYNC_even_cmb;
+reg short_field_o_cmb;
+
 reg [1:0] wrpage_post_sdram_buf_cmb, rdpage_post_sdram_buf_cmb;
 reg [7:0] wraddr_post_sdram_buf_main_next_cmb;
 reg [1:0] wraddr_post_sdram_buf_sub_next_cmb;
@@ -303,7 +306,7 @@ reg [hcnt_width-1:0] X_hstart_i = `HSTART_NTSC;
 reg [vcnt_width-1:0] X_vstart_i = `VSTART_NTSC_LX1;
 reg [vcnt_width-1:0] X_vstop_i  = `VSTOP_NTSC_LX1;
 
-reg Y_field_id_i;
+reg Y_field_id_i, Y_field_id_masked_i;
 reg [1:0] Y_field_cnt_i;
 reg Y_input_proc_en;
 reg Y_in2out_en;
@@ -398,6 +401,8 @@ reg [1:0] X_hpos_1st_rdpixel_sub, hpos_1st_rdpixel_sub;         //     due to BR
 reg output_proc_en = 1'b0;
 
 reg [11:0] hcnt_o_L, Y_vcnt_o_L;
+reg [11:0] hcnt_shifted_L, Y_vcnt_shifted_L;
+reg Y_short_field_o_L;
 reg Y_v_active_de;
 reg h_active_de;
 reg Y_v_active_px;
@@ -539,7 +544,8 @@ always @(posedge VCLK_i or negedge nRST_i)
     X_vstart_i <= `VSTART_NTSC_LX1;
     X_vstop_i  <= `VSTOP_NTSC_LX1;
     
-    Y_field_id_i <= 1'b1;
+    Y_field_id_i <= FIELD_ODD;
+    Y_field_id_masked_i <= FIELD_ODD;
     Y_field_cnt_i <= 2'b00;
     Y_input_proc_en <= 1'b0;
     Y_in2out_en <= 1'b0;
@@ -581,20 +587,21 @@ always @(posedge VCLK_i or negedge nRST_i)
           X_vstart_i <=  vshift_direction ? `VSTART_NTSC_LX1 + vshift : `VSTART_NTSC_LX1 - vshift;
           X_vstop_i  <=  vshift_direction ? `VSTOP_NTSC_LX1  + vshift : `VSTOP_NTSC_LX1  - vshift;
         end
+        Y_field_id_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
         case (vdata_input_processing_w)
           INPUT_PROCESSING_FRAME_DROP: begin
               Y_input_proc_en <= (negedge_nHSYNC & input_proc_en_w); // stop capturing of even frames in frame dropmode (ToDo: not really needed, or?)
-              Y_field_id_i <= FIELD_ODD;
+              Y_field_id_masked_i <= FIELD_ODD;
               Y_field_cnt_i <= Y_field_cnt_i + negedge_nHSYNC;
             end
           INPUT_PROCESSING_FIELD_ALTERNATING: begin
               Y_input_proc_en <= input_proc_en_w;
-              Y_field_id_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
+              Y_field_id_masked_i <= negedge_nHSYNC; // negedge at nHSYNC, too -> odd frame
               Y_field_cnt_i  <= negedge_nHSYNC ? Y_field_cnt_i + 1'b1 : Y_field_cnt_i;
             end
           default: begin // normal mode
               Y_input_proc_en <= input_proc_en_w;
-              Y_field_id_i <= FIELD_ODD;
+              Y_field_id_masked_i <= FIELD_ODD;
               Y_field_cnt_i <= Y_field_cnt_i + 1'b1;
             end
         endcase
@@ -623,7 +630,7 @@ always @(posedge VCLK_i or negedge nRST_i)
           hcnt_pre_sdram_buf <= {hpos_width{1'b0}};
         end
         if (hcnt_pre_sdram_buf == `ACTIVE_PIXEL_PER_LINE - 51) begin // write page info early
-          datainfo_pre_sdram_buf <= {Y_field_id_i,Y_field_cnt_i,Y_field_rdy4out};
+          datainfo_pre_sdram_buf <= {Y_field_id_masked_i,Y_field_cnt_i,Y_field_rdy4out};
           datainfo_rdy <= 1'b1;
         end
         if (datainfo_rdy) begin // change page delayed to page info write to avoid racing conditions to SDRAM clock domain
@@ -953,26 +960,30 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
 // | output rtl |
 // +------------+
 
+wire field_id_txclk_resynced;
 // resync registers
 register_sync #(
-  .reg_width(2),
-  .reg_preset(2'b00)
+  .reg_width(3),
+  .reg_preset(3'b000)
 ) register_sync_input2hdmi_u0 (
   .clk(VCLK_o),
   .clk_en(1'b1),
 //  .nrst(async_nRST_i),
   .nrst(1'b1),
-  .reg_i({vdata_detected,Y_in2out_en}),
-  .reg_o({vdata_detected_txclk_resynced,in2out_en_txclk_resynced})
+  .reg_i({vdata_detected               ,Y_field_id_i       ,Y_in2out_en}),
+  .reg_o({vdata_detected_txclk_resynced,field_id_txclk_resynced,in2out_en_txclk_resynced})
 );
 
 // read configuration for output
 assign X_vpos_px_offset_w = (video_vlines_out_i < {1'b0,X_VACTIVE_OS}) ? ({1'b0,X_VACTIVE_OS} - video_vlines_out_i)/2 : 11'd0;
 assign X_hpos_px_offset_w = (video_hpixel_out_i < X_HACTIVE_OS) ? (X_HACTIVE_OS - video_hpixel_out_i)/2 : 12'd0;
 
+reg X_direct_output;
+
 always @(posedge VCLK_o)
   if (Y_cfg_v_update_window) begin  // Y_cfg_v_update_window generated below
     if (Y_cfg_update_phase == 3'b000) begin
+      X_direct_output <= ((video_config_i == `USE_240p60) || (video_config_i == `USE_288p50));
       setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VSTART_OS,X_VACTIVE_OS,X_VSTOP_OS,X_VTOTAL);
       setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HSTART_OS,X_HACTIVE_OS,X_HSTOP_OS,X_HTOTAL);
     end
@@ -1158,6 +1169,35 @@ mult_add_2 h_interpolate_bl_u (
 
 // control logic for output video
 always @(*) begin
+  VSYNC_odd_cmb <= Y_vcnt_o_L < X_VSYNCLEN;
+  VSYNC_even_cmb <= Y_vcnt_shifted_L < X_VSYNCLEN;
+  if (X_direct_output) begin
+    if (field_id_txclk_resynced == FIELD_EVEN) begin
+      VSYNC_cmb <= VSYNC_even_cmb;
+      short_field_o_cmb <= interlaced_vclk_o_resynced;
+    end else begin
+      VSYNC_cmb <= VSYNC_odd_cmb;
+      short_field_o_cmb <= 1'b0;
+    end
+  end else begin
+    VSYNC_cmb <= VSYNC_odd_cmb;
+    short_field_o_cmb <= 1'b0;
+  end
+end
+
+reg [11:0] vcnt_comp_val_cmb;
+always @(*) begin
+  if (X_direct_output) begin
+    if (Y_short_field_o_L)
+      vcnt_comp_val_cmb <= X_VTOTAL - 2;
+    else
+      vcnt_comp_val_cmb <= X_VTOTAL - 1;
+  end else begin
+    vcnt_comp_val_cmb <= X_VTOTAL - 1;
+  end
+end
+
+always @(*) begin
   if (rdpage_post_sdram_buf[1]) begin
     rdpage_post_sdram_buf_cmb <= 2'b00;
   end else begin
@@ -1182,10 +1222,13 @@ always @(posedge VCLK_o or negedge nRST_o)
     
     hcnt_o_L <= 0;
     Y_vcnt_o_L <= 0;
+    hcnt_shifted_L <= 0;
+    Y_vcnt_shifted_L <= 0;
     Y_v_active_de <= 1'b0;
     h_active_de <= 1'b0;
     Y_v_active_px <= 1'b0;
     h_active_px <= 1'b0;
+    Y_short_field_o_L <= 1'b0;
     
     rden_post_sdram_buf <= 1'b0;
     rdpage_post_sdram_buf <= 2'b00;
@@ -1234,22 +1277,40 @@ always @(posedge VCLK_o or negedge nRST_o)
       if ((hcnt_o_L == X_HSTART_px-1) || (hcnt_o_L == X_HSTOP_px-1))  // next clock cycle either hcnt_o_L == X_HSTART_px or hcnt_o_L == X_HSTOP_px
         h_active_px <= ~h_active_px;
       if (hcnt_o_L == X_HTOTAL-1) begin
-        if (Y_vcnt_o_L < X_VTOTAL - 1) begin
+        if (Y_vcnt_o_L < vcnt_comp_val_cmb) begin
           Y_cfg_v_update_window <= 1'b0;
           Y_vcnt_o_L <= Y_vcnt_o_L + 1;
         end else begin
           Y_cfg_v_update_window <= 1'b1;
           Y_vcnt_o_L <= 0;
+          Y_short_field_o_L <= short_field_o_cmb;
         end
         if ((Y_vcnt_o_L == X_VSTART-1) || (Y_vcnt_o_L == X_VSTOP-1))        // next clock cycle either Y_vcnt_o_L == X_VSTART or Y_vcnt_o_L == X_VSTOP
           Y_v_active_de <= ~Y_v_active_de;
-        if ((Y_vcnt_o_L == X_VSTART_px-1) || (Y_vcnt_o_L == X_VSTOP_px-1))  // next clock cycle either Y_vcnt_o_L == X_VSTART_px or Y_vcnt_o_L == X_VSTOP_px
-          Y_v_active_px <= ~Y_v_active_px;
+        if (Y_short_field_o_L) begin
+          if ((Y_vcnt_o_L == X_VSTART_px-2) || (Y_vcnt_o_L == X_VSTOP_px-2))  // next clock cycle either Y_vcnt_o_L == X_VSTART_px-1 or Y_vcnt_o_L == X_VSTOP_px-1
+            Y_v_active_px <= ~Y_v_active_px;
+        end else begin
+          if ((Y_vcnt_o_L == X_VSTART_px-1) || (Y_vcnt_o_L == X_VSTOP_px-1))  // next clock cycle either Y_vcnt_o_L == X_VSTART_px or Y_vcnt_o_L == X_VSTOP_px
+            Y_v_active_px <= ~Y_v_active_px;
+        end
+      end
+      if (hcnt_shifted_L < X_HTOTAL - 1) begin
+        hcnt_shifted_L <= hcnt_shifted_L + 1;
+      end else begin
+        hcnt_shifted_L <= 0;
+        if (Y_vcnt_shifted_L < vcnt_comp_val_cmb)
+          Y_vcnt_shifted_L <= Y_vcnt_shifted_L + 1;
+        else
+          Y_vcnt_shifted_L <= 0;
       end
     end else begin
       Y_cfg_v_update_window <= 1'b1;
       Y_vcnt_o_L <= 0;
       hcnt_o_L <= 0;
+      Y_vcnt_shifted_L <= 0;
+      hcnt_shifted_L <= X_HTOTAL/2;
+      Y_short_field_o_L <= 1'b0;
       Y_v_active_de <= 1'b0;
       h_active_de <= 1'b0;
       Y_v_active_px <= 1'b0;
@@ -1404,7 +1465,7 @@ always @(posedge VCLK_o or negedge nRST_o)
     
     DE_virt_vpl_L <= {DE_virt_vpl_L[Videogen_Pipeline_Length-3:0],(Y_v_active_px & h_active_px)};
     HSYNC_vpl_L <= {HSYNC_vpl_L[Videogen_Pipeline_Length-2:0],(hcnt_o_L < X_HSYNCLEN) ~^ X_HSYNC_active};
-    VSYNC_vpl_L <= {VSYNC_vpl_L[Videogen_Pipeline_Length-2:0],(Y_vcnt_o_L < X_VSYNCLEN) ~^ X_VSYNC_active};
+    VSYNC_vpl_L <= {VSYNC_vpl_L[Videogen_Pipeline_Length-2:0],VSYNC_cmb ~^ X_VSYNC_active};
     DE_vpl_L <= {DE_vpl_L[Videogen_Pipeline_Length-2:0],(h_active_de && Y_v_active_de)};
     
 //    if (vdata_detected_txclk_resynced & DE_virt_vpl_L[Videogen_Pipeline_Length-2] & DE_vpl_L[Videogen_Pipeline_Length-2])
