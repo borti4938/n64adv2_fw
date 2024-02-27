@@ -435,9 +435,10 @@ int main()
     cfg_apply_to_logic();
 
     target_resolution = get_target_resolution(pal_pattern,palmode);
+    if (periphal_state.si5356_locked) periphal_state.si5356_locked = SI5356_PLL_LOCKSTATUS();
 
     // check up routines for si5356
-    if (!SI5356_PLL_LOCKSTATUS() || (target_resolution_pre != target_resolution)) {
+    if (!periphal_state.si5356_locked || (target_resolution_pre != target_resolution)) {
       led_drive(LED_NOK, LED_ON);
       periphals_clr_ready_bit();
       led_set_ok = FALSE;
