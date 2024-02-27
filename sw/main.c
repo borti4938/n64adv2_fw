@@ -221,6 +221,7 @@ int main()
   // N64Adv2 state variable
   bool_t video_input_detected_pre;
   vmode_t palmode_pre = palmode;
+  scanmode_t scanmode_pre = scanmode;
   bool_t unlock_1440p_pre = unlock_1440p;
 
   // set LEDs
@@ -260,6 +261,7 @@ int main()
   bool_t undo_changed_linex_setting = FALSE;
 
   bool_t led_set_ok = FALSE;
+  bool_t dv_send_pr = FALSE;
   bool_t game_id_txed = FALSE;
 
   // set some basic variables for operation
@@ -272,6 +274,7 @@ int main()
   while (1) {
     video_input_detected_pre = video_input_detected;
     palmode_pre = palmode;
+    scanmode_pre = scanmode;
     target_resolution_pre = target_resolution;
     unlock_1440p_pre = unlock_1440p;
     update_n64adv_state(); // also update commonly used ppu states (video_input_detected, palmode, scanmode, linemult_mode)
@@ -395,11 +398,13 @@ int main()
           case CMD_DEBLUR_QUICK_ON:
             if (scanmode == PROGRESSIVE) {
               cfg_set_flag(&deblur_mode);
+              todo = NEW_CONF_VALUE;
             };
             break;
           case CMD_DEBLUR_QUICK_OFF:
             if (scanmode == PROGRESSIVE) {
               cfg_clear_flag(&deblur_mode);
+              todo = NEW_CONF_VALUE;
             };
             break;
           default:
@@ -453,8 +458,10 @@ int main()
     }
 
     if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) { // all ok let's setup register settings in adv and  game-idperiphals_set_ready_bit();
-      if (!led_set_ok || (palmode_pre != palmode) || (undo_changed_linex_setting) || (todo == NEW_CONF_VALUE)) {
+      if (!led_set_ok || (palmode_pre != palmode) || (scanmode_pre != scanmode) || (undo_changed_linex_setting) || (todo == NEW_CONF_VALUE)) {
         set_cfg_adv7513();
+        dv_send_pr = (scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON);
+        set_dv_spd_packet(dv_send_pr);
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
       if (get_game_id()) {

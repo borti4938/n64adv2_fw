@@ -67,7 +67,7 @@ void set_vsif(bool_t enable) {
   alt_u8 idx = 0;
   alt_u8 crc = 0;
 
-  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1_UPDATE,ADV7513_SPARE_PACKET_UPDATE_START_VAL);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1_UPDATE,ADV7513_PACKET_UPDATE_START_VAL);
 
   // write header
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(0),0x81);
@@ -95,7 +95,43 @@ void set_vsif(bool_t enable) {
   crc = ~crc + 0x01;
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(3),crc);
 
-  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1_UPDATE,ADV7513_SPARE_PACKET_UPDATE_DONE_VAL);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1_UPDATE,ADV7513_PACKET_UPDATE_DONE_VAL);
+}
+
+void set_dv_spd_packet(bool_t dv_send_pr) {
+  if (cfg_get_value(&linex_resolution,0)!=DIRECT) {
+    adv7513_reg_bitclear(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPD_PACKET_ENABLE_BIT);
+    return;
+  }
+
+  adv7513_reg_bitset(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPD_PACKET_ENABLE_BIT);
+
+  // start writing information
+  // format according to https://github.com/MiSTer-devel/Main_MiSTer/issues/808
+  alt_u8 idx = 0;
+  alt_u16 wr_val = 0;
+
+  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET_UPDATE,ADV7513_PACKET_UPDATE_START_VAL);
+
+  // write header
+  for (idx = 0; idx < SPD_DV_HEADER_LEN; idx++)
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx),spd_header[idx]);
+
+  // write vi config
+  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(0+SPD_DV_VI_CFG_OFFSET),scanmode);
+  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(1+SPD_DV_VI_CFG_OFFSET),dv_send_pr ? 2 : 1);
+  for (idx = 0; idx < (SPD_DV_VI_CFG_LEN-2)/2; idx++) {
+    if (idx % 2 == 0) wr_val = vi_cfg_dv[2*scanmode + palmode][idx]/(1+dv_send_pr);
+    else              wr_val =  vi_cfg_dv[2*scanmode + palmode][idx];
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(2*idx  +2+SPD_DV_VI_CFG_OFFSET),(alt_u8) ( wr_val       & 0xFF));
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(2*idx+1+2+SPD_DV_VI_CFG_OFFSET),(alt_u8) ((wr_val >> 8) & 0xFF));
+  }
+
+  // write core name
+  for (idx = 0; idx < SPD_DV_CORE_NAME_LEN; idx++)
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx+SPD_DV_CORE_NAME_OFFSET),core_name_data[idx]);
+
+  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET_UPDATE,ADV7513_PACKET_UPDATE_DONE_VAL);
 }
 
 #ifdef HDR_TESTING

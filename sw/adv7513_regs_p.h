@@ -74,6 +74,7 @@
 #define ADV7513_REG_PACKET_ENABLE0            0x40
   #define ADV7513_SPARE_PACKET1_ENABLE_BIT      0
   #define ADV7513_SPARE_PACKET2_ENABLE_BIT      1
+  #define ADV7513_SPD_PACKET_ENABLE_BIT         6
 #define ADV7513_REG_POWER                     0x41
 #define ADV7513_REG_EDID_I2C_ADDR             0x43
 #define ADV7513_REG_PACKET_ENABLE1            0x44
@@ -150,16 +151,39 @@ const alt_u8 csc_reg_vals[MAX_COLOR_FORMATS+1][2*CSC_COEFFICIENTS] __ufmdata_sec
 
 // Packetmemory
 
+#define ADV7513_REG_SPD_PACKET(x)             (0x00 + (x)) /* 0x00 - 0x1e */
+#define ADV7513_REG_SPD_PACKET_UPDATE         0x1f
 #define ADV7513_REG_SPARE_PACKET1(x)          (0xc0 + (x)) /* 0xc0 - 0xde */
 #define ADV7513_REG_SPARE_PACKET1_UPDATE      0xdf
 #define ADV7513_REG_SPARE_PACKET2(x)          (0xe0 + (x)) /* 0xe0 - 0xfe */
 #define ADV7513_REG_SPARE_PACKET2_UPDATE      0xff
 
-#define ADV7513_SPARE_PACKET_UPDATE_START_VAL 0x80
-#define ADV7513_SPARE_PACKET_UPDATE_DONE_VAL  0x00
+#define ADV7513_PACKET_UPDATE_START_VAL       0x80
+#define ADV7513_PACKET_UPDATE_DONE_VAL        0x00
 
 #define SPARE_PACKET_MAX_SIZE                 (3 + 28)
 #define HDR_SPARE_PACKET_SIZE                 (SPARE_PACKET_MAX_SIZE - 1)
+
+#define SPD_DV_HEADER_LEN         (3+1+3)
+#define SPD_DV_VI_CFG_LEN         10
+#define SPD_DV_CORE_NAME_LEN      13
+  #define SPD_DV_VI_CFG_OFFSET      SPD_DV_HEADER_LEN
+  #define SPD_DV_CORE_NAME_OFFSET   (SPD_DV_HEADER_LEN+SPD_DV_VI_CFG_LEN)
+#define SPD_DV_PACKET_LEN         (SPD_DV_HEADER_LEN+SPD_DV_VI_CFG_LEN+SPD_DV_CORE_NAME_LEN-3)
+
+const alt_u8 spd_header[SPD_DV_HEADER_LEN] __ufmdata_section__ = {0x83, 0x01, SPD_DV_PACKET_LEN,
+                                                                  0,
+                                                                  'D', 'V', '1' /* version */
+                                                                 };
+const alt_u16 vi_cfg_dv[2*LINEX_MODES][4] __ufmdata_section__ = {
+//   hBP,vBP,Width,Height
+    { 45, 15,  640,   240}, // NTSC progressive
+    { 56, 19,  640,   288}, // PAL progressive
+    { 45, 15,  640, 2*240}, // NTSC interlaced
+    { 56, 19,  640, 2*288}  // PAL interlaced
+};
+const char core_name_data[SPD_DV_CORE_NAME_LEN] __ufmdata_section__  = "N64 - N64Adv2";
+
 
 #ifdef HDR_TESTING
   const alt_u8 hdr_data[HDR_SPARE_PACKET_SIZE] __ufmdata_section__ = {
