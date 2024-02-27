@@ -464,9 +464,11 @@ void print_current_timing_mode()
   alt_u16 hscale = cfg_get_value(&hor_scale,0);
   alt_u16 vscale = cfg_get_value(&vert_scale,0);
 
-  sprintf(szText,"(%d x %d)",hscale,vscale);
-  szText[6-(hscale<1000)] = (char) CHECKBOX_TICK;
-  vd_print_string(VD_INFO,hoffset + 1,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+  if (scaling_n64adv != NTSC_TO_240 && scaling_n64adv != PAL_TO_288) {
+    sprintf(szText,"(%d x %d)",hscale,vscale);
+    szText[6-(hscale<1000)] = (char) CHECKBOX_TICK;
+    vd_print_string(VD_INFO,hoffset + 1,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
+  }
 }
 
 void print_ctrl_data() {
