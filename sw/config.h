@@ -36,6 +36,8 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#define LINEX_TMP_TRAY  (PAL+1)
+
 typedef enum {
   INTCFG0 = 0,
   EXTCFG0,

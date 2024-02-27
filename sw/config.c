@@ -497,15 +497,14 @@ void cfg_store_linex_word(vmode_t palmode_select,bool_t skip_extcfg0) {
 
 void cfg_load_linex_word(vmode_t palmode_select,bool_t for_n64adv) {
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
-  if (for_n64adv)
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[palmode_select].config_val;
-  else
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[PAL+1].config_val; // loading from menu tray for EXTCFG0
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
-  if (for_n64adv)
+  if (for_n64adv) {
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[palmode_select].config_val;
     sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= linex_words[palmode_select].config_val;
-  else
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= linex_words[PAL+1].config_ref_val; // loading from menu tray for EXTCFG0
+  } else {
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[LINEX_TMP_TRAY].config_val; // loading from menu tray for EXTCFG0
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= linex_words[LINEX_TMP_TRAY].config_ref_val; // loading from menu tray for EXTCFG0
+  }
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val = linex_scanlines_words[palmode_select].config_val;
   sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val = linex_scanlines_words[palmode_select].config_ref_val;
 }

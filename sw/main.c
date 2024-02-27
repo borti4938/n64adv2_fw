@@ -143,7 +143,7 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 void load_value_trays(bool_t for_n64adv)
 {
   if (vmode_menu_pre != vmode_menu)
-    linex_words[PAL+1] = linex_words[vmode_menu];
+    linex_words[LINEX_TMP_TRAY] = linex_words[vmode_menu];
   vmode_menu_pre = vmode_menu;
   if (for_n64adv) {
     cfg_load_linex_word(vmode_n64adv,for_n64adv);
