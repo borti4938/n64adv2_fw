@@ -91,6 +91,17 @@ config_t limited_colorspace = {
     .val2char_func = &flag2set_func
 };
 
+config_t deblur_fwd_dv1_mode = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_DEBLUR_FWD_DV1_OFFSET,
+    .cfg_type     = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_DEBLUR_FWD_DV1_SETMASK,
+        .clrflag_mask = CFG_DEBLUR_FWD_DV1_CLRMASK
+    },
+    .value_string = (const char **) &OffOn
+};
+
 config_t deblur_mode_powercycle = {
     .cfg_word        = &intcfg0_word,
     .cfg_word_offset = CFG_DEBLUR_PC_DEFAULT_OFFSET,

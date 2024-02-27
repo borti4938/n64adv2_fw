@@ -178,17 +178,18 @@ typedef struct {
 #define PREDEFINED_SCALE_STEPS  25
 
 // the overall masks
-#define INTCFG0_GETALL_MASK   0x0000FFFF
+#define INTCFG0_GETALL_MASK   0x0001FFFF
 #define EXTCFG0_GETALL_MASK   0xFFFFFF7F
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x000003FE  // LSB is reserved for use in hardware only
 
 // internal cfg set 0
-#define CFG_LEDSWAP_OFFSET                 15
-#define CFG_HDR10INJ_OFFSET                14
-#define CFG_COLORSPACE_OFFSET              12
-#define CFG_LIMITED_COLORSPACE_OFFSET      11
+#define CFG_LEDSWAP_OFFSET                 16
+#define CFG_HDR10INJ_OFFSET                15
+#define CFG_COLORSPACE_OFFSET              13
+#define CFG_LIMITED_COLORSPACE_OFFSET      12
+#define CFG_DEBLUR_FWD_DV1_OFFSET          11
 #define CFG_DEBLUR_PC_DEFAULT_OFFSET       10
 #define CFG_MODE16BIT_PC_DEFAULT_OFFSET    9
 #define CFG_DEBLUR_IGR_OFFSET              8
@@ -210,6 +211,9 @@ typedef struct {
 #define CFG_LIMITED_COLORSPACE_GETMASK      (1<<CFG_LIMITED_COLORSPACE_OFFSET)
   #define CFG_LIMITED_COLORSPACE_SETMASK      (1<<CFG_LIMITED_COLORSPACE_OFFSET)
   #define CFG_LIMITED_COLORSPACE_CLRMASK      (INTCFG0_GETALL_MASK & ~CFG_LIMITED_COLORSPACE_SETMASK)
+#define CFG_DEBLUR_FWD_DV1_GETMASK          (1<<CFG_DEBLUR_FWD_DV1_OFFSET)
+  #define CFG_DEBLUR_FWD_DV1_SETMASK          (1<<CFG_DEBLUR_FWD_DV1_OFFSET)
+  #define CFG_DEBLUR_FWD_DV1_CLRMASK          (INTCFG0_GETALL_MASK & ~CFG_DEBLUR_FWD_DV1_SETMASK)
 #define CFG_DEBLUR_PC_DEFAULT_GETMASK       (1<<CFG_DEBLUR_PC_DEFAULT_OFFSET)
   #define CFG_DEBLUR_PC_DEFAULT_SETMASK       (1<<CFG_DEBLUR_PC_DEFAULT_OFFSET)
   #define CFG_DEBLUR_PC_DEFAULT_CLRMASK       (INTCFG0_GETALL_MASK & ~CFG_DEBLUR_PC_DEFAULT_SETMASK)
@@ -514,9 +518,9 @@ typedef struct {
 
 
 // default configuration
-#define INTCFG0_DEFAULTS            (CFG_DEBLUR_PC_DEFAULT_SETMASK)
+#define INTCFG0_DEFAULTS            (CFG_DEBLUR_FWD_DV1_SETMASK | CFG_DEBLUR_PC_DEFAULT_SETMASK)
 #define INTCFG0_DEFAULTS_GETMASK    (CFG_COLORSPACE_GETMASK | CFG_LIMITED_COLORSPACE_GETMASK | \
-                                     CFG_DEBLUR_PC_DEFAULT_GETMASK | CFG_MODE16BIT_PC_DEFAULT_GETMASK | \
+                                     CFG_DEBLUR_FWD_DV1_GETMASK | CFG_DEBLUR_PC_DEFAULT_GETMASK | CFG_MODE16BIT_PC_DEFAULT_GETMASK | \
                                      CFG_LINK_HV_SCALE_GETMASK)
 #define INTCFG0_NODEFAULTS_GETMASK  (INTCFG0_GETALL_MASK & ~INTCFG0_DEFAULTS_GETMASK)
 
@@ -556,7 +560,7 @@ extern config_tray_u8_t linex_words[LINEX_MODES+1];
   extern config_t hdr10_injection;
 #endif
 extern config_t swap_led, color_space, limited_colorspace,
-                deblur_mode_powercycle, mode16bit_powercycle, igr_deblur, igr_16bitmode,
+                deblur_fwd_dv1_mode, deblur_mode_powercycle, mode16bit_powercycle, igr_deblur, igr_16bitmode,
                 link_hv_scale, fallbackmode, autosave, debug_boot;
 extern config_t scaling_steps, region_selection,
                 timing_selection, scaling_selection,

@@ -460,7 +460,7 @@ int main()
     if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) { // all ok let's setup register settings in adv and  game-idperiphals_set_ready_bit();
       if (!led_set_ok || (palmode_pre != palmode) || (scanmode_pre != scanmode) || (undo_changed_linex_setting) || (todo == NEW_CONF_VALUE)) {
         set_cfg_adv7513();
-        dv_send_pr = (scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON);
+        dv_send_pr = cfg_get_value(&deblur_fwd_dv1_mode,0) == OFF ? FALSE : (scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON);
         set_dv_spd_packet(dv_send_pr);
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
