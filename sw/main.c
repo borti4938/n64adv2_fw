@@ -216,8 +216,6 @@ int main()
   target_resolution = get_target_resolution(PAL_PAT0,NTSC);
   target_resolution_pre = target_resolution;
 
-  cfg_apply_to_logic();
-
   // N64Adv2 state variable
   bool_t video_input_detected_pre;
   vmode_t palmode_pre = palmode;
