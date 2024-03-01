@@ -175,13 +175,6 @@ const alt_u8 spd_header[SPD_DV_HEADER_LEN] __ufmdata_section__ = {0x83, 0x01, SP
                                                                   0,
                                                                   'D', 'V', '1' /* version */
                                                                  };
-const alt_u16 vi_cfg_dv[2*LINEX_MODES][4] __ufmdata_section__ = {
-//   hBP,vBP,Width,Height
-    { 45, 15,  640,   240}, // NTSC progressive
-    { 56, 19,  640,   288}, // PAL progressive
-    { 45, 15,  640, 2*240}, // NTSC interlaced
-    { 56, 19,  640, 2*288}  // PAL interlaced
-};
 const char core_name_data[SPD_DV_CORE_NAME_LEN] __ufmdata_section__  = "N64 - N64Adv2";
 
 
