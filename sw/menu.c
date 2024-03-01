@@ -551,12 +551,10 @@ void print_hw_version()
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,FONTCOLOR_WHITE,&szText[0]);
 
   ext_fw = (ext_fw & GET_HDL_FW_MASK) >> HDL_FW_OFFSET;
-  sprintf(szText,"%1d.%02d",((ext_fw & HDL_FW_GETMAIN_MASK) >> HDL_FW_MAIN_OFFSET),
-                            ((ext_fw & HDL_FW_GETSUB_MASK) >> HDL_FW_SUB_OFFSET));
+  sprintf(szText,"%1d.%02d/%1d.%02d",((ext_fw & HDL_FW_GETMAIN_MASK) >> HDL_FW_MAIN_OFFSET),
+                                     ((ext_fw & HDL_FW_GETSUB_MASK)  >> HDL_FW_SUB_OFFSET ),
+                                     SW_FW_MAIN,SW_FW_SUB);
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+2,FONTCOLOR_WHITE,&szText[0]);
-
-  sprintf(szText,"%1d.%02d",SW_FW_MAIN,SW_FW_SUB);
-  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+3,FONTCOLOR_WHITE,&szText[0]);
 }
 
 void print_game_id()

@@ -59,7 +59,7 @@
 #define COPYRIGHT_H_OFFSET      (VD_WIDTH - 16)
 #define COPYRIGHT_V_OFFSET      0
 
-#define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 19)
+#define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 22)
 #define VERSION_V_OFFSET (OVERLAY_V_OFFSET +  4)
 
 #define  BNT_FCT_H_OFFSET 27
@@ -387,13 +387,12 @@ static const char *n64debug_overlay __ufmdata_section__ =
       "About";
   static const char *about_overlay __ufmdata_section__ =
       "The N64 RGB project is open source, i.e. PCB\n"
-      "files, HDL and SW sources are provided to you\n"
+      "files, HDL and SW sources, are provided to you\n"
       "FOR FREE!\n"
       "Your version\n"
       " - PCB version:\n"
       " - FPGA Chip ID:\n"
-      " - firmware (HDL):\n"
-      " - firmware (SW) :\n"
+      " - Firmware (HDL/SW):\n\n"
       "Questions / (limited) Support:\n"
       " - GitHub:\n"
       "      <https://github.com/borti4938/n64adv2_pcb>\n"
