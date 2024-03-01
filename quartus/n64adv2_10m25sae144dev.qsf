@@ -279,7 +279,7 @@ set_global_assignment -name VERILOG_FILE ../rtl/n64adv2_apu_top.v
 
 set_global_assignment -name VERILOG_FILE ../rtl/misc/reset_generator.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/register_sync.v
-#set_global_assignment -name VERILOG_FILE ../rtl/misc/register_sync_2.v
+set_global_assignment -name VERILOG_FILE ../rtl/misc/vector_reg_sync.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/pincheck.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/ram2port.v
 set_global_assignment -name VERILOG_FILE ../rtl/misc/font_rom.v

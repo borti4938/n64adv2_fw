@@ -317,7 +317,6 @@ reg [9:0] vdata_pre_sdram_buf_in_cnt;
 reg lineid_pre_sdram_buf = 1'b0;
 reg [hpos_width-1:0] hcnt_pre_sdram_buf;
 reg [3:0] datainfo_pre_sdram_buf;
-reg datainfo_rdy;
 
 // regs for sdram rtl
 reg [vcnt_width:0] X_vpos_1st_rdline; // first line to read (needed if scaling factor is so high such that not all lines are needed)
@@ -616,7 +615,6 @@ always @(posedge VCLK_i or negedge nRST_i)
     hcnt_pre_sdram_buf <= {hpos_width{1'b0}};
     vdata_pre_sdram_buf_in_cnt <= 10'd0;
     datainfo_pre_sdram_buf <= 4'h0;
-    datainfo_rdy <= 1'b0;
   end else begin
     if (vdata_valid_i_L) begin
       if (Y_input_proc_en && (Y_vcnt_i_L >= X_vstart_i && Y_vcnt_i_L < X_vstop_i)) begin
@@ -631,11 +629,7 @@ always @(posedge VCLK_i or negedge nRST_i)
         end
         if (hcnt_pre_sdram_buf == `ACTIVE_PIXEL_PER_LINE - 51) begin // write page info early
           datainfo_pre_sdram_buf <= {Y_field_id_masked_i,Y_field_cnt_i,Y_field_rdy4out};
-          datainfo_rdy <= 1'b1;
-        end
-        if (datainfo_rdy) begin // change page delayed to page info write to avoid racing conditions to SDRAM clock domain
           lineid_pre_sdram_buf <= ~lineid_pre_sdram_buf;
-          datainfo_rdy <= 1'b0;
         end
       end
     end
@@ -648,16 +642,20 @@ always @(posedge VCLK_i or negedge nRST_i)
 
 // resync register
 
-register_sync #(
+vector_reg_sync #(
   .reg_width(5),
   .reg_preset(5'd0)
 ) register_sync_vclki2dram_u0 (
-  .clk(DRAM_CLK_i),
-  .clk_en(1'b1),
-//  .nrst(async_nRST_i),
-  .nrst(1'b1),
-  .reg_i({datainfo_pre_sdram_buf,lineid_pre_sdram_buf}),
-  .reg_o({datainfo_pre_sdram_buf_drclk_resynced,lineid_pre_sdram_buf_drclk_resynced})
+  .clk_i(VCLK_i),
+  .clk_en_i(1'b1),
+  .nrst_i(nRST_i),
+//  .nrst_i(1'b1),
+  .vecreg_i({datainfo_pre_sdram_buf,lineid_pre_sdram_buf}),
+  .clk_o(DRAM_CLK_i),
+  .clk_en_o(1'b1),
+  .nrst_o(async_nRST_i),
+//  .nrst_o(1'b1),
+  .vecreg_o({datainfo_pre_sdram_buf_drclk_resynced,lineid_pre_sdram_buf_drclk_resynced})
 );
 
 register_sync #(
@@ -672,28 +670,36 @@ register_sync #(
   .reg_o({vdata_detected_drclk_resynced,input_proc_en_drclk_resynced,vcnt_i_drclk_resynced})
 );
 
-register_sync #(
+vector_reg_sync #(
   .reg_width(12),
   .reg_preset({12{1'b0}})
 ) register_sync_vclko2dram_u0 (
-  .clk(DRAM_CLK_i),
-  .clk_en(1'b1),
-//  .nrst(async_nRST_i),
-  .nrst(1'b1),
-  .reg_i(Y_vcnt_o_L),
-  .reg_o(vcnt_o_drclk_resynced)
+  .clk_i(VCLK_o),
+  .clk_en_i(1'b1),
+  .nrst_i(async_nRST_i),
+//  .nrst_i(1'b1),
+  .vecreg_i(Y_vcnt_o_L),
+  .clk_o(DRAM_CLK_i),
+  .clk_en_o(1'b1),
+  .nrst_o(async_nRST_i),
+//  .nrst_o(1'b1),
+  .vecreg_o(vcnt_o_drclk_resynced)
 );
 
-register_sync #(
+vector_reg_sync #(
   .reg_width(2),
   .reg_preset(2'b00)
 ) register_sync_vclko2dram_u1 (
-  .clk(DRAM_CLK_i),
-  .clk_en(1'b1),
-//  .nrst(async_nRST_i),
-  .nrst(1'b1),
-  .reg_i(rdpage_post_sdram_buf),
-  .reg_o(rdpage_slbuf_drclk_resynced)
+  .clk_i(VCLK_o),
+  .clk_en_i(1'b1),
+  .nrst_i(async_nRST_i),
+//  .nrst_i(1'b1),
+  .vecreg_i(rdpage_post_sdram_buf),
+  .clk_o(DRAM_CLK_i),
+  .clk_en_o(1'b1),
+  .nrst_o(async_nRST_i),
+//  .nrst_o(1'b1),
+  .vecreg_o(rdpage_slbuf_drclk_resynced)
 );
 
 
@@ -970,7 +976,7 @@ register_sync #(
   .clk_en(1'b1),
 //  .nrst(async_nRST_i),
   .nrst(1'b1),
-  .reg_i({vdata_detected               ,Y_field_id_i       ,Y_in2out_en}),
+  .reg_i({vdata_detected               ,Y_field_id_i           ,Y_in2out_en}),
   .reg_o({vdata_detected_txclk_resynced,field_id_txclk_resynced,in2out_en_txclk_resynced})
 );
 
