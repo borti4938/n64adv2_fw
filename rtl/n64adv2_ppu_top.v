@@ -148,8 +148,8 @@ wire cfg_direct_mode_i;
 
 wire [`VID_CFG_W-1:0] sys_vmode_pre_w;
 wire sys_direct_mode_w, sys_llm_w;
-wire [11:0] vlines_set_w;
-wire [11:0] hpixels_set_w;
+wire [11:0] direct_mode_vlines_set_w, cfg_vlines_set_w, vlines_set_w;
+wire [11:0] direct_mode_hpixels_set_w, cfg_hpixels_set_w, hpixels_set_w;
 
 wire palmode_sysclk_resynced, n64_480i_sysclk_resynced;
 wire use_interlaced_full_w;
@@ -297,9 +297,16 @@ always @(posedge SYS_CLK) begin
   end
 end
 
-assign vlines_set_w = ConfigSet_w[`target_vlines_slice];
-assign hpixels_set_w = (ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP) ? ConfigSet_w[`target_hpixels_slice] >> 1 :
-                                                                                        ConfigSet_w[`target_hpixels_slice];
+
+assign direct_mode_vlines_set_w = palmode_sysclk_resynced ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
+assign cfg_vlines_set_w = ConfigSet_w[`target_vlines_slice];
+assign vlines_set_w = sys_direct_mode_w ? direct_mode_vlines_set_w : cfg_vlines_set_w;
+
+assign direct_mode_hpixels_set_w = `ACTIVE_PIXEL_PER_LINE;
+assign cfg_hpixels_set_w = (ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP) ? ConfigSet_w[`target_hpixels_slice] >> 1 :
+                                                                                            ConfigSet_w[`target_hpixels_slice];
+assign hpixels_set_w = sys_direct_mode_w ? direct_mode_hpixels_set_w : cfg_hpixels_set_w;
+
 assign use_interlaced_full_w = sys_direct_mode_w ? 1'b0                                                              :  // do not full lines in interlacing on direct mode
                                                    (n64_480i_sysclk_resynced & ConfigSet_w[`deinterlacing_mode_bit1]);  // bit 1 in its config is weave -> so use full lines if set
 
