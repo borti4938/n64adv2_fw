@@ -370,7 +370,6 @@ int main()
       else run_pin_state(0);
 
       linex_words[PAL+1].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);  // save current menu settings
-      load_value_trays(1); // load settings for FPGA before leaving loop
 
       if (message_cnt == 0) {
         if (menu->type == N64DEBUG) print_ctrl_data();
@@ -433,6 +432,7 @@ int main()
       lock_menu_pre = FALSE;
     }
 
+    load_value_trays(1); // load settings for FPGA before leaving loop
     cfg_apply_to_logic();
 
     target_resolution = get_target_resolution(pal_pattern,palmode);
