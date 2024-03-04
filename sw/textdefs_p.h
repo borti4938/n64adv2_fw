@@ -2,7 +2,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2023 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2024 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,7 +226,7 @@ const char *btn_fct_confirm_overlay __ufmdata_section__ = "(A..Confirm, B..Cance
 const char *Unlock_1440p_Message __ufmdata_section__ = "On your own risk, so good luck I guess. ";
 
 static const char *copyright_note __ufmdata_section__ =
-    " 2023 borti4938"; /* 14 chars */
+    " 2024 borti4938"; /* 14 chars */
 
 static const char *resolution_header __ufmdata_section__ =
     "Resolution";
@@ -405,7 +405,7 @@ static const char *n64debug_overlay __ufmdata_section__ =
   static const char *license_overlay __ufmdata_section__ =
       "The N64Advanced v2 is part of the\n"
       "N64 RGB/YPbPr Digital2Digital and DAC project\n"
-      "    Copyright  2015 - 2023 Peter Bartmann\n"
+      "    Copyright  2015 - 2024 Peter Bartmann\n"
       "This project is published under the following\n"
       "licenses:\n"
       " - Hardware: CERN-OHL-W v2\n"

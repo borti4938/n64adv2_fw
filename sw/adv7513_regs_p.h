@@ -2,7 +2,7 @@
  *
  * This file is part of the N64 RGB/YPbPr DAC project.
  *
- * Copyright (C) 2015-2023 by Peter Bartmann <borti4938@gmail.com>
+ * Copyright (C) 2015-2024 by Peter Bartmann <borti4938@gmail.com>
  *
  * N64 RGB/YPbPr DAC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
