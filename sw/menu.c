@@ -405,7 +405,7 @@ void val2txt_scale_sel_func(alt_u16 v) {
     v = v - NUM_SCALING_MODES;
     if (v > NTSC_LAST_SCALING_MODE) {
       sprintf(szText,"PAL.%s  ",scanmode == INTERLACED ? "i" : "p");
-      v = v - PAL_TO_288;
+      v = v - PAL_DIRECT;
     } else {
       sprintf(szText,"NTSC.%s  ",scanmode == INTERLACED ? "i" : "p");
       h_offset++;
@@ -413,7 +413,7 @@ void val2txt_scale_sel_func(alt_u16 v) {
   } else {
     if (v > NTSC_LAST_SCALING_MODE) {
       sprintf(szText,"PAL  ");
-      v = v - PAL_TO_288;
+      v = v - PAL_DIRECT;
     } else {
       sprintf(szText,"NTSC  ");
       h_offset++;
@@ -432,7 +432,7 @@ void val2txt_scale_func(alt_u16 v, bool_t use_vertical) {
     if (idx & 0x01) idx = PREDEFINED_SCALE_STEPS;
     else idx = idx/2;
   }
-  if (idx < PREDEFINED_SCALE_STEPS && (scaling_menu != NTSC_TO_240) && (scaling_menu != PAL_TO_288)) {
+  if (idx < PREDEFINED_SCALE_STEPS && (scaling_menu != NTSC_DIRECT) && (scaling_menu != PAL_DIRECT)) {
     if (!use_vertical && hor_hires) sprintf(szText,"%4u %s", v, PredefScaleStepsHalf[idx]);
     else sprintf(szText,"%4u %s", v, PredefScaleSteps[idx]);
   } else {
@@ -464,7 +464,7 @@ void print_current_timing_mode()
   alt_u16 hscale = cfg_get_value(&hor_scale,0);
   alt_u16 vscale = cfg_get_value(&vert_scale,0);
 
-  if (scaling_n64adv != NTSC_TO_240 && scaling_n64adv != PAL_TO_288) {
+  if (scaling_n64adv != NTSC_DIRECT && scaling_n64adv != PAL_DIRECT) {
     sprintf(szText,"(%d x %d)",hscale,vscale);
     szText[6-(hscale<1000)] = (char) CHECKBOX_TICK;
     vd_print_string(VD_INFO,hoffset + 1,0,FONTCOLOR_NAVAJOWHITE,&szText[0]);
@@ -689,7 +689,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     }
 
     if (is_viscaling_screen(*current_menu)) {
-      if (((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288)) &&
+      if (((scaling_menu == NTSC_DIRECT) || (scaling_menu == PAL_DIRECT)) &&
           (current_sel > SCALING_PAGE_SELECTION) && (current_sel < PAL_BOXED_SELECTION)) {
         (*current_menu)->current_selection = ((todo == NEW_OVERLAY) || (command == CMD_MENU_UP)) ? SCALING_PAGE_SELECTION : PAL_BOXED_SELECTION;
       }
@@ -802,7 +802,7 @@ int update_cfg_screen(menu_t* current_menu)
   alt_u16 val_select, ref_val_select;
   bool_t val_is_ref;
 
-  bool_t use_240p_288p = (scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288);
+  bool_t use_240p_288p = (scaling_menu == NTSC_DIRECT) || (scaling_menu == PAL_DIRECT);
 
   bool_t use_sl_vert_negoffset = apply_sl_vert_negoffset(current_menu);
   alt_u8 v_run_negoffset = 0;
@@ -854,11 +854,7 @@ int update_cfg_screen(menu_t* current_menu)
         // check scaling menu
         if (is_viscaling_screen(current_menu) && use_240p_288p) {
           if (v_run == VHLINK_SELECTION) {
-            val_select = CFG_LINK_HV_SCALE_MAX_VALUE + 1;
-            font_color = FONTCOLOR_GREY;
-          }
-          if (v_run == VHLINK_SELECTION) {
-            val_select = CFG_LINK_HV_SCALE_MAX_VALUE + 1;
+            val_select = CFG_LINK_HV_SCALE_DEFAULTVAL_FIXED;
             font_color = FONTCOLOR_GREY;
           }
           if ((v_run == VERTSCALE_SELECTION) || (v_run == HORISCALE_SELECTION)) {

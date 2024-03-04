@@ -136,8 +136,8 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 {
   alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
 
-  if (palmode_tmp) return (PAL_TO_288 + linex_setting);
-  else return (NTSC_TO_240 + linex_setting);
+  if (palmode_tmp) return (PAL_DIRECT + linex_setting);
+  else return (NTSC_DIRECT + linex_setting);
 }
 
 void load_value_trays(bool_t for_n64adv)
@@ -341,9 +341,10 @@ int main()
           break;
         case NEW_OVERLAY:
           cfg_set_value(&region_selection,palmode);
-          vmode_menu_pre = (palmode == NTSC); // make sure that we load setting next loop correctly
+          cfg_set_value(&copy_direction,palmode);
           cfg_set_value(&scaling_selection,scaling_n64adv);
           cfg_set_value(&timing_selection,timing_n64adv);
+          vmode_menu_pre = (palmode == NTSC); // make sure that we load setting next loop correctly
           load_value_trays(0);  // reload needed
           print_overlay(menu);
           message_cnt = 0;

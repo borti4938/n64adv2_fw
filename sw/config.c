@@ -51,7 +51,7 @@ typedef struct {
   alt_u8  cfg_linex_trays[LINEX_MODES];
   alt_u8  cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32*LINEX_MODES];
   alt_u8  cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*NUM_TIMING_MODES];
-  alt_u8  cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*NUM_SCALING_MODES];
+  alt_u8  cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*(NUM_SCALING_MODES-NUM_DIRECT_MODES)];
 } cfg4flash_t;
 
 configuration_t sysconfig = {
@@ -80,18 +80,17 @@ config_tray_u16_t timing_words[NUM_TIMING_MODES] = {
   { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS}
 };
 
-const alt_u32 scaling_defaults[NUM_SCALING_MODES] __ufmdata_section__ =
-    {(alt_u32) CFG_SCALING_NTSC_240_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_NTSC_480_DEFAULT_SHIFTED  ,
-     (alt_u32) CFG_SCALING_NTSC_720_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_NTSC_960_DEFAULT_SHIFTED  ,
-     (alt_u32) CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED,(alt_u32) CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED ,
-     (alt_u32) CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,(alt_u32) CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,
-     (alt_u32) CFG_SCALING_PAL_288_DEFAULT_SHIFTED  ,(alt_u32) CFG_SCALING_PAL_576_DEFAULT_SHIFTED   ,
-     (alt_u32) CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,(alt_u32) CFG_SCALING_PAL_960_DEFAULT_SHIFTED   ,
-     (alt_u32) CFG_SCALING_PAL_1080_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_PAL_1200_DEFAULT_SHIFTED  ,
-     (alt_u32) CFG_SCALING_PAL_1440_DEFAULT_SHIFTED ,(alt_u32) CFG_SCALING_PAL_1440_DEFAULT_SHIFTED };
+const alt_u32 scaling_defaults[NUM_SCALING_MODES-NUM_DIRECT_MODES] __ufmdata_section__ =
+    {(alt_u32) CFG_SCALING_NTSC_480_DEFAULT_SHIFTED , (alt_u32) CFG_SCALING_NTSC_720_DEFAULT_SHIFTED ,
+     (alt_u32) CFG_SCALING_NTSC_960_DEFAULT_SHIFTED , (alt_u32) CFG_SCALING_NTSC_1080_DEFAULT_SHIFTED,
+     (alt_u32) CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED, (alt_u32) CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,
+     (alt_u32) CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,
+     (alt_u32) CFG_SCALING_PAL_576_DEFAULT_SHIFTED  , (alt_u32) CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,
+     (alt_u32) CFG_SCALING_PAL_960_DEFAULT_SHIFTED  , (alt_u32) CFG_SCALING_PAL_1080_DEFAULT_SHIFTED ,
+     (alt_u32) CFG_SCALING_PAL_1200_DEFAULT_SHIFTED , (alt_u32) CFG_SCALING_PAL_1440_DEFAULT_SHIFTED ,
+     (alt_u32) CFG_SCALING_PAL_1440_DEFAULT_SHIFTED };
 
-config_tray_t scaling_words[NUM_SCALING_MODES] = {
-    { .config_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_240_DEFAULT_SHIFTED},
+config_tray_t scaling_words[NUM_SCALING_MODES-NUM_DIRECT_MODES] = {
     { .config_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_480_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_720_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_NTSC_960_DEFAULT_SHIFTED},
@@ -99,7 +98,6 @@ config_tray_t scaling_words[NUM_SCALING_MODES] = {
     { .config_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1200_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED,  .config_ref_val = CFG_SCALING_NTSC_1440_DEFAULT_SHIFTED},
-    { .config_val = CFG_SCALING_PAL_288_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_288_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_576_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_720_DEFAULT_SHIFTED},
     { .config_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED  ,  .config_ref_val = CFG_SCALING_PAL_960_DEFAULT_SHIFTED},
@@ -279,30 +277,26 @@ void cfg_scale_v2h_update(bool_t direction_vh) {
 
 alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, bool_t ret_reference)
 {
+  if (scaling_menu == NTSC_DIRECT) {
+    return use_vertical ? CFG_SCALING_NTSC_240_VERT_FIXED :  CFG_SCALING_PAL_NTSC_HORI_FIXED;
+  }
+  if (scaling_menu == PAL_DIRECT) {
+    return use_vertical ? CFG_SCALING_PAL_240_VERT_FIXED :  CFG_SCALING_PAL_NTSC_HORI_FIXED;
+  }
   alt_u16 current_scale = use_vertical ? cfg_get_value(&vert_scale,0) :  cfg_get_value(&hor_scale,0);
+
   if (set_value) {  // ensure from outside that command is valid (left or right)
     alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
     alt_u8 idx, idx_min;
-    bool_t use_240p_288p = ((scaling_menu == NTSC_TO_240) || (scaling_menu == PAL_TO_288));
     bool_t use_1440Wp = ((scaling_menu == NTSC_TO_1440W) || (scaling_menu == PAL_TO_1440W));
     bool_t use_pal_limit = (scaling_menu > NTSC_TO_1440W);
-    alt_u16 scale_max, scale_min;
-    alt_u8 scale_inc = 1;
-    if (use_240p_288p) {
-      if (use_vertical) {
-        scale_max = 2*CFG_VERTSCALE_PAL_MIN;
-        scale_min = ((vmode_scaling_menu == PAL) && !((bool_t) cfg_get_value(&pal_boxed_mode,0))) ? (CFG_VERTSCALE_PAL_MIN & 0xFFFE) : (CFG_VERTSCALE_NTSC_MIN & 0xFFFE);
-      } else {
-        scale_max = 2*predef_scaling_vals[2][0];
-        scale_min = predef_scaling_vals[2][0];
-      }
-    } else {
-      scale_max = !use_vertical ? CFG_HORSCALE_MAX_VALUE :
-                  use_pal_limit ? CFG_VERTSCALE_PAL_MAX_VALUE : CFG_VERTSCALE_NTSC_MAX_VALUE;
-      scale_min = use_1440Wp ? 2*predef_scaling_vals[jdx][0] : predef_scaling_vals[jdx][0];
-      scale_inc = use_1440Wp ? 2 : 1;
-    }
-    bool_t scale_pixelwise = cfg_get_value(&scaling_steps,0) > 0 || (use_240p_288p && use_vertical);
+
+    alt_u16 scale_max = !use_vertical ? CFG_HORSCALE_MAX_VALUE :
+                use_pal_limit ? CFG_VERTSCALE_PAL_MAX_VALUE : CFG_VERTSCALE_NTSC_MAX_VALUE;
+    alt_u16 scale_min = use_1440Wp ? 2*predef_scaling_vals[jdx][0] : predef_scaling_vals[jdx][0];
+    alt_u8 scale_inc = use_1440Wp ? 2 : 1;
+
+    bool_t scale_pixelwise = (bool_t) cfg_get_value(&scaling_steps,0);
     idx_min = 0;
     for (idx = 0; idx < PREDEFINED_SCALE_STEPS; idx++) {
       if (predef_scaling_vals[jdx][idx] < scale_min) idx_min = idx+1;
@@ -329,6 +323,7 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
     if (use_vertical) cfg_set_value(&vert_scale,current_scale);
     else cfg_set_value(&hor_scale,current_scale);
   }
+
   current_scale = use_vertical ? cfg_get_value(&vert_scale,ret_reference) :  cfg_get_value(&hor_scale,ret_reference);
   return current_scale;
 }
@@ -398,7 +393,7 @@ int cfg_save_to_flash(bool_t need_confirm)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U16; jdx++)
       ((cfg4flash_t*) databuf)->cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx] = (alt_u8) ((timing_words[idx].config_val >> (8*jdx)) & 0xFF);
 
-  for (idx = 0; idx < NUM_SCALING_MODES; idx++)
+  for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
       ((cfg4flash_t*) databuf)->cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*idx+jdx] = (alt_u8) ((scaling_words[idx].config_val >> (8*jdx)) & 0xFF);
 
@@ -459,7 +454,7 @@ int cfg_load_from_flash(bool_t need_confirm)
       timing_words[idx].config_val |= (((cfg4flash_t*) databuf)->cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx]  << (8*jdx));
   }
 
-  for (idx = 0; idx < NUM_SCALING_MODES; idx++) {
+  for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++) {
       scaling_words[idx].config_val = 0;
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
       scaling_words[idx].config_val |= (((cfg4flash_t*) databuf)->cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*idx+jdx]  << (8*jdx));
@@ -531,6 +526,11 @@ void cfg_reset_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
 }
 
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
+  if ((scaling_word_select == NTSC_DIRECT) || (scaling_word_select == PAL_DIRECT)) return;
+
+  scaling_word_select--;
+  if (scaling_word_select > NTSC_LAST_SCALING_MODE) scaling_word_select--;
+
   scaling_words[scaling_word_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETSCALING_MASK) |
                                                   (sysconfig.cfg_word_def[INTCFG0]->cfg_word_val & CFG_LINK_HV_SCALE_GETMASK);
   scaling_words[scaling_word_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETSCALING_MASK) |
@@ -538,14 +538,30 @@ void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
 }
 
 void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
+
   sysconfig.cfg_word_def[INTCFG0]->cfg_word_val &= CFG_LINK_HV_SCALE_CLRMASK;
-  sysconfig.cfg_word_def[INTCFG0]->cfg_word_val |= (scaling_words[scaling_word_select].config_val & CFG_LINK_HV_SCALE_GETMASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
+  sysconfig.cfg_word_def[INTCFG0]->cfg_ref_word_val &= CFG_LINK_HV_SCALE_CLRMASK;
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
+
+  if (scaling_word_select == NTSC_DIRECT) {
+    sysconfig.cfg_word_def[INTCFG0]->cfg_word_val |= CFG_LINK_HV_SCALE_DEFAULTVAL_FIXED << CFG_LINK_HV_SCALE_OFFSET;
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= CFG_SCALING_NTSC_240_DEFAULT_SHIFTED & CFG_EXTCFG0_GETSCALING_MASK;
+    return;
+  }
+  if (scaling_word_select == PAL_DIRECT) {
+    sysconfig.cfg_word_def[INTCFG0]->cfg_word_val |= CFG_LINK_HV_SCALE_DEFAULTVAL_FIXED << CFG_LINK_HV_SCALE_OFFSET;
+    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= CFG_SCALING_PAL_288_DEFAULT_SHIFTED & CFG_EXTCFG0_GETSCALING_MASK;
+    return;
+  }
+
+  scaling_word_select--;
+  if (scaling_word_select > NTSC_LAST_SCALING_MODE) scaling_word_select--;
+
+  sysconfig.cfg_word_def[INTCFG0]->cfg_word_val |= (scaling_words[scaling_word_select].config_val & CFG_LINK_HV_SCALE_GETMASK);
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= (scaling_words[scaling_word_select].config_val & CFG_EXTCFG0_GETSCALING_MASK);
 
-  sysconfig.cfg_word_def[INTCFG0]->cfg_ref_word_val &= CFG_LINK_HV_SCALE_CLRMASK;
   sysconfig.cfg_word_def[INTCFG0]->cfg_ref_word_val |= (scaling_words[scaling_word_select].config_ref_val & CFG_LINK_HV_SCALE_GETMASK);
-  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNONSCALING_MASK;
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= (scaling_words[scaling_word_select].config_ref_val & CFG_EXTCFG0_GETSCALING_MASK);
 }
 
@@ -598,7 +614,7 @@ int cfg_load_defaults(fallback_vmodes_t vmode, bool_t need_confirm)
 
   int idx;
   for (idx = 0; idx < NUM_TIMING_MODES; idx++) cfg_reset_timing_word(idx);
-  for (idx = 0; idx < NUM_SCALING_MODES; idx++) cfg_reset_scaling_word(idx);
+  for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++) cfg_reset_scaling_word(idx);
 
   cfg_load_linex_word(palmode,1);
   cfg_load_timing_word(palmode);
@@ -611,8 +627,6 @@ int cfg_load_defaults(fallback_vmodes_t vmode, bool_t need_confirm)
 
 void cfg_apply_to_logic()
 {
-  if ((scaling_n64adv == PAL_TO_288) && ((bool_t) cfg_get_value(&pal_boxed_mode,0) == FALSE) && (cfg_get_value(&vert_scale,0) < CFG_VERTSCALE_PAL_MIN))
-    cfg_set_value(&vert_scale,288);
   alt_u32 cfg0_word_val = sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val;
   if (!video_input_detected)
     cfg0_word_val = (cfg0_word_val & (CFG_RESOLUTION_RSTMASK & CFG_FORCE_5060_RSTMASK)) | CFG_RESOLUTION_480_SETMASK | CFG_FORCE_60_SETMASK; // set to 480p60 if no video input is being detected
@@ -640,7 +654,7 @@ void cfg_update_reference()
   linex_scanlines_words[NTSC].config_ref_val = linex_scanlines_words[NTSC].config_val;
   linex_scanlines_words[PAL].config_ref_val  = linex_scanlines_words[PAL].config_val;
   for (idx = 0; idx < NUM_TIMING_MODES; idx++) timing_words[idx].config_ref_val = timing_words[idx].config_val;
-  for (idx = 0; idx < NUM_SCALING_MODES; idx++) scaling_words[idx].config_ref_val = scaling_words[idx].config_val;
+  for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++) scaling_words[idx].config_ref_val = scaling_words[idx].config_val;
 }
 
 int cfg_copy_ntsc2pal()
@@ -652,12 +666,12 @@ int cfg_copy_ntsc2pal()
     linex_words[NTSC].config_val = linex_words[PAL].config_val;
     linex_scanlines_words[NTSC].config_val = linex_scanlines_words[PAL].config_val;
     for (idx = 1; idx <= NTSC_LAST_SCALING_MODE; idx++)
-      scaling_words[idx] = scaling_words[idx + NTSC_LAST_SCALING_MODE + 1];
+      scaling_words[idx-1] = scaling_words[idx+NTSC_LAST_SCALING_MODE-1];
   } else {  // NTSC to PAL
     linex_words[PAL].config_val = linex_words[NTSC].config_val;
     linex_scanlines_words[PAL].config_val = linex_scanlines_words[NTSC].config_val;
     for (idx = 1; idx <= NTSC_LAST_SCALING_MODE; idx++)
-      scaling_words[idx + NTSC_LAST_SCALING_MODE + 1] = scaling_words[idx];
+      scaling_words[idx+NTSC_LAST_SCALING_MODE-1] = scaling_words[idx-1];
     cfg_set_flag(&pal_boxed_mode);
   }
   return 0;
