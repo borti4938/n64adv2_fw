@@ -339,9 +339,9 @@ set_global_assignment -name SYNTH_PROTECT_SDC_CONSTRAINT ON
 
 set_global_assignment -name QII_AUTO_PACKED_REGISTERS "SPARSE AUTO"
 set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
-set_global_assignment -name SEED 1
-#set_global_assignment -name SEED 46
-#set_global_assignment -name SEED 7
+set_global_assignment -name SEED 27
+#set_global_assignment -name SEED 14
+#set_global_assignment -name SEED 8
 set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
 set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON

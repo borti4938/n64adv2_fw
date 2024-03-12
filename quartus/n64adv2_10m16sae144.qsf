@@ -331,9 +331,9 @@ set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 
 set_global_assignment -name QII_AUTO_PACKED_REGISTERS "SPARSE AUTO"
 set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
-set_global_assignment -name SEED 10
-#set_global_assignment -name SEED 22
-#set_global_assignment -name SEED 2
+set_global_assignment -name SEED 50
+#set_global_assignment -name SEED 32
+#set_global_assignment -name SEED 34
 set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
 set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
