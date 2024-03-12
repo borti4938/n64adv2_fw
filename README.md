@@ -73,68 +73,63 @@ Only change something here if you are sure what you are doing.
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Input mode** \[1\] | | Mode where the following settings are applied |
-| **Output resolution - 240p/288p (4:3)** | Off | Changes to 240p/288p (4:3 with pixel repetition) output resolution<br>Note that scaling options will be limited and output becomes corrupted if N64 is running in 480i/576i |
-| **Output resolution - 480p/576p (4:3)** | On \[2\] | Changes to 480p/576p (4:3) output resolution |
-| **Output resolution - 720p (16:9)** | Off | Changes to 720p (16:9) output resolution |
-| **Output resolution - 960p (4:3)** | Off | Changes to 960p (4:3) resolution at output |
-| **Output resolution - 1080p (16:9)** | On \[2\] | Changes to 1080p (16:9) output resolution |
-| **Output resolution - 1200p (4:3)** | Off | Changes to 1200p (4:3) resolution with reduced blanking at output |
-| **Output resolution - 1440p (4:3)** | _not available_ | Changes to 1440p (4:3) resolution with reduced blanking at output \[3\] |
-| **Output resolution - 1440p (16:9)** | _not available_ | Changes to 1440p (16:9) resolution with reduced blanking at output \[3,4\] |
-| **Use VGA instead of 480p** | Off | Determines whether you want to use VGA (640x480) instead of standard 480p (720x480).<br>Note that this option has no effect for 576p. |
-| **Frame-Locked mode** | Off | Varies the pixel clock such that vertical sync matches the N64 generated vertical clock.<br>Vsync in this mode is slightly off spec. To my experience, NTSC runs fine on most TVs other than PAL.|
-| **Force 50/60** | Off (N64 Auto) | Forces 50Hz or 60Hz vertical output frequency. This may introduce additional shudder when running PAL in 60Hz and NTSC in 50Hz.<br>This option becomes inaccessible in frame locked mode. |
+| **Input mode** \[1\] | | Mode where the following settings are applied, NTSC or PAL |
+| **New settings - 240p/288p (4:3)** | Off | Changes to 240p/288p (4:3 with pixel repetition) output resolution<br>Note that scaling options will be limited and output becomes corrupted if N64 is running in 480i/576i |
+| **New settings - Output resolution** | \[2\] | Changes output resolution \[3,4,5\] |
+| **New settings - Use VGA-flag in 480p** | Off | Changes to 720p (16:9) output resolution |
+| **New settings - Frame-locked mode** | Off | Varies the pixel clock such that vertical sync matches the N64 generated vertical clock.<br>Vsync in this mode is slightly off spec. To my experience, NTSC runs fine on most TVs other than PAL.<br>Always on on direct mode |
+| **New settings - Force 50Hz/60Hz** | Off (N64 Auto) | Forces 50Hz or 60Hz vertical output frequency. This may introduce additional shudder when running PAL in 60Hz and NTSC in 50Hz.<br>This option becomes inaccessible in frame locked mode.<br>Always on Auto on direct mode |
+| **New settings - Test and apply** | | Apply current changes \[6\] |
+| **Current settings** | _not available_ | Menu entries are not modifiable. They are showing the actual settings | 
 
 \[1\] You are allowed to quickly change the _Input mode_ on this screen by pressing **L** or **R** on the controller.  
 \[2\] Default depends on boot procedure (see section [Default Configuration](https://github.com/borti4938/n64adv2_fw_beta_releases#default-configuration))  
-\[3\] Note that the 1440p modes will only be available if you unlock it over the _Miscellaneous_ menu or if it is already configured.
-\[4\] 1440p (16:9) uses pixel repetition at the HDMI transmitter. So 1440p (4:3) should be preferred if this works in the particular setup.
+\[3\] Available resolutions are: **Direct** (240p/480i / 288p/576i as per game), **480p/576p** (4:3), **720p** (16:9), **960p** (4:3), **1080p (16:9)**, **1200p** (4:3), and **1440p** (4:3 and 16:9)  
+\[4\] Note that the 1440p modes will only be available if you unlock it over the _Miscellaneous_ menu or if it is already configured.  
+\[5\] 1440p (16:9) uses pixel repetition at the HDMI transmitter. So 1440p (4:3) should be preferred if this works in the particular setup.  
+\[6\] Function test actual setting. Apply by confirming with _A_, undo with _B_ or waiting a short while.
 
 #### Scaler
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Vertical interpolation** | Integer | Sets the vertical interpolation type. Selection of<br>- **Integer**/**Integer (soft)** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
-| **Horizontal interpolation** | Integer | Sets the horizontal interpolation type. Selection of<br>- **Integer**/**Integer (soft)** simple 0-order hold interpolation \[5\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
-| **Scaling - Settings for** \[6\] | _Current_ | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
-| **Scaling - Link v/h factors** | 4:3 | Links vertical and horizontal to **4:3** or keep it **open**. |
+| **Vertical interpolation** | Integer | Sets the vertical interpolation type. Selection of<br>- **Integer**/**Integer (soft)** simple 0-order hold interpolation \[7\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Horizontal interpolation** | Integer | Sets the horizontal interpolation type. Selection of<br>- **Integer**/**Integer (soft)** simple 0-order hold interpolation \[7\]<br>- **Integer+Bi-linear** bi-linear scaling with pre-integer scaling<br>- **Bi-linear** bi-linear scaling |
+| **Scaling - Settings for** \[8\] | _Current_ | Selects on which scaling mode (NTSC/PAL to different output resolutions) the following settings shall be applied. |
+| **Scaling - Link v/h factors** | 4:3 | Links vertical and horizontal to **10:9**, **4:3**, **CRT**, **16:9** or keep it **open**. \ |
 | **Scaling - V/h scaling steps** | 0.25x | Changes between **0.25x** steps and **pixelwise** |
 | **Scaling - Vertical scale value** | _see notes_| Sets the number of desired output lines |
 | **Scaling - Horizontal scale value** | _see notes_ | Set the number of desired output pixel per line |
 | **Use PAL in 240p box** | Off | Uses 240 lines as input reference instead of 288 lines. |
-| **Shift N64 input image - Input Mode** \[7\] | _Current_ | Switches between NTSC/PAL progressive/interlaced input |
+| **Shift N64 input image - Input Mode** \[9\] | _Current_ | Switches between NTSC/PAL progressive/interlaced input |
 | **Shift N64 input image - Vertical shift**| 0 | Shifts the input by a certain number of lines before the buffer |
 | **Shift N64 input image - Horizontal shift** | 0 | Shifts the input by a certain number of pixels before the buffer |
 
-\[5\] Integer (soft) interpolation: If an output pixel is _exactly_ between two inputs, the output is the mean between both inputs to reduce uneven pixel and shimmering a bit. Scaling for 240p/288p is always integer scaling no matter what is set as _Interpolation type_.  
-\[6\] You are allowed to quickly change the _Scaling - Settings for_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Scaling_ related options.  
-\[6.1\] Scaling for 240p/288p output resolution is restricted to **open** _Link v/h factors_ and **pixelwise** _v/h scaling steps_.  
-\[6.2\] _Vertical scale value_ can only be set under 480 lines for 240p/288p scaling. Default depends on resolution.  
-\[6.3\] _Horizontal scale value_ for 240p/288p scaling increments and decrements in steps of two. Default depends on resolution.  
-\[7\] You are allowed to quickly change the _Shift N64 input image - Input Mode_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Shift N64 input image_ related options.
+\[7\] Integer (soft) interpolation: If an output pixel is _exactly_ between two inputs, the output is the mean between both inputs to reduce uneven pixel and shimmering a bit. Scaling for 240p/288p is always integer scaling no matter what is set as _Interpolation type_.  
+\[8\] You are allowed to quickly change the _Scaling - Settings for_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Scaling_ related options.  
+\[9\] You are allowed to quickly change the _Shift N64 input image - Input Mode_ on this screen by pressing **L** or **R** on the controller as long as your curser is somewhere around the _Shift N64 input image_ related options.
 
 #### Scanlines Config
 
 | Entry | Default | Description |
 |:------|:--------|:------------|
-| **Input mode** \[8\] | _Current_ | Switches between NTSC/PAL progressive/interlaced input |
+| **Input mode** \[10\] | _Current_ | Switches between NTSC/PAL progressive/interlaced input |
 | **Calculation Mode** | Luma based | Determines whether all calculations regarding thickness (adaptive) and strength (bloom effect) are **Luma based** or **per color based** |
-| **Horizontal scanlines** \[9\] | Off | Enables horizontal scanlines for the particular input mode. |
+| **Horizontal scanlines** \[11\] | Off | Enables horizontal scanlines for the particular input mode. |
 | **Horizontal - Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
 | **Horizontal - Profile** | Hanning | Set up the transition area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributed over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian** and **Rectangular**. |
-| **Horizontal - Strength** \[10\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
-| **Horizontal - Bloom effect** \[10\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
-| **Vertical scanlines** \[9\] | Off | Enables vertical scanlines for the particular input mode. |
+| **Horizontal - Strength** \[12\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
+| **Horizontal - Bloom effect** \[12\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
+| **Vertical scanlines** \[11\] | Off | Enables vertical scanlines for the particular input mode. |
 | **Vertical - Link to horizontal** | Off | Links the vertical scanlines settings to the horizontal settings.<br>Following settings will be a copy of the horizontal scanlines settings. |
 | **Vertical - Thickness** | Thin | Switches between **Thin**, **Normal**, **Thick** or **Adaptive** scanlines.<br>Depending on the scaling factor there might be a minor to huge difference. Just play around and see what suits best for you. |
 | **Vertical - Profile** | Hanning | Set up the transition area between scanline and no-scanline. A smooth transition ensures somehow feels equally distributed over the screen even for non-integer scales.<br>From smooth to non-smooth select from **Hanning**, **Gaussian** and **Rectangular**. |
-| **Vertical - Strength** \[10\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
-| **Vertical - Bloom effect** \[10\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
+| **Vertical - Strength** \[12\] | 6% | Selects the scanline strength with I = **s** x I_{in}, with **s** being the actual setting and I the pixel intensity. |
+| **Vertical - Bloom effect** \[12\] | 0% | Makes scanline strength pixel-intensity dependent<br>- 0% means that the scanlines are drawn as calculated<br>- 100% means that the scanlines strength is reduced down to 0 for maximum pixel intensity<br>- above or below 100% means that the scanlines strength is reduced to 0 before maximum pixel intensity or never completely reduced to 0, respectively |
 
-\[8\] _Input mode_ can be changed using **L** or **R** button on the controller.  
-\[9\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Another rule is, the larger the scaling factor the better the look. Also keep in mind that scanlines are not drawn if output resolution is not at least twice the input.  
-\[10\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
+\[10\] _Input mode_ can be changed using **L** or **R** button on the controller.  
+\[11\] Even though scanline drawing is interconnected with the scaler, best results will be achieved for full integer scaling factors. Another rule is, the larger the scaling factor the better the look. Also keep in mind that scanlines are not drawn if output resolution is not at least twice the input.  
+\[12\] A script for simulating the scanline behavior is available under [scrips/scanline\_sim.m](./scrips/scanline_sim.m)
 
 #### VI-Processing
 
@@ -144,13 +139,14 @@ Only change something here if you are sure what you are doing.
 | **Gamma value** | 1.00 | Applies some gamma boost.<br>Gamma curve on output is defined as I = I_{in}^**\gamma**, where I is the intensity. |
 | **Color space - Format** | RGB | Choose between **RGB**, **YCbCr (ITU601/SD)** or **YCbCr (ITU709/HD)** color space |
 | **Color space - Limited range** | Off | Sets color space to use just a limited range (not full 8bit (0 to 255)) leaving some headroom<br>- RGB values in a range of 16 to 235<br>YCbCr values between 16 and 235 (Y) or between 16 and 239 (Cb/Cr) |
-| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[11\] |
+| **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[13\] |
 | **LowRes.-DeBlur - Power cycle default** | Off | Sets the power cycle default. |
-| **16bit mode** | Off | Selects between \[12\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
+| **LowRes.-DeBlur - Direct mode fwd.** | On | Decides if deblur flag is being forwarded to external scaler / video processor. |
+| **16bit mode** | Off | Selects between \[14\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
 | **16bit mode - Power cycle default** | Off | Sets the power cycle default. |
 
-\[11\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
-\[12\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
+\[13\] _LowRes.-DeBlur_ applies only for progressive inputs (i.e. 240p/288p content). This improves the overall image quality if the games runs in 320x240 / 320x288. However it decreases image quality if the game uses 640 horizontal pixel.  
+\[14\] 21bit -> 7bit each color as provided by N64. 16bit -> 5bit for red and blue and 6bit for green.
 
 #### Audio-Processing
 
@@ -159,7 +155,7 @@ Only change something here if you are sure what you are doing.
 | **Filter Options - Bypass filter** | Off | Bypasses the reconstruction audio filter. Only use this option if you are facing any issues with the fillter enabled. |
 | **Output Settings - Mute audio** | Off | Mutes output audio |
 | **Output Settings - Swap L/R** | Off | Swaps left and right audio channel |
-| **Audio settings - output gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
+| **Audio settings - Output gain** | 0dB | Amplifies the audio signal after the audio filter. Saturation may appear. |
 | **S/PDIF support - Enabled** | Off | Enables the S/PDIF audio output. |
 
 #### Miscellaneous
@@ -171,10 +167,10 @@ Only change something here if you are sure what you are doing.
 | **Controller routines - 16bit mode** | Off | Allows switching _16bit mode_ (see description above) **on** and **off** via controller<br>- Button combination **On**: **Start + Z + R + C-down**<br>- Button combination **Off**: **Start + Z + R + C-up** |
 | **Reset masking** | VI + Audio | User can opt to not reset video interface pipeline (**VI pipeline**) and/or **Audio** processing if the console is being reset |
 | **Menu variations - Swap R/G-LED** | Off | Swap use of LED D1 and D2 (usually D1 is NOK / red and D2 is OK / green). Useful if D1 and D2 have opposite color on hardware. |
-| **Menu variations - Boot to debug** | Debug at no vi-input | If no video input is being detected at the N64 video interface input, the N64Adv2 boots into _Debug-Info_ screen.<br> This behavior can be switched off if setting is at _Normal boot_. |
-| **Unlock lucky 1440p** \[13\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
+| **Menu variations - Debug menu** | Open at no vi-input | If no video input is being detected at the N64 video interface input, the N64Adv2 opens the _Debug-Info_ screen.<br> This behavior can be switched off if setting is at _Do nothing_. |
+| **Unlock lucky 1440p** \[15\] | _Off_ | Unlocks 1440p resolution in the _resolution_ configuration screen |
 
-\[13\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
+\[15\] 1440p resolution runs over the maximum frequency specified for the FPGA and for the video transmitter IC. Therefore, it is intended that a) the setting is not in the resolution menu and b) 1440p must be unlocked! 
 
 #### Save/Load/Fallback
 
@@ -185,10 +181,10 @@ Only change something here if you are sure what you are doing.
 | **Load - Last configuration** | | Loads your last saved configuration |
 | **Load - Fallback defaults** | | Loads fallback configuration |
 | **Copy - Direction** | NTSC->PAL | Determines which config is copied _from_->_to_ |
-| **Copy - Copy config now** | | Copies the actual config. \[14\] | 
-| **Fallback config** | 1080p | Determines the fallback defaults (240p, 480p or 1080p) |
+| **Copy - Copy config now** | | Copies the actual config. \[16\] | 
+| **Fallback config** | 1080p | Determines the fallback defaults (Direct, 480p or 1080p) |
 
-\[14\] A copy from _NTSC->PAL_ also enables **Use PAL in 240p box** option. 240p/288p configurations stay unaffected.
+\[16\] A copy from _NTSC->PAL_ also enables **Use PAL in 240p box** option. 240p/288p configurations stay unaffected.
 
 Note that all unsaved configuration entries in the menu are shown in yellow color.
 As soon as the configuration is saved, every entry should appear in white or grey if unavailable.
@@ -197,17 +193,17 @@ As soon as the configuration is saved, every entry should appear in white or gre
 
 | Entry | Description |
 |:------|:------------|
-| **PPU state value** \[14\] | A value provided by the picture processing unit of the FPGA as feedback |
+| **PPU state value** \[17\] | A value provided by the picture processing unit of the FPGA as feedback |
 | **PPU state - VI mode** | Input resolution generated by the N64 |
 | **PPU state - Frame-Lock** | Shows whether frame locked mode is enabled or not.<br>In frame locked mode it will provide the actual number of scanlines pre-buffered for the output |
-| **Pin check value** \[14\] | A value representing some installation check results |
+| **Pin check value** \[17\] | A value representing some installation check results |
 | **Pin check - CLKs** | Shows if the different systems clocks are alive.<br>- PLL: clocks generated by N64Adv2-onboard SI5358 plus clock source for the PLL (27MHz or N64 (49MHz))<br>- Sys.: System clock<br>- Aud.: Audio processing clock<br>- N64: video clock from N64 mainboard |
 | **Pin check - VI** | Shows pin check results for video interface<br>- Sync: Data sync signal<br>- Data: data lines D6 down to D0 (left to right) |
 | **Pin check - Audio** | Shows pin check results for audio interface<br>- ALRC: audio left/right clock<br>- ASD: audio serial data<br>- ASC: audio serial clock |
 | **Re-sync VI pipeline**| Resets the video pipeline and resyncs input (i.e. video from N64) and output video<br>Might be useful in _frame locked mode_ if number of buffered scanlines does not stay constant, i.e. increase or decrease constantly |
 | **Lock menu (ctrl. test)**| Locks menu inputs for testing your controller.<br>Value of the controller test \[15\] is shown in the bottom line. |
 
-\[15\] Section [Work with the Debug-Info Page](https://github.com/borti4938/n64adv2_fw#work-with-the-debug-info-page) shows how to interpret those values
+\[17\] Section [Work with the Debug-Info Page](https://github.com/borti4938/n64adv2_fw#work-with-the-debug-info-page) shows how to interpret those values
 
 ### Default Configuration
 
@@ -222,7 +218,7 @@ The use can vary between three different defaults: _1080p_ or _480p/576p_ (no VG
 
 Even with a valid configuration in the UFM, it is possible to default the settings.
 By holding the reset button down during a power cycle, the N64Adv2 falls back to a certain default configuration.
-The defaults available for the fallback are _1080p_, _480p/576p_, and _240p/288p_.
+The defaults available for the fallback are _1080p_, _480p/576p_, and _Direct_.
 This can be set up in the _Save/Load/Fw.Update_ menu.
 
 #### Defaults
