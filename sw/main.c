@@ -371,11 +371,6 @@ int main()
 
       linex_words[PAL+1].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);  // save current menu settings
 
-      if (message_cnt == 0) {
-        if (menu->type == N64DEBUG) print_ctrl_data();
-        else print_current_timing_mode();
-      }
-
     } else { /* ELSE OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
       todo = NON;
 
@@ -421,6 +416,7 @@ int main()
               break;
           }
 
+      message_cnt = 0;
     } /* END OF if(cfg_get_value(&show_osd,0) && hdmi_clk_ok) */
 
     if (cfg_get_value(&lock_menu,0)) {
@@ -434,6 +430,11 @@ int main()
 
     load_value_trays(1); // load settings for FPGA before leaving loop
     cfg_apply_to_logic();
+
+    if (message_cnt == 0) {
+      if (menu->type == N64DEBUG) print_ctrl_data();
+      else print_current_timing_mode();
+    }
 
     target_resolution = get_target_resolution(pal_pattern,palmode);
     if (periphal_state.si5356_locked) periphal_state.si5356_locked = SI5356_PLL_LOCKSTATUS();
