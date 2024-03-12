@@ -200,7 +200,7 @@ typedef struct {
 #define CFG_LINK_HV_SCALE_OFFSET           4
 #define CFG_FALLBACK_OFFSET                2
 #define CFG_AUTOSAVE_OFFSET                1
-#define CFG_DEBUGBOOT_OFFSET               0
+#define CFG_DEBUGVTIMEOUT_OFFSET           0
 
 #define CFG_LEDSWAP_GETMASK                 (1<<CFG_LEDSWAP_OFFSET)
   #define CFG_LEDSWAP_SETMASK                 (1<<CFG_LEDSWAP_OFFSET)
@@ -238,9 +238,9 @@ typedef struct {
 #define CFG_AUTOSAVE_GETMASK                (1<<CFG_AUTOSAVE_OFFSET)
   #define CFG_AUTOSAVE_SETMASK                (1<<CFG_AUTOSAVE_OFFSET)
   #define CFG_AUTOSAVE_CLRMASK                (INTCFG0_GETALL_MASK & ~CFG_AUTOSAVE_SETMASK)
-#define CFG_DEBUGBOOT_GETMASK               (1<<CFG_DEBUGBOOT_OFFSET)
-  #define CFG_DEBUGBOOT_SETMASK               (1<<CFG_DEBUGBOOT_OFFSET)
-  #define CFG_DEBUGBOOT_CLRMASK               (INTCFG0_GETALL_MASK & ~CFG_DEBUGBOOT_GETMASK)
+#define CFG_DEBUGVTIMEOUT_GETMASK           (1<<CFG_DEBUGVTIMEOUT_OFFSET)
+  #define CFG_DEBUGVTIMEOUT_SETMASK           (1<<CFG_DEBUGVTIMEOUT_OFFSET)
+  #define CFG_DEBUGVTIMEOUT_CLRMASK           (INTCFG0_GETALL_MASK & ~CFG_DEBUGVTIMEOUT_GETMASK)
 
 
 // external cfg set 0
@@ -570,7 +570,7 @@ extern config_tray_u8_t linex_words[LINEX_MODES+1];
 #endif
 extern config_t swap_led, color_space, limited_colorspace,
                 deblur_fwd_dv1_mode, deblur_mode_powercycle, mode16bit_powercycle, igr_deblur, igr_16bitmode,
-                link_hv_scale, fallbackmode, autosave, debug_boot;
+                link_hv_scale, fallbackmode, autosave, debug_vtimeout;
 extern config_t scaling_steps, region_selection,
                 timing_selection, scaling_selection,
                 copy_direction, lock_menu;

@@ -179,13 +179,13 @@ config_t autosave = {
     .val2char_func = &flag2set_func
 };
 
-config_t debug_boot = {
+config_t debug_vtimeout = {
     .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_DEBUGBOOT_OFFSET,
+    .cfg_word_offset = CFG_DEBUGVTIMEOUT_OFFSET,
     .cfg_type        = FLAG,
     .flag_masks      = {
-        .setflag_mask = CFG_DEBUGBOOT_SETMASK,
-        .clrflag_mask = CFG_DEBUGBOOT_CLRMASK
+        .setflag_mask = CFG_DEBUGVTIMEOUT_SETMASK,
+        .clrflag_mask = CFG_DEBUGVTIMEOUT_CLRMASK
     },
     .value_string = (const char **) &DebugBoot
 };

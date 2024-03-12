@@ -111,25 +111,15 @@ alt_u16 get_pin_state()
 
 void update_n64adv_state()
 {
-  static bool_t boot_mask_video_input_detection = FALSE;
   static alt_u8 vin_detection_timeout = VIN_BOOT_DETECTION_TIMEOUT;
-  static bool_t init_phase = TRUE;
 
   n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
   video_input_detected = TRUE;
   if ((n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET) {
-    init_phase = vin_detection_timeout > VIN_BOOT_DETECTION_TIMEOUT-VIN_MIN_INIT_LENGTH;  // need some main loop cycles with init_phase being enabled. Otherwise program will deadlock
-//    init_phase = FALSE;  // need some main loop cycles with init_phase being enabled. Otherwise program will deadlock
-    if (vin_detection_timeout < VIN_DETECTION_TIMEOUT) {
-      vin_detection_timeout = VIN_DETECTION_TIMEOUT;
-      boot_mask_video_input_detection = FALSE;
-    } else {
-      vin_detection_timeout--;
-    }
+    if (vin_detection_timeout < VIN_DETECTION_TIMEOUT) vin_detection_timeout = VIN_DETECTION_TIMEOUT;
+    else vin_detection_timeout--;
   } else {
-    init_phase = vin_detection_timeout > VIN_DETECTION_TIMEOUT;
-    if (init_phase) boot_mask_video_input_detection = (bool_t) cfg_get_value(&debug_boot,0);
-    if (vin_detection_timeout == 0) video_input_detected = boot_mask_video_input_detection;
+    if (vin_detection_timeout == 0) video_input_detected = (bool_t) cfg_get_value(&debug_vtimeout,0);
     else vin_detection_timeout--;
     #ifdef DEBUG
       vid_timeout_cnt++;

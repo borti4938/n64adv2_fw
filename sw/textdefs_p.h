@@ -151,14 +151,14 @@
 
 #define MISC_OVERLAY_H_OFFSET             OVERLAY_H_OFFSET
 #define MISC_OVERLAY_V_OFFSET             OVERLAY_V_OFFSET
-#define MISC_VALS_H_OFFSET                (26 + MISC_OVERLAY_H_OFFSET)
+#define MISC_VALS_H_OFFSET                (25 + MISC_OVERLAY_H_OFFSET)
 #define MISC_VALS_V_OFFSET                VICFG_OVERLAY_V_OFFSET
 #define MISC_IGR_RESET_V_OFFSET           ( 2 + MISC_VALS_V_OFFSET)
 #define MISC_IGR_DEBLUR_V_OFFSET          ( 3 + MISC_VALS_V_OFFSET)
 #define MISC_IGR_16BITMODE_V_OFFSET       ( 4 + MISC_VALS_V_OFFSET)
 #define MISC_RST_MASKING_V_OFFSET         ( 5 + MISC_VALS_V_OFFSET)
 #define MISC_SWAP_LED_V_OFFSET            ( 7 + MISC_VALS_V_OFFSET)
-#define MISC_DEBUG_BOOT_V_OFFSET          ( 8 + MISC_VALS_V_OFFSET)
+#define MISC_DEBUGVITIMEOUT_V_OFFSET      ( 8 + MISC_VALS_V_OFFSET)
 #define MISC_LUCKY_1440P_V_OFFSET         ( 9 + MISC_VALS_V_OFFSET)
 
 #define RWDATA_OVERLAY_H_OFFSET           ( 1 + OVERLAY_H_OFFSET)
@@ -317,7 +317,7 @@ static const char *misc_overlay __ufmdata_section__ =
     "* Reset masking:\n"
     "* Menu variations:\n"
     "  - Swap R/G-LED:\n"
-    "  - Boot to debug:\n"
+    "  - Debug menu:\n"
     "* Unlock lucky 1440p:";
 
 static const char *rwdata_header __ufmdata_section__ =
@@ -484,7 +484,7 @@ const char *ScanlinesScaleProfile[]   __ufmdata_section__ = {"Hanning","Gaussian
 
 const char *RstMasking[] __ufmdata_section__ = {"None","VI pipeline","Audio","VI + Audio"};
 
-const char *DebugBoot[] __ufmdata_section__ = {"Debug at no vi-input","Normal boot"};
+const char *DebugBoot[] __ufmdata_section__ = {"Open at no vi-input","Do nothing"};
 
 const char *ScaleSteps[]           __ufmdata_section__ = {"0.25x","Pixelwise"};
 const char *PredefScaleSteps[]     __ufmdata_section__ = {"(2.00x)","(2.25x)","(2.50x)","(2.75x)",
