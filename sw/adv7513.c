@@ -224,29 +224,26 @@ void set_cfg_adv7513(void) {
 
   adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0xE0); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
                                                         // [6] AVI Packet Update: 1 = AVI Packet I2C update active
-                                                        // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
+
+  adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);                                                      // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
 
   switch (linex_val) {
     case DIRECT:
-//      set_pr_manual(PR_MANUAL,2,2*(2-hor_hires));
-      set_pr_manual(PR_MANUAL,2,2);
-      if (palmode) adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b010111);
-      else adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b001000);
+      set_pr_manual(PR_AUTO,2,2);
       break;
     case LineX6W:
       set_pr_manual(PR_MANUAL,2,1);
-      adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
+      break;
+    case LineX4:
+    case LineX5:
+    case LineX6:
+      set_pr_manual(PR_MANUAL,1,1);
       break;
 //    case LineX2:
 //    case LineX3:
-//    case LineX4:
 //    case LineX4p5:
-//    case LineX5:
-//    case LineX6:
     default:
-//      set_pr_manual(PR_AUTO,1,1);
-      set_pr_manual(PR_MANUAL,1,1);
-      adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);
+      set_pr_manual(PR_AUTO,1,1);
   }
 
   set_color_format((color_format << 1) | use_limited_colorspace);
@@ -263,7 +260,7 @@ void set_cfg_adv7513(void) {
                                                                                   // [5:4] Picture Aspect Ratio: 10 = 16:9
                                                                                   // [3:0] Active Format Aspect Ratio: 1010 = 16:9 (center)
       break;
-//    case PASSTHROUGH:
+//    case DIRECT:
 //    case LineX2:
 //    case LineX4:
 //    case LineX5:
