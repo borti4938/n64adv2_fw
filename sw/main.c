@@ -260,7 +260,8 @@ int main()
 
   bool_t led_set_ok = FALSE;
   bool_t dv_send_pr = FALSE;
-  bool_t game_id_txed = FALSE;
+  game_id_valid = FALSE;
+  bool_t game_id_valid_pre = FALSE;
 
   // set some basic variables for operation
   message_cnt = 0;
@@ -465,13 +466,10 @@ int main()
         set_dv_spd_packet(dv_send_pr);
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
-      if (get_game_id()) {
-        if (!game_id_txed) set_vsif(1);
-        game_id_txed = TRUE;
-      } else {
-        set_vsif(0);
-        game_id_txed = FALSE;
-      }
+
+      get_game_id();
+      if (game_id_valid != game_id_valid_pre) set_vsif(game_id_valid);
+      game_id_valid_pre = game_id_valid;
 
       periphals_set_ready_bit();
       if (!led_set_ok) led_drive(LED_OK,LED_ON);

@@ -559,14 +559,11 @@ void print_hw_version()
 
 void print_game_id()
 {
-  if (get_game_id()) {
-    sprintf(szText,"Game-ID: %02x%02x%02x%02x-%02x%02x%02x%02x-%02x:%02x",
-            game_id[0],game_id[1],game_id[2],game_id[3],
-            game_id[4],game_id[5],game_id[6],game_id[7],
-            game_id[8],game_id[9]);
-    vd_print_string(VD_TEXT,16,VD_TXT_HEIGHT-1,FONTCOLOR_WHITE,&szText[0]);
+  if (game_id_valid) {
+    sprintf(szText,"Game-ID: %s",game_id_txt);
+    vd_print_string(VD_TEXT,19,VD_TXT_HEIGHT-1,FONTCOLOR_WHITE,&szText[0]);
   } else {
-    vd_clear_lineend(VD_TEXT,16,VD_TXT_HEIGHT-1);
+    vd_clear_lineend(VD_TEXT,19,VD_TXT_HEIGHT-1);
     vd_print_string(VD_TEXT,27,VD_TXT_HEIGHT-1,FONTCOLOR_GREY,NoGameIDDetected);
   }
 }

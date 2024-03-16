@@ -84,9 +84,9 @@ void set_vsif(bool_t enable) {
   crc = (alt_u8) (0x81 + 0x01 + 0x1B +
       IEEE_OUI_MIMIC_2 + IEEE_OUI_MIMIC_1 + IEEE_OUI_MIMIC_0 +
       0x01 + 0x03); // CRC up to this point
-  for (idx = 0; idx < 10; idx++) {  // write 10 bytes for the game id
-    adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(9+idx),game_id[idx]);
-    crc += game_id[idx];
+  for (idx = 0; idx < 20; idx++) {  // write 20 bytes for the game id
+    adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(9+idx),game_id_txt[idx]);
+    crc += game_id_txt[idx];
   }
   // ensure that remaining bytes stay zero
 //  for (idx = 19; idx < SPARE_PACKET_MAX_SIZE; idx++)

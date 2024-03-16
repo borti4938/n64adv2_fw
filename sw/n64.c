@@ -79,7 +79,9 @@ scanmode_t scanmode;
 bool_t hor_hires;
 bool_t hdmi_clk_ok;
 
-alt_u8 game_id[10];
+bool_t game_id_valid;
+alt_u8 game_id_raw[10];
+char game_id_txt[21];
 
 #ifdef DEBUG
   alt_u16 vid_timeout_cnt;
@@ -307,39 +309,39 @@ alt_u32 get_chip_id(cfg_offon_t msb_select)
   }
 };
 
-bool_t get_game_id()
+void get_game_id()
 {
-  static bool_t game_id_valid = FALSE;
   alt_u8 idx;
   alt_u32 buf;
 
   if (!((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & GAME_ID_VALID_IN_MASK) == GAME_ID_VALID_IN_MASK)) {  // game-id in hw not valid
-    for (idx = 0; idx < 10; idx++)
-      game_id[idx] = 0xFF;
     game_id_valid = FALSE;
-    return game_id_valid;
   } else if (!game_id_valid) {  // only capture game-id if not already captured / valid
     SET_EXTINFO_SEL(GAME_ID_2);
     IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
     buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
     for (idx = 0; idx < 2; idx++)
-      game_id[idx] = buf >> 8*(1-idx);
+      game_id_raw[idx] = buf >> 8*(1-idx);
 
     SET_EXTINFO_SEL(GAME_ID_1);
     IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
     buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
     for (idx = 0; idx < 4; idx++)
-      game_id[2+idx] = buf >> 8*(3-idx);
+      game_id_raw[2+idx] = buf >> 8*(3-idx);
 
     SET_EXTINFO_SEL(GAME_ID_0);
     IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
     buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
     for (idx = 0; idx < 4; idx++)
-      game_id[6+idx] = buf >> 8*(3-idx);
+      game_id_raw[6+idx] = buf >> 8*(3-idx);
+
+    sprintf(game_id_txt,"%02X%02X%02X%02X-%02X%02X%02X%02X-%02X",
+            game_id_raw[0],game_id_raw[1],game_id_raw[2],game_id_raw[3],
+            game_id_raw[4],game_id_raw[5],game_id_raw[6],game_id_raw[7],
+            game_id_raw[9]);
 
     game_id_valid = TRUE;
   }
-  return game_id_valid;
 };
 
 alt_u16 get_hw_version()

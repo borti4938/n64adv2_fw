@@ -245,7 +245,9 @@ extern scanmode_t scanmode;
 extern bool_t hor_hires;
 extern bool_t hdmi_clk_ok;
 
+extern bool_t game_id_valid;
 extern alt_u8 game_id[10];
+extern char game_id_txt[21];
 
 
 void periphals_clr_ready_bit(void);
@@ -259,7 +261,7 @@ void loop_sync(bool_t with_escape);
 int resync_vi_pipeline(void);
 bool_t new_ctrl_available(void);
 alt_u8 get_fallback_mode(void);
-bool_t get_game_id(void);
+void get_game_id(void);
 alt_u32 get_chip_id(cfg_offon_t msb_select);
 alt_u16 get_hw_version(void);
 
