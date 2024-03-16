@@ -98,40 +98,53 @@ void set_vsif(bool_t enable) {
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1_UPDATE,ADV7513_PACKET_UPDATE_DONE_VAL);
 }
 
-void set_dv_spd_packet(bool_t dv_send_pr) {
-  if (cfg_get_value(&linex_resolution,0)!=DIRECT) {
-    adv7513_reg_bitclear(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPD_PACKET_ENABLE_BIT);
-    return;
-  }
-
+void set_dv_spd_packet(bool_t dv_tx,bool_t dv_send_pr) {
   adv7513_reg_bitset(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPD_PACKET_ENABLE_BIT);
 
-  // start writing information
-  // format according to https://github.com/MiSTer-devel/Main_MiSTer/issues/808
   alt_u8 idx = 0;
   alt_u16 wr_val = 0;
 
   adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET_UPDATE,ADV7513_PACKET_UPDATE_START_VAL);
+  for (idx = 0; idx < PACKET_MAX_SIZE; idx++) adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx),wr_val);
 
-  // write header
-  for (idx = 0; idx < SPD_DV_HEADER_LEN; idx++)
-    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx),spd_header[idx]);
+  if (dv_tx) {
+    // start writing information for dv1
+    // format according to https://github.com/MiSTer-devel/Main_MiSTer/issues/808
 
-  // write vi config
-  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(0+SPD_DV_VI_CFG_OFFSET),scanmode);
-  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(1+SPD_DV_VI_CFG_OFFSET),dv_send_pr ? 2 : 1);
-  for (idx = 0; idx < 4; idx++) adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx+2+SPD_DV_VI_CFG_OFFSET),0x00);
-  wr_val = dv_send_pr ? 320 : 640;
-  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(6+SPD_DV_VI_CFG_OFFSET),(alt_u8) ( wr_val       & 0xFF));
-  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(7+SPD_DV_VI_CFG_OFFSET),(alt_u8) ((wr_val >> 8) & 0xFF));
-  wr_val = palmode ? 288 : 240;
-  wr_val *= (1+scanmode);
-  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(8+SPD_DV_VI_CFG_OFFSET),(alt_u8) ( wr_val       & 0xFF));
-  adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(9+SPD_DV_VI_CFG_OFFSET),(alt_u8) ((wr_val >> 8) & 0xFF));
+    // write header for dv1
+    for (idx = 0; idx < SPD_DV_HEADER_LEN; idx++)
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx),spd_dv_header[idx]);
 
-  // write core name
-  for (idx = 0; idx < SPD_DV_CORE_NAME_LEN; idx++)
-    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx+SPD_DV_CORE_NAME_OFFSET),core_name_data[idx]);
+    // write vi config for dv1
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(0+SPD_DV_VI_CFG_OFFSET),scanmode);
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(1+SPD_DV_VI_CFG_OFFSET),dv_send_pr ? 2 : 1);
+    for (idx = 0; idx < 4; idx++) adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx+2+SPD_DV_VI_CFG_OFFSET),0x00);
+    wr_val = dv_send_pr ? 320 : 640;
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(6+SPD_DV_VI_CFG_OFFSET),(alt_u8) ( wr_val       & 0xFF));
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(7+SPD_DV_VI_CFG_OFFSET),(alt_u8) ((wr_val >> 8) & 0xFF));
+    wr_val = palmode ? 288 : 240;
+    wr_val *= (1+scanmode);
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(8+SPD_DV_VI_CFG_OFFSET),(alt_u8) ( wr_val       & 0xFF));
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(9+SPD_DV_VI_CFG_OFFSET),(alt_u8) ((wr_val >> 8) & 0xFF));
+
+    // write core name
+    for (idx = 0; idx < SPD_DV_CORE_NAME_LEN; idx++)
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx+SPD_DV_CORE_NAME_OFFSET),mod_name_data[idx]);
+  } else {
+    // start writing information for standard packet version
+
+    // write header
+    for (idx = 0; idx < SPD_STD_HEADER_LEN; idx++)
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx),spd_std_header[idx]);
+    // write vendor
+    for (idx = 0; idx < SPD_STD_VENDOR_NAME_LEN; idx++)
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx+SPD_STD_VENDOR_OFFSET),vendor_name_data[idx]);
+    // write name
+    for (idx = 0; idx < SPD_STD_PRODUCT_NAME_LEN; idx++)
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(idx+SPD_STD_PRODUCT_OFFSET),mod_name_data[idx]);
+    // write type
+    adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(SPD_STD_TYPE_OFFSET),8);
+  }
 
   adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET_UPDATE,ADV7513_PACKET_UPDATE_DONE_VAL);
 }

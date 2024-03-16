@@ -62,7 +62,7 @@ typedef enum {
 
 
 void set_vsif(bool_t enable);
-void set_dv_spd_packet(bool_t dv_send_pr);
+void set_dv_spd_packet(bool_t dv_tx,bool_t dv_send_pr);
 void set_cfg_adv7513(void);
 int check_adv7513(void);
 bool_t init_adv7513(void);
