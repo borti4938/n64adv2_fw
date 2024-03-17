@@ -453,21 +453,24 @@ always @(posedge VCLK_Tx) begin
       cfg_videomode[`VID_CFG_50HZ_BIT] <= palmode;
   end
   
-  if (ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P) begin  // mask some settings in direct mode
+  if (vid_direct_mode_w) begin  // mask some settings in direct mode
     cfg_pal_boxed <= 1'b0;
     cfg_v_interpolation_mode <= `INTERPOLATION_NEAREST;
     cfg_h_interpolation_mode <= `INTERPOLATION_NEAREST;
+    cfg_hSL_en <= 1'b0;
+    cfg_vSL_en <= 1'b0;
   end else begin
     cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
     cfg_v_interpolation_mode <= ConfigSet_resynced[`v_interpolation_mode_slice];
     cfg_h_interpolation_mode <= ConfigSet_resynced[`h_interpolation_mode_slice];
+    cfg_hSL_en <= ConfigSet_resynced[`hSL_en_bit];
+    cfg_vSL_en <= ConfigSet_resynced[`vSL_en_bit];
   end
   
   cfg_hSL_thickness <= ConfigSet_resynced[`hSL_thickness_slice];
   cfg_hSL_profile   <= ConfigSet_resynced[`hSL_profile_slice];
   cfg_hSLHyb_str    <= ConfigSet_resynced[`hSL_hybrid_slice];
   cfg_hSL_str       <= ((ConfigSet_resynced[`hSL_str_slice]+8'h01)<<4)-1'b1;
-  cfg_hSL_en        <= ConfigSet_resynced[`hSL_en_bit];
   if (ConfigSet_resynced[`h2v_SL_linked_bit]) begin
     cfg_vSL_thickness <= ConfigSet_resynced[`hSL_thickness_slice];
     cfg_vSL_profile   <= ConfigSet_resynced[`hSL_profile_slice];
@@ -479,7 +482,6 @@ always @(posedge VCLK_Tx) begin
     cfg_vSLHyb_str    <= ConfigSet_resynced[`vSL_hybrid_slice];
     cfg_vSL_str       <= ((ConfigSet_resynced[`vSL_str_slice]+8'h01)<<4)-1'b1;
   end
-  cfg_vSL_en         <= ConfigSet_resynced[`vSL_en_bit];
   cfg_sl_per_channel <= ~ConfigSet_resynced[`SL_per_Channel_bit];
   
   setVideoSYNCactive(cfg_videomode,cfg_active_vsync,cfg_active_hsync);
