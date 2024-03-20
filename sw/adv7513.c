@@ -227,9 +227,6 @@ void set_cfg_adv7513(void) {
   adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);                                                      // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
 
   switch (linex_val) {
-    case DIRECT:
-      set_pr_manual(PR_AUTO,2,2);
-      break;
     case LineX6W:
       set_pr_manual(PR_MANUAL,2,1);
       break;
@@ -238,6 +235,7 @@ void set_cfg_adv7513(void) {
     case LineX6:
       set_pr_manual(PR_MANUAL,1,1);
       break;
+//    case DIRECT:
 //    case LineX2:
 //    case LineX3:
 //    case LineX4p5:
