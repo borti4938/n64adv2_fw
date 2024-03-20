@@ -50,12 +50,12 @@
 #define adv7513_packetmem_readreg(regaddr)          i2c_readreg(ADV7513_PACKETMEM_I2C_BASE,regaddr)
 #define adv7513_packetmem_writereg(regaddr,data)    i2c_writereg(ADV7513_PACKETMEM_I2C_BASE,regaddr,data)
 
-#define IEEE_OUI_MIMIC_0  0x55
-#define IEEE_OUI_MIMIC_1  0x55
-#define IEEE_OUI_MIMIC_2  0x55
+#define OUI4GAMEID_2  0x49
+#define OUI4GAMEID_1  0x31
+#define OUI4GAMEID_0  0xF4
 
 
-void set_vsif(bool_t enable) {
+void set_vsif_packet(bool_t enable) {
   if (!enable) {
     adv7513_reg_bitclear(ADV7513_REG_PACKET_ENABLE0,ADV7513_SPARE_PACKET1_ENABLE_BIT);
     return;
@@ -74,15 +74,15 @@ void set_vsif(bool_t enable) {
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(1),0x01);
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(2),0x1B);
   // write IEEE OUI
-  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(4),IEEE_OUI_MIMIC_2);
-  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(5),IEEE_OUI_MIMIC_1);
-  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(6),IEEE_OUI_MIMIC_0);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(4),OUI4GAMEID_2);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(5),OUI4GAMEID_1);
+  adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(6),OUI4GAMEID_0);
   // write Vendor Type and Game-ID type
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(7),0x01);  // vendor
   adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(8),0x03);  // N64
 
   crc = (alt_u8) (0x81 + 0x01 + 0x1B +
-      IEEE_OUI_MIMIC_2 + IEEE_OUI_MIMIC_1 + IEEE_OUI_MIMIC_0 +
+      OUI4GAMEID_2 + OUI4GAMEID_1 + OUI4GAMEID_0 +
       0x01 + 0x03); // CRC up to this point
   for (idx = 0; idx < 20; idx++) {  // write 20 bytes for the game id
     adv7513_packetmem_writereg(ADV7513_REG_SPARE_PACKET1(9+idx),game_id_txt[idx]);
