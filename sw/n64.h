@@ -237,6 +237,7 @@ typedef enum {
 
 extern alt_u8 info_sync_val;
 extern alt_u32 ctrl_data;
+extern bool_t active_osd;
 extern alt_u32 n64adv_state;
 extern bool_t video_input_detected;
 extern cfg_pal_pattern_t pal_pattern;

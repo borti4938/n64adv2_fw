@@ -71,6 +71,8 @@ typedef enum {
 
 alt_u8 info_sync_val;
 alt_u32 ctrl_data;
+bool_t active_osd;
+
 alt_u32 n64adv_state;
 bool_t video_input_detected;
 cfg_pal_pattern_t pal_pattern;

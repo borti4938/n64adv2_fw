@@ -69,6 +69,7 @@ void open_osd_main(menu_t **menu)
   cfg_set_flag(&show_logo);
   print_selection_arrow(*menu);
   cfg_set_flag(&show_osd);
+  active_osd = TRUE;
   cfg_clear_flag(&mute_osd_tmp);
 }
 
@@ -252,6 +253,7 @@ int main()
   bool_t ctrl_ignore = 0;
 
   bool_t igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
+  bool_t active_osd_pre;
   bool_t lock_menu_pre = FALSE;
 
   alt_u8 linex_word_pre;
@@ -271,6 +273,7 @@ int main()
 
   /* Event loop never exits. */
   while (1) {
+    active_osd_pre = active_osd;
     video_input_detected_pre = video_input_detected;
     palmode_pre = palmode;
     scanmode_pre = scanmode;
@@ -308,8 +311,7 @@ int main()
     if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
     else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
 
-
-    if(cfg_get_value(&show_osd,0) && hdmi_clk_ok) {
+    if(active_osd && hdmi_clk_ok) {
       if (message_cnt > 0) {
         if (command != CMD_NON) {
           command = CMD_NON;
@@ -332,6 +334,7 @@ int main()
       switch (todo) {
         case MENU_CLOSE:
           cfg_clear_flag(&show_osd);
+          active_osd = FALSE;
           if (cfg_get_value(&autosave,0)) cfg_save_to_flash(0);
           break;
         case MENU_MUTE:
@@ -457,18 +460,25 @@ int main()
       periphals_clr_ready_bit();
       led_set_ok = FALSE;
       periphal_state.adv7513_hdmi_up = init_adv7513();
+      todo = NEW_CONF_VALUE;
     }
 
     if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) { // all ok let's setup register settings in adv and  game-idperiphals_set_ready_bit();
-      if (!led_set_ok || (palmode_pre != palmode) || (scanmode_pre != scanmode) || (undo_changed_linex_setting) || (todo == NEW_CONF_VALUE)) {
+
+      if ((active_osd_pre != active_osd) || undo_changed_linex_setting) {
+        undo_changed_linex_setting = FALSE;
+        todo = NEW_CONF_VALUE;
+      }
+
+      if (!led_set_ok || (palmode_pre != palmode) || (scanmode_pre != scanmode) || (todo == NEW_CONF_VALUE)) {
         set_cfg_adv7513();
         dv_send_pr = cfg_get_value(&deblur_fwd_dv1_mode,0) == OFF ? FALSE : (scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON);
-        set_dv_spd_packet(cfg_get_value(&linex_resolution,0)==DIRECT,dv_send_pr);
+        set_spd_packet(cfg_get_value(&linex_resolution,0)==DIRECT,dv_send_pr);
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
 
       get_game_id();
-      if (game_id_valid != game_id_valid_pre) set_vsif(game_id_valid);
+      if (game_id_valid != game_id_valid_pre) set_vsif_packet(game_id_valid);
       game_id_valid_pre = game_id_valid;
 
       periphals_set_ready_bit();
@@ -494,7 +504,6 @@ int main()
       }
     }
 
-    if (undo_changed_linex_setting) undo_changed_linex_setting = FALSE;
 
     if (changed_linex_setting) {  // important to check this flag in that order
                                   // as program cycles 1x through menu after change to set also the scaling correctly
@@ -511,8 +520,6 @@ int main()
     } else if (menu == &vires_screen) {
       changed_linex_setting = (linex_word_pre != linex_words[vmode_n64adv].config_val);
     }
-
-
   }
 
   return 0;

@@ -171,7 +171,7 @@ const alt_u8 csc_reg_vals[MAX_COLOR_FORMATS+1][2*CSC_COEFFICIENTS] __ufmdata_sec
 #define SPD_STD_VENDOR_NAME_LEN   7
   #define SPD_STD_VENDOR_OFFSET     SPD_STD_HEADER_LEN
 #define SPD_STD_PRODUCT_NAME_LEN  9
-  #define SPD_STD_PRODUCT_OFFSET    12  // SPD_STD_HEADER_LEN+SPD_STD_VENDOR_NAME_LEN must not exceed this number
+  #define SPD_STD_PRODUCT_OFFSET    (SPD_STD_HEADER_LEN+SPD_STD_VENDOR_NAME_LEN)
 #define SPD_STD_TYPE_LEN          1
   #define SPD_STD_TYPE_OFFSET     28    // SPD_STD_HEADER_LEN+SPD_STD_VENDOR_NAME_LEN+SPD_STD_PRODUCT_NAME_LEN must not exceed this number
   #define SPD_STD_TYPE_VALUE      8
@@ -188,8 +188,8 @@ const alt_u8 spd_std_header[SPD_STD_HEADER_LEN] __ufmdata_section__ = {0x83, 0x0
 const alt_u8 spd_dv_header [SPD_DV_HEADER_LEN]  __ufmdata_section__ = {0x83, 0x01, SPD_DV_PACKET_LEN, 0,
                                                                        'D', 'V', '1' /* version */
                                                                       };
-const char vendor_name_data[SPD_STD_VENDOR_NAME_LEN] __ufmdata_section__   = "Project";
-const char mod_name_data[SPD_STD_PRODUCT_NAME_LEN] __ufmdata_section__   = "N64 Adv.2";
+const char vendor_name_data[SPD_STD_VENDOR_NAME_LEN] __ufmdata_section__ = "Project";
+const char mod_name_data[SPD_STD_PRODUCT_NAME_LEN]   __ufmdata_section__ = "N64 Adv.2";
 
 
 #ifdef HDR_TESTING
