@@ -478,7 +478,8 @@ int main()
       }
 
       get_game_id();
-      if (game_id_valid != game_id_valid_pre) set_vsif_packet(game_id_valid);
+      if (game_id_valid != game_id_valid_pre) set_vsif_packet(TRUE);
+      else if (!game_id_valid) set_vsif_packet(FALSE);  // deactivate after one cycle
       game_id_valid_pre = game_id_valid;
 
       periphals_set_ready_bit();

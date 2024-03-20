@@ -59,6 +59,9 @@
 #define GET_PIN_STATE_MASK  0xFFFF0000
 #define GET_HW_VERSION_MASK 0x00007FFF
 
+#define GAMEID_BYTES    10
+#define GAMEID_TXT_LEN  21
+
 typedef enum {
   HW_INFO = 0,
   UNUSED,
@@ -82,8 +85,8 @@ bool_t hor_hires;
 bool_t hdmi_clk_ok;
 
 bool_t game_id_valid;
-alt_u8 game_id_raw[10];
-char game_id_txt[21];
+alt_u8 game_id_raw[GAMEID_BYTES];
+char game_id_txt[GAMEID_TXT_LEN];
 
 #ifdef DEBUG
   alt_u16 vid_timeout_cnt;
@@ -318,6 +321,7 @@ void get_game_id()
 
   if (!((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & GAME_ID_VALID_IN_MASK) == GAME_ID_VALID_IN_MASK)) {  // game-id in hw not valid
     game_id_valid = FALSE;
+    for (idx = 0; idx < GAMEID_BYTES; idx++) game_id_raw[idx] = 0;
   } else if (!game_id_valid) {  // only capture game-id if not already captured / valid
     SET_EXTINFO_SEL(GAME_ID_2);
     IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
@@ -337,13 +341,13 @@ void get_game_id()
     for (idx = 0; idx < 4; idx++)
       game_id_raw[6+idx] = buf >> 8*(3-idx);
 
-    sprintf(game_id_txt,"%02X%02X%02X%02X-%02X%02X%02X%02X-%02X",
-            game_id_raw[0],game_id_raw[1],game_id_raw[2],game_id_raw[3],
-            game_id_raw[4],game_id_raw[5],game_id_raw[6],game_id_raw[7],
-            game_id_raw[9]);
-
     game_id_valid = TRUE;
-  }
+  };
+
+  sprintf(game_id_txt,"%02X%02X%02X%02X-%02X%02X%02X%02X-%02X",
+          game_id_raw[0],game_id_raw[1],game_id_raw[2],game_id_raw[3],
+          game_id_raw[4],game_id_raw[5],game_id_raw[6],game_id_raw[7],
+          game_id_raw[9]);
 };
 
 alt_u16 get_hw_version()
