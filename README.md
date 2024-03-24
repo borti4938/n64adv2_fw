@@ -141,7 +141,6 @@ Only change something here if you are sure what you are doing.
 | **Color space - Limited range** | Off | Sets color space to use just a limited range (not full 8bit (0 to 255)) leaving some headroom<br>- RGB values in a range of 16 to 235<br>YCbCr values between 16 and 235 (Y) or between 16 and 239 (Cb/Cr) |
 | **LowRes.-DeBlur** | Off | Enables low resolution deblur. \[13\] |
 | **LowRes.-DeBlur - Power cycle default** | Off | Sets the power cycle default. |
-| **LowRes.-DeBlur - Direct mode fwd.** | On | Decides if deblur flag is being forwarded to external scaler / video processor. |
 | **16bit mode** | Off | Selects between \[14\]<br>- **On** = reduces the color depth of the input from 21bit down to 16bit<br>- **Off** use the whole 21bit color depth of the N64 input video interface |
 | **16bit mode - Power cycle default** | Off | Sets the power cycle default. |
 

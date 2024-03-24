@@ -209,9 +209,9 @@ menu_t vicfg_screen = {
     .arrow_position = (VICFG_VALS_H_OFFSET - 2),
     .current_selection = 0,
 #ifdef HDR_TESTING
-    .number_selections = 10,
-#else
     .number_selections = 9,
+#else
+    .number_selections = 8,
 #endif
     .leaves = {
         {.id = VICFG_DEINTERL_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deinterlace_mode},
@@ -223,7 +223,6 @@ menu_t vicfg_screen = {
 #endif
         {.id = VICFG_DEBLUR_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode},
         {.id = VICFG_PCDEBLUR_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deblur_mode_powercycle},
-        {.id = VICFG_DEBLUR_FWD_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &deblur_fwd_dv1_mode},
         {.id = VICFG_16BITMODE_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &mode16bit},
         {.id = VICFG_PC16BITMODE_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG , .config_value = &mode16bit_powercycle}
     }

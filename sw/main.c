@@ -472,7 +472,7 @@ int main()
 
       if (!led_set_ok || (palmode_pre != palmode) || (scanmode_pre != scanmode) || (todo == NEW_CONF_VALUE)) {
         set_cfg_adv7513();
-        dv_send_pr = cfg_get_value(&deblur_fwd_dv1_mode,0) == OFF ? FALSE : (scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON);
+        dv_send_pr = (scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON);
         set_spd_packet(cfg_get_value(&linex_resolution,0)==DIRECT,dv_send_pr);
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
