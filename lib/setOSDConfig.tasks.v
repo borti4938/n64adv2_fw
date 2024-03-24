@@ -46,8 +46,8 @@ task setOSDConfig;
           cfg_osd_hscale <= 2'b00;
           cfg_osd_voffset <=  36;   // (`VSYNCLEN_240p60 + `VBACKPORCH_240p60 + (`VACTIVE_240p60 - `OSD_WINDOW_VACTIVE)/2)
                                     // = (3 + 15 + (240 - 205)/2) = 35,5
-          cfg_osd_hoffset <=  280;  // `HSYNCLEN_240p60 + `HBACKPORCH_240p60 + (`HACTIVE_240p60 - `OSD_WINDOW_HACTIVE)/2
-                                    // = (62 + 57 + (720-399)/2) = 279,5
+          cfg_osd_hoffset <=  236;  // `HSYNCLEN_240p60 + `HBACKPORCH_240p60 + (`HACTIVE_240p60 - `OSD_WINDOW_HACTIVE)/2
+                                    // = (19 + 96 + (640-399)/2) = 235,5
          end
       `USE_VGAp60: begin
           cfg_osd_vscale <= 3'b001;
@@ -118,8 +118,8 @@ task setOSDConfig;
           cfg_osd_hscale <= 2'b00;
           cfg_osd_voffset <=  64;   // (`VSYNCLEN_288p50 + `VBACKPORCH_288p50 + (`VACTIVE_288p50 - `OSD_WINDOW_VACTIVE)/2)
                                     // = (3 + 19 + (288 - 205)/2) = 63,5
-          cfg_osd_hoffset <=  292;  // `HSYNCLEN_288p50 + `HBACKPORCH_288p50 + (`HACTIVE_288p50 - `OSD_WINDOW_HACTIVE)/2
-                                    // = (63 + 69 + (720-399)/2) = 292,5
+          cfg_osd_hoffset <=  231;  // `HSYNCLEN_288p50 + `HBACKPORCH_288p50 + (`HACTIVE_288p50 - `OSD_WINDOW_HACTIVE)/2
+                                    // = (12 + 98 + (640-399)/2) = 230,5
          end
       `USE_VGAp50: begin
           cfg_osd_vscale <= 3'b001;

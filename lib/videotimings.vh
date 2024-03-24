@@ -190,7 +190,7 @@
   `define VOVERSCAN_MAX_1440Wp60  `VFRONTPORCH_1440Wp60
   `define VTOTAL_1440Wp60         1481
   
-  // 288p-50, 4:3 (2x/4x pixelrep, mode 2)
+  // 288p-50, 4:3 (2x/4x pixelrep, mode 8)
   `define USE_288p50            5'b10000
   `define HSYNC_active_288p50   1'b0
   `define HFRONTPORCH_288p50    12
