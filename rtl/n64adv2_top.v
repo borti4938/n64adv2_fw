@@ -279,7 +279,7 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u (
 
 // controller module
 
-n64adv2_controller #({hdl_fw_main,hdl_fw_sub}) n64adv2_controller_u (
+n64adv2_controller n64adv2_controller_u (
   .N64_nRST_io(N64_nRST_io),
   .nRST_Masking_o(nRST_Masking_w),
   .SCLKs(CLKs_controller_w),

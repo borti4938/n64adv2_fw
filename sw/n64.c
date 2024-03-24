@@ -55,9 +55,9 @@
 
 #define SET_EXTINFO_SEL(x) (info_sync_val = (info_sync_val & EXT_INFO_CLR_MASK) | ((x & 0x7) << EXT_INFO_SEL_OFFSET))
 
-#define PIN_STATE_OFFSET    16
-#define GET_PIN_STATE_MASK  0xFFFF0000
-#define GET_HW_VERSION_MASK 0x00007FFF
+#define PIN_STATE_OFFSET      16
+#define GET_PIN_STATE_MASK    0xFFFF0000
+#define GET_PCB_VERSION_MASK  0x00000003
 
 #define GAMEID_BYTES    10
 #define GAMEID_TXT_LEN  21
@@ -350,9 +350,9 @@ void get_game_id()
           game_id_raw[9]);
 };
 
-alt_u16 get_hw_version()
+alt_u8 get_pcb_version()
 {
   SET_EXTINFO_SEL(HW_INFO);
   IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
-  return (IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE) & GET_HW_VERSION_MASK);
+  return (IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE) & GET_PCB_VERSION_MASK);
 };

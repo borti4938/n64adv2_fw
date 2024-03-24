@@ -29,10 +29,10 @@
 #ifndef APP_CFG_H_
 #define APP_CFG_H_
 
-#define SW_FW_MAIN  2
-#define SW_FW_SUB   20
+#define FW_MAIN 2
+#define FW_SUB  21
 
-#define CFG_FW_MAIN SW_FW_MAIN
+#define CFG_FW_MAIN FW_MAIN
 #define CFG_FW_SUB  8
 
 #ifndef DEBUG

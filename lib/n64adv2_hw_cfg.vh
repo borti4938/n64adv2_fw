@@ -33,9 +33,6 @@
 
 `ifndef _n64adv2_hw_cfg_vh_
 `define _n64adv2_hw_cfg_vh_
-
-  parameter [3:0] hdl_fw_main = 4'd2;
-  parameter [7:0] hdl_fw_sub  = 8'd20;
   
 //  parameter osd_font_rom_version = "V1";
   parameter osd_font_rom_version = "V2";

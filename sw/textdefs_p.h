@@ -59,7 +59,7 @@
 #define COPYRIGHT_H_OFFSET      (VD_WIDTH - 16)
 #define COPYRIGHT_V_OFFSET      0
 
-#define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 22)
+#define VERSION_H_OFFSET (OVERLAY_H_OFFSET + 17)
 #define VERSION_V_OFFSET (OVERLAY_V_OFFSET +  4)
 
 #define  BNT_FCT_H_OFFSET 27
@@ -387,9 +387,9 @@ static const char *n64debug_overlay __ufmdata_section__ =
       "files, HDL and SW sources, are provided to you\n"
       "FOR FREE!\n"
       "Your version\n"
+      " - Firmware:\n"
       " - PCB version:\n"
-      " - FPGA Chip ID:\n"
-      " - Firmware (HDL/SW):\n\n"
+      " - FPGA Chip ID:\n\n"
       "Questions / (limited) Support:\n"
       " - GitHub:\n"
       "      <https://github.com/borti4938/n64adv2_pcb>\n"

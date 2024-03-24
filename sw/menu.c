@@ -541,18 +541,15 @@ void print_1440p_unlock_info() {
 //  vd_print_string(VD_INFO,COPYRIGHT_H_OFFSET,COPYRIGHT_V_OFFSET,FONTCOLOR_DARKORANGE,copyright_note);
 //}
 
-void print_hw_version()
+void print_fw_version()
 {
-  alt_u16 ext_fw = (alt_u16) get_hw_version();
-  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET,FONTCOLOR_WHITE,pcb_rev[(ext_fw & GET_PCB_REV_MASK) >> PCB_REV_OFFSET]);
+//  sprintf(szText,"%1d.%02d (CiBo preview)",FW_MAIN,FW_SUB),
+  sprintf(szText,"%1d.%02d",FW_MAIN,FW_SUB);
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
+
+  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,FONTCOLOR_WHITE,pcb_rev[get_pcb_version()]);
 
   sprintf(szText,"0x%08x%08x",(uint) get_chip_id(1),(uint) get_chip_id(0));
-  vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,FONTCOLOR_WHITE,&szText[0]);
-
-  ext_fw = (ext_fw & GET_HDL_FW_MASK) >> HDL_FW_OFFSET;
-  sprintf(szText,"%1d.%02d/%1d.%02d",((ext_fw & HDL_FW_GETMAIN_MASK) >> HDL_FW_MAIN_OFFSET),
-                                     ((ext_fw & HDL_FW_GETSUB_MASK)  >> HDL_FW_SUB_OFFSET ),
-                                     SW_FW_MAIN,SW_FW_SUB);
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+2,FONTCOLOR_WHITE,&szText[0]);
 }
 
@@ -766,7 +763,7 @@ void print_overlay(menu_t* current_menu)
   vd_print_string(VD_TEXT,current_menu->body.hoffset,0,FONTCOLOR_WHITE,*current_menu->body.text);
 
   #ifndef DEBUG
-    if (is_about_screen(current_menu)) print_hw_version();
+    if (is_about_screen(current_menu)) print_fw_version();
   #endif
 }
 

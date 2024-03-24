@@ -197,17 +197,6 @@
 #define CTRL_TACK_BIT_SET_MASK      (1 << CTRL_TACK_BIT_OFFSET)
 #define CTRL_TACK_BIT_CLR_MASK      (~CTRL_TACK_BIT_SET_MASK & SYNC_INFO_OUT_ALL_MASK)
 
-#define PCB_REV_OFFSET      12
-#define GET_PCB_REV_MASK    0x3000
-#define HDL_FW_OFFSET       0
-#define GET_HDL_FW_MASK     0x0FFF
-
-#define HDL_FW_MAIN_OFFSET  8
-#define HDL_FW_SUB_OFFSET   0
-#define HDL_FW_GETALL_MASK  0xFFF
-  #define HDL_FW_GETMAIN_MASK (0xF << HDL_FW_MAIN_OFFSET)
-  #define HDL_FW_GETSUB_MASK  (0x0FF << HDL_FW_SUB_OFFSET)
-
 #define CTRL_IGNORE_FRAMES 10
 
 
@@ -264,6 +253,6 @@ bool_t new_ctrl_available(void);
 alt_u8 get_fallback_mode(void);
 void get_game_id(void);
 alt_u32 get_chip_id(cfg_offon_t msb_select);
-alt_u16 get_hw_version(void);
+alt_u8 get_pcb_version(void);
 
 #endif /* N64_H_ */
