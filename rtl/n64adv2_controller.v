@@ -267,7 +267,7 @@ assign ext_info = ext_info_sel == 3'b110 ? {     8'h00,     8'h00,game_id[0],gam
                   ext_info_sel == 3'b100 ? {game_id[6],game_id[7],game_id[8],game_id[9]} :
                   ext_info_sel == 3'b011 ? CHIP_ID_w[63:32] :
                   ext_info_sel == 3'b010 ? CHIP_ID_w[31: 0] :
-                                           {pincheck_status_i,14'b0,PCB_ID_i};
+                                           {pincheck_status_i,13'b0,PCB_ID_i};
 
 system_n64adv2 system_u (
   .clk_clk(SYS_CLK),
