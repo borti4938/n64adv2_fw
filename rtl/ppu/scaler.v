@@ -1372,8 +1372,8 @@ always @(posedge VCLK_o or negedge nRST_o)
             end
           HVSCALE_PHASE_POST: begin
               if (Y_vline_cnt_cmb >= {1'b0,X_pix_vlines_out_max}) begin
-                Y_pix_v_bypass_a0_current <= 1'b1;
-                Y_pix_v_bypass_a1_current <= 1'b0;
+                Y_pix_v_bypass_a0_current <= 1'b0;
+                Y_pix_v_bypass_a1_current <= 1'b1;
               end else begin
                 Y_vline_cnt <= Y_vline_cnt_cmb;
                 Y_pix_v_bypass_a0_current <= ~X_video_v_interpolation_mode[1];
