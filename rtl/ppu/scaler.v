@@ -1328,7 +1328,7 @@ always @(posedge VCLK_o or negedge nRST_o)
       if (hcnt_o_L == 6) begin
         case (Y_vscale_phase)
           HVSCALE_PHASE_INIT: begin
-              if (Y_vline_cnt_cmb >= X_pix_vlines_out_max && Y_vline_load_cnt[0]) begin
+              if (Y_vline_cnt_cmb >= X_pix_vlines_out_max && !Y_vphase_init_delay) begin
                 Y_vscale_phase <= HVSCALE_PHASE_MAIN;
                 if (X_video_v_interpolation_mode[1]) begin
                   Y_pix_v_bypass_a0_current <= 1'b0;
@@ -1341,15 +1341,17 @@ always @(posedge VCLK_o or negedge nRST_o)
               end else begin
                 if (Y_vphase_init_delay) begin
                   Y_vphase_init_delay <= 1'b0;
+                  Y_vline_load_cnt <= Y_vline_load_cnt + 10'd1;
                 end else begin
                   Y_vline_cnt <= Y_vline_cnt_cmb;
-                  Y_vline_load_cnt <= Y_vline_load_cnt + 10'd1;
                 end
+                Y_pix_v_bypass_a0_current <= 1'b0;
+                Y_pix_v_bypass_a1_current <= 1'b1;
               end
             end
           HVSCALE_PHASE_MAIN: begin
               if (Y_vline_cnt_cmb >= X_pix_vlines_out_max) begin
-                if (Y_vline_load_cnt == X_pix_vlines_in_needed - 1'b1)
+                if (Y_vline_load_cnt == X_pix_vlines_in_needed - 10'd1)
                   Y_vscale_phase <= HVSCALE_PHASE_POST;
                 Y_vline_cnt <= Y_vline_cnt_cmb - X_pix_vlines_out_max;
                 rdpage_post_sdram_buf <= rdpage_post_sdram_buf_cmb;
@@ -1394,14 +1396,14 @@ always @(posedge VCLK_o or negedge nRST_o)
       case (hscale_phase)
         HVSCALE_PHASE_INIT: begin
             hscale_phase <= HVSCALE_PHASE_MAIN;
-            hpixel_load_cnt <= 1;
+            hpixel_load_cnt <= 10'd1;
             pix_h_fir_step[0] <= 1'b1;
             pix_h_bypass_a0_current[0] <= 1'b1; // always!
             pix_h_bypass_a1_current[0] <= 1'b0; // always!
           end
         HVSCALE_PHASE_MAIN: begin
             if (hpixel_cnt_cmb >= X_pix_hpixel_out_max) begin
-              if (hpixel_load_cnt == X_pix_hpixel_in_needed - 1'b1)
+              if (hpixel_load_cnt == X_pix_hpixel_in_needed - 10'd1)
                 hscale_phase <= HVSCALE_PHASE_POST;
               hpixel_cnt <= hpixel_cnt_cmb - X_pix_hpixel_out_max;
               if (X_pix_hpixel_addr_mult2) begin
