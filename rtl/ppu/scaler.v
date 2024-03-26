@@ -521,9 +521,9 @@ assign vdata_input_processing_w = interlaced & vdata_deinterlacing_mode_i == `DE
 always @(*)
   if (vdata_direct_mode_i) begin
     if (palmode)
-      num_prefetched_lines_cmb <= `VSTART_PAL_LX1+3;
+      num_prefetched_lines_cmb <= `VSTART_PAL_LX1 - `STARTING_LINE_SDRAM_READ + 3;
     else
-      num_prefetched_lines_cmb <= `VSTART_NTSC_LX1+3;
+      num_prefetched_lines_cmb <= `VSTART_NTSC_LX1 - `STARTING_LINE_SDRAM_READ + 3;
   end else begin
     if (palmode)
       num_prefetched_lines_cmb <= `TOTAL_LINES_PAL_LX1/4;
@@ -860,7 +860,7 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             sdram_addr_i[ 9: 0] <= {hpos_width{1'b0}};  // horizontal position
             sdram_wr_hcnt <= {hpos_width{1'b0}};
             sdram_ctrl_state <= ST_SDRAM_FIFO2RAM0;
-          end else if (vcnt_o_drclk_resynced == 1) begin // fetch first line to read
+          end else if (vcnt_o_drclk_resynced == `STARTING_LINE_SDRAM_READ) begin  // fetch first line to read
             if (input_proc_en_drclk_resynced)
               Z_vinfo_llm_slbuf_fb_L <= video_llm_i ? vcnt_i_drclk_resynced : 9'd0; // provide feedback
             
