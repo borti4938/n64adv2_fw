@@ -931,7 +931,7 @@ int update_debug_screen(menu_t* current_menu)
     vd_print_string(VD_TEXT,N64DEBUG_N64ADV_VI_H_OFFSET,N64DEBUG_N64ADV_VI_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
     vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,OffOn[is_lowlatency_mode]);
     if (is_lowlatency_mode) {
-      sprintf(szText,"(%d sl. buffered)",(uint) ((n64adv_state & N64ADV_LLM_SLBUF_FB_GETMASK) >> N64ADV_LLM_SLBUF_FB_OFFSET));
+      sprintf(szText,"(appr. %d sl. delay)",(uint) ((n64adv_state & N64ADV_LLM_SLBUF_FB_GETMASK) >> N64ADV_LLM_SLBUF_FB_OFFSET));
       vd_print_string(VD_TEXT,N64DEBUG_SSM_H_OFFSET+3,N64DEBUG_SSM_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
     }
   } else {

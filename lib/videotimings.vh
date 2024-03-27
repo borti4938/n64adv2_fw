@@ -310,6 +310,7 @@
   `define VACTIVE_1440Wp50        1440
   `define VTOTAL_1440Wp50         1481
 
-  `define STARTING_LINE_SDRAM_READ  12  // shortest sync+bp is @ 240p60 with 18 lines (18 - overscan - slack = 18 - 3 - 3 = 12)
+  `define STARTING_LINE_SDRAM_READ_DV1  15  // shortest sync+bp is @ 240p60 with 18 lines (18 - overscan = 18 - 3 = 15)
+  `define STARTING_LINE_SDRAM_READ_STD  22  // shortest sync+bp is @ 960p60 with 25 lines (25 - overscan = 25 - 3 = 22)
 
 `endif

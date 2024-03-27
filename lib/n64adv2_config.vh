@@ -159,6 +159,11 @@
   `define HDMI_TARGET_1440P   3'b110
   `define HDMI_TARGET_1440WP  3'b111
   
+  `define RES_CAT_DV1   2'b00
+  `define RES_CAT_ED    2'b01
+  `define RES_CAT_HD    2'b10
+  `define RES_CAT_WQHD  2'b11
+  
   // PPU Feedback Channel
   
   `define PPU_State_Width               26  // without pal pattern bit

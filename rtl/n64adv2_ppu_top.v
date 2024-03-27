@@ -143,8 +143,8 @@ wire palmode, n64_480i;
 wire [ 3:0] cfg_gamma;
 wire cfg_nvideblur_pre, cfg_n16bit_mode;
 wire [9:0] cfg_hvshift;
+wire [1:0] vdata_outres_cat_w, cfg_vdata_outres_cat;
 wire [1:0] cfg_deinterlacing_mode_pre, cfg_deinterlacing_mode;
-wire cfg_direct_mode_i;
 
 wire [`VID_CFG_W-1:0] sys_vmode_pre_w;
 wire sys_direct_mode_w, sys_llm_w;
@@ -156,10 +156,10 @@ wire use_interlaced_full_w;
 wire cfg_nvideblur_sysclk_resynced;
 
 wire [1:0] cfg_deinterlacing_mode_dramclk_resynced;
-wire palmode_dramclk_resynced, n64_480i_dramclk_resynced;
+wire dv1_mode_dramclk_resynced, palmode_dramclk_resynced, n64_480i_dramclk_resynced;
 
 wire cfg_lowlatencymode_resynced;
-wire [9:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_resynced;
+wire [9:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_dramclk_resynced, cfg_vpos_1st_rdline_resynced;
 wire [11:0] cfg_vlines_out_w, cfg_vlines_out_resynced;
 wire [17:0] cfg_v_interp_factor_w, cfg_v_interp_factor_resynced;
 wire [9:0] cfg_vlines_in_needed_w, cfg_vlines_in_needed_resynced;
@@ -336,18 +336,24 @@ scaler_cfggen scaler_cfggen_u(
 // setup config in different clock domains ...
 
 // ... in N64_CLK_i
+assign vdata_outres_cat_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP ? `RES_CAT_WQHD :
+                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440P  ? `RES_CAT_WQHD :
+                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1200P  ? `RES_CAT_HD   :
+                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1080P  ? `RES_CAT_HD   :
+                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P   ? `RES_CAT_DV1  :
+                                                                                           `RES_CAT_ED   ;
 assign cfg_deinterlacing_mode_pre = sys_direct_mode_w ? `DEINTERLACING_BOB                     :  // signalling bob deinterlacing on direct mode as this outputs frame by frame
                                                          ConfigSet_w[`deinterlacing_mode_slice];  // otherwise output what is already set
 
 register_sync #(
-  .reg_width(19), // 4 + 1 + 10 + 1 + 2 + 1
-  .reg_preset(19'd0)
+  .reg_width(20), // 4 + 1 + 10 + 2 + 2 + 1
+  .reg_preset(20'd0)
 ) cfg_sync4n64clk_u0 (
   .clk(N64_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ConfigSet_w[`gamma_slice],~ConfigSet_w[`n16bit_mode_bit],ConfigSet_w[`hshift_slice],ConfigSet_w[`vshift_slice],sys_direct_mode_w,cfg_deinterlacing_mode_pre,~ConfigSet_w[`videblur_bit]}),
-  .reg_o({cfg_gamma                ,cfg_n16bit_mode               ,cfg_hvshift                                          ,cfg_direct_mode_i,cfg_deinterlacing_mode    ,cfg_nvideblur_pre})
+  .reg_i({ConfigSet_w[`gamma_slice],~ConfigSet_w[`n16bit_mode_bit],ConfigSet_w[`hshift_slice],ConfigSet_w[`vshift_slice],vdata_outres_cat_w  ,cfg_deinterlacing_mode_pre,~ConfigSet_w[`videblur_bit]}),
+  .reg_o({cfg_gamma                ,cfg_n16bit_mode               ,cfg_hvshift                                          ,cfg_vdata_outres_cat,cfg_deinterlacing_mode    ,cfg_nvideblur_pre})
 ); // Note: add output reg as false path in sdc (cfg_sync4n64clk_u0|reg_synced_1[*])
 
 always @(*)
@@ -359,14 +365,14 @@ always @(*)
 
 // ... in DRAM clock domain
 register_sync #(
-  .reg_width(12),  // 10 + 2
-  .reg_preset({12{1'b0}})
+  .reg_width(13),  // 1 + 10 + 2
+  .reg_preset({13{1'b0}})
 ) cfg_sync4dramlogic_u0 (
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({cfg_vpos_1st_rdline_w       ,cfg_deinterlacing_mode_pre}),
-  .reg_o({cfg_vpos_1st_rdline_resynced,cfg_deinterlacing_mode_dramclk_resynced})
+  .reg_i({sys_direct_mode_w        ,cfg_vpos_1st_rdline_w               ,cfg_deinterlacing_mode_pre}),
+  .reg_o({dv1_mode_dramclk_resynced,cfg_vpos_1st_rdline_dramclk_resynced,cfg_deinterlacing_mode_dramclk_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
 register_sync #(
@@ -378,19 +384,19 @@ register_sync #(
   .nrst(1'b1),
   .reg_i({palmode,n64_480i}),
   .reg_o({palmode_dramclk_resynced,n64_480i_dramclk_resynced})
-);
+); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u1|reg_synced_1[*])
 
 
 // ... in VCLK_Tx clock domain
 register_sync #(
-  .reg_width(51), // 1 + 10 + 10 + 12 + 18
-  .reg_preset(51'd0)
+  .reg_width(61), // 1 + 10 + 10 + 10 + 12 + 18
+  .reg_preset(61'd0)
 ) cfg_sync4txlogic_u0 (
   .clk(VCLK_Tx),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({sys_llm_w                  ,cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
-  .reg_o({cfg_lowlatencymode_resynced,cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
+  .reg_i({sys_llm_w                  ,cfg_vpos_1st_rdline_w       ,cfg_vlines_in_needed_w       ,cfg_vlines_in_full_w       ,cfg_vlines_out_w       ,cfg_v_interp_factor_w       }),
+  .reg_o({cfg_lowlatencymode_resynced,cfg_vpos_1st_rdline_resynced,cfg_vlines_in_needed_resynced,cfg_vlines_in_full_resynced,cfg_vlines_out_resynced,cfg_v_interp_factor_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4txlogic_u0|reg_synced_1[*])
 
 register_sync #(
@@ -570,7 +576,7 @@ scaler scaler_u (
   .vdata_i(vdata24_pp_w[1]),
   .vdata_valid_i(vdata_valid_pp_w[1]),
   .vdata_hvshift_i(cfg_hvshift),
-  .vdata_direct_mode_i(cfg_direct_mode_i),
+  .vdata_outres_cat_i(cfg_vdata_outres_cat),
   .vdata_deinterlacing_mode_i(cfg_deinterlacing_mode),
   .DRAM_CLK_i(DRAM_CLK_i),
   .DRAM_nRST_i(DRAM_nRST_i),
@@ -583,9 +589,9 @@ scaler scaler_u (
   .DRAM_DQM(DRAM_DQM),
   .DRAM_nRAS(DRAM_nRAS),
   .DRAM_nWE(DRAM_nWE),
-  .vinfo_dramsynced_i({palmode_dramclk_resynced,n64_480i_dramclk_resynced}),
+  .vinfo_dramsynced_i({dv1_mode_dramclk_resynced,palmode_dramclk_resynced,n64_480i_dramclk_resynced}),
   .video_deinterlacing_mode_dramsynced_i(cfg_deinterlacing_mode_dramclk_resynced),
-  .video_vpos_1st_rdline_i(cfg_vpos_1st_rdline_resynced),
+  .video_vpos_1st_rdline_dramsynced_i(cfg_vpos_1st_rdline_dramclk_resynced),
   .VCLK_o(VCLK_Tx),
   .nVRST_o(nVRST_post_scaler),
   .vinfo_txsynced_i({palmode_vclk_o_resynced,n64_480i_vclk_o_resynced}),
@@ -593,6 +599,7 @@ scaler scaler_u (
   .video_llm_i(cfg_lowlatencymode_resynced),
   .video_pal_boxed_i(cfg_pal_boxed),
   .video_v_interpolation_mode_i(cfg_v_interpolation_mode),
+  .video_vpos_1st_rdline_i(cfg_vpos_1st_rdline_resynced),
   .video_vlines_in_needed_i(cfg_vlines_in_needed_resynced),
   .video_vlines_in_full_i(cfg_vlines_in_full_resynced),
   .video_vlines_out_i(cfg_vlines_out_resynced),

@@ -124,7 +124,7 @@ parameter vdata_width_o = 4 + 3*color_width_o;
   `define HSTART_NTSC_2x  (2*`HSTART_NTSC+1)
   `define HSTOP_NTSC_2x   (`HSTART_NTSC_2x + `ACTIVE_PIXEL_PER_LINE_2x)
 
-  `define VSTART_NTSC_LX1 18
+  `define VSTART_NTSC_LX1 17
   `define VSTOP_NTSC_LX1  (`VSTART_NTSC_LX1 + `ACTIVE_LINES_NTSC_LX1)
   `define VSTART_NTSC_LX2 (2*`VSTART_NTSC_LX1)
   `define VSTOP_NTSC_LX2  (`VSTART_NTSC_LX2 + `ACTIVE_LINES_NTSC_LX2)

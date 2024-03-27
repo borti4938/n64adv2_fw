@@ -39,8 +39,8 @@ module scaler(
   vdata_i,
   vdata_valid_i,
   vdata_hvshift_i,
-  vdata_direct_mode_i,
   vdata_deinterlacing_mode_i,
+  vdata_outres_cat_i,
   
   DRAM_CLK_i,
   DRAM_nRST_i,
@@ -57,7 +57,7 @@ module scaler(
   
   vinfo_dramsynced_i,
   video_deinterlacing_mode_dramsynced_i,
-  video_vpos_1st_rdline_i,
+  video_vpos_1st_rdline_dramsynced_i,
 
   VCLK_o,   // actually an input, the _o indicates that this is the clock for the outputting process
   nVRST_o,  // this is an output
@@ -68,6 +68,7 @@ module scaler(
   video_pal_boxed_i,
   
   video_v_interpolation_mode_i,
+  video_vpos_1st_rdline_i,
   video_vlines_in_needed_i,
   video_vlines_in_full_i,
   video_vlines_out_i,
@@ -102,7 +103,7 @@ input [2:0] vinfo_i;
 input vdata_valid_i;
 input [`VDATA_O_FU_SLICE] vdata_i;
 input [9:0] vdata_hvshift_i;
-input vdata_direct_mode_i;
+input [1:0] vdata_outres_cat_i;
 input [1:0] vdata_deinterlacing_mode_i;
 
 input         DRAM_CLK_i;
@@ -118,9 +119,9 @@ output [ 1:0] DRAM_DQM;
 output        DRAM_nRAS;
 output        DRAM_nWE;
 
-input [1:0] vinfo_dramsynced_i;
+input [2:0] vinfo_dramsynced_i;
 input [1:0] video_deinterlacing_mode_dramsynced_i;
-input [9:0] video_vpos_1st_rdline_i;  // first line to read (needed if scaling factor is so high such that not all lines are needed)
+input [9:0] video_vpos_1st_rdline_dramsynced_i; // first line to read (needed if scaling factor is so high such that not all lines are needed)
 
 input VCLK_o;
 output nVRST_o;
@@ -131,6 +132,7 @@ input video_llm_i;
 input video_pal_boxed_i;
 
 input [1:0] video_v_interpolation_mode_i;
+input [9:0] video_vpos_1st_rdline_i;  // first line to read (needed if scaling factor is so high such that not all lines are needed)
 input [9:0] video_vlines_in_needed_i; // number of lines needed to scale for active lines
 input [9:0] video_vlines_in_full_i;   // number of lines at input (either 240 in NTSC or 288 in PAL or x2 if interlaced processed as weave/fully buffered)
 input [11:0] video_vlines_out_i;      // number of lines after scaling (max. 4095)
@@ -199,6 +201,7 @@ integer int_idx;
 wire vdata_detected = vinfo_i[2];
 wire palmode = vinfo_i[1];
 wire interlaced = vinfo_i[0];
+wire dv1_mode_dramclk_resynced = vinfo_dramsynced_i[2];
 wire palmode_dramclk_resynced = vinfo_dramsynced_i[1];
 wire interlaced_dramclk_resynced = vinfo_dramsynced_i[0];
 wire palmode_vclk_o_resynced = vinfo_txsynced_i[1];
@@ -230,8 +233,8 @@ wire lineid_pre_sdram_buf_drclk_resynced;
 
 wire vdata_detected_drclk_resynced;
 wire input_proc_en_drclk_resynced;
-wire [8:0] vcnt_i_drclk_resynced;
 
+wire [10:0] dram_startline_w;
 wire [11:0] vcnt_o_drclk_resynced;
 wire [1:0] rdpage_slbuf_drclk_resynced;
 
@@ -247,7 +250,10 @@ wire datainfo_pre_sdram_buf_field_rdy4out_w;
 
 // wires for output rtl
 wire vdata_detected_txclk_resynced;
+wire field_id_txclk_resynced;
 wire in2out_en_txclk_resynced;
+
+wire [8:0] vcnt_i_txclk_resynced;
 
 wire [11:0] X_hpos_px_offset_w;
 wire [10:0] X_vpos_px_offset_w;
@@ -319,7 +325,7 @@ reg [hpos_width-1:0] hcnt_pre_sdram_buf;
 reg [3:0] datainfo_pre_sdram_buf;
 
 // regs for sdram rtl
-reg [vcnt_width:0] X_vpos_1st_rdline; // first line to read (needed if scaling factor is so high such that not all lines are needed)
+reg [vcnt_width:0] X_vpos_1st_rdline_sdram;
 
 reg sdram_proc_en = 1'b0;
 reg [2:0] sdram_ctrl_state  = ST_SDRAM_WAIT; // state machine
@@ -354,34 +360,36 @@ reg [`VDATA_O_CO_SLICE] vdata3_for_post_sdram_buf [0:2];
 // regs for output rtl
 reg Y_cfg_v_update_window;
 reg [2:0] Y_cfg_update_phase;
+reg X_direct_output;
 reg X_VSYNC_active = `VSYNC_active_480p60;
 reg [10:0] X_VSYNCLEN = `VSYNCLEN_480p60;
 reg [10:0] X_VSTART = `VSYNCLEN_480p60 + `VBACKPORCH_480p60;
 reg [10:0] X_VACTIVE = `VACTIVE_480p60;
 reg [10:0] X_VSTOP = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60;
-reg [10:0] X_VSTART_OS = `VSYNCLEN_480p60;
-reg [10:0] X_VACTIVE_OS = `VBACKPORCH_480p60 + `VACTIVE_480p60 + `VFRONTPORCH_480p60;
-reg [10:0] X_VSTOP_OS = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60 + `VFRONTPORCH_480p60;
+reg [10:0] X_VSTART_OS = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 - `VOVERSCAN_MAX;
+reg [10:0] X_VACTIVE_OS = `VACTIVE_480p60 + 2*`VOVERSCAN_MAX;
+reg [10:0] X_VSTOP_OS = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60 + `VOVERSCAN_MAX;
 reg [10:0] X_VTOTAL = `VTOTAL_480p60;
 reg X_HSYNC_active = `HSYNC_active_480p60;
 reg [11:0] X_HSYNCLEN = `HSYNCLEN_480p60;
 reg [11:0] X_HSTART = `HSYNCLEN_480p60 + `HBACKPORCH_480p60;
 reg [11:0] X_HACTIVE = `HACTIVE_480p60;
 reg [11:0] X_HSTOP = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60;
-reg [11:0] X_HSTART_OS = `HSYNCLEN_480p60;
-reg [11:0] X_HACTIVE_OS = `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HFRONTPORCH_480p60;
-reg [11:0] X_HSTOP_OS = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HFRONTPORCH_480p60;
+reg [11:0] X_HSTART_OS = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 - `HOVERSCAN_MAX;
+reg [11:0] X_HACTIVE_OS = `HACTIVE_480p60 + 2*`HOVERSCAN_MAX;
+reg [11:0] X_HSTOP_OS = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HOVERSCAN_MAX;
 reg [11:0] X_HTOTAL = `HTOTAL_480p60;
 
-reg [10:0] X_VSTART_px = `VSYNCLEN_480p60;
-reg [10:0] X_VSTOP_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60 + `VFRONTPORCH_480p60;
-reg [11:0] X_HSTART_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60;
-reg [11:0] X_HSTOP_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HFRONTPORCH_480p60;
+reg [10:0] X_VSTART_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 - `VOVERSCAN_MAX;
+reg [10:0] X_VSTOP_px = `VSYNCLEN_480p60 + `VBACKPORCH_480p60 + `VACTIVE_480p60 + `VOVERSCAN_MAX;
+reg [11:0] X_HSTART_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 - `HOVERSCAN_MAX;
+reg [11:0] X_HSTOP_px = `HSYNCLEN_480p60 + `HBACKPORCH_480p60 + `HACTIVE_480p60 + `HOVERSCAN_MAX;
 
 reg [1:0] X_video_v_interpolation_mode, X_video_h_interpolation_mode;
 
+reg [9:0] X_video_vpos_1st_rdline = 0;                            // first line to read (needed if scaling factor is so high such that not all lines are needed)
 reg [9:0] X_pix_vlines_in_needed = `ACTIVE_LINES_NTSC_LX1;        // number of lines needed to scale for active lines
-reg [9:0] X_pix_vlines_in_full = `ACTIVE_LINES_NTSC_LX1;         // number of lines at input (either 240 in NTSC or 288 in PAL or x2 if interlaced processed as weave/fully buffered)
+reg [9:0] X_pix_vlines_in_full = `ACTIVE_LINES_NTSC_LX1;          // number of lines at input (either 240 in NTSC or 288 in PAL or x2 if interlaced processed as weave/fully buffered)
 reg [11:0] X_pix_vlines_out_max = `HACTIVE_480p60;                // number of lines after scaling (max. 4095)
 reg [11:0] X_pix_init_vline_cnt_phase = `ACTIVE_LINES_NTSC_LX1/2; // initial position for interpolation
 reg [17:0] X_pix_v_interpfactor = 18'b001000100010001000;         // factor needed to determine actual position during interpolation
@@ -517,19 +525,36 @@ assign vdata_input_processing_w = interlaced & vdata_deinterlacing_mode_i == `DE
                                   interlaced & vdata_deinterlacing_mode_i == `DEINTERLACING_WEAVE      ? INPUT_PROCESSING_FIELD_ALTERNATING :  // standard deinterlacing (weave)
                                                                                                          INPUT_PROCESSING_NORMAL            ;  // normal mode (progressive input or bob deinterlacing)
 
-
 always @(*)
-  if (vdata_direct_mode_i) begin
-    if (palmode)
-      num_prefetched_lines_cmb <= `VSTART_PAL_LX1 - `STARTING_LINE_SDRAM_READ + 3;
-    else
-      num_prefetched_lines_cmb <= `VSTART_NTSC_LX1 - `STARTING_LINE_SDRAM_READ + 3;
-  end else begin
-    if (palmode)
-      num_prefetched_lines_cmb <= `TOTAL_LINES_PAL_LX1/4;
-    else
-      num_prefetched_lines_cmb <= `TOTAL_LINES_NTSC_LX1/4;
-  end
+  case (vdata_outres_cat_i)
+    `RES_CAT_DV1: begin   // DV1
+        if (palmode)
+          num_prefetched_lines_cmb <= `VSTART_PAL_LX1; // = 21
+        else
+          num_prefetched_lines_cmb <= `VSTART_NTSC_LX1; // = 17
+      end
+    `RES_CAT_ED: begin    // 480p, 720p, 960p
+        if (palmode)
+          num_prefetched_lines_cmb <= `VSTART_PAL_LX1  + `ACTIVE_LINES_PAL_LX1/3  + 2*`VOVERSCAN_MAX; // = 21 + 288/3.25 + 2*3 = 115
+        else
+          num_prefetched_lines_cmb <= `VSTART_NTSC_LX1 + `ACTIVE_LINES_NTSC_LX1/3 + 2*`VOVERSCAN_MAX; // = 17 + 240/3.25 + 2*3 = 96
+      end
+    `RES_CAT_HD: begin    // 1080p, 1200p
+        if (palmode)
+          num_prefetched_lines_cmb <= `VSTART_PAL_LX1  + `ACTIVE_LINES_PAL_LX1/4.25  + 2*`VOVERSCAN_MAX; // = 21 + 288/4.25 + 2*3 = 94
+        else
+          num_prefetched_lines_cmb <= `VSTART_NTSC_LX1 + `ACTIVE_LINES_NTSC_LX1/4.25 + 2*`VOVERSCAN_MAX; // = 17 + 240/4.25 + 2*3 = 79
+      end
+    `RES_CAT_WQHD: begin  // 1440p
+        if (palmode)
+          num_prefetched_lines_cmb <= `VSTART_PAL_LX1  + `ACTIVE_LINES_PAL_LX1/5.5  + 2*`VOVERSCAN_MAX; // = 21 + 288/5.25 + 2*3= 81
+        else
+          num_prefetched_lines_cmb <= `VSTART_NTSC_LX1 + `ACTIVE_LINES_NTSC_LX1/5.5 + 2*`VOVERSCAN_MAX; // = 17 + 240/5.25 + 2*3= 68
+      end
+    default: begin        // should never appear
+        num_prefetched_lines_cmb <= `VSTART_PAL_LX1 + `ACTIVE_LINES_PAL_LX1/3 + 2*`VOVERSCAN_MAX;
+      end
+  endcase
 
 always @(posedge VCLK_i or negedge nRST_i)
   if (!nRST_i) begin
@@ -660,15 +685,15 @@ vector_reg_sync #(
 );
 
 register_sync #(
-  .reg_width(2+vcnt_width),
-  .reg_preset({(2+vcnt_width){1'b0}})
+  .reg_width(2),
+  .reg_preset(2'b00)
 ) register_sync_vclki2dram_u1 (
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
 //  .nrst(async_nRST_i),
   .nrst(1'b1),
-  .reg_i({vdata_detected,Y_input_proc_en,Y_vcnt_i_L}),
-  .reg_o({vdata_detected_drclk_resynced,input_proc_en_drclk_resynced,vcnt_i_drclk_resynced})
+  .reg_i({vdata_detected,Y_input_proc_en}),
+  .reg_o({vdata_detected_drclk_resynced,input_proc_en_drclk_resynced})
 );
 
 vector_reg_sync #(
@@ -735,7 +760,7 @@ sdram_ctrl #(
 // read configuration
 always @(posedge DRAM_CLK_i)
   if (vcnt_o_drclk_resynced == 0)
-    X_vpos_1st_rdline <= video_vpos_1st_rdline_i;
+    X_vpos_1st_rdline_sdram <= video_vpos_1st_rdline_i;
 
 // write data from sdram into post buffer
 assign wren_post_sdram_buf_p0_w = (wrpage_post_sdram_buf == 2'b00) & wren_post_sdram_buf;
@@ -788,6 +813,8 @@ always @(*) begin
   end
 end
 
+assign dram_startline_w = dv1_mode_dramclk_resynced ? `STARTING_LINE_SDRAM_READ_DV1 : `STARTING_LINE_SDRAM_READ_STD;
+
 always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
   if (!nRST_DRAM_proc) begin
     sdram_proc_en <= 1'b0;
@@ -824,8 +851,6 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
     vdata3_for_post_sdram_buf[0] <= {(3*color_width_o){1'b0}};
     vdata3_for_post_sdram_buf[1] <= {(3*color_width_o){1'b0}};
     vdata3_for_post_sdram_buf[2] <= {(3*color_width_o){1'b0}};
-    
-    Z_vinfo_llm_slbuf_fb_L <= 9'd0;
   end else begin
     case (sdram_ctrl_state)
       ST_SDRAM_WAIT: begin
@@ -860,18 +885,15 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             sdram_addr_i[ 9: 0] <= {hpos_width{1'b0}};  // horizontal position
             sdram_wr_hcnt <= {hpos_width{1'b0}};
             sdram_ctrl_state <= ST_SDRAM_FIFO2RAM0;
-          end else if (vcnt_o_drclk_resynced == `STARTING_LINE_SDRAM_READ) begin  // fetch first line to read
-            if (input_proc_en_drclk_resynced)
-              Z_vinfo_llm_slbuf_fb_L <= video_llm_i ? vcnt_i_drclk_resynced : 9'd0; // provide feedback
-            
+          end else if (vcnt_o_drclk_resynced == dram_startline_w) begin  // fetch first line to read
             if (interlaced_dramclk_resynced & (video_deinterlacing_mode_dramsynced_i == `DEINTERLACING_WEAVE)) begin  // weave deinterlacing
               sdram_rd_alternating_fields_out <= 1'b1;
-              sdram_rd_bank_sel_current <= X_vpos_1st_rdline[0] ? sdram_bank_rdy4out_even : sdram_bank_rdy4out_odd;
-              sdram_rd_vcnt <= X_vpos_1st_rdline;
+              sdram_rd_bank_sel_current <= X_vpos_1st_rdline_sdram[0] ? sdram_bank_rdy4out_even : sdram_bank_rdy4out_odd;
+              sdram_rd_vcnt <= video_vpos_1st_rdline_dramsynced_i;
             end else begin  // handle frame drop and bob deinterlacing as non-deinterlacing
               sdram_rd_alternating_fields_out <= 1'b0;
               sdram_rd_bank_sel_current <= sdram_bank_rdy4out_odd;
-              sdram_rd_vcnt <= {X_vpos_1st_rdline[vcnt_width-1:0],FIELD_ODD}; // in bob deinterlacing and progressive in we only use every odd sdram_rd_vcnt value, so shift X_vpos_1st_rdline
+              sdram_rd_vcnt <= {X_vpos_1st_rdline_sdram[vcnt_width-1:0],FIELD_ODD}; // in bob deinterlacing and progressive in we only use every odd sdram_rd_vcnt value, so shift X_vpos_1st_rdline_sdram
             end
             sdram_rd_bank_sel_odd  <= sdram_bank_rdy4out_odd;
             sdram_rd_bank_sel_even <= sdram_bank_rdy4out_even;
@@ -881,7 +903,7 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
             wraddr_post_sdram_buf_main <= 8'hff;
             wraddr_post_sdram_buf_sub <= 2'b10;
             sdram_ctrl_state <= ST_SDRAM_RAM2BUF0;
-          end else if (vcnt_o_drclk_resynced > 1 &&
+          end else if (vcnt_o_drclk_resynced > dram_startline_w &&
                        wrpage_post_sdram_buf_cmb != rdpage_slbuf_drclk_resynced ) begin  // fetch concurrent lines on demand
             if (sdram_rd_alternating_fields_out) begin
               sdram_rd_bank_sel_current <= sdram_rd_vcnt[0] == FIELD_ODD ? sdram_rd_bank_sel_even : // last field line was odd , so use even field bank
@@ -967,7 +989,6 @@ always @(posedge DRAM_CLK_i or negedge nRST_DRAM_proc)
 // | output rtl |
 // +------------+
 
-wire field_id_txclk_resynced;
 // resync registers
 register_sync #(
   .reg_width(3),
@@ -981,11 +1002,26 @@ register_sync #(
   .reg_o({vdata_detected_txclk_resynced,field_id_txclk_resynced,in2out_en_txclk_resynced})
 );
 
+vector_reg_sync #(
+  .reg_width(9),
+  .reg_preset(9'd0)
+) register_sync_input2hdmi_u1 (
+  .clk_i(VCLK_i),
+  .clk_en_i(1'b1),
+  .nrst_i(async_nRST_i),
+//  .nrst_i(1'b1),
+  .vecreg_i(Y_vcnt_i_L),
+  .clk_o(VCLK_o),
+  .clk_en_o(1'b1),
+  .nrst_o(async_nRST_i),
+//  .nrst_o(1'b1),
+  .vecreg_o(vcnt_i_txclk_resynced)
+);
+
+
 // read configuration for output
 assign X_vpos_px_offset_w = (video_vlines_out_i < {1'b0,X_VACTIVE_OS}) ? ({1'b0,X_VACTIVE_OS} - video_vlines_out_i)/2 : 11'd0;
 assign X_hpos_px_offset_w = (video_hpixel_out_i < X_HACTIVE_OS) ? (X_HACTIVE_OS - video_hpixel_out_i)/2 : 12'd0;
-
-reg X_direct_output;
 
 always @(posedge VCLK_o)
   if (Y_cfg_v_update_window) begin  // Y_cfg_v_update_window generated below
@@ -1002,6 +1038,7 @@ always @(posedge VCLK_o)
       X_HSTOP_px <= X_HSTOP_OS - X_hpos_px_offset_w;
       
       X_video_v_interpolation_mode <= video_v_interpolation_mode_i;
+      X_video_vpos_1st_rdline <= video_vpos_1st_rdline_i;
       X_pix_vlines_in_needed <= video_vlines_in_needed_i;
       X_pix_vlines_in_full <= video_vlines_in_full_i;
       X_pix_vlines_out_max <= video_vlines_out_i;
@@ -1271,6 +1308,8 @@ always @(posedge VCLK_o or negedge nRST_o)
     VSYNC_vpl_L <= {Videogen_Pipeline_Length{1'b0}};
     DE_vpl_L <= {Videogen_Pipeline_Length{1'b0}};
     vdata_vpl_end_L <= {(3*color_width_o){1'b0}};
+    
+    Z_vinfo_llm_slbuf_fb_L <= 9'd0;
   end else begin
     output_proc_en <= 1'b1;
     // generate sync
@@ -1302,6 +1341,10 @@ always @(posedge VCLK_o or negedge nRST_o)
           if ((Y_vcnt_o_L == X_VSTART_px-1) || (Y_vcnt_o_L == X_VSTOP_px-1))  // next clock cycle either Y_vcnt_o_L == X_VSTART_px or Y_vcnt_o_L == X_VSTOP_px
             Y_v_active_px <= ~Y_v_active_px;
         end
+        if (Y_vcnt_o_L == 0)
+          Z_vinfo_llm_slbuf_fb_L <= video_llm_i ? vcnt_i_txclk_resynced - 9'd1 : 9'd0; // provide feedback
+//        if (Y_vcnt_o_L == X_VSTART_px-1)
+//          Z_vinfo_llm_slbuf_fb_L <= video_llm_i ? vcnt_i_txclk_resynced - X_video_vpos_1st_rdline - 1'd1 : 9'd0; // provide feedback
       end
       if (hcnt_shifted_L < X_HTOTAL - 1) begin
         hcnt_shifted_L <= hcnt_shifted_L + 1;
@@ -1325,7 +1368,8 @@ always @(posedge VCLK_o or negedge nRST_o)
       h_active_px <= 1'b0;
     end
     if (Y_v_active_px) begin
-      if (hcnt_o_L == 6) begin
+//      if (hcnt_o_L == 6) begin
+      if (hcnt_o_L == X_HSYNCLEN) begin
         case (Y_vscale_phase)
           HVSCALE_PHASE_INIT: begin
               if (Y_vline_cnt_cmb >= X_pix_vlines_out_max && !Y_vphase_init_delay) begin
