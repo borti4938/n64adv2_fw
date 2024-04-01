@@ -134,7 +134,7 @@ localparam VIRT_CTRL_NEGEDGE_WAIT_TH = 8'h20; // trigger a virtual negedge after
 wire        vd_wrctrl_w;
 wire [19:0] vd_wrdata_w;
 
-wire FallbackMode_valid_resynced;
+wire FallbackCtrl_valid_resynced, FallbackRst_valid_resynced;
 wire [`PPU_State_Width-1:0] PPUState_resynced;
 wire HDMI_CLK_ok_resynced;
 wire ctrl_detected_resynced;
@@ -167,9 +167,11 @@ reg [1:0] nHSYNC_buf = 2'b0;
 reg [4:0] n64_clk_cnt = 5'd0;
 reg pal_pattern = 1'b0;
 
-reg [9:0] time_out = 10'd1023;
-reg FallbackMode  = 1'b0;
-reg FallbackMode_valid = 1'b0;
+reg [9:0] FallbackRst_time_out = 10'd1023;
+reg FallbackRst  = 1'b0;
+reg FallbackRst_valid = 1'b0;
+reg FallbackCtrl  = 1'b0;
+reg FallbackCtrl_valid = 1'b0;
 
 reg [1:0] ctrl_data_tack_resynced_L = 2'b00;
 reg use_igr = 1'b0;
@@ -233,24 +235,24 @@ always @(posedge N64_CLK_i)
 // ===========================
 
 always @(posedge N64_CLK_i)
-  if (!FallbackMode_valid) begin
-    if (~|time_out) begin
-      FallbackMode <= ~PPU_nRST_i;
-      FallbackMode_valid <= 1'b1;
+  if (!FallbackRst_valid) begin
+    if (~|FallbackRst_time_out) begin
+      FallbackRst <= ~PPU_nRST_i;
+      FallbackRst_valid <= 1'b1;
     end
-    time_out <= time_out - 10'd1;
+    FallbackRst_time_out <= FallbackRst_time_out - 10'd1;
   end
 
 
 register_sync #(
-  .reg_width(2 + `PPU_State_Width + 4), // 1 + 1 + PPU_State_Width + 1 + 1 + 1 + 1
-  .reg_preset({(2 + `PPU_State_Width + 4){1'b0}})
+  .reg_width(2 + `PPU_State_Width + 5), // 1 + 1 + PPU_State_Width + 1 + 1 + 1 + 1 + 1
+  .reg_preset({(2 + `PPU_State_Width + 5){1'b0}})
 ) sync4cpu_u0(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ctrl_detected,HDMI_CLK_ok_i,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],game_id_valid,FallbackMode_valid,new_ctrl_data[1],OSD_VSync}),
-  .reg_o({ctrl_detected_resynced,HDMI_CLK_ok_resynced,PPUState_resynced,game_id_valid_resynced,FallbackMode_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
+  .reg_i({ctrl_detected,HDMI_CLK_ok_i,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],game_id_valid,FallbackCtrl_valid,FallbackRst_valid,new_ctrl_data[1],OSD_VSync}),
+  .reg_o({ctrl_detected_resynced,HDMI_CLK_ok_resynced,PPUState_resynced,game_id_valid_resynced,FallbackCtrl_valid_resynced,FallbackRst_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
 );
 
 chip_id chip_id_u (
@@ -280,7 +282,7 @@ system_n64adv2 system_u (
   .vd_wrdata_export(vd_wrdata_w),
   .ctrl_data_in_export(serial_data[2]),
   .n64adv_state_in_export({ctrl_detected_resynced,HDMI_CLK_ok_resynced,PPUState_resynced}),
-  .fallback_in_export({FallbackMode,FallbackMode_valid_resynced}),
+  .fallback_in_export({FallbackCtrl,FallbackCtrl_valid_resynced,FallbackRst,FallbackRst_valid_resynced}),
   .cfg_set3_out_export(SysConfigSet3),
   .cfg_set2_out_export(SysConfigSet2),
   .cfg_set1_out_export(SysConfigSet1),
@@ -334,6 +336,8 @@ assign ctrl_bit = ctrl_low_cnt < wait_cnt;
 
 always @(posedge CTRL_CLK or negedge CTRL_nRST)
   if (!CTRL_nRST) begin
+    FallbackCtrl <= 1'b0;
+    FallbackCtrl_valid <= 1'b0;
     rd_state       <= ST_WAIT4N64;
     last_ctrl_edge <= 1'b0;
     wait_cnt       <=  8'h0;
@@ -455,9 +459,13 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
 
     ctrl_hist <= {ctrl_hist[1:0],CTRL_i};
 
-    if (new_ctrl_data[0] && new_ctrl_data[0]) begin
+    if (new_ctrl_data[0]) begin
       serial_data[2] <= serial_data[1];
       new_ctrl_data  <= 2'b10;
+      if (!FallbackCtrl_valid) begin
+        FallbackCtrl_valid <= 1'b1;
+        FallbackCtrl <= (serial_data[1][15:0] == `IGR_FALLBACK);
+      end
     end
     if (^ctrl_data_tack_resynced_L)
       new_ctrl_data[1] <= 1'b0;

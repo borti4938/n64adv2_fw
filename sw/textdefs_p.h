@@ -165,11 +165,12 @@
 #define RWDATA_VALS_V_OFFSET              VICFG_OVERLAY_V_OFFSET
 #define RWDATA_AUTOSAVE_V_OFFSET          ( 1 + RWDATA_OVERLAY_V_OFFSET)
 #define RWDATA_SAVE_FL_V_OFFSET           ( 2 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_FL_V_OFFSET           ( 4 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_LOAD_FBDEFAULTS_V_OFFSET   ( 5 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_CPYCFG_DIRECTION_V_OFFSET  ( 7 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_CPYCFG_FUNCTION_V_OFFSET   ( 8 + RWDATA_OVERLAY_V_OFFSET)
-#define RWDATA_FALLBACK_V_OFFSET          ( 9 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_LOAD_FL_V_OFFSET           ( 3 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_CPYCFG_DIRECTION_V_OFFSET  ( 5 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_CPYCFG_FUNCTION_V_OFFSET   ( 6 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FALLBACKRES_V_OFFSET       ( 8 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FALLBACKTRIG_V_OFFSET      ( 9 + RWDATA_OVERLAY_V_OFFSET)
+#define RWDATA_FALLBACKMENU_V_OFFSET      (10 + RWDATA_OVERLAY_V_OFFSET)
 
 #define N64DEBUG_OVERLAY_H_OFFSET       OVERLAY_H_OFFSET
 #define N64DEBUG_OVERLAY_V_OFFSET       OVERLAY_V_OFFSET
@@ -319,31 +320,18 @@ static const char *misc_overlay __ufmdata_section__ =
 
 static const char *rwdata_header __ufmdata_section__ =
     "Save/Load";
-#ifndef DEBUG
-  static const char *rwdata_overlay __ufmdata_section__ =
-      "* Save\n"
-      "  - Autosave:\n"
-      "  - Configuration now:\n"
-      "* Load\n"
-      "  - Last configuration:\n"
-      "  - Fallback defaults:\n"
-      "* Copy:\n"
-      "  - Direction:\n"
-      "  - Copy config now:\n"
-      "* Fallback config:";
-#else
-  static const char *rwdata_overlay __ufmdata_section__ =
-      "* Save\n"
-      "  - Autosave:              (n.a.)\n"
-      "  - Configuration now:     (n.a.)\n"
-      "* Load\n"
-      "  - Last configuration:    (n.a.)\n"
-      "  - Fallback defaults:\n"
-      "* Copy:\n"
-      "  - Direction:             (n.a.)\n"
-      "  - Copy config now:       (n.a.)\n"
-      "* Fallback config:";
-#endif
+static const char *rwdata_overlay __ufmdata_section__ =
+    "* Save/Load\n"
+    "  - Autosave:              (n.a.)\n"
+    "  - Save configuration:    (n.a.)\n"
+    "  - Load configuration:    (n.a.)\n"
+    "* Copy:\n"
+    "  - Direction:             (n.a.)\n"
+    "  - Copy config now:       (n.a.)\n"
+    "* Fallback config:\n"
+    "  - Resolution:\n"
+    "  - Trigger:\n"
+    "  - Open menu on fb.:";
 
 static const char *n64debug_header __ufmdata_section__ =
     "Debug-Info";
@@ -472,6 +460,7 @@ const char *Resolutions[]             __ufmdata_section__ = {"Direct","480p","72
 const char *Resolution576pReplacement __ufmdata_section__ = "576p";
 const char *VGAFLAG[]                 __ufmdata_section__ = {"(Std.)","(VGA)"};
 const char *FallbackRes[]             __ufmdata_section__ = {"1080p","Direct","480p/576p"};
+const char *FallbackTrig[]            __ufmdata_section__ = {"Rst. button","Ctrl. L","Rst.b. or Ctrl.L"};
 const char *DeInterModes[]            __ufmdata_section__ = {"Frame Drop","Bob","Weave"};
 const char *InterpModes[]             __ufmdata_section__ = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};
 const char *VTimingSel[]              __ufmdata_section__ = {"NTSC Progr.","NTSC Interl.","PAL Progr.","PAL Interl."};

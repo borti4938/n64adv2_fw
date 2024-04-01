@@ -295,23 +295,24 @@ menu_t rwdata_screen = {
     .arrow_position = (RWDATA_VALS_H_OFFSET - 2),
     .current_selection = 0,
 #ifndef DEBUG
-    .number_selections = 7,
+    .number_selections = 8,
     .leaves = {
         {.id = RWDATA_AUTOSAVE_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &autosave},
         {.id = RWDATA_SAVE_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1 = &cfg_save_to_flash},
         {.id = RWDATA_LOAD_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1 = &cfg_load_from_flash},
-        {.id = RWDATA_LOAD_FBDEFAULTS_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC2, .sys_fun_2 = &cfg_load_defaults},
         {.id = RWDATA_CPYCFG_DIRECTION_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &copy_direction},
         {.id = RWDATA_CPYCFG_FUNCTION_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0 = &cfg_copy_ntsc2pal},
-        {.id = RWDATA_FALLBACK_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallbackmode},
-//        {.id = RWDATA_UPDATE_V_OFFSET          , .arrowshape = &optval_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0 = &fw_update}
+        {.id = RWDATA_FALLBACKRES_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_resolution},
+        {.id = RWDATA_FALLBACKTRIG_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_trigger},
+        {.id = RWDATA_FALLBACKMENU_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_menu}
     }
 #else
-    .number_selections = 2,
-    .leaves = {
-        {.id = RWDATA_LOAD_FBDEFAULTS_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC2, .sys_fun_2 = &cfg_load_defaults},
-        {.id = RWDATA_FALLBACK_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallbackmode}
-    }
+    .number_selections = 3,
+        .leaves = {
+            {.id = RWDATA_FALLBACKRES_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_resolution},
+            {.id = RWDATA_FALLBACKTRIG_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_trigger},
+            {.id = RWDATA_FALLBACKMENU_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_menu}
+        }
 #endif
 };
 
@@ -744,7 +745,6 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       int retval = 0;
       if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC0) retval = (*current_menu)->leaves[current_sel].sys_fun_0();
       if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC1) retval = (*current_menu)->leaves[current_sel].sys_fun_1(1);
-      if ((*current_menu)->leaves[current_sel].leavetype == INFO_RET_FUNC2) retval = (*current_menu)->leaves[current_sel].sys_fun_2(cfg_get_value(&fallbackmode,0),1);
       return (retval == 0                     ? CONFIRM_OK  :
               retval == -CFG_FLASH_SAVE_ABORT ? CONFIRM_ABORTED :
                                                 CONFIRM_FAILED);
@@ -889,7 +889,6 @@ int update_cfg_screen(menu_t* current_menu)
         /* no break */
       case INFO_RET_FUNC0:
       case INFO_RET_FUNC1:
-      case INFO_RET_FUNC2:
         font_color = FONTCOLOR_WHITE;
         vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,RunFunction);
         break;

@@ -37,7 +37,7 @@
 #ifndef CFG_INT_P_H_
 #define CFG_INT_P_H_
 
-extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *VTimingSel[], *ScaleSteps[], *CopyCfg[], *DebugBoot[];
+extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *FallbackTrig[], *VTimingSel[], *ScaleSteps[], *CopyCfg[], *DebugBoot[];
 
 cfg_b32word_t intcfg0_word =
   { .cfg_word_mask    = INTCFG0_GETALL_MASK,
@@ -146,15 +146,37 @@ config_t link_hv_scale = {
     .value_string = (const char **) &ScaleVHLink
 };
 
-config_t fallbackmode = {
+config_t fallback_resolution = {
     .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_FALLBACK_OFFSET,
+    .cfg_word_offset = CFG_FALLBACK_RES_OFFSET,
     .cfg_type        = TXTVALUE,
     .value_details   = {
         .max_value     = CFG_FALLBACK_MAX_VALUE,
-        .getvalue_mask = CFG_FALLBACK_GETMASK
+        .getvalue_mask = CFG_FALLBACK_RES_GETMASK
     },
     .value_string = (const char **) &FallbackRes
+};
+
+config_t fallback_trigger = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_FALLBACK_TRIGGER_OFFSET,
+    .cfg_type        = TXTVALUE,
+    .value_details   = {
+        .max_value     = CFG_FALLBACK_MAX_VALUE,
+        .getvalue_mask = CFG_FALLBACK_TRIGGER_GETMASK
+    },
+    .value_string = (const char **) &FallbackTrig
+};
+
+config_t fallback_menu = {
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_FALLBACK_MENU_OFFSET,
+    .cfg_type        = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_FALLBACK_MENU_SETMASK,
+        .clrflag_mask = CFG_FALLBACK_MENU_CLRMASK
+    },
+    .value_string = (const char **) &OffOn
 };
 
 config_t autosave = {

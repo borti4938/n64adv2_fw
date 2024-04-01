@@ -661,7 +661,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="2" />
+  <parameter name="width" value="4" />
  </module>
  <module name="i2c_master" kind="i2c_opencores" version="22.1" enabled="1" />
  <module

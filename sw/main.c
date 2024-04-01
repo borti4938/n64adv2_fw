@@ -180,28 +180,31 @@ int main()
     bool_t load_n64_defaults = (cfg_load_from_flash(0) != 0);
   #endif
 
+  bool_t fallback_triggered = FALSE;
   alt_u8 use_fallback;
   do {
-    use_fallback = get_fallback_mode();
+    use_fallback = (get_fallback_mode() & FALLBACKRST_GETMASK);
   } while (use_fallback == 0);
 
   active_osd = FALSE;
+  cfg_clear_flag(&show_osd);
+
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
-    cfg_load_defaults((use_fallback & 0x2),0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
-    cfg_set_flag(&igr_reset); // handle a bit different from other defaults
+    cfg_load_defaults((use_fallback & FALLBACKRST_PRESSED_GETMASK),0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
+    fallback_triggered = TRUE;
+    cfg_set_flag(&igr_reset);     // handle a bit different from other defaults
+    cfg_set_flag(&fallback_menu); // handle a bit different from other defaults
     cfg_update_reference();
     open_osd_main(&menu);
   } else {
-    if (use_fallback > 1) {
-      cfg_load_defaults(cfg_get_value(&fallbackmode,0),0);  // load the desired default settings
-      open_osd_main(&menu);
-    } else {
-      #ifdef DEBUG
-        open_osd_main(&menu);
-      #else
-        cfg_clear_flag(&show_osd);
-      #endif
+    if (cfg_get_value(&fallback_trigger,0) == 1) { // fallback only on button L
+      use_fallback = 0; // clear fallback on reset button
+    }
+    if (use_fallback > 1) { // fallback on reset button triggered
+      if (cfg_get_value(&fallback_menu,0) == TRUE) open_osd_main(&menu);
+      cfg_load_defaults(cfg_get_value(&fallback_resolution,0),0);  // load the desired default settings
+      fallback_triggered = TRUE;  // fallback triggered on reset button
     }
     cfg_set_value(&deblur_mode,cfg_get_value(&deblur_mode_powercycle,0));
     cfg_set_value(&mode16bit,cfg_get_value(&mode16bit_powercycle,0));
@@ -274,6 +277,7 @@ int main()
 
   /* Event loop never exits. */
   while (1) {
+
     active_osd_pre = active_osd;
     video_input_detected_pre = video_input_detected;
     palmode_pre = palmode;
@@ -293,6 +297,17 @@ int main()
       command = CMD_NON;
     }
 
+    if (fallback_triggered == FALSE) {
+      use_fallback = (get_fallback_mode() & FALLBACKCTRL_GETMASK);  // check for fallback on controller L
+      if ((use_fallback > 0)) {
+        fallback_triggered = TRUE;
+        if (((use_fallback & FALLBACKCTRL_PRESSED_GETMASK) == FALLBACKCTRL_PRESSED_GETMASK) &&  // controller L pressed
+            (cfg_get_value(&fallback_trigger,0) > 0)) { // fallback on controller L also enabled
+          if (cfg_get_value(&fallback_menu,0) == TRUE) open_osd_main(&menu);
+          cfg_load_defaults(cfg_get_value(&fallback_resolution,0),0);  // load the desired default settings
+        }
+      }
+    }
 
     // update correct config set for FPGA
     if (!changed_linex_setting) { // important to check this flag as program cycles 1x through menu after change to set also the scaling correctly

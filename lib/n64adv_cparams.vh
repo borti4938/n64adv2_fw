@@ -69,7 +69,8 @@
   // In-game reset command
   // =====================
 
-  `define IGR_RESET (`A + `B + `Z + `St + `R)
+  `define IGR_RESET     (`A + `B + `Z + `St + `R)
+  `define IGR_FALLBACK  (`L)
 
   // OSD menu window sizing
   // ======================
