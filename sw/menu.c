@@ -274,12 +274,12 @@ menu_t misc_screen = {
     .current_selection = 0,
     .number_selections = 7,
     .leaves = {
-        {.id = MISC_IGR_RESET_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_reset},
-        {.id = MISC_IGR_DEBLUR_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_deblur},
-        {.id = MISC_IGR_16BITMODE_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &igr_16bitmode},
-        {.id = MISC_RST_MASKING_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &rst_masking},
-        {.id = MISC_SWAP_LED_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &swap_led},
-        {.id = MISC_DEBUGVITIMEOUT_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value = &debug_vtimeout},
+        {.id = MISC_IGR_RESET_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &igr_reset},
+        {.id = MISC_IGR_DEBLUR_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &igr_deblur},
+        {.id = MISC_IGR_16BITMODE_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &igr_16bitmode},
+        {.id = MISC_RST_MASKING_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &rst_masking},
+        {.id = MISC_SWAP_LED_V_OFFSET      , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &swap_led},
+        {.id = MISC_DEBUGVITIMEOUT_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &debug_vtimeout},
         {.id = MISC_LUCKY_1440P_V_OFFSET   , .arrowshape = &select_arrow, .leavetype = CFG_FUNC1, .cfgfct_call_1 = &cfgfct_unlock1440p}
     }
 };

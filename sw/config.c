@@ -114,7 +114,7 @@ const alt_u16 predef_scaling_vals[LINEX_MODES+1][PREDEFINED_SCALE_STEPS] __ufmda
 };
 
 //extern bool_t use_flash;
-extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
+extern cfg_scaler_in2out_sel_type_t scaling_menu;
 extern vmode_t vmode_menu, vmode_scaling_menu;
 
 bool_t unlock_1440p;

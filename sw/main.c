@@ -391,10 +391,9 @@ int main()
 
       linex_words[PAL+1].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);  // save current menu settings
 
-    } else { /* ELSE OF if(cfg_get_value(&show_osd,0) && !keep_vout_rst) */
+    } else { /* ELSE OF if(active_osd && hdmi_clk_ok) */
       todo = NON;
 
-      if (hdmi_clk_ok) {
         if (video_input_detected_pre && !video_input_detected) {  // open menu in debug screen if no video input is being detected
           command = CMD_OPEN_MENU;
           home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
@@ -402,9 +401,7 @@ int main()
         }
         if (command == CMD_OPEN_MENU) {
           open_osd_main(&menu);
-          ctrl_ignore = CTRL_IGNORE_FRAMES;
         }
-      }
 
       if (cfg_get_value(&igr_deblur,0))
         switch (command) {
@@ -437,7 +434,7 @@ int main()
           }
 
       message_cnt = 0;
-    } /* END OF if(cfg_get_value(&show_osd,0) && hdmi_clk_ok) */
+    } /* END OF if(active_osd && hdmi_clk_ok) */
 
     if (cfg_get_value(&lock_menu,0)) {
       if (!lock_menu_pre) igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
