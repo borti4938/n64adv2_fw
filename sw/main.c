@@ -185,6 +185,7 @@ int main()
     use_fallback = get_fallback_mode();
   } while (use_fallback == 0);
 
+  active_osd = FALSE;
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
     cfg_load_defaults((use_fallback & 0x2),0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
