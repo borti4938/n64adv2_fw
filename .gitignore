@@ -32,7 +32,6 @@ obj/
 */controller_bsp/*
 .settings/
 hdl_sim/
-font/
 .force_rebuild
 .force_relink
 Makefile
