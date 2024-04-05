@@ -118,6 +118,17 @@ void set_spd_packet(bool_t spd_dv1,bool_t dv_send_pr) {
     // write vi config for dv1
     adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(0+SPD_DV_VI_CFG_OFFSET),(active_osd << 2) | scanmode);
     adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(1+SPD_DV_VI_CFG_OFFSET),dv_send_pr ? 2 : 1);
+    if (palmode) {
+      wr_val = 56;
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(2+SPD_DV_VI_CFG_OFFSET),(alt_u8) (wr_val & 0xFF));
+      wr_val = 19;
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(4+SPD_DV_VI_CFG_OFFSET),(alt_u8) (wr_val & 0xFF));
+    } else {
+      wr_val = 45;
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(2+SPD_DV_VI_CFG_OFFSET),(alt_u8) (wr_val & 0xFF));
+      wr_val = 15;
+      adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(4+SPD_DV_VI_CFG_OFFSET),(alt_u8) (wr_val & 0xFF));
+    }
     wr_val = dv_send_pr ? 320 : 640;
     adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(6+SPD_DV_VI_CFG_OFFSET),(alt_u8) ( wr_val       & 0xFF));
     adv7513_packetmem_writereg(ADV7513_REG_SPD_PACKET(7+SPD_DV_VI_CFG_OFFSET),(alt_u8) ((wr_val >> 8) & 0xFF));

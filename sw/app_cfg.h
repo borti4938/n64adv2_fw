@@ -29,8 +29,9 @@
 #ifndef APP_CFG_H_
 #define APP_CFG_H_
 
-#define FW_MAIN 2
-#define FW_SUB  22
+#define FW_MOD  2
+#define FW_MAIN 22
+#define FW_SUB  1
 
 #define CFG_FW_MAIN FW_MAIN
 #define CFG_FW_SUB  9

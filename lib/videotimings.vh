@@ -42,13 +42,13 @@
   
   // 240p-60, 4:3 (2x/4x pixelrep, mode 2)
   `define USE_240p60            5'b00000
-  `define HSYNC_active_240p60   1'b0
+  `define HSYNC_active_240p60   1'b1
   `define HFRONTPORCH_240p60    19
   `define HSYNCLEN_240p60       96
   `define HBACKPORCH_240p60     45
   `define HACTIVE_240p60        640
   `define HTOTAL_240p60         800
-  `define VSYNC_active_240p60   1'b0
+  `define VSYNC_active_240p60   1'b1
   `define VFRONTPORCH_240p60    5
   `define VSYNCLEN_240p60       3
   `define VBACKPORCH_240p60     15
@@ -177,13 +177,13 @@
   
   // 288p-50, 4:3 (2x/4x pixelrep, mode 8)
   `define USE_288p50            5'b10000
-  `define HSYNC_active_288p50   1'b0
+  `define HSYNC_active_288p50   1'b1
   `define HFRONTPORCH_288p50    12
   `define HSYNCLEN_288p50       98
   `define HBACKPORCH_288p50     56
   `define HACTIVE_288p50        640
   `define HTOTAL_288p50         806
-  `define VSYNC_active_288p50   1'b0
+  `define VSYNC_active_288p50   1'b1
   `define VFRONTPORCH_288p50    3
   `define VSYNCLEN_288p50       3
   `define VBACKPORCH_288p50     19

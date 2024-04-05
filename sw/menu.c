@@ -544,8 +544,7 @@ void print_1440p_unlock_info() {
 
 void print_fw_version()
 {
-//  sprintf(szText,"%1d.%02d (CiBo preview)",FW_MAIN,FW_SUB),
-  sprintf(szText,"%1d.%02d",FW_MAIN,FW_SUB);
+  sprintf(szText,"%1d.%02d.%d",FW_MOD,FW_MAIN,FW_SUB);
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   vd_print_string(VD_TEXT,VERSION_H_OFFSET,VERSION_V_OFFSET+1,FONTCOLOR_WHITE,pcb_rev[get_pcb_version()]);
