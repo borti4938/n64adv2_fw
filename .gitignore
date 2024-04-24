@@ -48,4 +48,8 @@ fir_audio_sim/
 advancedRGBmod/firmware/ip/n64adv*/*/altclkctrl/*
 advancedRGBmod/firmware/ip/n64adv2/*/fir_2ch_audio*/*
 !software/n64adv2/controller_bsp/settings.bsp
+quartus/dse/*
+tb/questa/*
+tb/msim/*
+nios/software/controller_bsp/*
 
