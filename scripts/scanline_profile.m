@@ -25,8 +25,10 @@ factor_bits = 8;
 
 %% hanning profile
 
-y_hann = hann(2*2^fractional_bits+7);
-y_hann = y_hann(3:2^fractional_bits+2);
+% y_hann = hann(2*2^fractional_bits+7);
+% y_hann = y_hann(3:2^fractional_bits+2);
+y_hann = hanning(2*2^fractional_bits+5);
+y_hann = y_hann(2:2^fractional_bits+2);
 y_hann = round(y_hann*2^factor_bits);
 
 disp('Hanning profile')
@@ -38,11 +40,11 @@ end
 disp('endcase')
 
 %% Gaussian profile
-
+p = 1;
 x_start = -sqrt(2*(factor_bits+1)*log(2)) + 1e-12;
 x = linspace(x_start,0,2^fractional_bits+1);
 x = x(1:end-1);
-y_gauss = exp(-2\x.^2);
+y_gauss = exp(-(2\x.^2)^p);
 y_gauss = round(y_gauss*2^factor_bits);
 y_gauss(end) = 2^factor_bits-1;
 

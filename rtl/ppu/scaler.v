@@ -183,6 +183,9 @@ localparam GEN_SIGNALLING_DELAY = 1;
 localparam LOAD_PIXEL_BUF_DELAY = 2;
 localparam VERT_INTERP_DELAY = 3;
 localparam HORI_INTERP_DELAY = 3;
+// ToDo: double check :)
+//localparam HORI_INTERP_DELAY = 4; // signaltap analyzes shows that horizontal interpolation has four delay steps
+//                                  // although I don't know where the additional step is coming from      
 localparam POST_BUF_DELAY = 1;
 localparam Videogen_Pipeline_Length = GEN_SIGNALLING_DELAY+LOAD_PIXEL_BUF_DELAY+VERT_INTERP_DELAY+HORI_INTERP_DELAY+POST_BUF_DELAY;
 // current pipeline stages:
@@ -535,6 +538,7 @@ always @(*)
       end
     `RES_CAT_ED: begin    // 480p, 720p, 960p
         if (palmode)
+//          num_prefetched_lines_cmb <= `VSTART_PAL_LX1  + `ACTIVE_LINES_PAL_LX1/4  + 2*`VOVERSCAN_MAX; // = 21 + 288/4 + 2*3 = 99  (tearing line with scales above 4x scale)
           num_prefetched_lines_cmb <= `VSTART_PAL_LX1  + `ACTIVE_LINES_PAL_LX1/3  + 2*`VOVERSCAN_MAX; // = 21 + 288/3.25 + 2*3 = 115
         else
           num_prefetched_lines_cmb <= `VSTART_NTSC_LX1 + `ACTIVE_LINES_NTSC_LX1/3 + 2*`VOVERSCAN_MAX; // = 17 + 240/3.25 + 2*3 = 96
@@ -1483,7 +1487,7 @@ always @(posedge VCLK_o or negedge nRST_o)
               hpixel_load_cnt <= hpixel_load_cnt + 10'd1;
           end
         HVSCALE_PHASE_POST: begin
-            pix_h_fir_step[0] <= 1'b0;
+            pix_h_fir_step[0] <= 1'b0;  // correct?
             if (hpixel_cnt_cmb >= X_pix_hpixel_out_max) begin
               pix_h_bypass_a0_current[0] <= 1'b1;
               pix_h_bypass_a1_current[0] <= 1'b0;
