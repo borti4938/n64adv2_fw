@@ -211,27 +211,53 @@ assign nViDeblur_o = ~PPUConfigSet_w[`videblur_bit];
 
 // input registering
 
-register_sync #(
-  .reg_width(8),
-  .reg_preset(8'h00)
-) inp_vregs_u (
-  .clk(N64_CLK_w),
-  .clk_en(1'b1),
-  .nrst(1'b1),
-  .reg_i({nVDSYNC_i,VD_i}),
-  .reg_o({nVDSYNC_w,VD_w})
-);
+`ifdef CIBO_PREVIEW
+  wire cibo_nrst_w = ~PCB_ID_i[2];
+  
+  register_sync #(
+    .reg_width(8),
+    .reg_preset(8'h00)
+  ) inp_vregs_u (
+    .clk(N64_CLK_w),
+    .clk_en(1'b1),
+    .nrst(cibo_nrst_w),
+    .reg_i({nVDSYNC_i,VD_i}),
+    .reg_o({nVDSYNC_w,VD_w})
+  );
 
-register_sync #(
-  .reg_width(3),
-  .reg_preset(3'b000)
-) inp_aregs_u ( // just for the pincheck module
-  .clk(N64_CLK_w),
-  .clk_en(1'b1),
-  .nrst(1'b1),
-  .reg_i({ALRCLK_i,ASDATA_i,ASCLK_i}),
-  .reg_o({ALRCLK_w,ASDATA_w,ASCLK_w})
-);
+  register_sync #(
+    .reg_width(3),
+    .reg_preset(3'b000)
+  ) inp_aregs_u ( // just for the pincheck module
+    .clk(N64_CLK_w),
+    .clk_en(1'b1),
+    .nrst(cibo_nrst_w),
+    .reg_i({ALRCLK_i,ASDATA_i,ASCLK_i}),
+    .reg_o({ALRCLK_w,ASDATA_w,ASCLK_w})
+  );
+`else
+  register_sync #(
+    .reg_width(8),
+    .reg_preset(8'h00)
+  ) inp_vregs_u (
+    .clk(N64_CLK_w),
+    .clk_en(1'b1),
+    .nrst(1'b1),
+    .reg_i({nVDSYNC_i,VD_i}),
+    .reg_o({nVDSYNC_w,VD_w})
+  );
+
+  register_sync #(
+    .reg_width(3),
+    .reg_preset(3'b000)
+  ) inp_aregs_u ( // just for the pincheck module
+    .clk(N64_CLK_w),
+    .clk_en(1'b1),
+    .nrst(1'b1),
+    .reg_i({ALRCLK_i,ASDATA_i,ASCLK_i}),
+    .reg_o({ALRCLK_w,ASDATA_w,ASCLK_w})
+  );
+`endif
 
 
 // pin checking module
@@ -348,9 +374,9 @@ n64adv2_ppu_top #(
 assign DRAM_CLK = DRAM_CLKs_w[1];
 assign HDMI_CLK_o = HDMI_CLK_w;
 
-`ifdef VIDEO_USE_FAST_OUTPUT_REGs
-  always @(posedge HDMI_CLK_w or negedge HDMI_nRST_pp_w)
-    if (!HDMI_nRST_pp_w) begin
+`ifdef CIBO_PREVIEW
+  always @(posedge HDMI_CLK_w)
+    if (!cibo_nrst_w) begin
       VSYNC_o <= 1'b0;
       HSYNC_o <= 1'b0;
          DE_o <= 1'b0;
@@ -362,13 +388,29 @@ assign HDMI_CLK_o = HDMI_CLK_w;
          VD_o <= VD_o_w;
     end
 `else
-  always @(*) begin
-    VSYNC_o <= VSYNC_o_w;
-    HSYNC_o <= HSYNC_o_w;
-       DE_o <= DE_o_w;
-       VD_o <= VD_o_w;
-  end
+  `ifdef VIDEO_USE_FAST_OUTPUT_REGs
+    always @(posedge HDMI_CLK_w or negedge HDMI_nRST_pp_w)
+      if (!HDMI_nRST_pp_w) begin
+        VSYNC_o <= 1'b0;
+        HSYNC_o <= 1'b0;
+           DE_o <= 1'b0;
+           VD_o <= {3*color_width_o{1'b0}};
+      end else begin
+        VSYNC_o <= VSYNC_o_w;
+        HSYNC_o <= HSYNC_o_w;
+           DE_o <= DE_o_w;
+           VD_o <= VD_o_w;
+      end
+  `else
+    always @(*) begin
+      VSYNC_o <= VSYNC_o_w;
+      HSYNC_o <= HSYNC_o_w;
+         DE_o <= DE_o_w;
+         VD_o <= VD_o_w;
+    end
+  `endif
 `endif
+
 
 // audio processing module
 

@@ -40,4 +40,5 @@
   
 //  `define VIDEO_USE_FAST_OUTPUT_REGs
 
+//  `define CIBO_PREVIEW
 `endif
