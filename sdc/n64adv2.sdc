@@ -62,6 +62,11 @@ set hdmi_clk_1080p_per 6.698
 set hdmi_clk_1080p_waveform [list 0.000 [expr $hdmi_clk_1080p_per/2]]
 set hdmi_clk_1200p_per 7.628
 set hdmi_clk_1200p_waveform [list 0.000 [expr $hdmi_clk_1200p_per/2]]
+#if {[string equal $::quartus(nameofexecutable) "quartus_fit"]} {
+#  set hdmi_clk_1440p_per 4.000
+#} else {
+#  set hdmi_clk_1440p_per 5.510
+#}
 set hdmi_clk_1440p_per 5.510
 set hdmi_clk_1440p_waveform [list 0.000 [expr $hdmi_clk_1440p_per/2]]
 set hdmi_clk_1440Wp_per 8.230
