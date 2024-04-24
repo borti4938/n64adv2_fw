@@ -1,7 +1,7 @@
 //Register map for use with AN428 (JumpStart)
 //http://www.skyworksinc.com/timing
 //#BEGIN_HEADER
-//Date = Sunday, January 21, 2024 9:29 AM
+//Date = Sunday, March 17, 2024 2:48 PM
 //File version = 3
 //Software Name = ClockBuilder Pro
 //Software version = 4.3.0.0
@@ -22,14 +22,14 @@
 //N = 89  39/49  (89.7959)
 //Internal feedback enabled
 //Output Clock 0
-// Output Frequency (MHz) = 12.427257805
+// Output Frequency (MHz) = 13.321526977
 // Mux Selection = IDn
-// MultiSynth = 177  14361/475447  (177.0302)
+// MultiSynth = 165  20185/138033  (165.1462)
 // R = 1
 //Output Clock 1
-// Output Frequency (MHz) = 12.427257717
+// Output Frequency (MHz) = 13.321526883
 // Mux Selection = IDn
-// MultiSynth = 177  74561/2468375  (177.0302)
+// MultiSynth = 165  48367/330750  (165.1462)
 // R = 1
 //Output Clock 2
 // Output is off
@@ -123,26 +123,26 @@ Reg_Data const code Reg_Store[NUM_REGS_MAX] = {
 { 50,0xDE,0xC0},
 { 51,0x07,0x00},
 { 52,0x10,0x0C},
-{ 53,0x83,0xFF},
-{ 54,0x56,0xFF},
-{ 55,0x6C,0xFF},
-{ 56,0x23,0xFF},
-{ 57,0x19,0xFF},
+{ 53,0x92,0xFF},
+{ 54,0x50,0xFF},
+{ 55,0x38,0xFF},
+{ 56,0x0C,0xFF},
+{ 57,0x06,0xFF},
 { 58,0x00,0xFF},
-{ 59,0x37,0xFF},
-{ 60,0x41,0xFF},
-{ 61,0x07,0xFF},
+{ 59,0x31,0xFF},
+{ 60,0x1B,0xFF},
+{ 61,0x02,0xFF},
 { 62,0x00,0x3F},
 { 63,0x10,0x0C},
-{ 64,0x83,0xFF},
-{ 65,0x56,0xFF},
-{ 66,0xEC,0xFF},
-{ 67,0x88,0xFF},
-{ 68,0x82,0xFF},
+{ 64,0x92,0xFF},
+{ 65,0x50,0xFF},
+{ 66,0x90,0xFF},
+{ 67,0x7E,0xFF},
+{ 68,0x0E,0xFF},
 { 69,0x00,0xFF},
-{ 70,0x17,0xFF},
-{ 71,0xAA,0xFF},
-{ 72,0x25,0xFF},
+{ 70,0xFE,0xFF},
+{ 71,0x0B,0xFF},
+{ 72,0x05,0xFF},
 { 73,0x00,0x3F},
 { 74,0x10,0x0C},
 { 75,0x00,0xFF},
