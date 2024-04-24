@@ -271,6 +271,8 @@ assign ext_info = ext_info_sel == 3'b110 ? {     8'h00,     8'h00,game_id[0],gam
                   ext_info_sel == 3'b010 ? CHIP_ID_w[31: 0] :
                                            {pincheck_status_i,13'b0,PCB_ID_i};
 
+//wire [31:0] test_wire_0, test_wire_1;
+//reg [31:0] test_wire_0_r, test_wire_1_r;
 system_n64adv2 system_u (
   .clk_clk(SYS_CLK),
   .rst_reset_n(SYS_nRST),
@@ -289,8 +291,16 @@ system_n64adv2 system_u (
   .cfg_set0_out_export(SysConfigSet0),
   .info_sync_out_export({HDMI_cfg_done_o,ext_info_sel,run_pincheck_o,ctrl_data_tack}),
   .led_out_export(LED_o),
-  .ext_info_in_export(ext_info)
+  .ext_info_in_export(ext_info)//,
+//  .test_pio_0_export(test_wire_0),
+//  .test_pio_1_export(test_wire_1)
 );
+
+//always @(posedge SYS_CLK) begin
+//  
+////  test_wire_0_r <= test_wire_0;
+////  test_wire_1_r <= test_wire_1;
+//end
 
 always @(*) begin
   OSDInfo[1]   <= &{SysConfigSet1[`show_osd_logo_bit],SysConfigSet1[`show_osd_bit],!SysConfigSet1[`mute_osd_bit]};  // show logo only in OSD

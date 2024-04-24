@@ -63,6 +63,24 @@ extern alt_u8 info_sync_val;
  * - Additional windows (Ctrl. input, Video Output as OSD without menu)
  */
 
+//void test0_func()
+//{
+//  alt_u16 vscale = cfg_get_value(&vert_scale,0);
+//  alt_u32 test_val = (1<<23);
+//
+//  test_val = test_val / vscale;
+//  IOWR_ALTERA_AVALON_PIO_DATA(TEST_PIO_0_BASE,test_val);
+//}
+//
+//void test1_func()
+//{
+//  alt_u16 hscale = cfg_get_value(&hor_scale,0);
+//  alt_u32 test_val = (1<<23);
+//
+//  test_val = test_val / hscale;
+//  IOWR_ALTERA_AVALON_PIO_DATA(TEST_PIO_1_BASE,test_val);
+//}
+
 void open_osd_main(menu_t **menu)
 {
   print_overlay(*menu);
@@ -534,6 +552,9 @@ int main()
     } else if (menu == &vires_screen) {
       changed_linex_setting = (linex_word_pre != linex_words[vmode_n64adv].config_val);
     }
+
+//    test0_func();
+//    test1_func();
   }
 
   return 0;
