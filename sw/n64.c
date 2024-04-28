@@ -454,6 +454,8 @@ void send_fxd_if(bool_t enable, bool_t use_fxd)
     return;
   }
 
+//  bool_t use_pal_lines = palmode && (cfg_get_value(&pal_boxed_mode,0)==OFF);
+
   if_packet_t buf = {
     // header
     {0x81,0x01,27},
@@ -471,7 +473,9 @@ void send_fxd_if(bool_t enable, bool_t use_fxd)
   if (use_fxd) {
     // write aspect ratio mode, menu present and scanmode
     buf.packet_bytes[5] = (1 << 3 | (active_osd << 2) | scanmode);  // with DAR
+//    buf.packet_bytes[5] = (2 << 3 | (active_osd << 2) | scanmode);  // with PAR
     // write vertical start and stop
+//    if (use_pal_lines) {
     if (palmode && (cfg_get_value(&pal_boxed_mode,0)==OFF)) { // use 576 lines
       buf.packet_bytes[6] = 0x48; // 72
 //      buf.packet_bytes[7] = 0;
@@ -493,8 +497,10 @@ void send_fxd_if(bool_t enable, bool_t use_fxd)
     buf.packet_bytes[15] = 2;
     // write aspect ratio (for DAR)
     buf.packet_bytes[16] = 4; // DAR
+//    buf.packet_bytes[16] = use_pal_lines ? 10 : 4;    // PAR
 //    buf.packet_bytes[17] = 0;
     buf.packet_bytes[18] = 3; // DAR
+    //    buf.packet_bytes[18] = use_pal_lines ? 9 : 3; // PAR
 //    buf.packet_bytes[19] = 0;
   }
 
