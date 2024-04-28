@@ -411,29 +411,37 @@ void send_dv1_if(bool_t enable)
   };
   // write menu present and scanmode
   buf.packet_bytes[4] = ((active_osd << 2) | scanmode);
-  // wrtie pixel repetition
+  // write pixel repetition
   buf.packet_bytes[5] = (dv_send_pr ? 2 : 1);
-  // write horizontal and vertical de-offset
   if (palmode) {
+    // offset
     buf.packet_bytes[6] = 56;
-    buf.packet_bytes[7] = 0;
-    buf.packet_bytes[8] = 19;
-    buf.packet_bytes[9] = 0;
+//    buf.packet_bytes[7] = 0;
+    if (cfg_get_value(&pal_boxed_mode,0)==OFF) {
+      buf.packet_bytes[8] = 19;
+//      buf.packet_bytes[9] = 0;
+      wr_val = 288<<scanmode;
+    } else {
+      buf.packet_bytes[8] = 43;
+//      buf.packet_bytes[9] = 0;
+      wr_val = 240<<scanmode;
+    }
   } else {
+    // offsets
     buf.packet_bytes[6] = 45;
-    buf.packet_bytes[7] = 0;
+//    buf.packet_bytes[7] = 0;
     buf.packet_bytes[8] = 15;
-    buf.packet_bytes[9] = 0;
+//    buf.packet_bytes[9] = 0;
+    // setup height
+    wr_val = 240<<scanmode;
   }
+  // write height
+  buf.packet_bytes[12] = (alt_u8) ( wr_val       & 0xFF);
+  buf.packet_bytes[13] = (alt_u8) ((wr_val >> 8) & 0xFF);
   // write width
   wr_val = dv_send_pr ? 320 : 640;
   buf.packet_bytes[10] = (alt_u8) ( wr_val       & 0xFF);
   buf.packet_bytes[11] = (alt_u8) ((wr_val >> 8) & 0xFF);
-  // write height
-  wr_val = palmode ? 288 : 240;
-  wr_val *= (1+scanmode);
-  buf.packet_bytes[12] = (alt_u8) ( wr_val       & 0xFF);
-  buf.packet_bytes[13] = (alt_u8) ((wr_val >> 8) & 0xFF);
 
   // set infoframe
   set_infoframe_packet(enable,SPD_PACKET_ENABLE_BIT,SPD_PACKET_REG_OFFSET,&buf);
