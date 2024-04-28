@@ -300,7 +300,9 @@ always @(posedge SYS_CLK) begin
 end
 
 
-wire [11:0] direct_mode_dv1_vlines_set_w = palmode_sysclk_resynced ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
+wire [11:0] direct_mode_dv1_vlines_set_w = ~palmode_sysclk_resynced          ? `ACTIVE_LINES_NTSC_LX1 : 
+                                           ConfigSet_w[`pal_boxed_scale_bit] ? `ACTIVE_LINES_NTSC_LX1 :
+                                                                               `ACTIVE_LINES_PAL_LX1  ;
 wire [11:0] direct_mode_fxd_vlines_set_w = ~palmode_sysclk_resynced          ? `ACTIVE_LINES_NTSC_LX2 :
                                            ConfigSet_w[`pal_boxed_scale_bit] ? `ACTIVE_LINES_NTSC_LX2 :
                                                                                `ACTIVE_LINES_PAL_LX2  ;
