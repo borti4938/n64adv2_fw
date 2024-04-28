@@ -182,7 +182,7 @@ typedef struct {
 
 // the overall masks
 #define INTCFG0_GETALL_MASK   0x0007FFFF
-#define EXTCFG0_GETALL_MASK   0xFFFFFF7F
+#define EXTCFG0_GETALL_MASK   0xFFFFFFFF
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x000003FE  // LSB is reserved for use in hardware only
@@ -252,10 +252,11 @@ typedef struct {
 
 #define CFG_VERTSCALE_OFFSET        20
 #define CFG_HORSCALE_OFFSET          8
-#define CFG_FORCE_5060_OFFSET        5
-  #define CFG_FORCE_5060MSB_OFFSET     6
-  #define CFG_FORCE_5060LSB_OFFSET     5
-#define CFG_LOWLATENCYMODE_OFFSET    4
+#define CFG_FORCE_5060_OFFSET        6
+  #define CFG_FORCE_5060MSB_OFFSET     7
+  #define CFG_FORCE_5060LSB_OFFSET     6
+#define CFG_LOWLATENCYMODE_OFFSET    5
+#define CFG_DVMODE_VERSION_OFFSET    4
 #define CFG_VGAFOR480P_OFFSET        3
 #define CFG_RESOLUTION_OFFSET        0
   #define CFG_RESOLUTIONMSB_OFFSET     2
@@ -275,7 +276,10 @@ typedef struct {
 #define CFG_LOWLATENCYMODE_GETMASK    (1<<CFG_LOWLATENCYMODE_OFFSET)
   #define CFG_LOWLATENCYMODE_SETMASK    (1<<CFG_LOWLATENCYMODE_OFFSET)
   #define CFG_LOWLATENCYMODE_CLRMASK    (EXTCFG0_GETALL_MASK & ~CFG_LOWLATENCYMODE_GETMASK)
-#define CFG_VGAFOR480P_GETMASK        (3<<CFG_VGAFOR480P_OFFSET)
+#define CFG_DVMODE_VERSION_GETMASK    (1<<CFG_DVMODE_VERSION_OFFSET)
+  #define CFG_DVMODE_VERSION_SETMASK    (1<<CFG_DVMODE_VERSION_OFFSET)
+  #define CFG_DVMODE_VERSION_CLRMASK    (EXTCFG0_GETALL_MASK & ~CFG_DVMODE_VERSION_GETMASK)
+#define CFG_VGAFOR480P_GETMASK        (1<<CFG_VGAFOR480P_OFFSET)
   #define CFG_VGAFOR480P_SETMASK        (1<<CFG_VGAFOR480P_OFFSET)
   #define CFG_VGAFOR480P_CLRMASK        (EXTCFG0_GETALL_MASK & ~CFG_VGAFOR480P_GETMASK)
 #define CFG_RESOLUTION_GETMASK        (0x7<<CFG_RESOLUTION_OFFSET)
@@ -432,7 +436,8 @@ typedef struct {
 
 // some usefull masking
 #define CFG_EXTCFG0_GETLINEX_MASK       (CFG_FORCE_5060_GETMASK | CFG_LOWLATENCYMODE_GETMASK | \
-                                         CFG_VGAFOR480P_GETMASK | CFG_RESOLUTION_GETMASK)
+                                         CFG_DVMODE_VERSION_GETMASK | CFG_VGAFOR480P_GETMASK | \
+                                         CFG_RESOLUTION_GETMASK)
 #define CFG_EXTCFG0_GETNOLINEX_MASK     (EXTCFG0_GETALL_MASK & ~CFG_EXTCFG0_GETLINEX_MASK)
 
 #define CFG_EXTCFG1_GETTIMINGS_MASK     (CFG_VERTSHIFT_GETMASK | CFG_HORSHIFT_GETMASK)
@@ -578,7 +583,7 @@ extern config_t scaling_steps, region_selection,
 
 extern config_t vert_scale, hor_scale,
                 linex_force_5060, low_latency_mode,
-                vga_for_480p, linex_resolution;
+                dvmode_version, vga_for_480p, linex_resolution;
 extern config_t show_logo, show_osd, mute_osd_tmp,
                 igr_reset, rst_masking,
                 gamma_lut, deblur_mode, mode16bit,

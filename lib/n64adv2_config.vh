@@ -54,7 +54,7 @@
   //  wire [31:0] SysConfigSet0; (Scaler)
   //    [31:20] {LineX V-Scale Target (12bits)}
   //    [19: 8] {LineX H-Scale Target (12bits)}
-  //    [ 7: 0] {(1bit reserve),Force 50Hz/60Hz (2bits),LowLatencyMode (1bit),UseVGAfor480p (1bit),TargetResolution (3bits)}
+  //    [ 7: 0] {Force 50Hz/60Hz (2bits),LowLatencyMode (1bit),DirectModeVersion (1bit),UseVGAfor480p (1bit),TargetResolution (3bits)}
 
   
   
@@ -122,10 +122,11 @@
   
   `define target_vlines_slice       31 + `SysCfg0_PPUCfg_Offset : 20 + `SysCfg0_PPUCfg_Offset
   `define target_hpixels_slice      19 + `SysCfg0_PPUCfg_Offset :  8 + `SysCfg0_PPUCfg_Offset
-  `define force_5060_slice           6 + `SysCfg0_PPUCfg_Offset :  5 + `SysCfg0_PPUCfg_Offset
-  `define force50hz_bit              6 + `SysCfg0_PPUCfg_Offset
-  `define force60hz_bit              5 + `SysCfg0_PPUCfg_Offset
-  `define lowlatencymode_bit         4 + `SysCfg0_PPUCfg_Offset
+  `define force_5060_slice           7 + `SysCfg0_PPUCfg_Offset :  6 + `SysCfg0_PPUCfg_Offset
+  `define force50hz_bit              7 + `SysCfg0_PPUCfg_Offset
+  `define force60hz_bit              6 + `SysCfg0_PPUCfg_Offset
+  `define lowlatencymode_bit         5 + `SysCfg0_PPUCfg_Offset
+  `define directmode_version_bit     4 + `SysCfg0_PPUCfg_Offset
   `define use_vga_for_480p_bit       3 + `SysCfg0_PPUCfg_Offset
   `define target_resolution_slice    2 + `SysCfg0_PPUCfg_Offset :  0 + `SysCfg0_PPUCfg_Offset
   

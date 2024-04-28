@@ -40,7 +40,7 @@
 
 extern char szText[VD_WIDTH];
 
-extern const char *OffOn[], *Force5060[], *Resolutions[], *DeInterModes[], *InterpModes[],
+extern const char *OffOn[], *Force5060[], *DV_Versions[], *Resolutions[], *DeInterModes[], *InterpModes[],
                   *ScanlinesThickness[], *ScanlinesScaleProfile[], *ScanlinesCalcBase[],
                   *RstMasking[];
 
@@ -94,6 +94,17 @@ config_t low_latency_mode = {
         .clrflag_mask = CFG_LOWLATENCYMODE_CLRMASK
     },
     .val2char_func = &flag2set_func
+};
+
+config_t dvmode_version = {
+    .cfg_word        = &extcfg0_word,
+    .cfg_word_offset = CFG_DVMODE_VERSION_OFFSET,
+    .cfg_type        = FLAG,
+    .flag_masks      = {
+        .setflag_mask = CFG_DVMODE_VERSION_SETMASK,
+        .clrflag_mask = CFG_DVMODE_VERSION_CLRMASK
+    },
+    .value_string = (const char **) &DV_Versions
 };
 
 config_t vga_for_480p = {
