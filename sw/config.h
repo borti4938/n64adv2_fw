@@ -93,7 +93,8 @@ typedef enum {
 
 typedef enum {
   FB_1080P = 0,
-  FB_240P,
+  FB_DV1,
+  FB_FXD,
   FB_480P
 } fallback_vmodes_t;
 
@@ -458,7 +459,7 @@ typedef struct {
 #define CFG_LINK_HV_SCALE_OPEN_VALUE     3
 #define CFG_LINK_HV_SCALE_10R9_VALUE     4
 #define CFG_LINK_HV_SCALE_MAX_VALUE      4
-#define CFG_FALLBACK_MAX_VALUE           2
+#define CFG_FALLBACK_MAX_VALUE           3
 
 #define CFG_VERTSCALE_NTSC_MAX_VALUE   1920 // equals 8.00x @ NTSC
 #define CFG_VERTSCALE_PAL_MAX_VALUE    2304 // equals 8.00x @ PAL

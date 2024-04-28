@@ -64,6 +64,7 @@ module scaler(
   
   vinfo_txsynced_i,
   video_config_i,
+  video_fxd_i,
   video_llm_i,
   video_pal_boxed_i,
   
@@ -128,6 +129,7 @@ output nVRST_o;
 
 input [1:0] vinfo_txsynced_i;
 input [`VID_CFG_W-1:0] video_config_i;
+input video_fxd_i;
 input video_llm_i;
 input video_pal_boxed_i;
 
@@ -360,7 +362,7 @@ reg [`VDATA_O_CO_SLICE] vdata3_for_post_sdram_buf [0:2];
 // regs for output rtl
 reg Y_cfg_v_update_window;
 reg [2:0] Y_cfg_update_phase;
-reg X_direct_output;
+reg X_dv1_output;
 reg X_VSYNC_active = `VSYNC_active_480p60;
 reg [10:0] X_VSYNCLEN = `VSYNCLEN_480p60;
 reg [10:0] X_VSTART = `VSYNCLEN_480p60 + `VBACKPORCH_480p60;
@@ -1023,10 +1025,13 @@ vector_reg_sync #(
 assign X_vpos_px_offset_w = (video_vlines_out_i < {1'b0,X_VACTIVE_OS}) ? ({1'b0,X_VACTIVE_OS} - video_vlines_out_i)/2 : 11'd0;
 assign X_hpos_px_offset_w = (video_hpixel_out_i < X_HACTIVE_OS) ? (X_HACTIVE_OS - video_hpixel_out_i)/2 : 12'd0;
 
+reg X_use_fxd_mode;
+
 always @(posedge VCLK_o)
   if (Y_cfg_v_update_window) begin  // Y_cfg_v_update_window generated below
     if (Y_cfg_update_phase == 3'b000) begin
-      X_direct_output <= ((video_config_i == `USE_240p60) || (video_config_i == `USE_288p50));
+      X_dv1_output <= ((video_config_i == `USE_240p60) || (video_config_i == `USE_288p50));
+      X_use_fxd_mode <= video_fxd_i;
       setVideoVTimings(video_config_i,X_VSYNC_active,X_VSYNCLEN,X_VSTART,X_VACTIVE,X_VSTOP,X_VSTART_OS,X_VACTIVE_OS,X_VSTOP_OS,X_VTOTAL);
       setVideoHTimings(video_config_i,X_HSYNC_active,X_HSYNCLEN,X_HSTART,X_HACTIVE,X_HSTOP,X_HSTART_OS,X_HACTIVE_OS,X_HSTOP_OS,X_HTOTAL);
     end
@@ -1215,7 +1220,7 @@ mult_add_2 h_interpolate_bl_u (
 always @(*) begin
   VSYNC_odd_cmb <= Y_vcnt_o_L < X_VSYNCLEN;
   VSYNC_even_cmb <= Y_vcnt_shifted_L < X_VSYNCLEN;
-  if (X_direct_output) begin
+  if (X_dv1_output) begin
     if (field_id_txclk_resynced == FIELD_EVEN) begin
       VSYNC_cmb <= VSYNC_even_cmb;
       short_field_o_cmb <= interlaced_vclk_o_resynced;
@@ -1231,7 +1236,7 @@ end
 
 reg [11:0] vcnt_comp_val_cmb;
 always @(*) begin
-  if (X_direct_output) begin
+  if (X_dv1_output) begin
     if (Y_short_field_o_L)
       vcnt_comp_val_cmb <= X_VTOTAL - 2;
     else
@@ -1257,6 +1262,7 @@ always @(*) begin
   hpixel_cnt_cmb <= hpixel_cnt + {2'b00,X_pix_hpixel_in_full};
   a0_h_full_cmb <= hpixel_cnt * (* multstyle = "dsp" *) X_pix_h_interpfactor;
 end
+
 
 always @(posedge VCLK_o or negedge nRST_o)
   if (!nRST_o) begin
@@ -1527,8 +1533,9 @@ always @(posedge VCLK_o or negedge nRST_o)
     VSYNC_vpl_L <= {VSYNC_vpl_L[Videogen_Pipeline_Length-2:0],VSYNC_cmb ~^ X_VSYNC_active};
     DE_vpl_L <= {DE_vpl_L[Videogen_Pipeline_Length-2:0],(h_active_de && Y_v_active_de)};
     
-//    if (vdata_detected_txclk_resynced & DE_virt_vpl_L[Videogen_Pipeline_Length-2] & DE_vpl_L[Videogen_Pipeline_Length-2])
-    if (DE_virt_vpl_L[Videogen_Pipeline_Length-2] & DE_vpl_L[Videogen_Pipeline_Length-2])
+    if (X_use_fxd_mode & DE_vpl_L[Videogen_Pipeline_Length-2] & ((Y_vcnt_o_L == X_VSTART) | (Y_vcnt_o_L < X_VSTART+4)))
+      vdata_vpl_end_L <= {8'h0,{8{field_id_txclk_resynced^interlaced_vclk_o_resynced}},{8{interlaced_vclk_o_resynced}}};
+    else if (DE_virt_vpl_L[Videogen_Pipeline_Length-2] & DE_vpl_L[Videogen_Pipeline_Length-2])
       vdata_vpl_end_L <= {red_h_interp_out,gr_h_interp_out,bl_h_interp_out};
     else
       vdata_vpl_end_L <= {(3*color_width_o){1'b0}};

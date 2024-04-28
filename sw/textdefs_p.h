@@ -76,6 +76,7 @@
 #define RESCFG_INPUT_V_OFFSET               ( 0 + RESCFG_VALS_V_OFFSET)
 #define RESCFG_RESOLUTION_V_OFFSET          ( 2 + RESCFG_VALS_V_OFFSET)
 #define RESCFG_USE_VGA_RES_V_OFFSET         ( 3 + RESCFG_VALS_V_OFFSET)
+#define RESCFG_USE_DV1_FXD_V_OFFSET         ( 3 + RESCFG_VALS_V_OFFSET)
 #define RESCFG_USE_SRCSYNC_V_OFFSET         ( 4 + RESCFG_VALS_V_OFFSET)
 #define RESCFG_FORCE_5060_V_OFFSET          ( 5 + RESCFG_VALS_V_OFFSET)
 #define RESCFG_TEST_N_APPLY_V_OFFSET        ( 6 + RESCFG_VALS_V_OFFSET)
@@ -233,7 +234,7 @@ static const char *resolution_overlay __ufmdata_section__ =
     "* Input mode:\n"
     "* New settings:\n"
     "  - Output resolution:\n"
-    "  - Use VGA-flag in 480p:\n"
+    "  -\n"
     "  - Frame-locked mode:\n"
     "  - Force 50Hz/60Hz:\n"
     "  - Test and apply:\n\n"
@@ -241,6 +242,8 @@ static const char *resolution_overlay __ufmdata_section__ =
     "  - Output:\n"
     "  - Frame-locked mode:\n"
     "  - Force 50Hz/60Hz:\n\n";
+static const char *resolution_overlay_variation_vga __ufmdata_section__ = "Use VGA-flag in 480p:";
+static const char *resolution_overlay_variation_dv1 __ufmdata_section__ = "Direct mode version: ";
 
 static const char *scaler_header __ufmdata_section__ =
     "Scaler";
@@ -456,10 +459,11 @@ const char *RunFunction   __ufmdata_section__ = "[Run ...]";
 const char *OffOn[]                   __ufmdata_section__ = {"Off","On"};
 const char *NTSCPAL_SEL[]             __ufmdata_section__ = {"NTSC","PAL"};
 const char *Force5060[]               __ufmdata_section__ = {"Off (N64 Auto)","60Hz","50Hz"};
+const char *DV_Versions[]             __ufmdata_section__ = {"DV1 (MiSTer)","FX-Direct"};
 const char *Resolutions[]             __ufmdata_section__ = {"Direct","480p","720p","960p","1080p","1200p","1440p","1440p w."};
 const char *Resolution576pReplacement __ufmdata_section__ = "576p";
 const char *VGAFLAG[]                 __ufmdata_section__ = {"(Std.)","(VGA)"};
-const char *FallbackRes[]             __ufmdata_section__ = {"1080p","Direct","480p/576p"};
+const char *FallbackRes[]             __ufmdata_section__ = {"1080p","DV1 (MiSTer)","FX-Direct","480p/576p"};
 const char *FallbackTrig[]            __ufmdata_section__ = {"Rst. button","Ctrl. L","Rst.b. or Ctrl.L"};
 const char *DeInterModes[]            __ufmdata_section__ = {"Frame Drop","Bob","Weave"};
 const char *InterpModes[]             __ufmdata_section__ = {"Integer","Integer (soft)","Integer+Bilinear","Bilinear"};

@@ -312,5 +312,8 @@
 
   `define STARTING_LINE_SDRAM_READ_DV1  15  // shortest sync+bp is @ 240p60 with 18 lines (18 - overscan = 18 - 3 = 15)
   `define STARTING_LINE_SDRAM_READ_STD  22  // shortest sync+bp is @ 960p60 with 25 lines (25 - overscan = 25 - 3 = 22)
+  
+  `define USE_FXD60            5'b01111
+  `define USE_FXD50            5'b11111
 
 `endif

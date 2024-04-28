@@ -44,6 +44,8 @@
 #include "led.h"
 
 
+#define VSIF_CYCLE_CNT_TH 7
+
 typedef struct {
   bool_t si5356_i2c_up;
   bool_t si5356_locked;
@@ -79,18 +81,19 @@ clk_config_t get_target_resolution(cfg_pal_pattern_t pal_pattern_tmp, vmode_t pa
   clk_config_t retval = FREE_VGA60_480p;
   if (video_input_detected) {
     alt_u8 linex_setting = (alt_u8) cfg_get_value(&linex_resolution,0);
+    bool_t is_fx_direct = (alt_u8) cfg_get_value(&dvmode_version,0);
     alt_u8 not_vga = 1 - ((alt_u8) cfg_get_value(&vga_for_480p,0) && linex_setting == LineX2);
     alt_u8 case_val = (pal_pattern_tmp << 1 | palmode_tmp);
     if (linex_setting == DIRECT) {
         switch (case_val) {
           case 3:
-            retval = PAL1_N64_DIRECT;
+            retval = is_fx_direct ? PAL1_N64_720p : PAL1_N64_DIRECT;
             break;
           case 1:
-            retval = PAL0_N64_DIRECT;
+            retval = is_fx_direct ? PAL0_N64_720p : PAL0_N64_DIRECT;
             break;
           default:
-            retval = NTSC_N64_DIRECT;
+            retval = is_fx_direct ? NTSC_N64_720p : NTSC_N64_DIRECT;
         }
     } else if ((alt_u8) cfg_get_value(&low_latency_mode,0) == ON) {
       alt_u8 linex_offset = not_vga*linex_setting;
@@ -191,7 +194,7 @@ int main()
 
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
-    cfg_load_defaults((use_fallback & FALLBACKRST_PRESSED_GETMASK),0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
+    cfg_load_defaults((use_fallback & FALLBACKRST_PRESSED_GETMASK) ? FB_480P : FB_1080P,0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
     fallback_triggered = TRUE;
     cfg_set_flag(&igr_reset);     // handle a bit different from other defaults
     cfg_set_flag(&fallback_menu); // handle a bit different from other defaults
@@ -265,9 +268,11 @@ int main()
   bool_t undo_changed_linex_setting = FALSE;
 
   bool_t led_set_ok = FALSE;
-  bool_t dv_send_pr = FALSE;
   game_id_valid = FALSE;
   bool_t game_id_valid_pre = FALSE;
+  bool_t use_fxd_mode;
+  bool_t use_fxd_mode_pre = FALSE;
+  alt_u8 vsif_cycle_cnt = 0;
 
   // set some basic variables for operation
   message_cnt = 0;
@@ -476,6 +481,8 @@ int main()
       todo = NEW_CONF_VALUE;
     }
 
+    use_fxd_mode = (cfg_get_value(&linex_resolution,0)==DIRECT) && (cfg_get_value(&dvmode_version,0)==1);
+
     if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) { // all ok let's setup register settings in adv and  game-idperiphals_set_ready_bit();
 
       if ((active_osd_pre != active_osd) || undo_changed_linex_setting) {
@@ -485,15 +492,27 @@ int main()
 
       if (!led_set_ok || (palmode_pre != palmode) || (scanmode_pre != scanmode) || (todo == NEW_CONF_VALUE)) {
         set_cfg_adv7513();
-        dv_send_pr = (scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON);
-        set_spd_packet(cfg_get_value(&linex_resolution,0)==DIRECT,dv_send_pr);
+        if ((cfg_get_value(&linex_resolution,0)==DIRECT) && (cfg_get_value(&dvmode_version,0)==0)) send_dv1_if(ON);
+        else send_spd_if(ON);
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
 
       get_game_id();
-      if (game_id_valid != game_id_valid_pre) set_vsif_packet(TRUE);
-      else if (!game_id_valid) set_vsif_packet(FALSE);  // deactivate after one cycle
-      game_id_valid_pre = game_id_valid;
+      if (use_fxd_mode) {
+        vsif_cycle_cnt++;
+      } else {
+        vsif_cycle_cnt = 0;
+        if (use_fxd_mode_pre) send_fxd_if(ON,OFF);
+        else send_fxd_if(OFF,OFF);
+      }
+      if (vsif_cycle_cnt > VSIF_CYCLE_CNT_TH) {
+        send_fxd_if(ON,ON);
+      } else if (use_fxd_mode_pre == use_fxd_mode) {
+        if (game_id_valid != game_id_valid_pre) send_game_id_if(ON);
+        else if (!game_id_valid) send_game_id_if(OFF);  // deactivate after one cycle
+        game_id_valid_pre = game_id_valid;
+      }
+      use_fxd_mode_pre = use_fxd_mode;
 
       periphals_set_ready_bit();
       if (!led_set_ok) led_drive(LED_OK,LED_ON);
@@ -521,11 +540,13 @@ int main()
 
     if (changed_linex_setting) {  // important to check this flag in that order
                                   // as program cycles 1x through menu after change to set also the scaling correctly
+      if (use_fxd_mode) send_fxd_if(ON,ON);
       if (!confirmation_routine(1)) {  // change was not ok
         print_confirm_info(CONFIRM_ABORTED-CONFIRM_OK);
         linex_words[vmode_n64adv].config_val = linex_word_pre;
         undo_changed_linex_setting = TRUE;
         message_cnt = CONFIRM_SHOW_CNT_LONG;
+        if (use_fxd_mode) send_fxd_if(ON,OFF);
       } else {
         print_confirm_info(CONFIRM_OK-CONFIRM_OK);
         message_cnt = CONFIRM_SHOW_CNT_MID;

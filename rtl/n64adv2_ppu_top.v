@@ -197,7 +197,8 @@ reg cfg_nvideblur;
 
 reg [`VID_CFG_W-1:0] sys_videomode;
 
-reg [`VID_CFG_W-1:0] cfg_videomode;
+reg cfg_use_fxd_mode;
+reg [`VID_CFG_W-1:0] cfg_videomode_osd, cfg_videomode;
 reg cfg_pal_boxed;
 reg [1:0] cfg_v_interpolation_mode, cfg_h_interpolation_mode;
 
@@ -270,18 +271,19 @@ register_sync #(
 );
 
 
-assign sys_vmode_pre_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP ? `USE_1440Wp60 :
-                         ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440P  ? `USE_1440p60  :
-                         ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1200P  ? `USE_1200p60  :
-                         ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1080P  ? `USE_1080p60  :
-                         ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_960P   ? `USE_960p60   :
-                         ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_720P   ? `USE_720p60   :
-                         ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P   ? `USE_240p60   :
-                         ConfigSet_w[`use_vga_for_480p_bit]                           ? `USE_VGAp60   :
-                                                                                        `USE_480p60   ;
+assign sys_vmode_pre_w =                                       ConfigSet_w[`target_resolution_slice]  ==       `HDMI_TARGET_1440WP  ? `USE_1440Wp60 :
+                                                               ConfigSet_w[`target_resolution_slice]  ==       `HDMI_TARGET_1440P   ? `USE_1440p60  :
+                                                               ConfigSet_w[`target_resolution_slice]  ==       `HDMI_TARGET_1200P   ? `USE_1200p60  :
+                                                               ConfigSet_w[`target_resolution_slice]  ==       `HDMI_TARGET_1080P   ? `USE_1080p60  :
+                                                               ConfigSet_w[`target_resolution_slice]  ==       `HDMI_TARGET_960P    ? `USE_960p60   :
+                                                               ConfigSet_w[`target_resolution_slice]  ==       `HDMI_TARGET_720P    ? `USE_720p60   :
+                         {ConfigSet_w[`directmode_version_bit],ConfigSet_w[`target_resolution_slice]} == {1'b1,`HDMI_TARGET_DIRECT} ? `USE_720p60   : // FX-Direct
+                         {ConfigSet_w[`directmode_version_bit],ConfigSet_w[`target_resolution_slice]} == {1'b0,`HDMI_TARGET_DIRECT} ? `USE_240p60   : // DV1 (MiSTer)
+                          ConfigSet_w[`use_vga_for_480p_bit  ]                                                                      ? `USE_VGAp60   :
+                                                                                                                                      `USE_480p60   ;
 
-assign sys_direct_mode_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P;
-assign sys_llm_w = ConfigSet_w[`lowlatencymode_bit] | sys_direct_mode_w;  // force low latency mode in 240p / 288p
+assign sys_direct_mode_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_DIRECT;
+assign sys_llm_w = ConfigSet_w[`lowlatencymode_bit] | sys_direct_mode_w;  // force low latency mode in direct mode
 
 always @(posedge SYS_CLK) begin
   sys_videomode <= sys_vmode_pre_w;
@@ -298,7 +300,11 @@ always @(posedge SYS_CLK) begin
 end
 
 
-assign direct_mode_vlines_set_w = palmode_sysclk_resynced ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
+wire [11:0] direct_mode_dv1_vlines_set_w = palmode_sysclk_resynced ? `ACTIVE_LINES_PAL_LX1 : `ACTIVE_LINES_NTSC_LX1;
+wire [11:0] direct_mode_fxd_vlines_set_w = ~palmode_sysclk_resynced          ? `ACTIVE_LINES_NTSC_LX2 :
+                                           ConfigSet_w[`pal_boxed_scale_bit] ? `ACTIVE_LINES_NTSC_LX2 :
+                                                                               `ACTIVE_LINES_PAL_LX2  ;
+assign direct_mode_vlines_set_w = ConfigSet_w[`directmode_version_bit] ? direct_mode_fxd_vlines_set_w : direct_mode_dv1_vlines_set_w;
 assign cfg_vlines_set_w = ConfigSet_w[`target_vlines_slice];
 assign vlines_set_w = sys_direct_mode_w ? direct_mode_vlines_set_w : cfg_vlines_set_w;
 
@@ -336,12 +342,10 @@ scaler_cfggen scaler_cfggen_u(
 // setup config in different clock domains ...
 
 // ... in N64_CLK_i
-assign vdata_outres_cat_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP ? `RES_CAT_WQHD :
-                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440P  ? `RES_CAT_WQHD :
-                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1200P  ? `RES_CAT_HD   :
-                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1080P  ? `RES_CAT_HD   :
-                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_240P   ? `RES_CAT_DV1  :
-                                                                                           `RES_CAT_ED   ;
+assign vdata_outres_cat_w = ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440WP || ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1440P ? `RES_CAT_WQHD :
+                            ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1200P  || ConfigSet_w[`target_resolution_slice] == `HDMI_TARGET_1080P ? `RES_CAT_HD   :
+                            {ConfigSet_w[`directmode_version_bit],ConfigSet_w[`target_resolution_slice]} == {1'b0,`HDMI_TARGET_DIRECT}                  ? `RES_CAT_DV1  :
+                                                                                                                                                          `RES_CAT_ED   ;
 assign cfg_deinterlacing_mode_pre = sys_direct_mode_w ? `DEINTERLACING_BOB                     :  // signalling bob deinterlacing on direct mode as this outputs frame by frame
                                                          ConfigSet_w[`deinterlacing_mode_slice];  // otherwise output what is already set
 
@@ -432,40 +436,52 @@ register_sync #(
   .reg_o(ConfigSet_resynced)
 );
 
+assign videomode_pre_w =                                              ConfigSet_resynced[`target_resolution_slice]  ==       `HDMI_TARGET_1440WP  ? `USE_1440Wp60 :
+                                                                      ConfigSet_resynced[`target_resolution_slice]  ==       `HDMI_TARGET_1440P   ? `USE_1440p60  :
+                                                                      ConfigSet_resynced[`target_resolution_slice]  ==       `HDMI_TARGET_1200P   ? `USE_1200p60  :
+                                                                      ConfigSet_resynced[`target_resolution_slice]  ==       `HDMI_TARGET_1080P   ? `USE_1080p60  :
+                                                                      ConfigSet_resynced[`target_resolution_slice]  ==       `HDMI_TARGET_960P    ? `USE_960p60   :
+                                                                      ConfigSet_resynced[`target_resolution_slice]  ==       `HDMI_TARGET_720P    ? `USE_720p60   :
+                         {ConfigSet_resynced[`directmode_version_bit],ConfigSet_resynced[`target_resolution_slice]} == {1'b1,`HDMI_TARGET_DIRECT} ? `USE_720p60   : // FX-Direct
+                         {ConfigSet_resynced[`directmode_version_bit],ConfigSet_resynced[`target_resolution_slice]} == {1'b0,`HDMI_TARGET_DIRECT} ? `USE_240p60   : // DV1 (MiSTer)
+                          ConfigSet_resynced[`use_vga_for_480p_bit  ]                                                                             ? `USE_VGAp60   :
+                                                                                                                                                    `USE_480p60   ;
 
-assign videomode_pre_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1440WP ? `USE_1440Wp60 :
-                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1440P  ? `USE_1440p60  :
-                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1200P  ? `USE_1200p60  :
-                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_1080P  ? `USE_1080p60  :
-                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_960P   ? `USE_960p60   :
-                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_720P   ? `USE_720p60   :
-                         ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P   ? `USE_240p60   :
-                         ConfigSet_resynced[`use_vga_for_480p_bit]                           ? `USE_VGAp60   :
-                                                                                               `USE_480p60   ;
-
-assign vid_direct_mode_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_240P;
-assign vid_llm_w = ConfigSet_resynced[`lowlatencymode_bit] | vid_direct_mode_w; // force low latency mode in 240p / 288p
+assign vid_direct_mode_w = ConfigSet_resynced[`target_resolution_slice] == `HDMI_TARGET_DIRECT ? 1'b1 : 1'b0;
+assign vid_llm_w = ConfigSet_resynced[`lowlatencymode_bit] | vid_direct_mode_w; // force low latency mode in direct mode
 
 always @(posedge VCLK_Tx) begin
   cfg_videomode <= videomode_pre_w;
+  if (vid_direct_mode_w)
+    cfg_videomode_osd <= ConfigSet_resynced[`directmode_version_bit] ? `USE_FXD60 : `USE_240p60;
+  else
+    cfg_videomode_osd <= videomode_pre_w;
+  
   if (vid_llm_w) begin  // do not allow forcing non-native Hz-mode in llm
     cfg_videomode[`VID_CFG_50HZ_BIT] <= palmode;
+    cfg_videomode_osd[`VID_CFG_50HZ_BIT] <= palmode;
   end else begin
-    if (ConfigSet_resynced[`force60hz_bit])  // force 60Hz
+    if (ConfigSet_resynced[`force60hz_bit]) begin  // force 60Hz
       cfg_videomode[`VID_CFG_50HZ_BIT] <= 1'b0;
-    else if (ConfigSet_resynced[`force50hz_bit])  // force 50Hz
+      cfg_videomode_osd[`VID_CFG_50HZ_BIT] <= 1'b0;
+    end else if (ConfigSet_resynced[`force50hz_bit]) begin  // force 50Hz
       cfg_videomode[`VID_CFG_50HZ_BIT] <= 1'b1;
-    else  // auto
+      cfg_videomode_osd[`VID_CFG_50HZ_BIT] <= 1'b1;
+    end else begin  // auto
       cfg_videomode[`VID_CFG_50HZ_BIT] <= palmode;
+      cfg_videomode_osd[`VID_CFG_50HZ_BIT] <= palmode;
+    end
   end
   
   if (vid_direct_mode_w) begin  // mask some settings in direct mode
-    cfg_pal_boxed <= 1'b0;
+    cfg_use_fxd_mode <= ConfigSet_resynced[`directmode_version_bit];
+    cfg_pal_boxed <= ConfigSet_resynced[`directmode_version_bit] & ConfigSet_resynced[`pal_boxed_scale_bit];  // mask pal in box for dv1
     cfg_v_interpolation_mode <= `INTERPOLATION_NEAREST;
     cfg_h_interpolation_mode <= `INTERPOLATION_NEAREST;
     cfg_hSL_en <= 1'b0;
     cfg_vSL_en <= 1'b0;
   end else begin
+    cfg_use_fxd_mode <= 1'b0;
     cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
     cfg_v_interpolation_mode <= ConfigSet_resynced[`v_interpolation_mode_slice];
     cfg_h_interpolation_mode <= ConfigSet_resynced[`h_interpolation_mode_slice];
@@ -491,7 +507,7 @@ always @(posedge VCLK_Tx) begin
   cfg_sl_per_channel <= ~ConfigSet_resynced[`SL_per_Channel_bit];
   
   setVideoSYNCactive(cfg_videomode,cfg_active_vsync,cfg_active_hsync);
-  setOSDConfig(cfg_videomode,cfg_osd_vscale,cfg_osd_hscale,cfg_osd_voffset,cfg_osd_hoffset);
+  setOSDConfig(cfg_videomode_osd,cfg_osd_vscale,cfg_osd_hscale,cfg_osd_voffset,cfg_osd_hoffset);
 end
 
 register_sync #(
@@ -596,6 +612,7 @@ scaler scaler_u (
   .nVRST_o(nVRST_post_scaler),
   .vinfo_txsynced_i({palmode_vclk_o_resynced,n64_480i_vclk_o_resynced}),
   .video_config_i(cfg_videomode),
+  .video_fxd_i(cfg_use_fxd_mode),
   .video_llm_i(cfg_lowlatencymode_resynced),
   .video_pal_boxed_i(cfg_pal_boxed),
   .video_v_interpolation_mode_i(cfg_v_interpolation_mode),

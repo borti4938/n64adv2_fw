@@ -149,8 +149,7 @@
   `define GAMMA_TABLE_OFF     4'b0101
   
   // Target output modes
-  `define HDMI_TARGET_240P    3'b000
-  `define HDMI_TARGET_288P    3'b000
+  `define HDMI_TARGET_DIRECT  3'b000
   `define HDMI_TARGET_480P    3'b001
   `define HDMI_TARGET_576P    3'b001
   `define HDMI_TARGET_720P    3'b010

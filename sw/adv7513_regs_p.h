@@ -150,9 +150,6 @@ const alt_u8 csc_reg_vals[MAX_COLOR_FORMATS+1][2*CSC_COEFFICIENTS] __ufmdata_sec
 
 
 // Packetmemory
-
-#define PACKET_MAX_SIZE   (3 + 28)
-
 #define ADV7513_REG_SPD_PACKET(x)             (0x00 + (x)) /* 0x00 - 0x1e */
 #define ADV7513_REG_SPD_PACKET_UPDATE         0x1f
 #define ADV7513_REG_SPARE_PACKET1(x)          (0xc0 + (x)) /* 0xc0 - 0xde */
@@ -163,37 +160,9 @@ const alt_u8 csc_reg_vals[MAX_COLOR_FORMATS+1][2*CSC_COEFFICIENTS] __ufmdata_sec
 #define ADV7513_PACKET_UPDATE_START_VAL       0x80
 #define ADV7513_PACKET_UPDATE_DONE_VAL        0x00
 
-#define HDR_SPARE_PACKET_SIZE                 (SPARE_PACKET_MAX_SIZE - 1)
-
-#define SPD_PRE_HEADER_LEN  (3+1)
-
-#define SPD_STD_HEADER_LEN      (3+1)
-#define SPD_STD_VENDOR_NAME_LEN   7
-  #define SPD_STD_VENDOR_OFFSET     SPD_STD_HEADER_LEN
-#define SPD_STD_PRODUCT_NAME_LEN  9
-  #define SPD_STD_PRODUCT_OFFSET    12  // SPD_STD_HEADER_LEN+SPD_STD_VENDOR_NAME_LEN must not exceed this number
-#define SPD_STD_TYPE_LEN          1
-  #define SPD_STD_TYPE_OFFSET     28    // SPD_STD_HEADER_LEN+SPD_STD_VENDOR_NAME_LEN+SPD_STD_PRODUCT_NAME_LEN must not exceed this number
-  #define SPD_STD_TYPE_VALUE      8
-#define SPD_STD_PACKET_LEN        (SPD_STD_TYPE_OFFSET-3)
-
-#define SPD_DV_HEADER_LEN         (SPD_PRE_HEADER_LEN+3)
-#define SPD_DV_VI_CFG_LEN         10
-  #define SPD_DV_VI_CFG_OFFSET      SPD_DV_HEADER_LEN
-#define SPD_DV_CORE_NAME_LEN      SPD_STD_PRODUCT_NAME_LEN
-  #define SPD_DV_CORE_NAME_OFFSET   (SPD_DV_HEADER_LEN+SPD_DV_VI_CFG_LEN)
-#define SPD_DV_PACKET_LEN         (SPD_DV_HEADER_LEN+SPD_DV_VI_CFG_LEN+SPD_DV_CORE_NAME_LEN-3)
-
-const alt_u8 spd_std_header[SPD_STD_HEADER_LEN] __ufmdata_section__ = {0x83, 0x01, SPD_STD_PACKET_LEN, 0};
-const alt_u8 spd_dv_header [SPD_DV_HEADER_LEN]  __ufmdata_section__ = {0x83, 0x01, SPD_DV_PACKET_LEN, 0,
-                                                                       'D', 'V', '1' /* version */
-                                                                      };
-const char vendor_name_data[SPD_STD_VENDOR_NAME_LEN] __ufmdata_section__ = "Project";
-const char mod_name_data[SPD_STD_PRODUCT_NAME_LEN]   __ufmdata_section__ = "N64 Adv.2";
-
 
 #ifdef HDR_TESTING
-  const alt_u8 hdr_data[HDR_SPARE_PACKET_SIZE] __ufmdata_section__ = {
+  const alt_u8 hdr_data[PACKET_MAX_SIZE] __ufmdata_section__ = {
     0x87,0x01,0x1a,                           // header bytes
     0x74,0x02,0x00,0xc2,0x33,0xc4,0x86,0x4c,  // data bytes  0 -  7
     0x1d,0xb8,0x0b,0xd0,0x84,0x80,0x3e,0x13,  // data bytes  8 - 15

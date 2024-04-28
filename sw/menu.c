@@ -122,12 +122,15 @@ menu_t vires_screen = {
         {.id = RESCFG_USE_SRCSYNC_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &low_latency_mode},
         {.id = RESCFG_FORCE_5060_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &linex_force_5060},
         {.id = RESCFG_TEST_N_APPLY_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = CFG_FUNC0, .cfgfct_call_0  = &cfg_apply_new_linex},
+        {.id = RESCFG_USE_DV1_FXD_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &dvmode_version},
     }
 };
 
-#define LINEX_SELECTION       1
-#define LLMODE_SELECTION      3
-#define FORCE5060_SELECTION   4
+#define LINEX_SELECTION         1
+#define VGA_DV1_SELECTION       2
+  #define DV1_SELECTION_OFFSET    4
+#define LLMODE_SELECTION        3
+#define FORCE5060_SELECTION     4
 
 menu_t viscaling_screen = {
     .type = CONFIG,
@@ -423,7 +426,8 @@ void val2txt_scale_sel_func(alt_u16 v) {
   if ((v == LineX2) && ((palmode && (force5060_mode != FORCE_60HZ)) || (force5060_mode == FORCE_50HZ)))
     sprintf(&szText[h_offset],Resolution576pReplacement);
   else
-    sprintf(&szText[h_offset],Resolutions[v]);
+    if ((v == DIRECT) & (h_offset > 7)) sprintf(&szText[h_offset],DV_Versions[cfg_get_value(&dvmode_version,0)]);
+    else sprintf(&szText[h_offset],Resolutions[v]);
 };
 
 void val2txt_scale_func(alt_u16 v, bool_t use_vertical) {
@@ -494,39 +498,51 @@ void print_confirm_info(alt_u8 type) {
 void print_linex_settings() {
   alt_u8 ref_val, font_color;
 
-  alt_u8 val_linex = (linex_words[vmode_menu].config_val & (linex_resolution.value_details.getvalue_mask)) >> linex_resolution.cfg_word_offset;
-  alt_u8 val_vga = (linex_words[vmode_menu].config_val & (vga_for_480p.value_details.getvalue_mask)) >> vga_for_480p.cfg_word_offset;
+  alt_u8 cfg_val = linex_words[vmode_menu].config_val;
+  alt_u8 cfg_ref_val = linex_words[vmode_menu].config_ref_val;
+
+  alt_u8 val_linex = (cfg_val & (linex_resolution.value_details.getvalue_mask)) >> linex_resolution.cfg_word_offset;
+  alt_u8 val_dv = (cfg_val & (dvmode_version.value_details.getvalue_mask)) >> dvmode_version.cfg_word_offset;
+  alt_u8 val_vga = (cfg_val & (vga_for_480p.value_details.getvalue_mask)) >> vga_for_480p.cfg_word_offset;
   alt_u8 val_llm;
   if (val_linex == DIRECT) val_llm = 1;
-  else                     val_llm = (linex_words[vmode_menu].config_val & (low_latency_mode.value_details.getvalue_mask)) >> low_latency_mode.cfg_word_offset;
+  else                     val_llm = (cfg_val & (low_latency_mode.value_details.getvalue_mask)) >> low_latency_mode.cfg_word_offset;
   alt_u8 val_5060;
   if (val_llm) val_5060 = AUTO_HZ;
-  else         val_5060 = (linex_words[vmode_menu].config_val & (linex_force_5060.value_details.getvalue_mask)) >> linex_force_5060.cfg_word_offset;
+  else         val_5060 = (cfg_val & (linex_force_5060.value_details.getvalue_mask)) >> linex_force_5060.cfg_word_offset;
 
   // LineX output
-  ref_val = (linex_words[vmode_menu].config_ref_val & (linex_resolution.value_details.getvalue_mask)) >> linex_resolution.cfg_word_offset;
+  ref_val = (cfg_ref_val & (linex_resolution.value_details.getvalue_mask)) >> linex_resolution.cfg_word_offset;
   font_color = val_linex == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
   vd_clear_lineend(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_RESOLUTION_V_OFFSET);
-  vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_RESOLUTION_V_OFFSET,font_color,linex_resolution.value_string[val_linex]);
+  if (val_linex == DIRECT) {
+    if (val_linex == ref_val) {
+      ref_val = (cfg_ref_val & (dvmode_version.value_details.getvalue_mask)) >> dvmode_version.cfg_word_offset;
+      font_color = val_dv == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
+    }
+    vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_RESOLUTION_V_OFFSET,font_color,dvmode_version.value_string[val_dv]);
+  } else {
+    vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_RESOLUTION_V_OFFSET,font_color,linex_resolution.value_string[val_linex]);
+  }
 
   if (val_linex == LineX2) {
     if ((palmode && (val_5060 != FORCE_60HZ))  || (!palmode && (val_5060 == FORCE_50HZ)))
       vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_RESOLUTION_V_OFFSET,font_color,Resolution576pReplacement);
-    ref_val = (linex_words[vmode_menu].config_ref_val & (vga_for_480p.value_details.getvalue_mask)) >> vga_for_480p.cfg_word_offset;
+    ref_val = (cfg_ref_val & (vga_for_480p.value_details.getvalue_mask)) >> vga_for_480p.cfg_word_offset;
     font_color = val_vga == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
     vd_print_string(VD_TEXT,vires_screen.arrow_position + 5,RESCFG_CURRENT_RESOLUTION_V_OFFSET,font_color,VGAFLAG[val_vga]);
   }
 
   // LLM
   if (val_linex == DIRECT) ref_val = 1;
-  else                     ref_val = (linex_words[vmode_menu].config_ref_val & (low_latency_mode.value_details.getvalue_mask)) >> low_latency_mode.cfg_word_offset;
+  else                     ref_val = (cfg_ref_val & (low_latency_mode.value_details.getvalue_mask)) >> low_latency_mode.cfg_word_offset;
   font_color = val_llm == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
   vd_clear_lineend(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_SRCSYNC_V_OFFSET);
   vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_SRCSYNC_V_OFFSET,font_color,OffOn[val_llm]);
 
   // Hz mode
   if (val_llm) ref_val = AUTO_HZ;
-  else         ref_val = (linex_words[vmode_menu].config_ref_val & (linex_force_5060.value_details.getvalue_mask)) >> linex_force_5060.cfg_word_offset;
+  else         ref_val = (cfg_ref_val & (linex_force_5060.value_details.getvalue_mask)) >> linex_force_5060.cfg_word_offset;
   font_color = val_5060 == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
   vd_clear_lineend(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_5060_V_OFFSET);
   vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_5060_V_OFFSET,font_color,linex_force_5060.value_string[val_5060]);
@@ -673,12 +689,27 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   current_sel = (*current_menu)->current_selection;
 
   // menu specific modifications
+  if (apply_sl_vert_negoffset(*current_menu) && current_sel > SL_VLINK_SELECTION){
+    current_sel -= SL_HORI_TO_VERT_OFFSET;
+  }
+  if (is_vires_screen(*current_menu)) {
+    if (cfg_get_value(&linex_resolution,0) == DIRECT) {
+      vd_print_string(VD_TEXT,RESCFG_OVERLAY_H_OFFSET+4,RESCFG_USE_DV1_FXD_V_OFFSET,FONTCOLOR_WHITE,resolution_overlay_variation_dv1);
+      if (current_sel == VGA_DV1_SELECTION) current_sel += DV1_SELECTION_OFFSET;
+    } else {
+      vd_print_string(VD_TEXT,RESCFG_OVERLAY_H_OFFSET+4,RESCFG_USE_VGA_RES_V_OFFSET,FONTCOLOR_WHITE,resolution_overlay_variation_vga);
+    }
+  }
+
   if (command == CMD_NON || todo == NEW_OVERLAY || todo == NEW_SELECTION) { // end by end of this if clause if we have either no command, new overlay or a new selection
     if (is_vires_screen(*current_menu)) {
-      if ((cfg_get_value(&linex_resolution,0) == DIRECT) && ((current_sel == FORCE5060_SELECTION) || (current_sel == LLMODE_SELECTION)))
+      if (cfg_get_value(&linex_resolution,0) == DIRECT) {
+        if ((current_sel == FORCE5060_SELECTION) || (current_sel == LLMODE_SELECTION))
           (*current_menu)->current_selection = (command == CMD_MENU_UP) ? LLMODE_SELECTION - 1 : FORCE5060_SELECTION + 1;
-      else if ((cfg_get_value(&low_latency_mode,0) == ON) && (current_sel == FORCE5060_SELECTION))
-        (*current_menu)->current_selection = (command == CMD_MENU_UP) ? FORCE5060_SELECTION - 1 : FORCE5060_SELECTION + 1;
+      } else {
+        if ((cfg_get_value(&low_latency_mode,0) == ON) && (current_sel == FORCE5060_SELECTION))
+          (*current_menu)->current_selection = (command == CMD_MENU_UP) ? FORCE5060_SELECTION - 1 : FORCE5060_SELECTION + 1;
+      }
     }
 
     if (is_viscaling_screen(*current_menu)) {
@@ -691,8 +722,6 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
     if (command == CMD_NON) return NEW_SELECTION;
     return todo;
   }
-
-  if (apply_sl_vert_negoffset(*current_menu) && current_sel > SL_VLINK_SELECTION) current_sel -= SL_HORI_TO_VERT_OFFSET;
 
   // check for configuration change
   if ((*current_menu)->leaves[current_sel].leavetype == ICONFIG) {
@@ -833,13 +862,20 @@ int update_cfg_screen(menu_t* current_menu)
               print_szText = TRUE;
             }
           }
-          if ((cfg_get_value(&linex_resolution,0) == DIRECT) && ((v_run == FORCE5060_SELECTION) || (v_run == LLMODE_SELECTION))) {
-            val_select = (v_run == LLMODE_SELECTION);
-            font_color = FONTCOLOR_GREY;
-          }
-          if ((cfg_get_value(&low_latency_mode,0) == ON) && (v_run == FORCE5060_SELECTION)) {
-            val_select = 0;
-            font_color = FONTCOLOR_GREY;
+          if (cfg_get_value(&linex_resolution,0) == DIRECT) {
+            if (v_run == VGA_DV1_SELECTION) {
+              v_run += DV1_SELECTION_OFFSET;
+              val_select = cfg_get_value(current_menu->leaves[v_run].config_value,0);
+            }
+            if ((v_run == FORCE5060_SELECTION) || (v_run == LLMODE_SELECTION)) {
+              val_select = (v_run == LLMODE_SELECTION);
+              font_color = FONTCOLOR_GREY;
+            }
+          } else {
+            if ((cfg_get_value(&low_latency_mode,0) == ON) && (v_run == FORCE5060_SELECTION)) {
+              val_select = 0;
+              font_color = FONTCOLOR_GREY;
+            }
           }
         }
 
@@ -861,6 +897,7 @@ int update_cfg_screen(menu_t* current_menu)
         } else {
           vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
         }
+        if (is_vires_screen(current_menu) && (v_run == current_menu->number_selections)) v_run -= DV1_SELECTION_OFFSET;
         break;
       case CFG_FUNC1:  // at the moment just for unlock 1440p
         flag2set_func(unlock_1440p);

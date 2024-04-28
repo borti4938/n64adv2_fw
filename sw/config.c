@@ -583,12 +583,12 @@ int cfg_load_defaults(fallback_vmodes_t vmode, bool_t need_confirm)
 
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
   switch (vmode) {
-    case FB_240P:
+    case FB_1080P:
 //      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL288P;
+      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL1080P;
       cfg_store_linex_word(PAL,0);
       sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC240P;
+      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC1080P;
       cfg_store_linex_word(NTSC,0);
       break;
     case FB_480P:
@@ -599,12 +599,14 @@ int cfg_load_defaults(fallback_vmodes_t vmode, bool_t need_confirm)
       sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC480P;
       cfg_store_linex_word(NTSC,0);
       break;
-    default:  // FB_1080P
+    default:  // FB_DV1 / FB_FXD
 //      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL1080P;
+      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL288P;
+      if (vmode == FB_FXD) sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= CFG_DVMODE_VERSION_SETMASK;
       cfg_store_linex_word(PAL,0);
       sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC1080P;
+      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC240P;
+      if (vmode == FB_FXD) sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= CFG_DVMODE_VERSION_SETMASK;
       cfg_store_linex_word(NTSC,0);
   }
 
