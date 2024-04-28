@@ -823,7 +823,7 @@ int update_cfg_screen(menu_t* current_menu)
   alt_u16 val_select, ref_val_select;
   bool_t val_is_ref;
 
-  bool_t use_240p_288p = (scaling_menu == NTSC_DIRECT) || (scaling_menu == PAL_DIRECT);
+  bool_t use_direct_mode = (scaling_menu == NTSC_DIRECT) || (scaling_menu == PAL_DIRECT);
 
   bool_t use_sl_vert_negoffset = apply_sl_vert_negoffset(current_menu);
   alt_u8 v_run_negoffset = 0;
@@ -880,7 +880,7 @@ int update_cfg_screen(menu_t* current_menu)
         }
 
         // check scaling menu
-        if (is_viscaling_screen(current_menu) && use_240p_288p) {
+        if (is_viscaling_screen(current_menu) && use_direct_mode) {
           if (v_run == VHLINK_SELECTION) {
             val_select = CFG_LINK_HV_SCALE_DEFAULTVAL_FIXED;
             font_color = FONTCOLOR_GREY;
@@ -907,7 +907,7 @@ int update_cfg_screen(menu_t* current_menu)
       case CFG_FUNC4:  // at the moment just for horizontal and vertical scale
         val_select = current_menu->leaves[v_run].cfgfct_call_4(0,v_run==VERTSCALE_SELECTION,0,0);
         val2txt_scale_func(val_select,v_run==VERTSCALE_SELECTION);
-        if (use_240p_288p) {
+        if (use_direct_mode) {
           font_color = FONTCOLOR_GREY;
         } else {
           ref_val_select = current_menu->leaves[v_run].cfgfct_call_4(0,v_run==VERTSCALE_SELECTION,0,1);
