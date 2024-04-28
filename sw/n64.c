@@ -471,15 +471,15 @@ void send_fxd_if(bool_t enable, bool_t use_fxd)
   if (use_fxd) {
     // write aspect ratio mode, menu present and scanmode
     buf.packet_bytes[5] = (1 << 3 | (active_osd << 2) | scanmode);  // with DAR
-    // write vertical start and stop and aspect ratio
-    if (palmode && cfg_get_value(&pal_boxed_mode,0)==OFF) {
+    // write vertical start and stop
+    if (palmode && (cfg_get_value(&pal_boxed_mode,0)==OFF)) { // use 576 lines
       buf.packet_bytes[6] = 0x48; // 72
-      buf.packet_bytes[7] = 0;
+//      buf.packet_bytes[7] = 0;
       buf.packet_bytes[8] = 0x88; // LSB(648)
       buf.packet_bytes[9] = 0x02; // MSB(648)
     } else {
       buf.packet_bytes[6] = 0x78; // 120
-      buf.packet_bytes[7] = 0;
+//      buf.packet_bytes[7] = 0;
       buf.packet_bytes[8] = 0x58; // LSB(600)
       buf.packet_bytes[9] = 0x02; // MSB(600)
     }
@@ -489,13 +489,12 @@ void send_fxd_if(bool_t enable, bool_t use_fxd)
     buf.packet_bytes[12] = 0xC0; // LSB(960)
     buf.packet_bytes[13] = 0x03; // MSB(960)
     // write horizontal and vertical prescale
-    if ((scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON)) buf.packet_bytes[14] = 2;
-    else buf.packet_bytes[14] = 1;
+    buf.packet_bytes[14] = 1 + ((scanmode == PROGRESSIVE && cfg_get_value(&deblur_mode,0) == ON));
     buf.packet_bytes[15] = 2;
-    // write aspect ratio
-    buf.packet_bytes[16] = 4;
+    // write aspect ratio (for DAR)
+    buf.packet_bytes[16] = 4; // DAR
 //    buf.packet_bytes[17] = 0;
-    buf.packet_bytes[18] = 3;
+    buf.packet_bytes[18] = 3; // DAR
 //    buf.packet_bytes[19] = 0;
   }
 
