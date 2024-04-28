@@ -40,7 +40,7 @@ task setOSDConfig;
   output [11:0] osd_hoffset;
   
   begin
-    case (cfg_videomode)
+    case (videomode)
       `USE_240p60: begin
           cfg_osd_vscale <= 3'b000;
           cfg_osd_hscale <= 2'b00;
