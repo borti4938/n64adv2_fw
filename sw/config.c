@@ -275,14 +275,20 @@ void cfg_scale_v2h_update(bool_t direction_vh) {
 
 alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, bool_t ret_reference)
 {
-  if (scaling_menu == NTSC_DIRECT) {
-    return use_vertical ? CFG_SCALING_NTSC_240_VERT_FIXED :  CFG_SCALING_PAL_NTSC_HORI_FIXED;
+  alt_u16 current_scale;
+  if ((scaling_menu == NTSC_DIRECT) || (scaling_menu == PAL_DIRECT)) {
+    if (use_vertical) {
+      if ((scaling_menu == PAL_DIRECT) && (cfg_get_value(&pal_boxed_mode,0) == OFF)) current_scale = CFG_SCALING_PAL_240_VERT_FIXED;
+      else current_scale = CFG_SCALING_NTSC_240_VERT_FIXED;
+    }
+    else {
+      current_scale = CFG_SCALING_PAL_NTSC_HORI_FIXED;
+      if ((scanmode == PROGRESSIVE) && (cfg_get_value(&deblur_mode,0) == ON)) current_scale /= 2;
+    }
+    return current_scale;
   }
-  if (scaling_menu == PAL_DIRECT) {
-    return use_vertical ? CFG_SCALING_PAL_240_VERT_FIXED :  CFG_SCALING_PAL_NTSC_HORI_FIXED;
-  }
-  alt_u16 current_scale = use_vertical ? cfg_get_value(&vert_scale,0) :  cfg_get_value(&hor_scale,0);
 
+  current_scale = use_vertical ? cfg_get_value(&vert_scale,0) :  cfg_get_value(&hor_scale,0);
   if (set_value) {  // ensure from outside that command is valid (left or right)
     alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
     alt_u8 idx, idx_min;
