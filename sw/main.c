@@ -268,8 +268,6 @@ int main()
   bool_t undo_changed_linex_setting = FALSE;
 
   bool_t led_set_ok = FALSE;
-  game_id_valid = FALSE;
-  bool_t game_id_valid_pre = FALSE;
   bool_t use_fxd_mode;
   bool_t use_fxd_mode_pre = FALSE;
   alt_u8 vsif_cycle_cnt = 0;
@@ -497,22 +495,23 @@ int main()
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
 
-      get_game_id();
-      if (use_fxd_mode) {
-        vsif_cycle_cnt++;
-      } else {
-        vsif_cycle_cnt = 0;
-        if (use_fxd_mode_pre) send_fxd_if(ON,OFF);
-        else send_fxd_if(OFF,OFF);
-      }
       if (vsif_cycle_cnt > VSIF_CYCLE_CNT_TH) {
-        send_fxd_if(ON,ON);
-      } else if (use_fxd_mode_pre == use_fxd_mode) {
-        if (game_id_valid != game_id_valid_pre) send_game_id_if(ON);
-        else if (!game_id_valid) send_game_id_if(OFF);  // deactivate after one cycle
-        game_id_valid_pre = game_id_valid;
+        if (use_fxd_mode) {
+          send_fxd_if(ON,ON);
+        }
+        else if (use_fxd_mode_pre) {
+          send_fxd_if(ON,OFF);
+          vsif_cycle_cnt = VSIF_CYCLE_CNT_TH; // make sure that info on fx-direct is off is being send
+        }
+        else {
+          send_fxd_if(OFF,OFF);
+        }
+      } else {
+        get_game_id();
+        send_game_id_if(ON);
       }
       use_fxd_mode_pre = use_fxd_mode;
+      vsif_cycle_cnt++;
 
       periphals_set_ready_bit();
       if (!led_set_ok) led_drive(LED_OK,LED_ON);

@@ -86,7 +86,7 @@ bool_t hor_hires;
 bool_t hdmi_clk_ok;
 
 bool_t game_id_valid;
-alt_u8 game_id_raw[GAMEID_BYTES];
+alt_u8 game_id_raw[GAMEID_BYTES] = {0,0,0,0,0,0,0,0,0,0};
 char game_id_txt[GAMEID_TXT_LEN];
 
 #ifdef DEBUG
@@ -324,38 +324,44 @@ alt_u8 get_pcb_version()
 
 void get_game_id()
 {
+  static bool_t game_id_tgl = 0;      // init ensures that game_id_txt will be ...
+  static bool_t game_id_tgl_pre = 1;  // ... initialized as well
+
   alt_u8 idx;
   alt_u32 buf;
 
-  if (!((IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & GAME_ID_VALID_IN_MASK) == GAME_ID_VALID_IN_MASK)) {  // game-id in hw not valid
+  if (game_id_tgl != game_id_tgl_pre) {
     game_id_valid = FALSE;
-    for (idx = 0; idx < GAMEID_BYTES; idx++) game_id_raw[idx] = 0;
-  } else if (!game_id_valid) {  // only capture game-id if not already captured / valid
+
     SET_EXTINFO_SEL(GAME_ID_2);
     IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
     buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+    game_id_valid |= buf > 0;
     for (idx = 0; idx < 2; idx++)
       game_id_raw[idx] = buf >> 8*(1-idx);
 
     SET_EXTINFO_SEL(GAME_ID_1);
     IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
     buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+    game_id_valid |= buf > 0;
     for (idx = 0; idx < 4; idx++)
       game_id_raw[2+idx] = buf >> 8*(3-idx);
 
     SET_EXTINFO_SEL(GAME_ID_0);
     IOWR_ALTERA_AVALON_PIO_DATA(INFO_SYNC_OUT_BASE,info_sync_val);
     buf = IORD_ALTERA_AVALON_PIO_DATA(EXT_INFO_IN_BASE);
+    game_id_valid |= buf > 0;
     for (idx = 0; idx < 4; idx++)
       game_id_raw[6+idx] = buf >> 8*(3-idx);
 
-    game_id_valid = TRUE;
-  };
+    sprintf(game_id_txt,"%02X%02X%02X%02X-%02X%02X%02X%02X-%02X",
+            game_id_raw[0],game_id_raw[1],game_id_raw[2],game_id_raw[3],
+            game_id_raw[4],game_id_raw[5],game_id_raw[6],game_id_raw[7],
+            game_id_raw[9]);
+  }
 
-  sprintf(game_id_txt,"%02X%02X%02X%02X-%02X%02X%02X%02X-%02X",
-          game_id_raw[0],game_id_raw[1],game_id_raw[2],game_id_raw[3],
-          game_id_raw[4],game_id_raw[5],game_id_raw[6],game_id_raw[7],
-          game_id_raw[9]);
+  game_id_tgl_pre = game_id_tgl;
+  game_id_tgl = (IORD_ALTERA_AVALON_PIO_DATA(SYNC_IN_BASE) & GAME_ID_TGL_IN_MASK) == GAME_ID_TGL_IN_MASK;
 };
 
 void send_game_id_if(bool_t enable)
