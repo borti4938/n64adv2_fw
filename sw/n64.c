@@ -370,6 +370,9 @@ void send_game_id_if(bool_t enable)
     set_infoframe_packet(enable,SPARE_PACKET1_ENABLE_BIT,SPARE_PACKET1_REG_OFFSET,NULL);
     return;
   }
+
+  // format as suggested by PixelFx: https://docs.pixelfx.co/VSIF-metadata.html
+
   alt_u8 idx;
   if_packet_t buf = {
     // header
