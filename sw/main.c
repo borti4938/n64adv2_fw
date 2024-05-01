@@ -397,44 +397,42 @@ int main()
     } else { /* ELSE OF if(active_osd && hdmi_clk_ok) */
       todo = NON;
 
-        if (video_input_detected_pre && !video_input_detected) {  // open menu in debug screen if no video input is being detected
-          command = CMD_OPEN_MENU;
-          home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
-          menu = &debug_screen;
-        }
-        if (command == CMD_OPEN_MENU) {
-          open_osd_main(&menu);
-        }
+      if (video_input_detected_pre && !video_input_detected) {  // open menu in debug screen if no video input is being detected
+        command = CMD_OPEN_MENU;
+        home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
+        menu = &debug_screen;
+      }
+      if (command == CMD_OPEN_MENU) {
+        open_osd_main(&menu);
+      }
 
-      if (cfg_get_value(&igr_deblur,0))
+      if ((scanmode == PROGRESSIVE) && cfg_get_value(&igr_deblur,0))
         switch (command) {
           case CMD_DEBLUR_QUICK_ON:
-            if (scanmode == PROGRESSIVE) {
-              cfg_set_value(&deblur_mode,ON);
-              todo = NEW_CONF_VALUE;
-            };
+            cfg_set_value(&deblur_mode,ON);
+            todo = NEW_CONF_VALUE;
             break;
           case CMD_DEBLUR_QUICK_OFF:
-            if (scanmode == PROGRESSIVE) {
-              cfg_set_value(&deblur_mode,OFF);
-              todo = NEW_CONF_VALUE;
-            };
+            cfg_set_value(&deblur_mode,OFF);
+            todo = NEW_CONF_VALUE;
             break;
           default:
             break;
         }
 
       if (cfg_get_value(&igr_16bitmode,0))
-          switch (command) {
-            case CMD_16BIT_QUICK_ON:
-              cfg_set_value(&mode16bit,ON);
-              break;
-            case CMD_16BIT_QUICK_OFF:
-              cfg_set_value(&mode16bit,OFF);
-              break;
-            default:
-              break;
-          }
+        switch (command) {
+          case CMD_16BIT_QUICK_ON:
+            cfg_set_value(&mode16bit,ON);
+            todo = NEW_CONF_VALUE;
+            break;
+          case CMD_16BIT_QUICK_OFF:
+            cfg_set_value(&mode16bit,OFF);
+            todo = NEW_CONF_VALUE;
+            break;
+          default:
+            break;
+        }
 
       message_cnt = 0;
     } /* END OF if(active_osd && hdmi_clk_ok) */
@@ -482,7 +480,6 @@ int main()
     use_fxd_mode = (cfg_get_value(&linex_resolution,0)==DIRECT) && (cfg_get_value(&dvmode_version,0)==1);
 
     if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) { // all ok let's setup register settings in adv and  game-idperiphals_set_ready_bit();
-
       if ((active_osd_pre != active_osd) || undo_changed_linex_setting) {
         undo_changed_linex_setting = FALSE;
         todo = NEW_CONF_VALUE;

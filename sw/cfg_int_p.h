@@ -109,7 +109,7 @@ config_t igr_deblur = {
   .getvalue_mask   = CFG_DEBLUR_IGR_GETMASK,
   .max_value       = 1,
   .cfg_disp_type   = DISP_BUF_FUNC,
-  .val2char_func = &flag2set_func
+  .val2char_func   = &flag2set_func
 };
 
 config_t igr_16bitmode = {
@@ -118,7 +118,7 @@ config_t igr_16bitmode = {
   .getvalue_mask   = CFG_MODE16BIT_IGR_GETMASK,
   .max_value       = 1,
   .cfg_disp_type   = DISP_BUF_FUNC,
-  .val2char_func = &flag2set_func
+  .val2char_func   = &flag2set_func
 };
 
 config_t link_hv_scale = {
