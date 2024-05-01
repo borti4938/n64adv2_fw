@@ -443,7 +443,7 @@ int main()
       if (!lock_menu_pre) igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
       cfg_set_value(&igr_reset,OFF);
       lock_menu_pre = TRUE;
-    } else {
+    } else if (lock_menu_pre) {
       cfg_set_value(&igr_reset,(alt_u16) igr_reset_tmp);
       lock_menu_pre = FALSE;
     }
