@@ -68,11 +68,11 @@ extern alt_u8 info_sync_val;
 void open_osd_main(menu_t **menu)
 {
   print_overlay(*menu);
-  cfg_set_flag(&show_logo);
+  cfg_set_value(&show_logo,ON);
   print_selection_arrow(*menu);
-  cfg_set_flag(&show_osd);
+  cfg_set_value(&show_osd,ON);
   active_osd = TRUE;
-  cfg_clear_flag(&mute_osd_tmp);
+  cfg_set_value(&mute_osd_tmp,OFF);
 }
 
 
@@ -190,14 +190,14 @@ int main()
   } while (use_fallback == 0);
 
   active_osd = FALSE;
-  cfg_clear_flag(&show_osd);
+  cfg_set_value(&show_osd,OFF);
 
   if (load_n64_defaults) {
     cfg_clear_words();  // just in case anything went wrong while loading from flash
     cfg_load_defaults((use_fallback & FALLBACKRST_PRESSED_GETMASK) ? FB_480P : FB_1080P,0);  // loads 1080p on default and 480p if reset button is pressed (do not use fallback configuration from flash as load was invalid)
     fallback_triggered = TRUE;
-    cfg_set_flag(&igr_reset);     // handle a bit different from other defaults
-    cfg_set_flag(&fallback_menu); // handle a bit different from other defaults
+    cfg_set_value(&igr_reset,ON);     // handle a bit different from other defaults
+    cfg_set_value(&fallback_menu,ON); // handle a bit different from other defaults
     cfg_update_reference();
     open_osd_main(&menu);
   } else {
@@ -352,15 +352,15 @@ int main()
 
       switch (todo) {
         case MENU_CLOSE:
-          cfg_clear_flag(&show_osd);
+          cfg_set_value(&show_osd,OFF);
           active_osd = FALSE;
           if (cfg_get_value(&autosave,0)) cfg_save_to_flash(0);
           break;
         case MENU_MUTE:
-          cfg_set_flag(&mute_osd_tmp);
+          cfg_set_value(&mute_osd_tmp,ON);
           break;
         case MENU_UNMUTE:
-          cfg_clear_flag(&mute_osd_tmp);
+          cfg_set_value(&mute_osd_tmp,OFF);
           break;
         case NEW_OVERLAY:
           cfg_set_value(&region_selection,palmode);
@@ -410,13 +410,13 @@ int main()
         switch (command) {
           case CMD_DEBLUR_QUICK_ON:
             if (scanmode == PROGRESSIVE) {
-              cfg_set_flag(&deblur_mode);
+              cfg_set_value(&deblur_mode,ON);
               todo = NEW_CONF_VALUE;
             };
             break;
           case CMD_DEBLUR_QUICK_OFF:
             if (scanmode == PROGRESSIVE) {
-              cfg_clear_flag(&deblur_mode);
+              cfg_set_value(&deblur_mode,OFF);
               todo = NEW_CONF_VALUE;
             };
             break;
@@ -427,10 +427,10 @@ int main()
       if (cfg_get_value(&igr_16bitmode,0))
           switch (command) {
             case CMD_16BIT_QUICK_ON:
-              cfg_set_flag(&mode16bit);
+              cfg_set_value(&mode16bit,ON);
               break;
             case CMD_16BIT_QUICK_OFF:
-              cfg_clear_flag(&mode16bit);
+              cfg_set_value(&mode16bit,OFF);
               break;
             default:
               break;
@@ -441,7 +441,7 @@ int main()
 
     if (cfg_get_value(&lock_menu,0)) {
       if (!lock_menu_pre) igr_reset_tmp = (bool_t) cfg_get_value(&igr_reset,0);
-      cfg_clear_flag(&igr_reset);
+      cfg_set_value(&igr_reset,OFF);
       lock_menu_pre = TRUE;
     } else {
       cfg_set_value(&igr_reset,(alt_u16) igr_reset_tmp);

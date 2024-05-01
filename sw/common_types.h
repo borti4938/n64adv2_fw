@@ -37,6 +37,11 @@ typedef enum {
 typedef bool_t boolean_t;
 
 typedef enum {
+  OFF = 0,
+  ON
+} cfg_offon_t;
+
+typedef enum {
   NTSC = 0,
   PAL
 } vmode_t;

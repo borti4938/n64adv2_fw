@@ -103,12 +103,6 @@ typedef enum {
   PAL_PAT1
 } cfg_pal_pattern_t;
 
-
-typedef enum {
-  OFF = 0,
-  ON
-} cfg_offon_t;
-
 typedef struct {
   const alt_u32 cfg_word_mask;
   alt_u32       cfg_word_val;
@@ -120,23 +114,11 @@ typedef struct {
 } configuration_t;
 
 typedef enum {
-  FLAG,
-  FLAGTXT,
-  TXTVALUE,
-  NUMVALUE
-} config_type_t;
+  VAL_STRING = 0,
+  DISP_BUF_FUNC
+} cgf_disp_type_t;
 
-typedef struct {
-  const alt_u32 setflag_mask;
-  const alt_u32 clrflag_mask;
-} config_flag_t;
-
-typedef struct {
-  const alt_u32 getvalue_mask;
-  const alt_u16 max_value;
-} config_value_t;
-
-typedef void (*val2char_func_call)(alt_u16);
+typedef void (*val2char_buf_func_call)(alt_u16);
 
 typedef struct {
   cfg_b32word_t       *cfg_word;
@@ -144,14 +126,12 @@ typedef struct {
     alt_u8              cfg_word_offset;
     alt_u8              cfg_value;
   };
-  const config_type_t cfg_type;
+  const alt_u32 getvalue_mask;
+  const alt_u16 max_value;
+  const cgf_disp_type_t cfg_disp_type;
   union {
-    const config_flag_t  flag_masks;
-    const config_value_t value_details;
-  };
-  union {
-    const char*        *value_string;
-    val2char_func_call val2char_func;
+    const char*             *value_string;
+    val2char_buf_func_call  val2char_func;
   };
 } config_t;
 
@@ -181,14 +161,22 @@ typedef struct {
 
 #define PREDEFINED_SCALE_STEPS  25
 
-// the overall masks
+// some definitions for the configuration (might be also needed outside of cfg_io_p.h / cfg_int_p.h) ...
+
+// ... IO bases
 #define INTCFG0_GETALL_MASK   0x0007FFFF
+#define EXTCFG0_OUT_BASE  CFG_SET0_OUT_BASE
+#define EXTCFG1_OUT_BASE  CFG_SET1_OUT_BASE
+#define EXTCFG2_OUT_BASE  CFG_SET2_OUT_BASE
+#define EXTCFG3_OUT_BASE  CFG_SET3_OUT_BASE
+
+// ... the different overall masks
 #define EXTCFG0_GETALL_MASK   0xFFFFFFFF
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
 #define EXTCFG3_GETALL_MASK   0x000003FE  // LSB is reserved for use in hardware only
 
-// internal cfg set 0
+// ... intcfg0
 #define CFG_LEDSWAP_OFFSET                 18
 #define CFG_HDR10INJ_OFFSET                17
 #define CFG_COLORSPACE_OFFSET              15
@@ -247,10 +235,7 @@ typedef struct {
   #define CFG_LINK_HV_SCALE_RSTMASK           (INTCFG0_GETALL_MASK & ~CFG_LINK_HV_SCALE_GETMASK)
   #define CFG_LINK_HV_SCALE_CLRMASK           (INTCFG0_GETALL_MASK & ~CFG_LINK_HV_SCALE_GETMASK)
 
-
-// external cfg set 0
-#define EXTCFG0_OUT_BASE  CFG_SET0_OUT_BASE
-
+// ... extcfg0 - scaler
 #define CFG_VERTSCALE_OFFSET        20
 #define CFG_HORSCALE_OFFSET          8
 #define CFG_FORCE_5060_OFFSET        6
@@ -294,9 +279,7 @@ typedef struct {
   #define CFG_RESOLUTION_240_SETMASK    (DIRECT<<CFG_RESOLUTION_OFFSET)
   #define CFG_RESOLUTION_RSTMASK        (EXTCFG0_GETALL_MASK & ~CFG_RESOLUTION_GETMASK)
 
-// external cfg set 1
-#define EXTCFG1_OUT_BASE  CFG_SET1_OUT_BASE
-
+// ... extcfg1 - osd, igr and vi-processing
 #define CFG_SHOWLOGO_OFFSET       31
 #define CFG_SHOWOSD_OFFSET        30
 #define CFG_MUTEOSDTMP_OFFSET     29
@@ -355,9 +338,7 @@ typedef struct {
   #define CFG_PAL_BOXED_MODE_SETMASK    (1<<CFG_PAL_BOXED_MODE_OFFSET)
   #define CFG_PAL_BOXED_MODE_CLRMASK    (EXTCFG1_GETALL_MASK & ~CFG_PAL_BOXED_MODE_SETMASK)
 
-// external cfg set 2
-#define EXTCFG2_OUT_BASE  CFG_SET2_OUT_BASE
-
+// ... extcfg2 - scanlines
 #define CFG_VSL_THICKNESS_OFFSET  28
 #define CFG_VSL_PROFILE_OFFSET    26
 #define CFG_VSLHYBDEP_OFFSET      21
@@ -408,9 +389,7 @@ typedef struct {
   #define CFG_SL_CALC_BASE_SETMASK    (1<<CFG_SL_CALC_BASE_OFFSET)
   #define CFG_SL_CALC_BASE_CLRMASK    (EXTCFG2_GETALL_MASK & ~CFG_SL_CALC_BASE_GETMASK)
 
-// external cfg set 3
-#define EXTCFG3_OUT_BASE  CFG_SET3_OUT_BASE
-
+// ... extcfg3 - audio
 #define CFG_AUDIO_FILTER_BYPASS_OFFSET  9
 #define CFG_AUDIO_MUTE_OFFSET           8
 #define CFG_AUDIO_AMP_OFFSET            3
@@ -433,25 +412,11 @@ typedef struct {
   #define CFG_AUDIO_SPDIF_EN_SETMASK        (1<<CFG_AUDIO_SPDIF_EN_OFFSET)
   #define CFG_AUDIO_SPDIF_EN_CLRMASK        (EXTCFG3_GETALL_MASK & ~CFG_AUDIO_SPDIF_EN_SETMASK)
 
-
-
-// some usefull masking
-#define CFG_EXTCFG0_GETLINEX_MASK       (CFG_FORCE_5060_GETMASK | CFG_LOWLATENCYMODE_GETMASK | \
-                                         CFG_DVMODE_VERSION_GETMASK | CFG_VGAFOR480P_GETMASK | \
-                                         CFG_RESOLUTION_GETMASK)
-#define CFG_EXTCFG0_GETNOLINEX_MASK     (EXTCFG0_GETALL_MASK & ~CFG_EXTCFG0_GETLINEX_MASK)
-
-#define CFG_EXTCFG1_GETTIMINGS_MASK     (CFG_VERTSHIFT_GETMASK | CFG_HORSHIFT_GETMASK)
-#define CFG_EXTCFG1_GETNONTIMINGS_MASK  (EXTCFG1_GETALL_MASK & ~CFG_EXTCFG1_GETTIMINGS_MASK)
-
-#define CFG_EXTCFG0_GETSCALING_MASK     (CFG_VERTSCALE_GETMASK | CFG_HORSCALE_GETMASK)
-#define CFG_EXTCFG0_GETNONSCALING_MASK  (EXTCFG0_GETALL_MASK & ~CFG_EXTCFG0_GETSCALING_MASK)
-
-// some min values
+// ... some min values
 #define CFG_VERTSCALE_NTSC_MIN  240
 #define CFG_VERTSCALE_PAL_MIN   288
 
-// some max values
+// ... some max values
 #define CFG_COLORSPACE_MAX_VALUE         2
 #define CFG_LINK_HV_SCALE_4R3_VALUE      0
 #define CFG_LINK_HV_SCALE_CRT_VALUE      1
@@ -480,9 +445,20 @@ typedef struct {
 #define CFG_SLSTR_MAX_VALUE            15
 #define CFG_SLHYBDEP_MAX_VALUE         24
 
+// ... some usefull masking
+#define CFG_EXTCFG0_GETLINEX_MASK       (CFG_FORCE_5060_GETMASK | CFG_LOWLATENCYMODE_GETMASK | \
+                                         CFG_DVMODE_VERSION_GETMASK | CFG_VGAFOR480P_GETMASK | \
+                                         CFG_RESOLUTION_GETMASK)
+#define CFG_EXTCFG0_GETNOLINEX_MASK     (EXTCFG0_GETALL_MASK & ~CFG_EXTCFG0_GETLINEX_MASK)
 
-// some default values other than 0 (go into default value of config)
-// these are N64 defaults
+#define CFG_EXTCFG1_GETTIMINGS_MASK     (CFG_VERTSHIFT_GETMASK | CFG_HORSHIFT_GETMASK)
+#define CFG_EXTCFG1_GETNONTIMINGS_MASK  (EXTCFG1_GETALL_MASK & ~CFG_EXTCFG1_GETTIMINGS_MASK)
+
+#define CFG_EXTCFG0_GETSCALING_MASK     (CFG_VERTSCALE_GETMASK | CFG_HORSCALE_GETMASK)
+#define CFG_EXTCFG0_GETNONSCALING_MASK  (EXTCFG0_GETALL_MASK & ~CFG_EXTCFG0_GETSCALING_MASK)
+
+// ... some default values other than 0 (go into default value of config)
+//     (these are N64 defaults)
 #define CFG_AUDIO_AMP_DEFAULTVAL              19
   #define CFG_AUDIO_AMP_DEFAULT_SETMASK         (CFG_AUDIO_AMP_DEFAULTVAL << CFG_AUDIO_AMP_OFFSET)
 #define CFG_RSTMASKS_DEFAULTVAL                3
@@ -533,8 +509,7 @@ typedef struct {
 #define CFG_SCALING_PAL_1440_DEFAULT          (1440 << (CFG_VERTSCALE_OFFSET-CFG_HORSCALE_OFFSET) | 1920)
 #define CFG_SCALING_PAL_1440_DEFAULT_SHIFTED  (CFG_SCALING_PAL_1440_DEFAULT << CFG_HORSCALE_OFFSET | CFG_LINK_HV_SCALE_DEFAULTVAL_4R3 << CFG_LINK_HV_SCALE_OFFSET)
 
-
-// default configuration
+// ... default configuration
 #define INTCFG0_DEFAULTS            (CFG_DEBLUR_PC_DEFAULT_SETMASK)
 #define INTCFG0_DEFAULTS_GETMASK    (CFG_COLORSPACE_GETMASK | CFG_LIMITED_COLORSPACE_GETMASK | \
                                      CFG_DEBLUR_PC_DEFAULT_GETMASK | CFG_MODE16BIT_PC_DEFAULT_GETMASK | \
@@ -598,12 +573,6 @@ extern config_t audio_fliter_bypass, audio_mute, audio_amp, audio_swap_lr, audio
 extern bool_t unlock_1440p;
 
 
-static inline bool_t is_local_cfg(config_t* cfg_data)
-  { return cfg_data->cfg_word == NULL;  }
-
-void cfg_toggle_flag(config_t* cfg_data);
-void cfg_set_flag(config_t* cfg_data);
-void cfg_clear_flag(config_t* cfg_data);
 void cfg_inc_value(config_t* cfg_data);
 void cfg_dec_value(config_t* cfg_data);
 alt_u16 cfg_get_value(config_t* cfg_data,cfg_offon_t get_reference);

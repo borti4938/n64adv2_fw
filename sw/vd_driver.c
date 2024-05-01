@@ -169,14 +169,14 @@ int vd_print_string(vd_area_t vd_area, alt_u8 horiz_offset, alt_u8 vert_offset, 
 void vd_clear_hdr()
 {
   vd_clear_area_local(0,vd_overall_width-1,VD_HDR_AREA_VOFFSET,VD_HDR_AREA_VOFFSET+VD_HDR_HEIGHT-1);
-  cfg_set_flag(&show_logo);
+  cfg_set_value(&show_logo,ON);
 };
 
 void vd_wr_hdr(alt_u8 color, const char *string)
 {
   vd_clear_hdr();
   alt_u8 h_offset = VD_WIDTH - strlen(string);
-  if (h_offset < 32) cfg_clear_flag(&show_logo);
+  if (h_offset < 32) cfg_set_value(&show_logo,OFF);
   vd_print_string_local(h_offset,VD_HDR_AREA_VOFFSET,color,string,VD_HDR_HEIGHT-1);
 };
 

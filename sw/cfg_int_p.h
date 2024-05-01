@@ -39,227 +39,185 @@
 
 extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_SEL[], *FallbackRes[], *FallbackTrig[], *VTimingSel[], *ScaleSteps[], *CopyCfg[], *DebugBoot[];
 
-cfg_b32word_t intcfg0_word =
-  { .cfg_word_mask    = INTCFG0_GETALL_MASK,
-    .cfg_word_val     = 0x00000000,
-    .cfg_ref_word_val = 0x00000000
-  };
+
+// internal configuration with references (saveable)
+cfg_b32word_t intcfg0_word = {
+  .cfg_word_mask    = INTCFG0_GETALL_MASK,
+  .cfg_word_val     = 0x00000000,
+  .cfg_ref_word_val = 0x00000000
+};
 
 config_t swap_led = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_LEDSWAP_OFFSET,
-    .cfg_type        = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_LEDSWAP_SETMASK,
-        .clrflag_mask = CFG_LEDSWAP_CLRMASK
-    },
-    .val2char_func = &flag2set_func
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_LEDSWAP_OFFSET,
+  .getvalue_mask   = CFG_LEDSWAP_GETMASK,
+  .max_value       = 1,
+  .cfg_disp_type   = DISP_BUF_FUNC,
+  .val2char_func   = &flag2set_func
 };
 
 #ifdef HDR_TESTING
   config_t hdr10_injection = {
-      .cfg_word        = &intcfg0_word,
-      .cfg_word_offset = CFG_HDR10INJ_OFFSET,
-      .cfg_type        = FLAGTXT,
-      .flag_masks      = {
-          .setflag_mask = CFG_HDR10INJ_SETMASK,
-          .clrflag_mask = CFG_HDR10INJ_CLRMASK
-      },
-      .val2char_func = &flag2set_func
+    .cfg_word        = &intcfg0_word,
+    .cfg_word_offset = CFG_HDR10INJ_OFFSET,
+    .getvalue_mask   = CFG_HDR10INJ_GETMASK,
+    .max_value       = 1,
+    .cfg_disp_type   = DISP_BUF_FUNC,
+    .val2char_func   = &flag2set_func
   };
 #endif
 
 config_t color_space = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_COLORSPACE_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_COLORSPACE_MAX_VALUE,
-        .getvalue_mask = CFG_COLORSPACE_GETMASK
-    },
-    .value_string = (const char **) &ColorSpace
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_COLORSPACE_OFFSET,
+  .getvalue_mask   = CFG_COLORSPACE_GETMASK,
+  .max_value       = CFG_COLORSPACE_MAX_VALUE,
+  .cfg_disp_type   = VAL_STRING,
+  .value_string    = (const char **) &ColorSpace
 };
 
 config_t limited_colorspace = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_LIMITED_COLORSPACE_OFFSET,
-    .cfg_type        = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_LIMITED_COLORSPACE_SETMASK,
-        .clrflag_mask = CFG_LIMITED_COLORSPACE_CLRMASK
-    },
-    .val2char_func = &flag2set_func
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_LIMITED_COLORSPACE_OFFSET,
+  .getvalue_mask   = CFG_LIMITED_COLORSPACE_GETMASK,
+  .max_value       = 1,
+  .cfg_disp_type   = DISP_BUF_FUNC,
+  .val2char_func   = &flag2set_func
 };
 
 config_t deblur_mode_powercycle = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_DEBLUR_PC_DEFAULT_OFFSET,
-    .cfg_type     = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_DEBLUR_PC_DEFAULT_SETMASK,
-        .clrflag_mask = CFG_DEBLUR_PC_DEFAULT_CLRMASK
-    },
-    .value_string = (const char **) &OffOn
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_DEBLUR_PC_DEFAULT_OFFSET,
+  .getvalue_mask   = CFG_DEBLUR_PC_DEFAULT_GETMASK,
+  .max_value       = 1,
+  .cfg_disp_type   = VAL_STRING,
+  .value_string    = (const char **) &OffOn
 };
 
 config_t mode16bit_powercycle = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_MODE16BIT_PC_DEFAULT_OFFSET,
-    .cfg_type     = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_MODE16BIT_PC_DEFAULT_SETMASK,
-        .clrflag_mask = CFG_MODE16BIT_PC_DEFAULT_CLRMASK
-    },
-    .value_string = (const char **) &OffOn
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_MODE16BIT_PC_DEFAULT_OFFSET,
+  .getvalue_mask   = CFG_MODE16BIT_PC_DEFAULT_GETMASK,
+  .max_value       = 1,
+  .cfg_disp_type   = VAL_STRING,
+  .value_string    = (const char **) &OffOn
 };
 
 config_t igr_deblur = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_DEBLUR_IGR_OFFSET,
-    .cfg_type     = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_DEBLUR_IGR_SETMASK,
-        .clrflag_mask = CFG_DEBLUR_IGR_CLRMASK
-    },
-    .val2char_func = &flag2set_func
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_DEBLUR_IGR_OFFSET,
+  .getvalue_mask   = CFG_DEBLUR_IGR_GETMASK,
+  .max_value       = 1,
+  .cfg_disp_type   = DISP_BUF_FUNC,
+  .val2char_func = &flag2set_func
 };
 
 config_t igr_16bitmode = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_MODE16BIT_IGR_OFFSET,
-    .cfg_type     = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_MODE16BIT_IGR_SETMASK,
-        .clrflag_mask = CFG_MODE16BIT_IGR_CLRMASK
-    },
-    .val2char_func = &flag2set_func
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_MODE16BIT_IGR_OFFSET,
+  .getvalue_mask   = CFG_MODE16BIT_IGR_GETMASK,
+  .max_value       = 1,
+  .cfg_disp_type   = DISP_BUF_FUNC,
+  .val2char_func = &flag2set_func
 };
 
 config_t link_hv_scale = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_LINK_HV_SCALE_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_LINK_HV_SCALE_MAX_VALUE,
-        .getvalue_mask = CFG_LINK_HV_SCALE_GETMASK
-    },
-    .value_string = (const char **) &ScaleVHLink
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_LINK_HV_SCALE_OFFSET,
+  .getvalue_mask   = CFG_LINK_HV_SCALE_GETMASK,
+  .max_value       = CFG_LINK_HV_SCALE_MAX_VALUE,
+  .cfg_disp_type   = VAL_STRING,
+  .value_string    = (const char **) &ScaleVHLink
 };
 
 config_t fallback_resolution = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_FALLBACK_RES_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_FALLBACK_MAX_VALUE,
-        .getvalue_mask = CFG_FALLBACK_RES_GETMASK
-    },
-    .value_string = (const char **) &FallbackRes
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_FALLBACK_RES_OFFSET,
+  .max_value       = CFG_FALLBACK_MAX_VALUE,
+  .getvalue_mask   = CFG_FALLBACK_RES_GETMASK,
+  .cfg_disp_type   = VAL_STRING,
+  .value_string    = (const char **) &FallbackRes
 };
 
 config_t fallback_trigger = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_FALLBACK_TRIGGER_OFFSET,
-    .cfg_type        = TXTVALUE,
-    .value_details   = {
-        .max_value     = CFG_FALLBACK_MAX_VALUE,
-        .getvalue_mask = CFG_FALLBACK_TRIGGER_GETMASK
-    },
-    .value_string = (const char **) &FallbackTrig
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_FALLBACK_TRIGGER_OFFSET,
+  .max_value       = CFG_FALLBACK_MAX_VALUE,
+  .getvalue_mask   = CFG_FALLBACK_TRIGGER_GETMASK,
+  .cfg_disp_type   = VAL_STRING,
+  .value_string    = (const char **) &FallbackTrig
 };
 
 config_t fallback_menu = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_FALLBACK_MENU_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_FALLBACK_MENU_SETMASK,
-        .clrflag_mask = CFG_FALLBACK_MENU_CLRMASK
-    },
-    .value_string = (const char **) &OffOn
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_FALLBACK_MENU_OFFSET,
+  .getvalue_mask   = CFG_FALLBACK_MENU_GETMASK,
+  .max_value       = 1,
+  .cfg_disp_type   = VAL_STRING,
+  .value_string    = (const char **) &OffOn
 };
 
 config_t autosave = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_AUTOSAVE_OFFSET,
-    .cfg_type     = FLAGTXT,
-    .flag_masks      = {
-        .setflag_mask = CFG_AUTOSAVE_SETMASK,
-        .clrflag_mask = CFG_AUTOSAVE_CLRMASK
-    },
-    .val2char_func = &flag2set_func
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_AUTOSAVE_OFFSET,
+  .getvalue_mask   = CFG_AUTOSAVE_GETMASK,
+  .cfg_disp_type   = DISP_BUF_FUNC,
+  .val2char_func   = &flag2set_func
 };
 
 config_t debug_vtimeout = {
-    .cfg_word        = &intcfg0_word,
-    .cfg_word_offset = CFG_DEBUGVTIMEOUT_OFFSET,
-    .cfg_type        = FLAG,
-    .flag_masks      = {
-        .setflag_mask = CFG_DEBUGVTIMEOUT_SETMASK,
-        .clrflag_mask = CFG_DEBUGVTIMEOUT_CLRMASK
-    },
-    .value_string = (const char **) &DebugBoot
+  .cfg_word        = &intcfg0_word,
+  .cfg_word_offset = CFG_DEBUGVTIMEOUT_OFFSET,
+  .getvalue_mask   = CFG_DEBUGVTIMEOUT_GETMASK,
+  .max_value       = 1,
+  .cfg_disp_type   = VAL_STRING,
+  .value_string    = (const char **) &DebugBoot
 };
 
-// values without reference values
+
+// values without reference values (not saveable)
+// .cfg_b32word_t* must be NULL to show that this is a local value without reference
 config_t scaling_steps = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
-    .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = 0,
-    .value_details = {
-      .max_value = 1,
-    },
-    .value_string = (const char **) &ScaleSteps
+  .cfg_value     = 0,
+  .max_value     = 1,
+  .cfg_disp_type = VAL_STRING,
+  .value_string  = (const char **) &ScaleSteps
 };
 
 config_t region_selection = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
-    .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = NTSC,
-    .value_details = {
-      .max_value = PAL,
-    },
-    .value_string = (const char **) &NTSCPAL_SEL
+  .cfg_value     = NTSC,
+  .max_value     = PAL,
+  .cfg_disp_type = VAL_STRING,
+  .value_string  = (const char **) &NTSCPAL_SEL
 };
 
 config_t timing_selection = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
-    .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = NTSC_PROGRESSIVE,
-    .value_details = {
-      .max_value = PAL_INTERLACED,
-    },
-    .value_string = (const char **) &VTimingSel
+  .cfg_value     = NTSC_PROGRESSIVE,
+  .max_value     = PAL_INTERLACED,
+  .cfg_disp_type = VAL_STRING,
+  .value_string  = (const char **) &VTimingSel
 };
 
 config_t scaling_selection = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
-    .cfg_type     = NUMVALUE, // treat as numvalue for modifying function
-    .cfg_value    = NTSC_TO_1080,
-    .value_details = {
-      .max_value = PAL_TO_1440W,
-    },
-    .val2char_func = &val2txt_scale_sel_func
+  .cfg_value     = NTSC_TO_1080,
+  .max_value     = PAL_TO_1440W,
+  .cfg_disp_type = DISP_BUF_FUNC,
+  .val2char_func = &val2txt_scale_sel_func
 };
 
 config_t copy_direction = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
-    .cfg_type     = TXTVALUE, // treat as txtvalue for modifying function
-    .cfg_value    = 0,
-    .value_details = {
-      .max_value = 1,
-    },
-    .value_string = (const char **) &CopyCfg
+  .cfg_value     = 0,
+  .max_value     = 1,
+  .cfg_disp_type = VAL_STRING,
+  .value_string  = (const char **) &CopyCfg
 };
 
 config_t lock_menu = {
-    // .cfg_b32word_t* must be NULL to show that this is a local value without reference
-    .cfg_type     = FLAGTXT,
-    .cfg_value    = 0,
-    .value_details = {
-      .max_value = 1,
-    },
-    .val2char_func = &flag2set_func
+  .cfg_value     = FALSE,
+  .max_value     = TRUE,
+  .cfg_disp_type = DISP_BUF_FUNC,
+  .val2char_func = &flag2set_func
 };
+
 
 #endif /* CFG_INT_P_H_ */
