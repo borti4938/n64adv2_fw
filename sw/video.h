@@ -98,10 +98,17 @@ typedef struct {
 } if_packet_t;
 
 
-void set_infoframe_packet(bool_t enable,alt_u8 enable_bit,alt_u8 packet_addr_offset,if_packet_t *buf);
 void set_cfg_adv7513(void);
 int check_adv7513(void);
 bool_t init_adv7513(void);
+
+void send_game_id_if(bool_t enable);
+void send_dv1_if(bool_t enable);
+void send_fxd_if(bool_t enable, bool_t use_fxd);
+void send_spd_if(bool_t enable);
+#ifdef HDR_TESTING
+  void set_hdr_if(bool_t enable, bool_t use_hdr)
+#endif
 
 
 #endif /* ADV7513_H_ */

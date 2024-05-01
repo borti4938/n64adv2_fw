@@ -258,9 +258,5 @@ alt_u8 get_fallback_mode(void);
 alt_u32 get_chip_id(cfg_offon_t msb_select);
 alt_u8 get_pcb_version(void);
 void get_game_id(void);
-void send_game_id_if(bool_t enable);
-void send_dv1_if(bool_t enable);
-void send_fxd_if(bool_t enable, bool_t use_fxd);
-void send_spd_if(bool_t enable);
 
 #endif /* N64_H_ */
