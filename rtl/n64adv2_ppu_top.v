@@ -235,11 +235,11 @@ assign ConfigSet_w[`hSL_en_bit] = ConfigSet[`hSL_en_bit] & h_allow_slemu_w;  // 
 assign ConfigSet_w[`hSL_en_bit-1:0] = ConfigSet[`hSL_en_bit-1:0];
 
 assign PPUState[`PPU_input_vdata_detected_bit]  = vdata_detected;
-assign PPUState[`PPU_input_palpattern_bit]      = 1'b0;
+assign PPUState[`PPU_input_palpattern_bit]      = 1'b0; // will be overwritten in n64adv2_controller.v
 assign PPUState[`PPU_input_pal_bit]             = palmode;
 assign PPUState[`PPU_input_interlaced_bit]      = n64_480i;
 assign PPUState[`PPU_output_f5060_slice]        = {ConfigSet_resynced[`force50hz_bit],ConfigSet_resynced[`force60hz_bit]};
-assign PPUState[`PPU_output_vga_for_480p_bit]   = ConfigSet_resynced[`use_vga_for_480p_bit];
+assign PPUState[`PPU_output_vga_for_480p_bit]   = ~|ConfigSet_resynced[`target_resolution_slice] ? ConfigSet_resynced[`use_vga_for_480p_bit] : ConfigSet_resynced[`directmode_version_bit];
 assign PPUState[`PPU_output_resolution_slice]   = ConfigSet_resynced[`target_resolution_slice];
 assign PPUState[`PPU_output_lowlatencymode_bit] = sys_llm_w;
 assign PPUState[`PPU_240p_deblur_bit]           = ~cfg_nvideblur;

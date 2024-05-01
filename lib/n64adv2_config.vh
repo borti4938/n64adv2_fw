@@ -166,21 +166,22 @@
   
   // PPU Feedback Channel
   
-  `define PPU_State_Width               26  // without pal pattern bit
+  `define PPU_State_Width                     26
   
-  `define PPU_input_vdata_detected_bit  25
-  `define PPU_input_palpattern_bit      24
-  `define PPU_input_pal_bit             23
-  `define PPU_input_interlaced_bit      22
+  `define PPU_input_vdata_detected_bit        25
+  `define PPU_input_palpattern_bit            24
+  `define PPU_input_pal_bit                   23
+  `define PPU_input_interlaced_bit            22
   
-  `define PPU_output_f5060_slice        21:20
-  `define PPU_output_vga_for_480p_bit   19
-  `define PPU_output_resolution_slice   18:16
-  `define PPU_output_llm_slbuf_slice    15: 7
-  `define PPU_output_lowlatencymode_bit  6
+  `define PPU_output_f5060_slice              21:20
+  `define PPU_output_vga_for_480p_bit         19
+  `define PPU_output_directmode_version_bit   19  // shared
+  `define PPU_output_resolution_slice         18:16
+  `define PPU_output_llm_slbuf_slice          15: 7
+  `define PPU_output_lowlatencymode_bit        6
   
-  `define PPU_240p_deblur_bit            5
-  `define PPU_color_16bit_mode_bit       4
-  `define PPU_gamma_table_slice          3: 0
+  `define PPU_240p_deblur_bit                  5
+  `define PPU_color_16bit_mode_bit             4
+  `define PPU_gamma_table_slice                3: 0
 
 `endif
