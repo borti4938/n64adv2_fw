@@ -38,7 +38,7 @@
 #include "n64.h"
 #include "vd_driver.h"
 #include "si5356.h"
-#include "adv7513.h"
+#include "video.h"
 
 #define VIN_MIN_INIT_LENGTH           5
 #define VIN_BOOT_DETECTION_TIMEOUT  255

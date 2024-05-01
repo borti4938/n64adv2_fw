@@ -34,7 +34,6 @@
 #include "i2c_opencores.h"
 #include "system.h"
 #include "app_cfg.h"
-#include "adv7513.h"
 #include "si5356.h"
 #include "n64.h"
 #include "config.h"
@@ -42,6 +41,7 @@
 #include "vd_driver.h"
 #include "flash.h"
 #include "led.h"
+#include "video.h"
 
 
 #define VSIF_CYCLE_CNT_TH 7

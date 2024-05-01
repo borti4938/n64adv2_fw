@@ -27,13 +27,14 @@
  ********************************************************************************/
 
 
+#include "video.h"
+
 #include "alt_types.h"
 #include "common_types.h"
 #include "i2c_opencores.h"
 #include "system.h"
 #include "altera_avalon_pio_regs.h"
 
-#include "adv7513.h"
 #include "adv7513_regs_p.h"
 #include "i2c.h"
 #include "n64.h"

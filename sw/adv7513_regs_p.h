@@ -28,7 +28,7 @@
 
 #include "alt_types.h"
 #include "app_cfg.h"
-#include "adv7513.h"
+#include "video.h"
 
 #ifndef ADV7513_REGS_P_H_
 #define ADV7513_REGS_P_H_

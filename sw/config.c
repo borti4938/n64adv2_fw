@@ -38,7 +38,7 @@
 #include "menu.h"
 #include "flash.h"
 #include "vd_driver.h"
-#include "adv7513.h"
+#include "video.h"
 
 
 #define CFG2FLASH_WORD_FACTOR_U32   4
