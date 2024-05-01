@@ -74,9 +74,9 @@ Only change something here if you are sure what you are doing.
 | Entry | Default | Description |
 |:------|:--------|:------------|
 | **Input mode** \[1\] | | Mode where the following settings are applied, NTSC or PAL |
-| **New settings - 240p/288p (4:3)** | Off | Changes to 240p/288p (4:3 with pixel repetition) output resolution<br>Note that scaling options will be limited and output becomes corrupted if N64 is running in 480i/576i |
-| **New settings - Output resolution** | \[2\] | Changes output resolution \[3,4,5\] |
-| **New settings - Use VGA-flag in 480p** | Off | Changes to 720p (16:9) output resolution |
+| **New settings - Output resolution** | \[2\] | Changes output resolution \[3,4\] |
+| **New settings - Use VGA-flag in 480p** | Off | Reduces width from 720 pixel to 640 pixel in 480p and 576p output resolution |
+| **New settings - Direct mode version** \[5\]| DV1 (MiSTer) | Switches between direct mode as used on MiSTer (_DV1 (MiSTer)_) and used by PixelFX (_FX-Direct_)<br>DV1 is supported by Retrotink4k, OSSC Pro and Morph, FX-Direct only by Morph. |
 | **New settings - Frame-locked mode** | Off | Varies the pixel clock such that vertical sync matches the N64 generated vertical clock.<br>Vsync in this mode is slightly off spec. To my experience, NTSC runs fine on most TVs other than PAL.<br>Always on on direct mode |
 | **New settings - Force 50Hz/60Hz** | Off (N64 Auto) | Forces 50Hz or 60Hz vertical output frequency. This may introduce additional shudder when running PAL in 60Hz and NTSC in 50Hz.<br>This option becomes inaccessible in frame locked mode.<br>Always on Auto on direct mode |
 | **New settings - Test and apply** | | Apply current changes \[6\] |
@@ -84,9 +84,9 @@ Only change something here if you are sure what you are doing.
 
 \[1\] You are allowed to quickly change the _Input mode_ on this screen by pressing **L** or **R** on the controller.  
 \[2\] Default depends on boot procedure (see section [Default Configuration](https://github.com/borti4938/n64adv2_fw_beta_releases#default-configuration))  
-\[3\] Available resolutions are: **Direct** (240p/480i / 288p/576i as per game), **480p/576p** (4:3), **720p** (16:9), **960p** (4:3), **1080p (16:9)**, **1200p** (4:3), and **1440p** (4:3 and 16:9)  
-\[4\] Note that the 1440p modes will only be available if you unlock it over the _Miscellaneous_ menu or if it is already configured.  
-\[5\] 1440p (16:9) uses pixel repetition at the HDMI transmitter. So 1440p (4:3) should be preferred if this works in the particular setup.  
+\[3\] Available resolutions are: **Direct** (240p/480i / 288p/576i as per game in _DV1_, and 720p in _FX-Direct_), **480p/576p** (4:3), **720p** (16:9), **960p** (4:3), **1080p (16:9)**, **1200p** (4:3), and **1440p** (4:3 and 16:9)  
+\[4\] Note that the 1440p modes will only be available if you unlock it over the _Miscellaneous_ menu or if it is already configured. 1440p (16:9) uses pixel repetition at the HDMI transmitter. So 1440p (4:3) should be preferred if this works in the particular setup.  
+\[5\] Only appears if target output resolution is set to _Direct_.  
 \[6\] Function test actual setting. Apply by confirming with _A_, undo with _B_ or waiting a short while.
 
 #### Scaler
@@ -243,9 +243,9 @@ This value contains 26 bits of following meaning:
 - \[23\]: PAL/NTSC mode detected at video input (1 = PAL, 0 = NTSC)
 - \[22\]: progressive/interlaced mode detected at video input (1 = interlaced, 0 = progressive)
 - \[21:20\]: Refresh rate at video output (00: Auto (same as input), 01 = 60Hz, 10 = 50Hz)
-- \[19\]: Use VGA instead of standard 480p (1 = yes, 0 = no)
+- \[19\]: Use VGA instead of standard 480p (1 = yes, 0 = no) / Direct mode (0 = DV1, 1 = FX-Direct)
 - \[18:16\]: Output resolution  
-  - 000: 240p/288p (4:3)
+  - 000: Direct
   - 001: 480p/576p (4:3)
   - 010: 720p (16:9)
   - 011: 960p (4:3)
