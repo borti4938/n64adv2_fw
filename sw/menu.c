@@ -89,7 +89,7 @@ menu_t home_menu = {
         {.id = MAIN2SCALER_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &viscaling_screen},
         {.id = MAIN2SCANLINE_V_OFFSET, .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &slcfg_opt_subscreen},
         {.id = MAIN2VIPROC_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &vicfg_screen},
-        {.id = MAIN2AUDPROC_V_OFFSET  , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &audcfg_screen},
+        {.id = MAIN2AUDPROC_V_OFFSET , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &audcfg_screen},
         {.id = MAIN2MISC_V_OFFSET    , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &misc_screen},
         {.id = MAIN2SAVE_V_OFFSET    , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &rwdata_screen},
         {.id = MAIN2DEBUG_V_OFFSET   , .arrowshape = &select_arrow, .leavetype = ISUBMENU, .submenu = &debug_screen},
@@ -501,23 +501,23 @@ void print_linex_settings() {
   alt_u8 cfg_val = linex_words[vmode_menu].config_val;
   alt_u8 cfg_ref_val = linex_words[vmode_menu].config_ref_val;
 
-  alt_u8 val_linex = (cfg_val & (linex_resolution.getvalue_mask)) >> linex_resolution.cfg_word_offset;
-  alt_u8 val_dv = (cfg_val & (dvmode_version.getvalue_mask)) >> dvmode_version.cfg_word_offset;
-  alt_u8 val_vga = (cfg_val & (vga_for_480p.getvalue_mask)) >> vga_for_480p.cfg_word_offset;
+  alt_u8 val_linex = (cfg_val & CFG_RESOLUTION_GETMASK);
+  alt_u8 val_dv = (cfg_val & CFG_DVMODE_VERSION_GETMASK) >> CFG_DVMODE_VERSION_OFFSET;
+  alt_u8 val_vga = (cfg_val & CFG_VGAFOR480P_GETMASK) >> CFG_VGAFOR480P_OFFSET;
   alt_u8 val_llm;
   if (val_linex == DIRECT) val_llm = 1;
-  else                     val_llm = (cfg_val & (low_latency_mode.getvalue_mask)) >> low_latency_mode.cfg_word_offset;
+  else                     val_llm = (cfg_val & CFG_LOWLATENCYMODE_GETMASK) >> CFG_LOWLATENCYMODE_OFFSET;
   alt_u8 val_5060;
   if (val_llm) val_5060 = AUTO_HZ;
-  else         val_5060 = (cfg_val & (linex_force_5060.getvalue_mask)) >> linex_force_5060.cfg_word_offset;
+  else         val_5060 = (cfg_val & CFG_FORCE_5060_GETMASK) >> CFG_FORCE_5060_OFFSET;
 
   // LineX output
-  ref_val = (cfg_ref_val & (linex_resolution.getvalue_mask)) >> linex_resolution.cfg_word_offset;
+  ref_val = (cfg_ref_val & CFG_RESOLUTION_GETMASK);
   font_color = val_linex == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
   vd_clear_lineend(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_RESOLUTION_V_OFFSET);
   if (val_linex == DIRECT) {
     if (val_linex == ref_val) {
-      ref_val = (cfg_ref_val & (dvmode_version.getvalue_mask)) >> dvmode_version.cfg_word_offset;
+      ref_val = (cfg_ref_val & CFG_DVMODE_VERSION_GETMASK) >> CFG_DVMODE_VERSION_OFFSET;
       font_color = val_dv == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
     }
     vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_RESOLUTION_V_OFFSET,font_color,dvmode_version.value_string[val_dv]);
@@ -528,21 +528,21 @@ void print_linex_settings() {
   if (val_linex == LineX2) {
     if ((palmode && (val_5060 != FORCE_60HZ))  || (!palmode && (val_5060 == FORCE_50HZ)))
       vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_RESOLUTION_V_OFFSET,font_color,Resolution576pReplacement);
-    ref_val = (cfg_ref_val & (vga_for_480p.getvalue_mask)) >> vga_for_480p.cfg_word_offset;
+    ref_val = (cfg_ref_val & CFG_VGAFOR480P_GETMASK) >> CFG_VGAFOR480P_OFFSET;
     font_color = val_vga == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
     vd_print_string(VD_TEXT,vires_screen.arrow_position + 5,RESCFG_CURRENT_RESOLUTION_V_OFFSET,font_color,VGAFLAG[val_vga]);
   }
 
   // LLM
   if (val_linex == DIRECT) ref_val = 1;
-  else                     ref_val = (cfg_ref_val & (low_latency_mode.getvalue_mask)) >> low_latency_mode.cfg_word_offset;
+  else                     ref_val = (cfg_ref_val & CFG_LOWLATENCYMODE_GETMASK) >> CFG_LOWLATENCYMODE_OFFSET;
   font_color = val_llm == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
   vd_clear_lineend(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_SRCSYNC_V_OFFSET);
   vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_SRCSYNC_V_OFFSET,font_color,OffOn[val_llm]);
 
   // Hz mode
   if (val_llm) ref_val = AUTO_HZ;
-  else         ref_val = (cfg_ref_val & (linex_force_5060.getvalue_mask)) >> linex_force_5060.cfg_word_offset;
+  else         ref_val = (cfg_ref_val & CFG_FORCE_5060_GETMASK) >> CFG_FORCE_5060_OFFSET;
   font_color = val_5060 == ref_val ? FONTCOLOR_WHITE : FONTCOLOR_YELLOW;
   vd_clear_lineend(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_5060_V_OFFSET);
   vd_print_string(VD_TEXT,vires_screen.arrow_position,RESCFG_CURRENT_5060_V_OFFSET,font_color,linex_force_5060.value_string[val_5060]);

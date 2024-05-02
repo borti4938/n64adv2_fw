@@ -40,6 +40,8 @@
 #include "vd_driver.h"
 #include "video.h"
 
+#define U32_MAX_VALUE               0xFFFFFFFF
+#define gen_get_mask(b,o)           (~(U32_MAX_VALUE << b) << o)
 
 #define CFG2FLASH_WORD_FACTOR_U32   4
 #define CFG2FLASH_WORD_FACTOR_U16   2
@@ -131,10 +133,11 @@ void cfg_inc_value(config_t* cfg_data)
   }
 
   alt_u32 *cfg_word = &(cfg_data->cfg_word->cfg_word_val);
-  alt_u16 cur_val = (*cfg_word & cfg_data->getvalue_mask) >> cfg_data->cfg_word_offset;
+  alt_u32 getvalue_mask = gen_get_mask(cfg_data->num_cfg_bits,cfg_data->cfg_word_offset);
+  alt_u16 cur_val = (*cfg_word & getvalue_mask) >> cfg_data->cfg_word_offset;
 
   cur_val = cur_val == cfg_data->max_value ? 0 : cur_val + 1;
-  *cfg_word = (*cfg_word & ~cfg_data->getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
+  *cfg_word = (*cfg_word & ~getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
 }
 
 void cfg_dec_value(config_t* cfg_data)
@@ -145,10 +148,11 @@ void cfg_dec_value(config_t* cfg_data)
   }
 
   alt_u32 *cfg_word = &(cfg_data->cfg_word->cfg_word_val);
-  alt_u16 cur_val = (*cfg_word & cfg_data->getvalue_mask) >> cfg_data->cfg_word_offset;
+  alt_u32 getvalue_mask = gen_get_mask(cfg_data->num_cfg_bits,cfg_data->cfg_word_offset);
+  alt_u16 cur_val = (*cfg_word & getvalue_mask) >> cfg_data->cfg_word_offset;
 
   cur_val = cur_val == 0 ? cfg_data->max_value : cur_val - 1;
-  *cfg_word = (*cfg_word & ~cfg_data->getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
+  *cfg_word = (*cfg_word & ~getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
 }
 
 alt_u16 cfg_get_value(config_t* cfg_data, cfg_offon_t get_reference)
@@ -158,8 +162,9 @@ alt_u16 cfg_get_value(config_t* cfg_data, cfg_offon_t get_reference)
   alt_u32 *cfg_word;
   if (!get_reference) cfg_word = &(cfg_data->cfg_word->cfg_word_val);
   else                cfg_word = &(cfg_data->cfg_word->cfg_ref_word_val);
+  alt_u32 getvalue_mask = gen_get_mask(cfg_data->num_cfg_bits,cfg_data->cfg_word_offset);
 
-  return ((*cfg_word & cfg_data->getvalue_mask) >> cfg_data->cfg_word_offset);
+  return ((*cfg_word & getvalue_mask) >> cfg_data->cfg_word_offset);
 }
 
 void cfg_set_value(config_t* cfg_data, alt_u16 value)
@@ -171,8 +176,9 @@ void cfg_set_value(config_t* cfg_data, alt_u16 value)
 
   alt_u32 *cfg_word = &(cfg_data->cfg_word->cfg_word_val);
   alt_u32 cur_val = value > cfg_data->max_value ? 0 : value;
+  alt_u32 getvalue_mask = gen_get_mask(cfg_data->num_cfg_bits,cfg_data->cfg_word_offset);
 
-  *cfg_word = (*cfg_word & ~cfg_data->getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
+  *cfg_word = (*cfg_word & ~getvalue_mask) | (cur_val << cfg_data->cfg_word_offset);
 }
 
 void cfg_apply_new_linex(void) {

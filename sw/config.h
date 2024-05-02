@@ -126,7 +126,7 @@ typedef struct {
     alt_u8              cfg_word_offset;
     alt_u8              cfg_value;
   };
-  const alt_u32 getvalue_mask;
+  const alt_u8  num_cfg_bits;
   const alt_u16 max_value;
   const cgf_disp_type_t cfg_disp_type;
   union {
@@ -164,13 +164,13 @@ typedef struct {
 // some definitions for the configuration (might be also needed outside of cfg_io_p.h / cfg_int_p.h) ...
 
 // ... IO bases
-#define INTCFG0_GETALL_MASK   0x0007FFFF
 #define EXTCFG0_OUT_BASE  CFG_SET0_OUT_BASE
 #define EXTCFG1_OUT_BASE  CFG_SET1_OUT_BASE
 #define EXTCFG2_OUT_BASE  CFG_SET2_OUT_BASE
 #define EXTCFG3_OUT_BASE  CFG_SET3_OUT_BASE
 
 // ... the different overall masks
+#define INTCFG0_GETALL_MASK   0x0007FFFF
 #define EXTCFG0_GETALL_MASK   0xFFFFFFFF
 #define EXTCFG1_GETALL_MASK   0xFDFFFFB7
 #define EXTCFG2_GETALL_MASK   0x3FFFFFFF
@@ -191,6 +191,21 @@ typedef struct {
 #define CFG_AUTOSAVE_OFFSET                4
 #define CFG_DEBUGVTIMEOUT_OFFSET           3
 #define CFG_LINK_HV_SCALE_OFFSET           0
+
+#define CFG_LEDSWAP_NOFBITS                 1
+#define CFG_HDR10INJ_NOFBITS                1
+#define CFG_COLORSPACE_NOFBITS              1
+#define CFG_LIMITED_COLORSPACE_NOFBITS      1
+#define CFG_DEBLUR_PC_DEFAULT_NOFBITS       1
+#define CFG_MODE16BIT_PC_DEFAULT_NOFBITS    1
+#define CFG_DEBLUR_IGR_NOFBITS              1
+#define CFG_MODE16BIT_IGR_NOFBITS           1
+#define CFG_FALLBACK_RES_NOFBITS            2
+#define CFG_FALLBACK_TRIGGER_NOFBITS        2
+#define CFG_FALLBACK_MENU_NOFBITS           1
+#define CFG_AUTOSAVE_NOFBITS                1
+#define CFG_DEBUGVTIMEOUT_NOFBITS           1
+#define CFG_LINK_HV_SCALE_NOFBITS           3
 
 #define CFG_LEDSWAP_GETMASK                 (1<<CFG_LEDSWAP_OFFSET)
   #define CFG_LEDSWAP_SETMASK                 (1<<CFG_LEDSWAP_OFFSET)
@@ -248,6 +263,14 @@ typedef struct {
   #define CFG_RESOLUTIONMSB_OFFSET     2
   #define CFG_RESOLUTIONLSB_OFFSET     0
 
+#define CFG_HORSCALE_NOFBITS        12
+#define CFG_VERTSCALE_NOFBITS       12
+#define CFG_FORCE_5060_NOFBITS       2
+#define CFG_LOWLATENCYMODE_NOFBITS   1
+#define CFG_DVMODE_VERSION_NOFBITS   1
+#define CFG_VGAFOR480P_NOFBITS       1
+#define CFG_RESOLUTION_NOFBITS       3
+
 #define CFG_VERTSCALE_GETMASK         (0xFFF<<CFG_VERTSCALE_OFFSET)
   #define CFG_VERTSCALE_RSTMASK         (EXTCFG0_GETALL_MASK & ~CFG_VERTSCALE_GETMASK)
   #define CFG_VERTSCALE_CLRMASK         (EXTCFG0_GETALL_MASK & ~CFG_VERTSCALE_GETMASK)
@@ -294,6 +317,21 @@ typedef struct {
 #define CFG_V_INTERP_MODE_OFFSET   4
 #define CFG_H_INTERP_MODE_OFFSET   1
 #define CFG_PAL_BOXED_MODE_OFFSET  0
+
+#define CFG_SHOWLOGO_NOFBITS        1
+#define CFG_SHOWOSD_NOFBITS         1
+#define CFG_MUTEOSDTMP_NOFBITS      1
+#define CFG_IGRRST_NOFBITS          1
+#define CFG_RSTMASKS_NOFBITS        2
+#define CFG_GAMMA_NOFBITS           4
+#define CFG_DEBLUR_MODE_NOFBITS     1
+#define CFG_16BITMODE_NOFBITS       1
+#define CFG_VERTSHIFT_NOFBITS       5
+#define CFG_HORSHIFT_NOFBITS        5
+#define CFG_DEINTER_MODE_NOFBITS    2
+#define CFG_V_INTERP_MODE_NOFBITS   2
+#define CFG_H_INTERP_MODE_NOFBITS   2
+#define CFG_PAL_BOXED_MODE_NOFBITS  1
 
 #define CFG_SHOWLOGO_GETMASK        (1<<CFG_SHOWLOGO_OFFSET)
   #define CFG_SHOWLOGO_SETMASK        (1<<CFG_SHOWLOGO_OFFSET)
@@ -352,6 +390,19 @@ typedef struct {
 #define CFG_H2V_SL_LINK_OFFSET     1
 #define CFG_SL_CALC_BASE_OFFSET    0
 
+#define CFG_VSL_THICKNESS_NOFBITS   2
+#define CFG_VSL_PROFILE_NOFBITS     2
+#define CFG_VSLHYBDEP_NOFBITS       5
+#define CFG_VSLSTR_NOFBITS          4
+#define CFG_HSL_THICKNESS_NOFBITS   2
+#define CFG_HSL_PROFILE_NOFBITS     2
+#define CFG_HSLHYBDEP_NOFBITS       5
+#define CFG_HSLSTR_NOFBITS          4
+#define CFG_VSL_EN_NOFBITS          1
+#define CFG_HSL_EN_NOFBITS          1
+#define CFG_H2V_SL_LINK_NOFBITS     1
+#define CFG_SL_CALC_BASE_NOFBITS    1
+
 #define CFG_VSL_THICKNESS_GETMASK   (0x3<<CFG_VSL_THICKNESS_OFFSET)
   #define CFG_VSL_THICKNESS_RSTMASK   (EXTCFG2_GETALL_MASK & ~CFG_VSL_THICKNESS_GETMASK)
   #define CFG_VSL_THICKNESS_CLRMASK   (EXTCFG2_GETALL_MASK & ~CFG_VSL_THICKNESS_GETMASK)
@@ -395,6 +446,12 @@ typedef struct {
 #define CFG_AUDIO_AMP_OFFSET            3
 #define CFG_AUDIO_SWAP_LR_OFFSET        2
 #define CFG_AUDIO_SPDIF_EN_OFFSET       1
+
+#define CFG_AUDIO_FILTER_BYPASS_NOFBITS   1
+#define CFG_AUDIO_MUTE_NOFBITS            1
+#define CFG_AUDIO_AMP_NOFBITS             5
+#define CFG_AUDIO_SWAP_LR_NOFBITS         1
+#define CFG_AUDIO_SPDIF_EN_NOFBITS        1
 
 #define CFG_AUDIO_FILTER_BYPASS_GETMASK   (1<<CFG_AUDIO_FILTER_BYPASS_OFFSET)
   #define CFG_AUDIO_FILTER_BYPASS_SETMASK   (1<<CFG_AUDIO_FILTER_BYPASS_OFFSET)
