@@ -42,7 +42,6 @@ extern const char  *ColorSpace[], *ScaleVHLink[], *OffOn[], *NTSCPAL_SEL[], *HV_
 
 // internal configuration with references (saveable)
 cfg_b32word_t intcfg0_word = {
-  .cfg_word_mask    = INTCFG0_GETALL_MASK,
   .cfg_word_val     = 0x00000000,
   .cfg_ref_word_val = 0x00000000
 };

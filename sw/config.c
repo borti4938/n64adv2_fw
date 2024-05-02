@@ -40,9 +40,6 @@
 #include "vd_driver.h"
 #include "video.h"
 
-#define U32_MAX_VALUE               0xFFFFFFFF
-#define gen_get_mask(b,o)           (~(U32_MAX_VALUE << b) << o)
-
 #define CFG2FLASH_WORD_FACTOR_U32   4
 #define CFG2FLASH_WORD_FACTOR_U16   2
 

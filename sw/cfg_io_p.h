@@ -45,7 +45,6 @@ extern const char *OffOn[], *Force5060[], *DV_Versions[], *Resolutions[], *DeInt
 
 // extcfg0 - scaler
 cfg_b32word_t extcfg0_word = {
-  .cfg_word_mask    = EXTCFG0_GETALL_MASK,
   .cfg_word_val     = 0x000000000,
   .cfg_ref_word_val = 0x000000000
 };
@@ -116,7 +115,6 @@ config_t linex_resolution = {
 
 // extcfg1 - osd, igr and vi-processing
 cfg_b32word_t extcfg1_word = {
-  .cfg_word_mask    = EXTCFG1_GETALL_MASK,
   .cfg_word_val     = 0x00000000,
   .cfg_ref_word_val = 0x00000000
 };
@@ -243,7 +241,6 @@ config_t pal_boxed_mode = {
 
 // extcfg2 - scanlines
 cfg_b32word_t extcfg2_word ={
-  .cfg_word_mask    = EXTCFG2_GETALL_MASK,
   .cfg_word_val     = 0x00000000,
   .cfg_ref_word_val = 0x00000000
 };
@@ -359,7 +356,6 @@ config_t sl_calc_base = {
 
 // extcfg3 - audio
 cfg_b32word_t extcfg3_word = {
-  .cfg_word_mask    = EXTCFG3_GETALL_MASK,
   .cfg_word_val     = 0x00000000,
   .cfg_ref_word_val = 0x00000000
 };
