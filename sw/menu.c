@@ -299,17 +299,21 @@ menu_t rwdata_screen = {
     .number_selections = 8,
     .leaves = {
         {.id = RWDATA_AUTOSAVE_V_OFFSET        , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &autosave},
-        {.id = RWDATA_SAVE_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1 = &cfg_save_to_flash},
-        {.id = RWDATA_LOAD_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1 = &cfg_load_from_flash},
+        {.id = RWDATA_SAVE_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1    = &cfg_save_to_flash},
+        {.id = RWDATA_LOAD_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1    = &cfg_load_from_flash},
         {.id = RWDATA_CPYCFG_DIRECTION_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &copy_direction},
-        {.id = RWDATA_CPYCFG_FUNCTION_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0 = &cfg_copy_ntsc2pal},
+        {.id = RWDATA_CPYCFG_FUNCTION_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0    = &cfg_copy_ntsc2pal},
         {.id = RWDATA_FALLBACKRES_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_resolution},
         {.id = RWDATA_FALLBACKTRIG_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_trigger},
         {.id = RWDATA_FALLBACKMENU_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_menu}
     }
 #else
-    .number_selections = 3,
+    .number_selections = 7,
         .leaves = {
+            {.id = RWDATA_SAVE_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1    = &cfg_save_to_flash},
+            {.id = RWDATA_LOAD_FL_V_OFFSET         , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC1, .sys_fun_1    = &cfg_load_from_flash},
+            {.id = RWDATA_CPYCFG_DIRECTION_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &copy_direction},
+            {.id = RWDATA_CPYCFG_FUNCTION_V_OFFSET , .arrowshape = &select_arrow, .leavetype = INFO_RET_FUNC0, .sys_fun_0    = &cfg_copy_ntsc2pal},
             {.id = RWDATA_FALLBACKRES_V_OFFSET     , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_resolution},
             {.id = RWDATA_FALLBACKTRIG_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_trigger},
             {.id = RWDATA_FALLBACKMENU_V_OFFSET    , .arrowshape = &optval_arrow, .leavetype = ICONFIG       , .config_value = &fallback_menu}

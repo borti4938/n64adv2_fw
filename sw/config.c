@@ -334,12 +334,13 @@ bool_t confirmation_routine(bool_t question_type)
 
 int cfg_save_to_flash(bool_t need_confirm)
 {
-#ifdef DEBUG
-  return 0;
-#else
   if (need_confirm) {
     if (!confirmation_routine(0)) return -CFG_FLASH_SAVE_ABORT; // does not return ok
   }
+
+#ifdef DEBUG
+  return 0;
+#else
 
   alt_u8 databuf[PAGESIZE];
   int idx, jdx;
@@ -377,12 +378,13 @@ int cfg_save_to_flash(bool_t need_confirm)
 
 int cfg_load_from_flash(bool_t need_confirm)
 {
-#ifdef DEBUG
-  return 0;
-#else
   if (need_confirm) {
     if (!confirmation_routine(0)) return -CFG_FLASH_LOAD_ABORT; // does not return ok
   }
+
+#ifdef DEBUG
+  return 0;
+#else
 
   alt_u8 databuf[PAGESIZE];
   int idx, jdx, retval;
