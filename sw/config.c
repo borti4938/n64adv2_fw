@@ -47,7 +47,7 @@ typedef struct {
   alt_u8  vers_cfg_main;
   alt_u8  vers_cfg_sub;
   alt_u8  cfg_words[CFG2FLASH_WORD_FACTOR_U32*NUM_CFG_B32WORDS];
-  alt_u8  cfg_linex_trays[LINEX_MODES];
+  alt_u8  cfg_linex_tray;
   alt_u8  cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32*LINEX_MODES];
   alt_u8  cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*NUM_TIMING_MODES];
   alt_u8  cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*(NUM_SCALING_MODES-NUM_DIRECT_MODES)];
@@ -61,11 +61,7 @@ configuration_t sysconfig = {
   .cfg_word_def[EXTCFG3] = &extcfg3_word
 };
 
-config_tray_u8_t linex_words[LINEX_MODES+1] = {
-  { .config_val = 0x00, .config_ref_val = 0x00},
-  { .config_val = 0x00, .config_ref_val = 0x00},
-  { .config_val = 0x00, .config_ref_val = 0x00}
-};
+alt_u8 linex_words[2] = {0x00,0x00}; // menu + sys
 
 config_tray_t linex_scanlines_words[LINEX_MODES] = {
   { .config_val = 0x00000000, .config_ref_val = 0x00000000},
@@ -114,7 +110,7 @@ const alt_u16 predef_scaling_vals[LINEX_MODES+1][PREDEFINED_SCALE_STEPS] __ufmda
 
 //extern bool_t use_flash;
 extern cfg_scaler_in2out_sel_type_t scaling_menu;
-extern vmode_t vmode_menu, vmode_scaling_menu;
+extern vmode_t vmode_scaling_menu;
 
 bool_t unlock_1440p;
 
@@ -179,7 +175,7 @@ void cfg_set_value(config_t* cfg_data, alt_u16 value)
 }
 
 void cfg_apply_new_linex(void) {
-  linex_words[vmode_menu] = linex_words[PAL+1];
+  linex_words[1] = linex_words[0];
 }
 
 void cfgfct_unlock1440p(bool_t set_value)
@@ -355,8 +351,7 @@ int cfg_save_to_flash(bool_t need_confirm)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
       ((cfg4flash_t*) databuf)->cfg_words[CFG2FLASH_WORD_FACTOR_U32*idx+jdx] = (alt_u8) ((sysconfig.cfg_word_def[idx]->cfg_word_val >> (8*jdx)) & 0xFF);
 
-  ((cfg4flash_t*) databuf)->cfg_linex_trays[NTSC] = linex_words[NTSC].config_val; // global/ntsc
-  ((cfg4flash_t*) databuf)->cfg_linex_trays[PAL] = linex_words[PAL].config_val; // pal
+  ((cfg4flash_t*) databuf)->cfg_linex_tray = linex_words[1];
 
   for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++) {
     ((cfg4flash_t*) databuf)->cfg_linex_scanlines_trays[                          jdx] = (alt_u8) ((linex_scanlines_words[NTSC].config_val >> (8*jdx)) & 0xFF); // global/ntsc
@@ -410,10 +405,7 @@ int cfg_load_from_flash(bool_t need_confirm)
       sysconfig.cfg_word_def[idx]->cfg_word_val |= (((cfg4flash_t*) databuf)->cfg_words[CFG2FLASH_WORD_FACTOR_U32*idx + jdx] << (8*jdx));
   }
 
-  linex_words[NTSC].config_val = 0;
-  linex_words[PAL].config_val = 0;
-  linex_words[NTSC].config_val |= ((cfg4flash_t*) databuf)->cfg_linex_trays[NTSC];
-  linex_words[PAL].config_val  |= ((cfg4flash_t*) databuf)->cfg_linex_trays[PAL];
+  linex_words[1] = ((cfg4flash_t*) databuf)->cfg_linex_tray;
 
   linex_scanlines_words[NTSC].config_val = 0;
   linex_scanlines_words[PAL].config_val = 0;
@@ -443,10 +435,8 @@ int cfg_load_from_flash(bool_t need_confirm)
   cfg_set_value(&mode16bit_powercycle,cfg_get_value(&mode16bit,0));
   cfg_set_value(&mode16bit,(alt_u8) mode16bit_bak);
 
-  if (((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK)  ||
-      ((linex_words[NTSC].config_val & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440W_SETMASK) ||
-      ((linex_words[PAL].config_val  & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK)  ||
-      ((linex_words[PAL].config_val  & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440W_SETMASK)  )
+  if (((linex_words[1] & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440_SETMASK)  ||
+      ((linex_words[1] & CFG_RESOLUTION_GETMASK) == CFG_RESOLUTION_1440W_SETMASK)  )
     unlock_1440p = TRUE;
   else
     unlock_1440p = FALSE;
@@ -455,25 +445,21 @@ int cfg_load_from_flash(bool_t need_confirm)
 #endif
 }
 
-void cfg_store_linex_word(vmode_t palmode_select,bool_t skip_extcfg0) {
-  if (!skip_extcfg0) {
-    linex_words[palmode_select].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);
-    linex_words[palmode_select].config_ref_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val & CFG_EXTCFG0_GETLINEX_MASK);
-  }
+void cfg_store_linex_word(bool_t for_n64adv) {
+  linex_words[for_n64adv] = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);
+}
+
+void cfg_load_linex_word(bool_t for_n64adv) {
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
+  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[for_n64adv];
+}
+
+void cfg_store_scanline_word(vmode_t palmode_select) {
   linex_scanlines_words[palmode_select].config_val = sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val;
   linex_scanlines_words[palmode_select].config_ref_val = sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val;
 }
 
-void cfg_load_linex_word(vmode_t palmode_select,bool_t for_n64adv) {
-  sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
-  sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val &= CFG_EXTCFG0_GETNOLINEX_MASK;
-  if (for_n64adv) {
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[palmode_select].config_val;
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= linex_words[palmode_select].config_val;
-  } else {
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= linex_words[LINEX_TMP_TRAY].config_val; // loading from menu tray for EXTCFG0
-    sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= linex_words[LINEX_TMP_TRAY].config_ref_val; // loading from menu tray for EXTCFG0
-  }
+void cfg_load_scanline_word(bool_t palmode_select) {
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val = linex_scanlines_words[palmode_select].config_val;
   sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val = linex_scanlines_words[palmode_select].config_ref_val;
 }
@@ -539,7 +525,7 @@ void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
   sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val |= (scaling_words[scaling_word_select].config_ref_val & CFG_EXTCFG0_GETSCALING_MASK);
 }
 
-int cfg_load_defaults(fallback_vmodes_t vmode, bool_t need_confirm)
+int cfg_load_defaults(fallback_vmodes_t vmode_default, bool_t need_confirm)
 {
   if (need_confirm) {
     if (!confirmation_routine(0)) return -CFG_DEF_LOAD_ABORT; // does not return ok
@@ -553,44 +539,32 @@ int cfg_load_defaults(fallback_vmodes_t vmode, bool_t need_confirm)
 
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val &= EXTCFG2_NODEFAULTS_GETMASK;
   sysconfig.cfg_word_def[EXTCFG2]->cfg_word_val |= EXTCFG2_DEFAULTS;
+  cfg_store_scanline_word(NTSC);
+  cfg_store_scanline_word(PAL);
 
   sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val &= EXTCFG3_NODEFAULTS_GETMASK;
   sysconfig.cfg_word_def[EXTCFG3]->cfg_word_val |= EXTCFG3_DEFAULTS;
 
   sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-  switch (vmode) {
+  switch (vmode_default) {  // don't care about ntsc/pal as scaling properly set at end
     case FB_1080P:
-//      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL1080P;
-      cfg_store_linex_word(PAL,0);
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
       sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC1080P;
-      cfg_store_linex_word(NTSC,0);
       break;
     case FB_480P:
-//      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL576P;
-      cfg_store_linex_word(PAL,0);
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
       sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC480P;
-      cfg_store_linex_word(NTSC,0);
       break;
     default:  // FB_DV1 / FB_FXD
-//      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_PAL288P;
-      if (vmode == FB_FXD) sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= CFG_DVMODE_VERSION_SETMASK;
-      cfg_store_linex_word(PAL,0);
-      sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val &= EXTCFG0_NODEFAULTS_GETMASK;
       sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= EXTCFG0_DEFAULTS_NTSC240P;
-      if (vmode == FB_FXD) sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= CFG_DVMODE_VERSION_SETMASK;
-      cfg_store_linex_word(NTSC,0);
+      if (vmode_default == FB_FXD) sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val |= CFG_DVMODE_VERSION_SETMASK;
   }
+  cfg_store_linex_word(1);
 
   int idx;
+  for (idx = 0; idx < LINEX_MODES; idx++) linex_scanlines_words->config_val &= (CFG_VSL_EN_CLRMASK & CFG_HSL_EN_CLRMASK);  // just disable scanlines for default
   for (idx = 0; idx < NUM_TIMING_MODES; idx++) cfg_reset_timing_word(idx);
   for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++) cfg_reset_scaling_word(idx);
 
-  cfg_load_linex_word(palmode,1);
+  cfg_load_scanline_word(palmode);
   cfg_load_timing_word(palmode);
   cfg_load_scaling_word(palmode);
 
@@ -623,8 +597,6 @@ void cfg_update_reference()
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++)
     sysconfig.cfg_word_def[idx]->cfg_ref_word_val = sysconfig.cfg_word_def[idx]->cfg_word_val;
 
-  linex_words[NTSC].config_ref_val = linex_words[NTSC].config_val;
-  linex_words[PAL].config_ref_val  = linex_words[PAL].config_val;
   linex_scanlines_words[NTSC].config_ref_val = linex_scanlines_words[NTSC].config_val;
   linex_scanlines_words[PAL].config_ref_val  = linex_scanlines_words[PAL].config_val;
   for (idx = 0; idx < NUM_TIMING_MODES; idx++) timing_words[idx].config_ref_val = timing_words[idx].config_val;
@@ -637,12 +609,10 @@ int cfg_copy_ntsc2pal()
 
   alt_u8 idx;
   if (cfg_get_value(&copy_direction,0)) { // PAL to NTSC
-    linex_words[NTSC].config_val = linex_words[PAL].config_val;
     linex_scanlines_words[NTSC].config_val = linex_scanlines_words[PAL].config_val;
     for (idx = 1; idx <= NTSC_LAST_SCALING_MODE; idx++)
       scaling_words[idx-1] = scaling_words[idx+NTSC_LAST_SCALING_MODE-1];
   } else {  // NTSC to PAL
-    linex_words[PAL].config_val = linex_words[NTSC].config_val;
     linex_scanlines_words[PAL].config_val = linex_scanlines_words[NTSC].config_val;
     for (idx = 1; idx <= NTSC_LAST_SCALING_MODE; idx++)
       scaling_words[idx+NTSC_LAST_SCALING_MODE-1] = scaling_words[idx-1];

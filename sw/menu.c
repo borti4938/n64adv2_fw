@@ -45,7 +45,6 @@
 char szText[VD_WIDTH];
 extern vmode_t vmode_menu;
 extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
-extern config_tray_u8_t linex_words[LINEX_MODES+1];
 
 static const arrowshape_t select_arrow = {
     .left  = EMPTY,
@@ -116,19 +115,18 @@ menu_t vires_screen = {
     .current_selection = 0,
     .number_selections = 6,
     .leaves = {
-        {.id = RESCFG_INPUT_V_OFFSET       , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &region_selection},
         {.id = RESCFG_RESOLUTION_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &linex_resolution},
+        {.id = RESCFG_USE_DV1_FXD_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &dvmode_version},
         {.id = RESCFG_USE_VGA_RES_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &vga_for_480p},
         {.id = RESCFG_USE_SRCSYNC_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &low_latency_mode},
         {.id = RESCFG_FORCE_5060_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &linex_force_5060},
         {.id = RESCFG_TEST_N_APPLY_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = CFG_FUNC0, .cfgfct_call_0  = &cfg_apply_new_linex},
-        {.id = RESCFG_USE_DV1_FXD_V_OFFSET , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value   = &dvmode_version},
     }
 };
 
-#define LINEX_SELECTION         1
-#define VGA_DV1_SELECTION       2
-  #define DV1_SELECTION_OFFSET    4
+#define LINEX_SELECTION         0
+#define DIRECTMODE_SELECTION    1
+#define VGA480P_SELECTION       2
 #define LLMODE_SELECTION        3
 #define FORCE5060_SELECTION     4
 
@@ -498,8 +496,8 @@ void print_confirm_info(alt_u8 type) {
 void print_linex_settings() {
   alt_u8 ref_val, font_color;
 
-  alt_u8 cfg_val = linex_words[vmode_menu].config_val;
-  alt_u8 cfg_ref_val = linex_words[vmode_menu].config_ref_val;
+  alt_u8 cfg_val = sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val;
+  alt_u8 cfg_ref_val = sysconfig.cfg_word_def[EXTCFG0]->cfg_ref_word_val;
 
   alt_u8 val_linex = (cfg_val & CFG_RESOLUTION_GETMASK);
   alt_u8 val_dv = (cfg_val & CFG_DVMODE_VERSION_GETMASK) >> CFG_DVMODE_VERSION_OFFSET;
@@ -608,10 +606,6 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       }
       break;
     case CMD_MENU_PAGE_RIGHT:
-      if (is_vires_screen(*current_menu)) {
-        cfg_inc_value(&region_selection);
-        todo = NEW_SELECTION;
-      }
       if (is_viscaling_screen(*current_menu)){
         if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < TIMING_PAGE_SELECTION) {
           cfg_inc_value(&scaling_selection);
@@ -629,10 +623,6 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
       }
       break;
     case CMD_MENU_PAGE_LEFT:
-      if (is_vires_screen(*current_menu)) {
-        cfg_dec_value(&region_selection);
-        todo = NEW_SELECTION;
-      }
       if (is_viscaling_screen(*current_menu)){
         if ((*current_menu)->current_selection >= SCALING_PAGE_SELECTION && (*current_menu)->current_selection < TIMING_PAGE_SELECTION) {
           cfg_dec_value(&scaling_selection);
@@ -692,23 +682,17 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
   if (apply_sl_vert_negoffset(*current_menu) && current_sel > SL_VLINK_SELECTION){
     current_sel -= SL_HORI_TO_VERT_OFFSET;
   }
-  if (is_vires_screen(*current_menu)) {
-    if (cfg_get_value(&linex_resolution,0) == DIRECT) {
-      vd_print_string(VD_TEXT,RESCFG_OVERLAY_H_OFFSET+4,RESCFG_USE_DV1_FXD_V_OFFSET,FONTCOLOR_WHITE,resolution_overlay_variation_dv1);
-      if (current_sel == VGA_DV1_SELECTION) current_sel += DV1_SELECTION_OFFSET;
-    } else {
-      vd_print_string(VD_TEXT,RESCFG_OVERLAY_H_OFFSET+4,RESCFG_USE_VGA_RES_V_OFFSET,FONTCOLOR_WHITE,resolution_overlay_variation_vga);
-    }
-  }
 
   if (command == CMD_NON || todo == NEW_OVERLAY || todo == NEW_SELECTION) { // end by end of this if clause if we have either no command, new overlay or a new selection
     if (is_vires_screen(*current_menu)) {
       if (cfg_get_value(&linex_resolution,0) == DIRECT) {
-        if ((current_sel == FORCE5060_SELECTION) || (current_sel == LLMODE_SELECTION))
-          (*current_menu)->current_selection = (command == CMD_MENU_UP) ? LLMODE_SELECTION - 1 : FORCE5060_SELECTION + 1;
+        if ((current_sel == VGA480P_SELECTION) || (current_sel == FORCE5060_SELECTION))
+          (*current_menu)->current_selection = (command == CMD_MENU_UP) ? VGA480P_SELECTION - 1 : FORCE5060_SELECTION + 1;
       } else {
-        if ((cfg_get_value(&low_latency_mode,0) == ON) && (current_sel == FORCE5060_SELECTION))
-          (*current_menu)->current_selection = (command == CMD_MENU_UP) ? FORCE5060_SELECTION - 1 : FORCE5060_SELECTION + 1;
+        if (current_sel == DIRECTMODE_SELECTION) current_sel = (command == CMD_MENU_UP) ? DIRECTMODE_SELECTION - 1 : DIRECTMODE_SELECTION + 1;
+        if ((cfg_get_value(&linex_resolution,0) != LineX2) && (current_sel == VGA480P_SELECTION)) current_sel = (command == CMD_MENU_UP) ? DIRECTMODE_SELECTION - 1 : VGA480P_SELECTION + 1;
+        if ((cfg_get_value(&low_latency_mode,0) == ON) && (current_sel == FORCE5060_SELECTION)) current_sel = (command == CMD_MENU_UP) ? FORCE5060_SELECTION - 1 : FORCE5060_SELECTION + 1;
+        (*current_menu)->current_selection = current_sel;
       }
     }
 
@@ -855,28 +839,19 @@ int update_cfg_screen(menu_t* current_menu)
         // check res screen
         if (is_vires_screen(current_menu)) {
           font_color = FONTCOLOR_WHITE;
-          if ((val_select == LineX2) && (v_run == LINEX_SELECTION)) {
-            alt_u8 force5060_mode = cfg_get_value(&linex_force_5060,0);
-            if (((vmode_menu == PAL) && (force5060_mode != FORCE_60HZ)) || (force5060_mode == FORCE_50HZ)) {
-              sprintf(szText,Resolution576pReplacement);
-              print_szText = TRUE;
-            }
-          }
           if (cfg_get_value(&linex_resolution,0) == DIRECT) {
-            if (v_run == VGA_DV1_SELECTION) {
-              v_run += DV1_SELECTION_OFFSET;
-              val_select = cfg_get_value(current_menu->leaves[v_run].config_value,0);
-            }
             if ((v_run == FORCE5060_SELECTION) || (v_run == LLMODE_SELECTION)) {
               val_select = (v_run == LLMODE_SELECTION);
               font_color = FONTCOLOR_GREY;
             }
           } else {
+            if (v_run == DIRECTMODE_SELECTION)  font_color = FONTCOLOR_GREY;
             if ((cfg_get_value(&low_latency_mode,0) == ON) && (v_run == FORCE5060_SELECTION)) {
               val_select = 0;
               font_color = FONTCOLOR_GREY;
             }
           }
+          if ((cfg_get_value(&linex_resolution,0) != LineX2) && (v_run == VGA480P_SELECTION)) font_color = FONTCOLOR_GREY;
         }
 
         // check scaling menu
@@ -896,7 +871,6 @@ int update_cfg_screen(menu_t* current_menu)
         } else {
           vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,current_menu->leaves[v_run].config_value->value_string[val_select]);
         }
-        if (is_vires_screen(current_menu) && (v_run == current_menu->number_selections)) v_run -= DV1_SELECTION_OFFSET;
         break;
       case CFG_FUNC1:  // at the moment just for unlock 1440p
         flag2set_func(unlock_1440p);
@@ -920,8 +894,6 @@ int update_cfg_screen(menu_t* current_menu)
         vd_print_string(VD_TEXT,h_l_offset,v_offset,font_color,EnterSubMenu);
         break;
       case CFG_FUNC0: // at the moment only in resolution screen
-        print_linex_settings();
-        /* no break */
       case INFO_RET_FUNC0:
       case INFO_RET_FUNC1:
         font_color = FONTCOLOR_WHITE;

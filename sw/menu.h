@@ -144,6 +144,7 @@ void gamma2txt_func(alt_u16 v);
 void print_current_timing_mode(void);
 void print_ctrl_data(void);
 void print_confirm_info(alt_u8 type);
+void print_linex_settings(void);
 void print_1440p_unlock_info(void);
 void print_cr_info(void);
 

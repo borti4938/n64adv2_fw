@@ -54,7 +54,7 @@ typedef struct {
 } periphal_state_t;
 
 //bool_t use_flash;
-vmode_t vmode_n64adv, vmode_menu, vmode_menu_pre, vmode_scaling_menu;
+vmode_t vmode_menu, vmode_scaling_menu;
 cfg_timing_model_sel_type_t timing_n64adv, timing_menu;
 cfg_scaler_in2out_sel_type_t scaling_n64adv, scaling_menu;
 
@@ -146,15 +146,13 @@ cfg_scaler_in2out_sel_type_t get_target_scaler(vmode_t palmode_tmp)
 
 void load_value_trays(bool_t for_n64adv)
 {
-  if (vmode_menu_pre != vmode_menu)
-    linex_words[LINEX_TMP_TRAY] = linex_words[vmode_menu];
-  vmode_menu_pre = vmode_menu;
+  cfg_load_linex_word(for_n64adv);
   if (for_n64adv) {
-    cfg_load_linex_word(vmode_n64adv,for_n64adv);
+    cfg_load_scanline_word(palmode);
     cfg_load_timing_word(timing_n64adv);
     cfg_load_scaling_word(scaling_n64adv);
   } else {
-    cfg_load_linex_word(vmode_menu,for_n64adv);
+    cfg_load_scanline_word(vmode_menu);
     cfg_load_timing_word(timing_menu);
     cfg_load_scaling_word(scaling_menu);
   }
@@ -162,7 +160,8 @@ void load_value_trays(bool_t for_n64adv)
 
 void store_value_trays()
 {
-  cfg_store_linex_word(vmode_menu,1);
+  cfg_store_linex_word(0);
+  cfg_store_scanline_word(vmode_menu);
   cfg_store_timing_word(timing_menu);
   cfg_store_scaling_word(scaling_menu);
 }
@@ -215,10 +214,9 @@ int main()
 
 
   // setup initial target resolution and apply config to FPGA
-  vmode_n64adv = NTSC;
   timing_n64adv = NTSC_PROGRESSIVE;
   scaling_n64adv = get_target_scaler(NTSC);
-  load_value_trays(1);
+  load_value_trays(1);  // initialize trays with config
 
   clk_config_t target_resolution, target_resolution_pre;
   target_resolution = get_target_resolution(PAL_PAT0,NTSC);
@@ -314,14 +312,13 @@ int main()
 
     // update correct config set for FPGA
     if (!changed_linex_setting) { // important to check this flag as program cycles 1x through menu after change to set also the scaling correctly
-      linex_word_pre = linex_words[palmode].config_val;
-      vmode_n64adv = palmode; // update only if there is no change in linex config
+      linex_word_pre = linex_words[1]; // copy from running sys_config
     }
-    if (vmode_n64adv)
+    if (palmode)
       timing_n64adv = scanmode ? PAL_INTERLACED : PAL_PROGRESSIVE;
     else
       timing_n64adv = scanmode ? NTSC_INTERLACED : NTSC_PROGRESSIVE;
-    scaling_n64adv = get_target_scaler(vmode_n64adv);
+    scaling_n64adv = get_target_scaler(palmode);
 
     // update correct config set for menu
     vmode_menu = cfg_get_value(&region_selection,0);
@@ -339,8 +336,7 @@ int main()
         message_cnt--;
       }
 
-      // load settings to display correct values for menu
-      load_value_trays(0);
+      load_value_trays(0);  // load settings to display correct values for menu
 
       if (video_input_detected_pre && !video_input_detected) {  // go directly to debug screen if no video input is being detected and if not already there
         home_menu.current_selection = DEBUG_IN_MAIN_MENU_SELECTION;
@@ -367,7 +363,7 @@ int main()
           cfg_set_value(&copy_direction,palmode);
           cfg_set_value(&scaling_selection,scaling_n64adv);
           cfg_set_value(&timing_selection,timing_n64adv);
-          vmode_menu_pre = (palmode == NTSC); // make sure that we load setting next loop correctly
+          linex_words[0] = linex_words[1];
           load_value_trays(0);  // reload needed
           print_overlay(menu);
           message_cnt = 0;
@@ -391,9 +387,6 @@ int main()
 
       if (menu->type == N64DEBUG) update_debug_screen(menu);
       else run_pin_state(0);
-
-      linex_words[PAL+1].config_val = (sysconfig.cfg_word_def[EXTCFG0]->cfg_word_val & CFG_EXTCFG0_GETLINEX_MASK);  // save current menu settings
-
     } else { /* ELSE OF if(active_osd && hdmi_clk_ok) */
       todo = NON;
 
@@ -449,6 +442,7 @@ int main()
     load_value_trays(1); // load settings for FPGA before leaving loop
     cfg_apply_to_logic();
 
+    if (menu == &vires_screen) print_linex_settings();
     if (message_cnt == 0) {
       if (menu->type == N64DEBUG) print_ctrl_data();
       else print_current_timing_mode();
@@ -539,7 +533,7 @@ int main()
       if (use_fxd_mode) send_fxd_if(ON,ON);
       if (!confirmation_routine(1)) {  // change was not ok
         print_confirm_info(CONFIRM_ABORTED-CONFIRM_OK);
-        linex_words[vmode_n64adv].config_val = linex_word_pre;
+        linex_words[1] = linex_word_pre; // restore config
         undo_changed_linex_setting = TRUE;
         message_cnt = CONFIRM_SHOW_CNT_LONG;
         if (use_fxd_mode) send_fxd_if(ON,OFF);
@@ -549,7 +543,7 @@ int main()
       }
       changed_linex_setting = FALSE;
     } else if (menu == &vires_screen) {
-      changed_linex_setting = (linex_word_pre != linex_words[vmode_n64adv].config_val);
+      changed_linex_setting = (linex_word_pre != linex_words[1]);
     }
   }
 

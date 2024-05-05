@@ -36,8 +36,6 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#define LINEX_TMP_TRAY  (PAL+1)
-
 typedef enum {
   INTCFG0 = 0,
   EXTCFG0,
@@ -597,7 +595,7 @@ typedef struct {
 
 extern configuration_t sysconfig;
 
-extern config_tray_u8_t linex_words[LINEX_MODES+1];
+extern alt_u8 linex_words[2];
 
 #ifdef HDR_TESTING
   extern config_t hdr10_injection;
@@ -638,8 +636,10 @@ alt_u16 cfgfct_scale(alt_u16 command,bool_t use_vertical,bool_t set_value,bool_t
 bool_t confirmation_routine(bool_t question_type);
 int cfg_save_to_flash(bool_t need_confirm);
 int cfg_load_from_flash(bool_t need_confirm);
-void cfg_store_linex_word(vmode_t palmode_select,bool_t skip_extcfg0);
-void cfg_load_linex_word(vmode_t palmode_select,bool_t for_n64adv);
+void cfg_store_linex_word(bool_t for_n64adv);
+void cfg_load_linex_word(bool_t for_n64adv);
+void cfg_store_scanline_word(vmode_t palmode_select);
+void cfg_load_scanline_word(bool_t for_n64adv);
 void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_select);
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
