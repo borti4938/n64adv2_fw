@@ -45,7 +45,7 @@ typedef enum {
   NTSC = 0,
   PAL
 } vmode_t;
-#define LINEX_MODES (PAL+1)
+#define VSTD_MODES (PAL+1)
 
 typedef enum {
   PROGRESSIVE = 0,

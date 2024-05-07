@@ -150,7 +150,7 @@ menu_t viscaling_screen = {
         {.id = SCALERCFG_VERTSCALE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = CFG_FUNC4, .cfgfct_call_4 = &cfgfct_scale},
         {.id = SCALERCFG_HORISCALE_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = CFG_FUNC4, .cfgfct_call_4 = &cfgfct_scale},
         {.id = SCALERCFG_PALBOXED_V_OFFSET   , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &pal_boxed_mode},
-        {.id = SCALERCFG_INSHIFTMODE_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &timing_selection},
+        {.id = SCALERCFG_INSHIFTMODE_V_OFFSET, .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &region_selection},
         {.id = SCALERCFG_VERTSHIFT_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &vert_shift},
         {.id = SCALERCFG_HORISHIFT_V_OFFSET  , .arrowshape = &optval_arrow, .leavetype = ICONFIG  , .config_value  = &hor_shift}
     }
@@ -617,7 +617,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
         }
 //        if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION && (*current_menu)->current_selection <= HORSHIFT_SELECTION) {
         if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION) {
-          cfg_inc_value(&timing_selection);
+          cfg_inc_value(&region_selection);
           todo = NEW_SELECTION;
         }
       }
@@ -633,7 +633,7 @@ updateaction_t modify_menu(cmd_t command, menu_t* *current_menu)
           todo = NEW_SELECTION;
         }
         if ((*current_menu)->current_selection >= TIMING_PAGE_SELECTION) {
-          cfg_dec_value(&timing_selection);
+          cfg_dec_value(&region_selection);
           todo = NEW_SELECTION;
         }
       }

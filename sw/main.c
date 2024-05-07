@@ -55,7 +55,6 @@ typedef struct {
 
 //bool_t use_flash;
 vmode_t vmode_menu, vmode_scaling_menu;
-cfg_timing_model_sel_type_t timing_n64adv, timing_menu;
 cfg_scaler_in2out_sel_type_t scaling_n64adv, scaling_menu;
 
 extern alt_u8 info_sync_val;
@@ -149,11 +148,11 @@ void load_value_trays(bool_t for_n64adv)
   cfg_load_linex_word(for_n64adv);
   if (for_n64adv) {
     cfg_load_scanline_word(palmode);
-    cfg_load_timing_word(timing_n64adv);
+    cfg_load_imgshift_word(palmode);
     cfg_load_scaling_word(scaling_n64adv);
   } else {
     cfg_load_scanline_word(vmode_menu);
-    cfg_load_timing_word(timing_menu);
+    cfg_load_imgshift_word(vmode_menu);
     cfg_load_scaling_word(scaling_menu);
   }
 }
@@ -162,7 +161,7 @@ void store_value_trays()
 {
   cfg_store_linex_word(0);
   cfg_store_scanline_word(vmode_menu);
-  cfg_store_timing_word(timing_menu);
+  cfg_store_imgshift_word(vmode_menu);
   cfg_store_scaling_word(scaling_menu);
 }
 
@@ -214,7 +213,6 @@ int main()
 
 
   // setup initial target resolution and apply config to FPGA
-  timing_n64adv = NTSC_PROGRESSIVE;
   scaling_n64adv = get_target_scaler(NTSC);
   load_value_trays(1);  // initialize trays with config
 
@@ -314,15 +312,10 @@ int main()
     if (!changed_linex_setting) { // important to check this flag as program cycles 1x through menu after change to set also the scaling correctly
       linex_word_pre = linex_words[1]; // copy from running sys_config
     }
-    if (palmode)
-      timing_n64adv = scanmode ? PAL_INTERLACED : PAL_PROGRESSIVE;
-    else
-      timing_n64adv = scanmode ? NTSC_INTERLACED : NTSC_PROGRESSIVE;
     scaling_n64adv = get_target_scaler(palmode);
 
     // update correct config set for menu
     vmode_menu = cfg_get_value(&region_selection,0);
-    timing_menu = cfg_get_value(&timing_selection,0);
     scaling_menu = cfg_get_value(&scaling_selection,0);
     if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
     else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
@@ -362,7 +355,6 @@ int main()
           cfg_set_value(&region_selection,palmode);
           cfg_set_value(&copy_direction,palmode);
           cfg_set_value(&scaling_selection,scaling_n64adv);
-          cfg_set_value(&timing_selection,timing_n64adv);
           linex_words[0] = linex_words[1];
           load_value_trays(0);  // reload needed
           print_overlay(menu);

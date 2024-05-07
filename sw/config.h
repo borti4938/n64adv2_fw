@@ -47,15 +47,6 @@ typedef enum {
 #define NUM_CFG_B32WORDS    5
 
 
-
-typedef enum {
-  NTSC_PROGRESSIVE = 0,
-  NTSC_INTERLACED,
-  PAL_PROGRESSIVE,
-  PAL_INTERLACED
-} cfg_timing_model_sel_type_t;
-#define NUM_TIMING_MODES  (PAL_INTERLACED+1)
-
 typedef enum {
   NTSC_DIRECT = 0,
   NTSC_TO_480,
@@ -519,8 +510,8 @@ typedef struct {
 #define CFG_DEINTER_MODE_DEFAULTVAL            2
   #define CFG_DEINTER_MODE_DEFAULT_SETMASK      (CFG_DEINTER_MODE_DEFAULTVAL << CFG_DEINTER_MODE_OFFSET)
 
-#define CFG_TIMING_DEFAULTS           (1 << 9 | 1 << 4)
-#define CFG_TIMING_DEFAULTS_SHIFTED   (CFG_TIMING_DEFAULTS << CFG_HORSHIFT_OFFSET)
+#define CFG_IMGSHIFT_DEFAULTS           (1 << 9 | 1 << 4)
+#define CFG_IMGSHIFT_DEFAULTS_SHIFTED   (CFG_IMGSHIFT_DEFAULTS << CFG_HORSHIFT_OFFSET)
 
 #define CFG_LINK_HV_SCALE_DEFAULTVAL_4R3    0
 #define CFG_LINK_HV_SCALE_DEFAULTVAL_10R9   4
@@ -578,7 +569,7 @@ typedef struct {
 #define EXTCFG0_NODEFAULTS_GETMASK  (U32_MAX_VALUE & ~EXTCFG0_DEFAULTS_GETMASK)
 
 #define EXTCFG1_DEFAULTS            (CFG_RSTMASKS_DEFAULT_SETMASK | CFG_GAMMA_DEFAULT_SETMASK | \
-                                     CFG_DEBLUR_MODE_SETMASK | CFG_DEINTER_MODE_DEFAULT_SETMASK | CFG_TIMING_DEFAULTS_SHIFTED)
+                                     CFG_DEBLUR_MODE_SETMASK | CFG_DEINTER_MODE_DEFAULT_SETMASK | CFG_IMGSHIFT_DEFAULTS_SHIFTED)
 #define EXTCFG1_DEFAULTS_GETMASK    (CFG_RSTMASKS_GETMASK | CFG_GAMMA_GETMASK | CFG_DEBLUR_MODE_GETMASK | \
                                      CFG_16BITMODE_GETMASK | CFG_VERTSHIFT_GETMASK | CFG_HORSHIFT_GETMASK | \
                                      CFG_DEINTER_MODE_GETMASK | CFG_V_INTERP_MODE_GETMASK | CFG_H_INTERP_MODE_GETMASK | CFG_PAL_BOXED_MODE_GETMASK)
@@ -604,8 +595,7 @@ extern config_t swap_led, color_space, limited_colorspace,
                 deblur_mode_powercycle, mode16bit_powercycle, igr_deblur, igr_16bitmode,
                 link_hv_scale, fallback_resolution, fallback_trigger, fallback_menu,
                 autosave, debug_vtimeout;
-extern config_t scaling_steps, region_selection,
-                timing_selection, scaling_selection,
+extern config_t scaling_steps, region_selection, scaling_selection,
                 copy_direction, lock_menu;
 
 extern config_t vert_scale, hor_scale,
@@ -640,8 +630,8 @@ void cfg_store_linex_word(bool_t for_n64adv);
 void cfg_load_linex_word(bool_t for_n64adv);
 void cfg_store_scanline_word(vmode_t palmode_select);
 void cfg_load_scanline_word(bool_t for_n64adv);
-void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_select);
-void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_select);
+void cfg_store_imgshift_word(vmode_t palmode_select);
+void cfg_load_imgshift_word(vmode_t palmode_select);
 void cfg_store_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
 void cfg_load_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select);
 int cfg_load_defaults(fallback_vmodes_t vmode,bool_t need_confirm);

@@ -48,8 +48,8 @@ typedef struct {
   alt_u8  vers_cfg_sub;
   alt_u8  cfg_words[CFG2FLASH_WORD_FACTOR_U32*NUM_CFG_B32WORDS];
   alt_u8  cfg_linex_tray;
-  alt_u8  cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32*LINEX_MODES];
-  alt_u8  cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*NUM_TIMING_MODES];
+  alt_u8  cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32*VSTD_MODES];
+  alt_u8  cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*VSTD_MODES];
   alt_u8  cfg_scaling_trays[CFG2FLASH_WORD_FACTOR_U32*(NUM_SCALING_MODES-NUM_DIRECT_MODES)];
 } cfg4flash_t;
 
@@ -63,16 +63,14 @@ configuration_t sysconfig = {
 
 alt_u8 linex_words[2] = {0x00,0x00}; // menu + sys
 
-config_tray_t linex_scanlines_words[LINEX_MODES] = {
+config_tray_t linex_scanlines_words[VSTD_MODES] = {
   { .config_val = 0x00000000, .config_ref_val = 0x00000000},
   { .config_val = 0x00000000, .config_ref_val = 0x00000000}
 };
 
-config_tray_u16_t timing_words[NUM_TIMING_MODES] = {
-  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS},
-  { .config_val = CFG_TIMING_DEFAULTS,  .config_ref_val = CFG_TIMING_DEFAULTS}
+config_tray_u16_t imgshift_words[VSTD_MODES] = {
+  { .config_val = CFG_IMGSHIFT_DEFAULTS,  .config_ref_val = CFG_IMGSHIFT_DEFAULTS},
+  { .config_val = CFG_IMGSHIFT_DEFAULTS,  .config_ref_val = CFG_IMGSHIFT_DEFAULTS}
 };
 
 const alt_u32 scaling_defaults[NUM_SCALING_MODES-NUM_DIRECT_MODES] __ufmdata_section__ =
@@ -102,7 +100,7 @@ config_tray_t scaling_words[NUM_SCALING_MODES-NUM_DIRECT_MODES] = {
     { .config_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED ,  .config_ref_val = CFG_SCALING_PAL_1440_DEFAULT_SHIFTED}
 };
 
-const alt_u16 predef_scaling_vals[LINEX_MODES+1][PREDEFINED_SCALE_STEPS] __ufmdata_section__ = {
+const alt_u16 predef_scaling_vals[VSTD_MODES+1][PREDEFINED_SCALE_STEPS] __ufmdata_section__ = {
   { 480, 540, 600, 660, 720, 780, 840, 900, 960,1020,1080,1140,1200,1260,1320,1380,1440,1500,1560,1620,1680,1740,1800,1860,1920}, // vertical NTSC
   { 576, 648, 720, 792, 864, 936,1008,1080,1152,1224,1296,1368,1440,1512,1584,1656,1728,1800,1872,1944,2016,2088,2160,2232,2304}, // vertical PAL
   { 640, 720, 800, 880, 960,1040,1120,1200,1280,1360,1440,1520,1600,1680,1760,1840,1920,2000,2080,2160,2240,2320,2400,2480,2560}  // horizontal
@@ -359,9 +357,9 @@ int cfg_save_to_flash(bool_t need_confirm)
     ((cfg4flash_t*) databuf)->cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32+jdx] = (alt_u8) ((linex_scanlines_words[PAL].config_val  >> (8*jdx)) & 0xFF); // pal
   }
 
-  for (idx = 0; idx < NUM_TIMING_MODES; idx++)
+  for (idx = 0; idx < VSTD_MODES; idx++)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U16; jdx++)
-      ((cfg4flash_t*) databuf)->cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx] = (alt_u8) ((timing_words[idx].config_val >> (8*jdx)) & 0xFF);
+      ((cfg4flash_t*) databuf)->cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx] = (alt_u8) ((imgshift_words[idx].config_val >> (8*jdx)) & 0xFF);
 
   for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
@@ -416,10 +414,10 @@ int cfg_load_from_flash(bool_t need_confirm)
     linex_scanlines_words[PAL].config_val  |= (((cfg4flash_t*) databuf)->cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32+jdx]  << (8*jdx)); // pal
   }
 
-  for (idx = 0; idx < NUM_TIMING_MODES; idx++) {
-    timing_words[idx].config_val = 0;
+  for (idx = 0; idx < VSTD_MODES; idx++) {
+    imgshift_words[idx].config_val = 0;
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U16; jdx++)
-      timing_words[idx].config_val |= (((cfg4flash_t*) databuf)->cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx]  << (8*jdx));
+      imgshift_words[idx].config_val |= (((cfg4flash_t*) databuf)->cfg_timing_trays[CFG2FLASH_WORD_FACTOR_U16*idx+jdx]  << (8*jdx));
   }
 
   for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++) {
@@ -466,21 +464,21 @@ void cfg_load_scanline_word(bool_t palmode_select) {
   sysconfig.cfg_word_def[EXTCFG2]->cfg_ref_word_val = linex_scanlines_words[palmode_select].config_ref_val;
 }
 
-void cfg_reset_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
-  timing_words[timing_word_select].config_val = CFG_TIMING_DEFAULTS;
+void cfg_reset_imgshift_word(vmode_t palmode_select) {
+  imgshift_words[palmode_select].config_val = CFG_IMGSHIFT_DEFAULTS;
 }
 
-void cfg_store_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
-  timing_words[timing_word_select].config_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
-  timing_words[timing_word_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
+void cfg_store_imgshift_word(vmode_t palmode_select) {
+  imgshift_words[palmode_select].config_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
+  imgshift_words[palmode_select].config_ref_val = ((sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val & CFG_EXTCFG1_GETTIMINGS_MASK) >> CFG_HORSHIFT_OFFSET);
 }
 
-void cfg_load_timing_word(cfg_timing_model_sel_type_t timing_word_select) {
+void cfg_load_imgshift_word(vmode_t palmode_select) {
   sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
-  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= ((timing_words[timing_word_select].config_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_word_val |= ((imgshift_words[palmode_select].config_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
 
   sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val &= CFG_EXTCFG1_GETNONTIMINGS_MASK;
-  sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val |= ((timing_words[timing_word_select].config_ref_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
+  sysconfig.cfg_word_def[EXTCFG1]->cfg_ref_word_val |= ((imgshift_words[palmode_select].config_ref_val << CFG_HORSHIFT_OFFSET) & CFG_EXTCFG1_GETTIMINGS_MASK);
 }
 
 void cfg_reset_scaling_word(cfg_scaler_in2out_sel_type_t scaling_word_select) {
@@ -562,12 +560,12 @@ int cfg_load_defaults(fallback_vmodes_t vmode_default, bool_t need_confirm)
   cfg_store_linex_word(1);
 
   int idx;
-  for (idx = 0; idx < LINEX_MODES; idx++) linex_scanlines_words->config_val &= (CFG_VSL_EN_CLRMASK & CFG_HSL_EN_CLRMASK);  // just disable scanlines for default
-  for (idx = 0; idx < NUM_TIMING_MODES; idx++) cfg_reset_timing_word(idx);
+  for (idx = 0; idx < VSTD_MODES; idx++) linex_scanlines_words->config_val &= (CFG_VSL_EN_CLRMASK & CFG_HSL_EN_CLRMASK);  // just disable scanlines for default
+  for (idx = 0; idx < VSTD_MODES; idx++) cfg_reset_imgshift_word(idx);
   for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++) cfg_reset_scaling_word(idx);
 
   cfg_load_scanline_word(palmode);
-  cfg_load_timing_word(palmode);
+  cfg_load_imgshift_word(palmode);
   cfg_load_scaling_word(palmode);
 
   unlock_1440p = FALSE;
@@ -601,7 +599,7 @@ void cfg_update_reference()
 
   linex_scanlines_words[NTSC].config_ref_val = linex_scanlines_words[NTSC].config_val;
   linex_scanlines_words[PAL].config_ref_val  = linex_scanlines_words[PAL].config_val;
-  for (idx = 0; idx < NUM_TIMING_MODES; idx++) timing_words[idx].config_ref_val = timing_words[idx].config_val;
+  for (idx = 0; idx < VSTD_MODES; idx++) imgshift_words[idx].config_ref_val = imgshift_words[idx].config_val;
   for (idx = 0; idx < NUM_SCALING_MODES-NUM_DIRECT_MODES; idx++) scaling_words[idx].config_ref_val = scaling_words[idx].config_val;
 }
 

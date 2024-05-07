@@ -190,13 +190,6 @@ config_t region_selection = {
   .value_string  = (const char **) &NTSCPAL_SEL
 };
 
-config_t timing_selection = {
-  .cfg_value     = NTSC_PROGRESSIVE,
-  .max_value     = PAL_INTERLACED,
-  .cfg_disp_type = VAL_STRING,
-  .value_string  = (const char **) &VTimingSel
-};
-
 config_t scaling_selection = {
   .cfg_value     = NTSC_TO_1080,
   .max_value     = PAL_TO_1440W,

@@ -101,7 +101,7 @@ Only change something here if you are sure what you are doing.
 | **Scaling - Vertical scale value** | _see notes_| Sets the number of desired output lines |
 | **Scaling - Horizontal scale value** | _see notes_ | Set the number of desired output pixel per line |
 | **Use PAL in 240p box** | Off | Uses 240 lines as input reference instead of 288 lines. |
-| **Shift N64 input image - Input Mode** \[9\] | _Current_ | Switches between NTSC/PAL progressive/interlaced input |
+| **Shift N64 input image - Input Mode** \[9\] | _Current_ | Switches between NTSC/PAL input |
 | **Shift N64 input image - Vertical shift**| 0 | Shifts the input by a certain number of lines before the buffer |
 | **Shift N64 input image - Horizontal shift** | 0 | Shifts the input by a certain number of pixels before the buffer |
 
