@@ -33,6 +33,7 @@
 
 module n64_vinfo_ext(
   VCLK,
+  nRST_unmasked,
   nRST,
   nVDSYNC,
 
@@ -45,13 +46,14 @@ module n64_vinfo_ext(
 `include "../../lib/n64adv_vparams.vh"
 
 input VCLK;
+input nRST_unmasked;
 input nRST;
 input nVDSYNC;
 
 input  [3:0] Sync_pre;
 input  [3:0] Sync_cur;
 
-output [2:0] vinfo_o;   // order: vdata_detected,palmode,n64_480i
+output [3:0] vinfo_o;   // order: vdata_detected,pal_is_240p,palmode,n64_480i
 
 
 // some pre-assignments
@@ -149,6 +151,7 @@ always @(posedge VCLK or negedge nRST)
     end
   end
 
+
 // determine vmode
 // ===============
 
@@ -170,9 +173,37 @@ always @(posedge VCLK or negedge nRST)
   end
 
 
+// check for 240p in PAL mode (must use a non-masked reset)
+// ========================================================
+
+reg palmode_pre = 1'b0;
+reg [3:0] pal_288p_sense_cnt = 4'h0;
+reg pal_is_240p = 1'b1;
+
+always @(posedge VCLK or negedge nRST_unmasked)
+  if (!nRST_unmasked) begin
+    palmode_pre <= 1'b0;
+    pal_288p_sense_cnt <= 4'h0;
+    pal_is_240p <= 1'b1;
+  end else begin
+    if (palmode) begin
+      if ((vclk_cnt > `VSTART_PAL_LX1) && (vclk_cnt < `VSTART_PAL_LX1 + 24)) begin
+        if (nVDSYNC && |Sync_cur && (pal_288p_sense_cnt < 4'hf))
+          pal_288p_sense_cnt <= pal_288p_sense_cnt + 4'b1;
+      end else begin
+        if (&pal_288p_sense_cnt) pal_is_240p <= 1'b0;
+        pal_288p_sense_cnt <= 4'd0;
+      end
+    end
+    if (palmode_pre != palmode)
+      pal_is_240p <= 1'b1;
+    palmode_pre <= palmode;
+  end
+
+
 // pack vinfo_o vector
 // ===================
 
-assign vinfo_o = {vdata_detected,palmode,n64_480i};
+assign vinfo_o = {vdata_detected,pal_is_240p,palmode,n64_480i};
 
 endmodule

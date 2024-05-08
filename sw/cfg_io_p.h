@@ -38,7 +38,7 @@
 #ifndef CFG_HEADER_CFG_IO_P_H_
 #define CFG_HEADER_CFG_IO_P_H_
 
-extern const char *OffOn[], *Force5060[], *DV_Versions[], *Resolutions[], *DeInterModes[], *InterpModes[],
+extern const char *OffOn[], *AutoOnOff[], *Force5060[], *DV_Versions[], *Resolutions[], *DeInterModes[], *InterpModes[],
                   *ScanlinesThickness[], *ScanlinesScaleProfile[], *ScanlinesCalcBase[],
                   *RstMasking[];
 
@@ -234,9 +234,9 @@ config_t pal_boxed_mode = {
     .cfg_word        = &extcfg1_word,
     .cfg_word_offset = CFG_PAL_BOXED_MODE_OFFSET,
     .num_cfg_bits    = CFG_PAL_BOXED_MODE_NOFBITS,
-    .max_value       = 1,
-    .cfg_disp_type   = DISP_BUF_FUNC,
-    .val2char_func   = &flag2set_func
+    .max_value       = CFG_PAL_BOXED_MODE_MAX_VALUE,
+    .cfg_disp_type   = VAL_STRING,
+    .value_string    = (const char **) &AutoOnOff
 };
 
 // extcfg2 - scanlines

@@ -454,6 +454,7 @@ const char *EnterSubMenu  __ufmdata_section__ = "[Enter ...]";
 const char *RunFunction   __ufmdata_section__ = "[Run ...]";
 
 const char *OffOn[]                   __ufmdata_section__ = {"Off","On"};
+const char *AutoOnOff[]               __ufmdata_section__ = {"Auto","On","Off"};
 const char *NTSCPAL_SEL[]             __ufmdata_section__ = {"NTSC","PAL"};
 const char *Force5060[]               __ufmdata_section__ = {"Off (N64 Auto)","60Hz","50Hz"};
 const char *DV_Versions[]             __ufmdata_section__ = {"DV1 (MiSTer)","FX-Direct"};

@@ -43,6 +43,7 @@ module n64adv2_ppu_top #(
 ) (
   // N64 Video Input
   N64_CLK_i,
+  PPU_nRST_unmasked_i,
   PPU_nRST_i,
   nVDSYNC_i,
   VD_i,
@@ -95,6 +96,7 @@ module n64adv2_ppu_top #(
 `include "../lib/setOSDConfig.tasks.v"
 
 input N64_CLK_i;
+input PPU_nRST_unmasked_i;
 input PPU_nRST_i;
 input nVDSYNC_i;
 input [color_width_i-1:0] VD_i;
@@ -136,9 +138,9 @@ output        DRAM_nWE;
 // start of rtl
 
 // wires
-wire [2:0] vinfo_pass;  // [2:0] {vmode,n64_480i}
+wire [3:0] vinfo_pass;
 wire vdata_detected;
-wire palmode, n64_480i;
+wire pal_is_240p, palmode, n64_480i;
 
 wire [ 3:0] cfg_gamma;
 wire cfg_nvideblur_pre, cfg_n16bit_mode;
@@ -225,7 +227,8 @@ reg n_palmode_change, n_vdata_detected_change;
 // apply some assignments
 // ----------------------
 
-assign vdata_detected = vinfo_pass[2];
+assign vdata_detected = vinfo_pass[3];
+assign pal_is_240p = vinfo_pass[2];
 assign palmode = vinfo_pass[1];
 assign n64_480i = vinfo_pass[0];
 
@@ -236,6 +239,7 @@ assign ConfigSet_w[`hSL_en_bit-1:0] = ConfigSet[`hSL_en_bit-1:0];
 
 assign PPUState[`PPU_input_vdata_detected_bit]  = vdata_detected;
 assign PPUState[`PPU_input_palpattern_bit]      = 1'b0; // will be overwritten in n64adv2_controller.v
+assign PPUState[`PPU_input_pal_is_240p_bit]     = pal_is_240p;
 assign PPUState[`PPU_input_pal_bit]             = palmode;
 assign PPUState[`PPU_input_interlaced_bit]      = n64_480i;
 assign PPUState[`PPU_output_f5060_slice]        = {ConfigSet_resynced[`force50hz_bit],ConfigSet_resynced[`force60hz_bit]};
@@ -300,12 +304,13 @@ always @(posedge SYS_CLK) begin
 end
 
 
-wire [11:0] direct_mode_dv1_vlines_set_w = ~palmode_sysclk_resynced          ? `ACTIVE_LINES_NTSC_LX1 : 
-                                           ConfigSet_w[`pal_boxed_scale_bit] ? `ACTIVE_LINES_NTSC_LX1 :
-                                                                               `ACTIVE_LINES_PAL_LX1  ;
-wire [11:0] direct_mode_fxd_vlines_set_w = ~palmode_sysclk_resynced          ? `ACTIVE_LINES_NTSC_LX2 :
-                                           ConfigSet_w[`pal_boxed_scale_bit] ? `ACTIVE_LINES_NTSC_LX2 :
-                                                                               `ACTIVE_LINES_PAL_LX2  ;
+wire use_pal_boxed_w = ^ConfigSet_w[`pal_boxed_scale_slice] ? ConfigSet_w[`pal_boxed_scale_bit] : pal_is_240p;
+wire [11:0] direct_mode_dv1_vlines_set_w = ~palmode_sysclk_resynced ? `ACTIVE_LINES_NTSC_LX1 : 
+                                                    use_pal_boxed_w ? `ACTIVE_LINES_NTSC_LX1 :
+                                                                      `ACTIVE_LINES_PAL_LX1  ;
+wire [11:0] direct_mode_fxd_vlines_set_w = ~palmode_sysclk_resynced ? `ACTIVE_LINES_NTSC_LX2 :
+                                                    use_pal_boxed_w ? `ACTIVE_LINES_NTSC_LX2 :
+                                                                      `ACTIVE_LINES_PAL_LX2  ;
 assign direct_mode_vlines_set_w = ConfigSet_w[`directmode_version_bit] ? direct_mode_fxd_vlines_set_w : direct_mode_dv1_vlines_set_w;
 assign cfg_vlines_set_w = ConfigSet_w[`target_vlines_slice];
 assign vlines_set_w = sys_direct_mode_w ? direct_mode_vlines_set_w : cfg_vlines_set_w;
@@ -321,7 +326,7 @@ assign use_interlaced_full_w = sys_direct_mode_w ? 1'b0                         
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
   .palmode_i(palmode_sysclk_resynced),
-  .palmode_boxed_i(ConfigSet_w[`pal_boxed_scale_bit]),
+  .palmode_boxed_i(use_pal_boxed_w),
   .use_interlaced_full_i(use_interlaced_full_w),
   .nvideblur_i(cfg_nvideblur_sysclk_resynced),
   .video_config_i(sys_videomode),
@@ -382,14 +387,14 @@ register_sync #(
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u0|reg_synced_1[*])
 
 register_sync #(
-  .reg_width(2),
-  .reg_preset(2'd0)
+  .reg_width(1),
+  .reg_preset(1'd0)
 ) cfg_sync4dramlogic_u1 (
   .clk(DRAM_CLK_i),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({palmode,n64_480i}),
-  .reg_o({palmode_dramclk_resynced,n64_480i_dramclk_resynced})
+  .reg_i({n64_480i}),
+  .reg_o({n64_480i_dramclk_resynced})
 ); // Note: add output reg as false path in sdc (cfg_sync4dramlogic_u1|reg_synced_1[*])
 
 
@@ -529,6 +534,7 @@ register_sync #(
 
 n64_vinfo_ext get_vinfo_u (
   .VCLK(N64_CLK_i),
+  .nRST_unmasked(PPU_nRST_unmasked_i),
   .nRST(PPU_nRST_i),
   .nVDSYNC(nVDSYNC_i),
   .Sync_pre(vdata_bwd_sy_w),
@@ -590,7 +596,7 @@ assign async_nRST_scaler_w = PPU_nRST_i & DRAM_nRST_i & nVRST_Tx_i & scaler_nres
 scaler scaler_u (
   .async_nRST_i(async_nRST_scaler_w),
   .VCLK_i(N64_CLK_i),
-  .vinfo_i(vinfo_pass),
+  .vinfo_i({vdata_detected,palmode,n64_480i}),
   .vdata_i(vdata24_pp_w[1]),
   .vdata_valid_i(vdata_valid_pp_w[1]),
   .vdata_hvshift_i(cfg_hvshift),

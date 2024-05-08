@@ -100,7 +100,7 @@ Only change something here if you are sure what you are doing.
 | **Scaling - V/h scaling steps** | 0.25x | Changes between **0.25x** steps and **pixelwise** |
 | **Scaling - Vertical scale value** | _see notes_| Sets the number of desired output lines |
 | **Scaling - Horizontal scale value** | _see notes_ | Set the number of desired output pixel per line |
-| **Use PAL in 240p box** | Off | Uses 240 lines as input reference instead of 288 lines. |
+| **Use PAL in 240p box** | Auto | Uses 240 lines as input reference instead of 288 lines. User can decide whether setting is being estimated (_Auto_) or fix lines to either 240 (_On_) or 288 (_Off_). |
 | **Shift N64 input image - Input Mode** \[9\] | _Current_ | Switches between NTSC/PAL input |
 | **Shift N64 input image - Vertical shift**| 0 | Shifts the input by a certain number of lines before the buffer |
 | **Shift N64 input image - Horizontal shift** | 0 | Shifts the input by a certain number of pixels before the buffer |
@@ -237,9 +237,11 @@ However, if the N64Adv2 boots with an invalid configuration in the UFM, those co
 Shown is a hexadecimal value where each bit or bit group represents a certain feedback information provided by the FPGA.
 This value contains 26 bits of following meaning:
 
-- \[26\]: Input controller detected (1 = yes, 0 = no)
-- \[25\]: Video input detected (1 = yes, 0 = no)
-- \[24\]: version of PAL leap pattern (NTSC formats do not use a leap pattern)
+- \[27\]: Input controller detected (1 = yes, 0 = no)
+- \[27\]: HDMI clock ok (1 = yes, 0 = no)
+- \[26\]: Video input detected (1 = yes, 0 = no)
+- \[25\]: version of PAL leap pattern (NTSC formats do not use a leap pattern)
+- \[24\]: PAL mode lines (1 = 240p, 0 = 288p)
 - \[23\]: PAL/NTSC mode detected at video input (1 = PAL, 0 = NTSC)
 - \[22\]: progressive/interlaced mode detected at video input (1 = interlaced, 0 = progressive)
 - \[21:20\]: Refresh rate at video output (00: Auto (same as input), 01 = 60Hz, 10 = 50Hz)

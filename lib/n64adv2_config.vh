@@ -47,10 +47,9 @@
   //    [31:29] {show_osd_logo,show_osd,mute_osd}
   //    [28   ] {igr for reset}
   //    [27:26] {reset masks (2bit)}
-  //    [25]    {(1bit reserved)}
-  //    [24:19] {gamma (4bits),VI-DeBlur,16bit mode}
-  //    [18: 9] {LineX V-Shift (5bits),LineX H-Shift (5bits)}
-  //    [ 8: 0] {De-Interlace Mode (2 bit),(1bit reserve),Vert. Interpolation Mode (2 bits),(1bit reserve),Horiz. Interpolation Mode (2 bits),PAL boxed mode (1 bit)}
+  //    [25:20] {gamma (4bits),VI-DeBlur,16bit mode}
+  //    [19:10] {Img.V-Shift (5bits),Img.H-Shift (5bits)}
+  //    [ 9: 0] {De-Interlace Mode (2 bit),(1bit reserve),Vert. Interpolation Mode (2 bits),(1bit reserve),Horiz. Interpolation Mode (2 bits),PAL boxed mode (2 bits)}
   //  wire [31:0] SysConfigSet0; (Scaler)
   //    [31:20] {LineX V-Scale Target (12bits)}
   //    [19: 8] {LineX H-Scale Target (12bits)}
@@ -108,16 +107,17 @@
   `define h2v_SL_linked_bit      1 + `SysCfg2_PPUCfg_Offset
   `define SL_per_Channel_bit     0 + `SysCfg2_PPUCfg_Offset
   
-  `define gamma_slice                 24 + `SysCfg1_PPUCfg_Offset : 21 + `SysCfg1_PPUCfg_Offset
-  `define videblur_bit                20 + `SysCfg1_PPUCfg_Offset
-  `define n16bit_mode_bit             19 + `SysCfg1_PPUCfg_Offset
-  `define vshift_slice                18 + `SysCfg1_PPUCfg_Offset : 14 + `SysCfg1_PPUCfg_Offset
-  `define hshift_slice                13 + `SysCfg1_PPUCfg_Offset :  9 + `SysCfg1_PPUCfg_Offset
-  `define deinterlacing_mode_slice     8 + `SysCfg1_PPUCfg_Offset :  7 + `SysCfg1_PPUCfg_Offset
-  `define deinterlacing_mode_bit1      8 + `SysCfg1_PPUCfg_Offset
-  `define deinterlacing_mode_bit0      7 + `SysCfg1_PPUCfg_Offset
-  `define v_interpolation_mode_slice   5 + `SysCfg1_PPUCfg_Offset :  4 + `SysCfg1_PPUCfg_Offset
-  `define h_interpolation_mode_slice   2 + `SysCfg1_PPUCfg_Offset :  1 + `SysCfg1_PPUCfg_Offset
+  `define gamma_slice                 25 + `SysCfg1_PPUCfg_Offset : 22 + `SysCfg1_PPUCfg_Offset
+  `define videblur_bit                21 + `SysCfg1_PPUCfg_Offset
+  `define n16bit_mode_bit             20 + `SysCfg1_PPUCfg_Offset
+  `define vshift_slice                19 + `SysCfg1_PPUCfg_Offset : 15 + `SysCfg1_PPUCfg_Offset
+  `define hshift_slice                14 + `SysCfg1_PPUCfg_Offset : 10 + `SysCfg1_PPUCfg_Offset
+  `define deinterlacing_mode_slice     9 + `SysCfg1_PPUCfg_Offset :  8 + `SysCfg1_PPUCfg_Offset
+  `define deinterlacing_mode_bit1      9 + `SysCfg1_PPUCfg_Offset
+  `define deinterlacing_mode_bit0      8 + `SysCfg1_PPUCfg_Offset
+  `define v_interpolation_mode_slice   6 + `SysCfg1_PPUCfg_Offset :  5 + `SysCfg1_PPUCfg_Offset
+  `define h_interpolation_mode_slice   3 + `SysCfg1_PPUCfg_Offset :  2 + `SysCfg1_PPUCfg_Offset
+  `define pal_boxed_scale_slice        1 + `SysCfg1_PPUCfg_Offset :  0 + `SysCfg1_PPUCfg_Offset
   `define pal_boxed_scale_bit          0 + `SysCfg1_PPUCfg_Offset
   
   `define target_vlines_slice       31 + `SysCfg0_PPUCfg_Offset : 20 + `SysCfg0_PPUCfg_Offset
@@ -166,10 +166,11 @@
   
   // PPU Feedback Channel
   
-  `define PPU_State_Width                     26
+  `define PPU_State_Width                     27
   
-  `define PPU_input_vdata_detected_bit        25
-  `define PPU_input_palpattern_bit            24
+  `define PPU_input_vdata_detected_bit        26
+  `define PPU_input_palpattern_bit            25
+  `define PPU_input_pal_is_240p_bit           24
   `define PPU_input_pal_bit                   23
   `define PPU_input_interlaced_bit            22
   

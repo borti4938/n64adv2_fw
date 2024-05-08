@@ -317,8 +317,8 @@ int main()
     // update correct config set for menu
     vmode_menu = cfg_get_value(&region_selection,0);
     scaling_menu = cfg_get_value(&scaling_selection,0);
-    if (cfg_get_value(&pal_boxed_mode,0)) vmode_scaling_menu = NTSC;
-    else vmode_scaling_menu = scaling_menu > NTSC_LAST_SCALING_MODE;
+    if (scaling_menu <= NTSC_LAST_SCALING_MODE) vmode_scaling_menu = NTSC;
+    else vmode_scaling_menu = use_pal_at_288p ? PAL : NTSC;
 
     if(active_osd && hdmi_clk_ok) {
       if (message_cnt > 0) {

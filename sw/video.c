@@ -315,7 +315,7 @@ void send_dv1_if(bool_t enable)
     // offset
     buf.packet_bytes[6] = 56;
 //    buf.packet_bytes[7] = 0;
-    if (cfg_get_value(&pal_boxed_mode,0)==OFF) {
+    if (use_pal_at_288p) {
       buf.packet_bytes[8] = 19;
 //      buf.packet_bytes[9] = 0;
       wr_val = 288<<scanmode;
@@ -352,8 +352,6 @@ void send_fxd_if(bool_t enable, bool_t use_fxd)
     return;
   }
 
-//  bool_t use_pal_lines = palmode && (cfg_get_value(&pal_boxed_mode,0)==OFF);
-
   if_packet_t buf = {
     // header
     {0x81,0x01,27},
@@ -373,13 +371,12 @@ void send_fxd_if(bool_t enable, bool_t use_fxd)
     buf.packet_bytes[5] = (1 << 3 | (active_osd << 2) | scanmode);  // with DAR
 //    buf.packet_bytes[5] = (2 << 3 | (active_osd << 2) | scanmode);  // with PAR
     // write vertical start and stop
-//    if (use_pal_lines) {
-    if (palmode && (cfg_get_value(&pal_boxed_mode,0)==OFF)) { // use 576 lines
+    if (palmode & use_pal_at_288p) { // use 576 lines
       buf.packet_bytes[6] = 0x48; // 72
 //      buf.packet_bytes[7] = 0;
       buf.packet_bytes[8] = 0x88; // LSB(648)
       buf.packet_bytes[9] = 0x02; // MSB(648)
-    } else {
+    } else {  // use 480 lines
       buf.packet_bytes[6] = 0x78; // 120
 //      buf.packet_bytes[7] = 0;
       buf.packet_bytes[8] = 0x58; // LSB(600)

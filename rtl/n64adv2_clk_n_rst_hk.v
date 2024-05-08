@@ -38,6 +38,7 @@ module n64adv2_clk_n_rst_hk(
   
   SYS_CLK_i,
   
+  PPU_nRST_unmasked_o,
   PPU_nRST_o,
   
   HDMI_cfg_done_i,
@@ -68,6 +69,7 @@ input [1:0] nRST_Masking_i;
 
 input SYS_CLK_i;
 
+output PPU_nRST_unmasked_o;
 output PPU_nRST_o;
 
 input HDMI_cfg_done_i;
@@ -102,10 +104,20 @@ always @(posedge N64_CLK_i)
     n64boot_delay <= n64boot_delay - 8'h1;
   end
 
+wire nRST_video_unmasked_w = n64_en & N64_nRST_i;
+reset_generator #(
+  .rst_length(4)
+) reset_n64clk_u0(
+  .clk(N64_CLK_i),
+  .clk_en(1'b1),
+  .async_nrst_i(nRST_video_unmasked_w),
+  .rst_o(PPU_nRST_unmasked_o)
+);
+
 wire nRST_video_masked_w = n64_en & (nRST_Masking_i[0] | N64_nRST_i);
 reset_generator #(
   .rst_length(4)
-) reset_n64clk_u(
+) reset_n64clk_u1(
   .clk(N64_CLK_i),
   .clk_en(1'b1),
   .async_nrst_i(nRST_video_masked_w),

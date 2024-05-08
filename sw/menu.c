@@ -924,7 +924,7 @@ int update_debug_screen(menu_t* current_menu)
 
   // PPU state
   vd_clear_lineend(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_N64ADV_STATE_V_OFFSET);
-  sprintf(szText,"0x%07x",(uint) n64adv_state);
+  sprintf(szText,"0x%08x",(uint) n64adv_state);
   vd_print_string(VD_TEXT,N64DEBUG_VALS_H_OFFSET,N64DEBUG_N64ADV_STATE_V_OFFSET,FONTCOLOR_WHITE,&szText[0]);
 
   // PPU state: VI mode and Source-Sync. Mode

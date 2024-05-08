@@ -81,6 +81,7 @@ alt_u32 n64adv_state;
 bool_t video_input_detected;
 cfg_pal_pattern_t pal_pattern;
 vmode_t palmode;
+bool_t use_pal_at_288p;
 scanmode_t scanmode;
 bool_t hor_hires;
 bool_t hdmi_clk_ok;
@@ -121,7 +122,7 @@ void update_n64adv_state()
 {
   static alt_u8 vin_detection_timeout = VIN_BOOT_DETECTION_TIMEOUT;
 
-  n64adv_state = (IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE) & N64ADV_FEEDBACK_GETALL_MASK);
+  n64adv_state = IORD_ALTERA_AVALON_PIO_DATA(N64ADV_STATE_IN_BASE);
   video_input_detected = TRUE;
   if ((n64adv_state & N64ADV_INPUT_VDATA_DETECTED_GETMASK) >> N64ADV_INPUT_VDATA_DETECTED_OFFSET) {
     if (vin_detection_timeout < VIN_DETECTION_TIMEOUT) vin_detection_timeout = VIN_DETECTION_TIMEOUT;
@@ -135,6 +136,10 @@ void update_n64adv_state()
   }
   pal_pattern = ((n64adv_state & N64ADV_INPUT_PALPATTERN_GETMASK) >> N64ADV_INPUT_PALPATTERN_OFFSET);
   palmode = ((n64adv_state & N64ADV_INPUT_PALMODE_GETMASK) >> N64ADV_INPUT_PALMODE_OFFSET);
+  use_pal_at_288p = !(
+                      (cfg_get_value(&pal_boxed_mode,0)==FORCE_60HZ) ||
+                      ((cfg_get_value(&pal_boxed_mode,0)==AUTO_HZ) && (n64adv_state & N64ADV_INPUT_PAL_IS_240P_GETMASK) >> N64ADV_INPUT_PAL_IS_240P_OFFSET)
+                     );
   scanmode = ((n64adv_state & N64ADV_INPUT_INTERLACED_GETMASK) >> N64ADV_INPUT_INTERLACED_OFFSET);
   hor_hires = (scanmode == INTERLACED) || ((n64adv_state & N64ADV_240P_DEBLUR_GETMASK) == 0);
 

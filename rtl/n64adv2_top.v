@@ -167,7 +167,7 @@ wire ALRCLK_w, ASDATA_w, ASCLK_w;
 
 wire [1:0] nRST_Masking_w;
 
-wire PPU_nRST_w;
+wire PPU_nRST_unmasked_w, PPU_nRST_w;
 wire HDMI_CLK_sel_w;
 wire HDMI_CLK_ok_w;
 wire HDMI_CLK_w;
@@ -260,6 +260,7 @@ n64adv2_clk_n_rst_hk clk_n_rst_hk_u (
   .N64_nRST_i(N64_nRST_io),
   .nRST_Masking_i(nRST_Masking_w),
   .SYS_CLK_i(SYS_CLK_i),
+  .PPU_nRST_unmasked_o(PPU_nRST_unmasked_w),
   .PPU_nRST_o(PPU_nRST_w),
   .HDMI_cfg_done_i(HDMI_cfg_done_w),
   .HDMI_CLKsub_i(HDMI_CLKsub_i),
@@ -314,6 +315,7 @@ n64adv2_ppu_top #(
   .osd_window_color(osd_window_color)
 ) n64adv2_ppu_u (
   .N64_CLK_i(N64_CLK_w),
+  .PPU_nRST_unmasked_i(PPU_nRST_unmasked_w),
   .PPU_nRST_i(PPU_nRST_w),
   .nVDSYNC_i(nVDSYNC_w),
   .VD_i(VD_w),

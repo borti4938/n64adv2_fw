@@ -182,7 +182,7 @@ void cfgfct_unlock1440p(bool_t set_value)
 };
 
 alt_u8 cfg_scale_is_predefined(alt_u16 value, bool_t use_vertical) {
-  alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
+  alt_u8 jdx = use_vertical ? (vmode_scaling_menu & use_pal_at_288p) : 2;
   alt_u8 idx;
   for (idx = 0; idx < PREDEFINED_SCALE_STEPS; idx++) {
     if (predef_scaling_vals[jdx][idx] == value) return idx;
@@ -242,10 +242,9 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
   alt_u16 current_scale;
   if ((scaling_menu == NTSC_DIRECT) || (scaling_menu == PAL_DIRECT)) {
     if (use_vertical) {
-      if ((scaling_menu == PAL_DIRECT) && (cfg_get_value(&pal_boxed_mode,0) == OFF)) current_scale = CFG_SCALING_PAL_240_VERT_FIXED;
+      if ((scaling_menu == PAL_DIRECT) && use_pal_at_288p) current_scale = CFG_SCALING_PAL_288_VERT_FIXED;
       else current_scale = CFG_SCALING_NTSC_240_VERT_FIXED;
-    }
-    else {
+    } else {
       current_scale = CFG_SCALING_PAL_NTSC_HORI_FIXED;
       if ((scanmode == PROGRESSIVE) && (cfg_get_value(&deblur_mode,0) == ON)) current_scale /= 2;
     }
@@ -254,10 +253,10 @@ alt_u16 cfgfct_scale(alt_u16 command, bool_t use_vertical, bool_t set_value, boo
 
   current_scale = use_vertical ? cfg_get_value(&vert_scale,0) :  cfg_get_value(&hor_scale,0);
   if (set_value) {  // ensure from outside that command is valid (left or right)
-    alt_u8 jdx = use_vertical ? vmode_scaling_menu : 2;
+    alt_u8 jdx = use_vertical ? (vmode_scaling_menu & use_pal_at_288p) : 2;
     alt_u8 idx, idx_min;
     bool_t use_1440Wp = ((scaling_menu == NTSC_TO_1440W) || (scaling_menu == PAL_TO_1440W));
-    bool_t use_pal_limit = (scaling_menu > NTSC_TO_1440W);
+    bool_t use_pal_limit = (scaling_menu > NTSC_TO_1440W) && use_pal_at_288p;
 
     alt_u16 scale_max = !use_vertical ? CFG_HORSCALE_MAX_VALUE :
                 use_pal_limit ? CFG_VERTSCALE_PAL_MAX_VALUE : CFG_VERTSCALE_NTSC_MAX_VALUE;

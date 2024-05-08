@@ -731,7 +731,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="28" />
+  <parameter name="width" value="29" />
  </module>
  <module
    name="nios2_gen2_0"
