@@ -5,11 +5,11 @@
  version="1.0"
  fabric="QSYS">
  <!-- Format version 22.1 922 (Future versions may contain additional information.) -->
- <!-- 2024.04.27.20:13:33 -->
+ <!-- 2024.05.08.22:38:39 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1714241613</value>
+  <value>1715200719</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -11930,7 +11930,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="instSlaveMapParam">
    <type>java.lang.String</type>
-   <value><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x10000' end='0x1A800' type='altera_avalon_onchip_memory2.s1' /><slave name='onchip_flash_0.data' start='0x28000' end='0x30000' type='altera_onchip_flash.data' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x30800' end='0x31000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='onchip_flash_0.csr' start='0x31108' end='0x31110' type='altera_onchip_flash.csr' /></address-map>]]></value>
+   <value><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x10000' end='0x1A000' type='altera_avalon_onchip_memory2.s1' /><slave name='onchip_flash_0.data' start='0x28000' end='0x30000' type='altera_onchip_flash.data' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x30800' end='0x31000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='onchip_flash_0.csr' start='0x31108' end='0x31110' type='altera_onchip_flash.csr' /></address-map>]]></value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -11950,7 +11950,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="dataSlaveMapParam">
    <type>java.lang.String</type>
-   <value><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x10000' end='0x1A800' type='altera_avalon_onchip_memory2.s1' /><slave name='onchip_flash_0.data' start='0x28000' end='0x30000' type='altera_onchip_flash.data' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x30800' end='0x31000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='i2c_master.avalon_slave_0' start='0x31000' end='0x31020' type='i2c_opencores.avalon_slave_0' /><slave name='cfg_set3_out.s1' start='0x31020' end='0x31030' type='altera_avalon_pio.s1' /><slave name='info_sync_out.s1' start='0x31030' end='0x31040' type='altera_avalon_pio.s1' /><slave name='cfg_set2_out.s1' start='0x31040' end='0x31050' type='altera_avalon_pio.s1' /><slave name='fallback_in.s1' start='0x31050' end='0x31060' type='altera_avalon_pio.s1' /><slave name='led_out.s1' start='0x31060' end='0x31070' type='altera_avalon_pio.s1' /><slave name='ext_int_n.s1' start='0x31070' end='0x31080' type='altera_avalon_pio.s1' /><slave name='cfg_set1_out.s1' start='0x31080' end='0x31090' type='altera_avalon_pio.s1' /><slave name='ext_info_in.s1' start='0x31090' end='0x310A0' type='altera_avalon_pio.s1' /><slave name='sync_in.s1' start='0x310A0' end='0x310B0' type='altera_avalon_pio.s1' /><slave name='n64adv_state_in.s1' start='0x310B0' end='0x310C0' type='altera_avalon_pio.s1' /><slave name='cfg_set0_out.s1' start='0x310C0' end='0x310D0' type='altera_avalon_pio.s1' /><slave name='ctrl_data_in.s1' start='0x310D0' end='0x310E0' type='altera_avalon_pio.s1' /><slave name='vd_wrctrl.s1' start='0x310E0' end='0x310F0' type='altera_avalon_pio.s1' /><slave name='vd_wrdata.s1' start='0x310F0' end='0x31100' type='altera_avalon_pio.s1' /><slave name='onchip_flash_0.csr' start='0x31108' end='0x31110' type='altera_onchip_flash.csr' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x31110' end='0x31118' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></value>
+   <value><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x10000' end='0x1A000' type='altera_avalon_onchip_memory2.s1' /><slave name='onchip_flash_0.data' start='0x28000' end='0x30000' type='altera_onchip_flash.data' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x30800' end='0x31000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='i2c_master.avalon_slave_0' start='0x31000' end='0x31020' type='i2c_opencores.avalon_slave_0' /><slave name='cfg_set3_out.s1' start='0x31020' end='0x31030' type='altera_avalon_pio.s1' /><slave name='info_sync_out.s1' start='0x31030' end='0x31040' type='altera_avalon_pio.s1' /><slave name='cfg_set2_out.s1' start='0x31040' end='0x31050' type='altera_avalon_pio.s1' /><slave name='fallback_in.s1' start='0x31050' end='0x31060' type='altera_avalon_pio.s1' /><slave name='led_out.s1' start='0x31060' end='0x31070' type='altera_avalon_pio.s1' /><slave name='ext_int_n.s1' start='0x31070' end='0x31080' type='altera_avalon_pio.s1' /><slave name='cfg_set1_out.s1' start='0x31080' end='0x31090' type='altera_avalon_pio.s1' /><slave name='ext_info_in.s1' start='0x31090' end='0x310A0' type='altera_avalon_pio.s1' /><slave name='sync_in.s1' start='0x310A0' end='0x310B0' type='altera_avalon_pio.s1' /><slave name='n64adv_state_in.s1' start='0x310B0' end='0x310C0' type='altera_avalon_pio.s1' /><slave name='cfg_set0_out.s1' start='0x310C0' end='0x310D0' type='altera_avalon_pio.s1' /><slave name='ctrl_data_in.s1' start='0x310D0' end='0x310E0' type='altera_avalon_pio.s1' /><slave name='vd_wrctrl.s1' start='0x310E0' end='0x310F0' type='altera_avalon_pio.s1' /><slave name='vd_wrdata.s1' start='0x310F0' end='0x31100' type='altera_avalon_pio.s1' /><slave name='onchip_flash_0.csr' start='0x31108' end='0x31110' type='altera_onchip_flash.csr' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x31110' end='0x31118' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -12662,7 +12662,7 @@ parameters are a RESULT of the module parameters. -->
     <slaveName>s1</slaveName>
     <name>onchip_memory2_0.s1</name>
     <baseAddress>65536</baseAddress>
-    <span>43008</span>
+    <span>40960</span>
    </memoryBlock>
    <memoryBlock>
     <isBridge>false</isBridge>
@@ -13093,7 +13093,7 @@ parameters are a RESULT of the module parameters. -->
     <slaveName>s1</slaveName>
     <name>onchip_memory2_0.s1</name>
     <baseAddress>65536</baseAddress>
-    <span>43008</span>
+    <span>40960</span>
    </memoryBlock>
   </interface>
   <interface name="irq" kind="interrupt_receiver" version="22.1">
@@ -15488,7 +15488,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.SIZE_VALUE</name>
-   <value>43008</value>
+   <value>40960</value>
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.WRITABLE</name>
@@ -15620,7 +15620,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="memorySize">
    <type>long</type>
-   <value>43008</value>
+   <value>40960</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -15904,7 +15904,7 @@ parameters are a RESULT of the module parameters. -->
    </parameter>
    <parameter name="addressSpan">
     <type>java.math.BigInteger</type>
-    <value>43008</value>
+    <value>40960</value>
     <derived>true</derived>
     <enabled>true</enabled>
     <visible>false</visible>
@@ -15992,7 +15992,7 @@ parameters are a RESULT of the module parameters. -->
    </parameter>
    <parameter name="explicitAddressSpan">
     <type>java.math.BigInteger</type>
-    <value>43008</value>
+    <value>40960</value>
     <derived>false</derived>
     <enabled>true</enabled>
     <visible>true</visible>
