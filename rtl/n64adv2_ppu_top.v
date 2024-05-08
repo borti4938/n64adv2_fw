@@ -158,7 +158,7 @@ wire use_interlaced_full_w;
 wire cfg_nvideblur_sysclk_resynced;
 
 wire [1:0] cfg_deinterlacing_mode_dramclk_resynced;
-wire dv1_mode_dramclk_resynced, palmode_dramclk_resynced, n64_480i_dramclk_resynced;
+wire dv1_mode_dramclk_resynced, n64_480i_dramclk_resynced;
 
 wire cfg_lowlatencymode_resynced;
 wire [9:0] cfg_vpos_1st_rdline_w, cfg_vpos_1st_rdline_dramclk_resynced, cfg_vpos_1st_rdline_resynced;
@@ -201,7 +201,6 @@ reg [`VID_CFG_W-1:0] sys_videomode;
 
 reg cfg_use_fxd_mode;
 reg [`VID_CFG_W-1:0] cfg_videomode_osd, cfg_videomode;
-reg cfg_pal_boxed;
 reg [1:0] cfg_v_interpolation_mode, cfg_h_interpolation_mode;
 
 reg cfg_vSL_en, cfg_hSL_en;
@@ -482,14 +481,12 @@ always @(posedge VCLK_Tx) begin
   
   if (vid_direct_mode_w) begin  // mask some settings in direct mode
     cfg_use_fxd_mode <= ConfigSet_resynced[`directmode_version_bit];
-    cfg_pal_boxed <= ConfigSet_resynced[`directmode_version_bit] & ConfigSet_resynced[`pal_boxed_scale_bit];  // mask pal in box for dv1
     cfg_v_interpolation_mode <= `INTERPOLATION_NEAREST;
     cfg_h_interpolation_mode <= `INTERPOLATION_NEAREST;
     cfg_hSL_en <= 1'b0;
     cfg_vSL_en <= 1'b0;
   end else begin
     cfg_use_fxd_mode <= 1'b0;
-    cfg_pal_boxed <= ConfigSet_resynced[`pal_boxed_scale_bit];
     cfg_v_interpolation_mode <= ConfigSet_resynced[`v_interpolation_mode_slice];
     cfg_h_interpolation_mode <= ConfigSet_resynced[`h_interpolation_mode_slice];
     cfg_hSL_en <= ConfigSet_resynced[`hSL_en_bit];
@@ -613,7 +610,7 @@ scaler scaler_u (
   .DRAM_DQM(DRAM_DQM),
   .DRAM_nRAS(DRAM_nRAS),
   .DRAM_nWE(DRAM_nWE),
-  .vinfo_dramsynced_i({dv1_mode_dramclk_resynced,palmode_dramclk_resynced,n64_480i_dramclk_resynced}),
+  .vinfo_dramsynced_i({dv1_mode_dramclk_resynced,n64_480i_dramclk_resynced}),
   .video_deinterlacing_mode_dramsynced_i(cfg_deinterlacing_mode_dramclk_resynced),
   .video_vpos_1st_rdline_dramsynced_i(cfg_vpos_1st_rdline_dramclk_resynced),
   .VCLK_o(VCLK_Tx),
@@ -622,7 +619,6 @@ scaler scaler_u (
   .video_config_i(cfg_videomode),
   .video_fxd_i(cfg_use_fxd_mode),
   .video_llm_i(cfg_lowlatencymode_resynced),
-  .video_pal_boxed_i(cfg_pal_boxed),
   .video_v_interpolation_mode_i(cfg_v_interpolation_mode),
   .video_vpos_1st_rdline_i(cfg_vpos_1st_rdline_resynced),
   .video_vlines_in_needed_i(cfg_vlines_in_needed_resynced),

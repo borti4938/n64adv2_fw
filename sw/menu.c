@@ -43,7 +43,6 @@
 #include "led.h"
 
 char szText[VD_WIDTH];
-extern vmode_t vmode_menu;
 extern cfg_scaler_in2out_sel_type_t scaling_menu, scaling_n64adv;
 
 static const arrowshape_t select_arrow = {

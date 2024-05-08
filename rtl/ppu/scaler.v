@@ -66,7 +66,6 @@ module scaler(
   video_config_i,
   video_fxd_i,
   video_llm_i,
-  video_pal_boxed_i,
   
   video_v_interpolation_mode_i,
   video_vpos_1st_rdline_i,
@@ -120,7 +119,7 @@ output [ 1:0] DRAM_DQM;
 output        DRAM_nRAS;
 output        DRAM_nWE;
 
-input [2:0] vinfo_dramsynced_i;
+input [1:0] vinfo_dramsynced_i;
 input [1:0] video_deinterlacing_mode_dramsynced_i;
 input [9:0] video_vpos_1st_rdline_dramsynced_i; // first line to read (needed if scaling factor is so high such that not all lines are needed)
 
@@ -131,7 +130,6 @@ input [1:0] vinfo_txsynced_i;
 input [`VID_CFG_W-1:0] video_config_i;
 input video_fxd_i;
 input video_llm_i;
-input video_pal_boxed_i;
 
 input [1:0] video_v_interpolation_mode_i;
 input [9:0] video_vpos_1st_rdline_i;  // first line to read (needed if scaling factor is so high such that not all lines are needed)
@@ -203,8 +201,7 @@ integer int_idx;
 wire vdata_detected = vinfo_i[2];
 wire palmode = vinfo_i[1];
 wire interlaced = vinfo_i[0];
-wire dv1_mode_dramclk_resynced = vinfo_dramsynced_i[2];
-wire palmode_dramclk_resynced = vinfo_dramsynced_i[1];
+wire dv1_mode_dramclk_resynced = vinfo_dramsynced_i[1];
 wire interlaced_dramclk_resynced = vinfo_dramsynced_i[0];
 wire palmode_vclk_o_resynced = vinfo_txsynced_i[1];
 wire interlaced_vclk_o_resynced = vinfo_txsynced_i[0];
