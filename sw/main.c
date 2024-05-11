@@ -222,6 +222,7 @@ int main()
 
   // N64Adv2 state variable
   bool_t video_input_detected_pre;
+  bool_t use_pal_at_288p_pre = use_pal_at_288p;
   vmode_t palmode_pre = palmode;
   scanmode_t scanmode_pre = scanmode;
   bool_t unlock_1440p_pre = unlock_1440p;
@@ -264,6 +265,8 @@ int main()
   bool_t undo_changed_linex_setting = FALSE;
 
   bool_t led_set_ok = FALSE;
+  bool_t use_dv1_mode;
+  bool_t spd_if_set_to_dv1 = FALSE;
   bool_t use_fxd_mode;
   bool_t use_fxd_mode_pre = FALSE;
   alt_u8 vsif_cycle_cnt = 0;
@@ -279,6 +282,7 @@ int main()
 
     active_osd_pre = active_osd;
     video_input_detected_pre = video_input_detected;
+    use_pal_at_288p_pre = use_pal_at_288p;
     palmode_pre = palmode;
     scanmode_pre = scanmode;
     target_resolution_pre = target_resolution;
@@ -463,7 +467,9 @@ int main()
       todo = NEW_CONF_VALUE;
     }
 
-    use_fxd_mode = (cfg_get_value(&linex_resolution,0)==DIRECT) && (cfg_get_value(&dvmode_version,0)==1);
+    use_dv1_mode = (cfg_get_value(&linex_resolution,0)==DIRECT);
+    use_fxd_mode = use_dv1_mode && (cfg_get_value(&dvmode_version,0)==1);
+    use_dv1_mode ^= use_fxd_mode;
 
     if (periphal_state.si5356_locked && periphal_state.adv7513_hdmi_up) { // all ok let's setup register settings in adv and  game-idperiphals_set_ready_bit();
       if ((active_osd_pre != active_osd) || undo_changed_linex_setting) {
@@ -473,11 +479,21 @@ int main()
 
       if (!led_set_ok || (palmode_pre != palmode) || (scanmode_pre != scanmode) || (todo == NEW_CONF_VALUE)) {
         set_cfg_adv7513();
-        if ((cfg_get_value(&linex_resolution,0)==DIRECT) && (cfg_get_value(&dvmode_version,0)==0)) send_dv1_if(ON);
-        else send_spd_if(ON);
+        spd_if_set_to_dv1 = !use_dv1_mode;
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
       }
 
+      if (use_dv1_mode) {
+        if (!spd_if_set_to_dv1 || (use_pal_at_288p_pre != use_pal_at_288p) || (palmode_pre != palmode)) {
+          send_dv1_if(ON);
+          spd_if_set_to_dv1 = TRUE;
+        }
+      } else {
+        if (spd_if_set_to_dv1) {
+          send_spd_if(ON);
+          spd_if_set_to_dv1 = FALSE;
+        }
+      }
       if (vsif_cycle_cnt > VSIF_CYCLE_CNT_TH) {
         if (use_fxd_mode) {
           send_fxd_if(ON,ON);
