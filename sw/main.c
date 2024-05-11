@@ -224,6 +224,7 @@ int main()
   bool_t video_input_detected_pre;
   bool_t use_pal_at_288p_pre = use_pal_at_288p;
   vmode_t palmode_pre = palmode;
+  scanmode_t scanmode_pre = scanmode;
   bool_t unlock_1440p_pre = unlock_1440p;
 
   // set LEDs
@@ -283,6 +284,7 @@ int main()
     video_input_detected_pre = video_input_detected;
     use_pal_at_288p_pre = use_pal_at_288p;
     palmode_pre = palmode;
+    scanmode_pre = scanmode;
     target_resolution_pre = target_resolution;
     unlock_1440p_pre = unlock_1440p;
     update_n64adv_state(); // also update commonly used ppu states (video_input_detected, palmode, scanmode, linemult_mode)
@@ -482,7 +484,7 @@ int main()
       }
 
       if (use_dv1_mode) {
-        if (!spd_if_set_to_dv1 || (use_pal_at_288p_pre != use_pal_at_288p) || (palmode_pre != palmode)) {
+        if (!spd_if_set_to_dv1 || (use_pal_at_288p_pre != use_pal_at_288p) || (palmode_pre != palmode) || (scanmode_pre != scanmode)) {
           send_dv1_if(ON);
           spd_if_set_to_dv1 = TRUE;
         }
