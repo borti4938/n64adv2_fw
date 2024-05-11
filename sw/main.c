@@ -224,7 +224,6 @@ int main()
   bool_t video_input_detected_pre;
   bool_t use_pal_at_288p_pre = use_pal_at_288p;
   vmode_t palmode_pre = palmode;
-  scanmode_t scanmode_pre = scanmode;
   bool_t unlock_1440p_pre = unlock_1440p;
 
   // set LEDs
@@ -284,7 +283,6 @@ int main()
     video_input_detected_pre = video_input_detected;
     use_pal_at_288p_pre = use_pal_at_288p;
     palmode_pre = palmode;
-    scanmode_pre = scanmode;
     target_resolution_pre = target_resolution;
     unlock_1440p_pre = unlock_1440p;
     update_n64adv_state(); // also update commonly used ppu states (video_input_detected, palmode, scanmode, linemult_mode)
@@ -477,7 +475,7 @@ int main()
         todo = NEW_CONF_VALUE;
       }
 
-      if (!led_set_ok || (palmode_pre != palmode) || (scanmode_pre != scanmode) || (todo == NEW_CONF_VALUE)) {
+      if (!led_set_ok || (todo == NEW_CONF_VALUE)) {
         set_cfg_adv7513();
         spd_if_set_to_dv1 = !use_dv1_mode;
         led_set_ok = FALSE;  // this forces that green led will show up on a change of settings
@@ -494,6 +492,7 @@ int main()
           spd_if_set_to_dv1 = FALSE;
         }
       }
+
       if (vsif_cycle_cnt > VSIF_CYCLE_CNT_TH) {
         if (use_fxd_mode) {
           send_fxd_if(ON,ON);
