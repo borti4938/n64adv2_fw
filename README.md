@@ -184,7 +184,7 @@ Only change something here if you are sure what you are doing.
 | **Fallback config - Trigger** | Rst. button | Determines the fallback trigger (_Rst. button_, _Controller L_ or _Rst.b. or Ctrl.L_) \[17\] | 
 | **Fallback config - Open menu on fb.** | On | Determines whether menu is opened on fallback or not |
 
-\[16\] A copy from _NTSC->PAL_ also enables **Use PAL in 240p box** option. 240p/288p configurations stay unaffected.  
+\[16\] A copy from _NTSC->PAL_ also sets **Use PAL in 240p box** option to _Auto_. 240p/288p configurations stay unaffected.  
 \[17\] On _Controller L_ you need to keep pressed button L on controller 1 until the game reads the controller inputs the first time.  
 
 Note that all unsaved configuration entries in the menu are shown in yellow color.

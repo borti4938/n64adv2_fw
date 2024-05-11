@@ -615,7 +615,7 @@ int cfg_copy_ntsc2pal()
     linex_scanlines_words[PAL].config_val = linex_scanlines_words[NTSC].config_val;
     for (idx = 1; idx <= NTSC_LAST_SCALING_MODE; idx++)
       scaling_words[idx+NTSC_LAST_SCALING_MODE-1] = scaling_words[idx-1];
-    cfg_set_value(&pal_boxed_mode,ON);
+    cfg_set_value(&pal_boxed_mode,AUTO_HZ);
   }
   return 0;
 }
