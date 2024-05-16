@@ -40,6 +40,8 @@ module n64_vinfo_ext(
   Sync_pre,
   Sync_cur,
 
+  pal_boxed_mode,
+
   vinfo_o
 );
 
@@ -52,6 +54,8 @@ input nVDSYNC;
 
 input  [3:0] Sync_pre;
 input  [3:0] Sync_cur;
+
+input [1:0] pal_boxed_mode;
 
 output [3:0] vinfo_o;   // order: vdata_detected,pal_is_240p,palmode,n64_480i
 
@@ -179,12 +183,14 @@ always @(posedge VCLK or negedge nRST)
 reg palmode_pre = 1'b0;
 reg [3:0] pal_288p_sense_cnt = 4'h0;
 reg pal_is_240p = 1'b1;
+reg pal_in_240p_box = 1'b1;
 
 always @(posedge VCLK or negedge nRST_unmasked)
   if (!nRST_unmasked) begin
     palmode_pre <= 1'b0;
     pal_288p_sense_cnt <= 4'h0;
     pal_is_240p <= 1'b1;
+    pal_in_240p_box <= 1'b1;
   end else begin
     if (palmode) begin
       if ((vclk_cnt > `VSTART_PAL_LX1) && (vclk_cnt < `VSTART_PAL_LX1 + 24)) begin
@@ -198,12 +204,15 @@ always @(posedge VCLK or negedge nRST_unmasked)
     if (palmode_pre != palmode)
       pal_is_240p <= 1'b1;
     palmode_pre <= palmode;
+    
+    if (^pal_boxed_mode) pal_in_240p_box <= pal_boxed_mode[0];
+    else                 pal_in_240p_box <= pal_is_240p;
   end
 
 
 // pack vinfo_o vector
 // ===================
 
-assign vinfo_o = {vdata_detected,pal_is_240p,palmode,n64_480i};
+assign vinfo_o = {vdata_detected,pal_in_240p_box,palmode,n64_480i};
 
 endmodule

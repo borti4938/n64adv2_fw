@@ -333,6 +333,7 @@ set_false_path -from [get_registers {n64adv2_ppu_u|cfg_sync4n64clk_u0|reg_synced
 set_false_path -from [get_registers {n64adv2_ppu_u|get_vinfo_u|field_id \
                                      n64adv2_ppu_u|get_vinfo_u|n64_480i \
                                      n64adv2_ppu_u|get_vinfo_u|palmode \
+                                     n64adv2_ppu_u|get_vinfo_u|pal_in_240p_box \
                                      n64adv2_ppu_u|get_vinfo_u|vdata_detected} \
                      ]
 

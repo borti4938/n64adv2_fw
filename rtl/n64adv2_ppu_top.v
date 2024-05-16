@@ -140,7 +140,7 @@ output        DRAM_nWE;
 // wires
 wire [3:0] vinfo_pass;
 wire vdata_detected;
-wire pal_is_240p, palmode, n64_480i;
+wire pal_in_240p_box, palmode, n64_480i;
 
 wire [ 3:0] cfg_gamma;
 wire cfg_nvideblur_pre, cfg_n16bit_mode;
@@ -227,7 +227,7 @@ reg n_palmode_change, n_vdata_detected_change;
 // ----------------------
 
 assign vdata_detected = vinfo_pass[3];
-assign pal_is_240p = vinfo_pass[2];
+assign pal_in_240p_box = vinfo_pass[2];
 assign palmode = vinfo_pass[1];
 assign n64_480i = vinfo_pass[0];
 
@@ -238,7 +238,7 @@ assign ConfigSet_w[`hSL_en_bit-1:0] = ConfigSet[`hSL_en_bit-1:0];
 
 assign PPUState[`PPU_input_vdata_detected_bit]  = vdata_detected;
 assign PPUState[`PPU_input_palpattern_bit]      = 1'b0; // will be overwritten in n64adv2_controller.v
-assign PPUState[`PPU_input_pal_is_240p_bit]     = pal_is_240p;
+assign PPUState[`PPU_input_pal_in_240p_box_bit] = pal_in_240p_box;
 assign PPUState[`PPU_input_pal_bit]             = palmode;
 assign PPUState[`PPU_input_interlaced_bit]      = n64_480i;
 assign PPUState[`PPU_output_f5060_slice]        = {ConfigSet_resynced[`force50hz_bit],ConfigSet_resynced[`force60hz_bit]};
@@ -303,12 +303,11 @@ always @(posedge SYS_CLK) begin
 end
 
 
-wire use_pal_boxed_w = ^ConfigSet_w[`pal_boxed_scale_slice] ? ConfigSet_w[`pal_boxed_scale_bit] : pal_is_240p;
 wire [11:0] direct_mode_dv1_vlines_set_w = ~palmode_sysclk_resynced ? `ACTIVE_LINES_NTSC_LX1 : 
-                                                    use_pal_boxed_w ? `ACTIVE_LINES_NTSC_LX1 :
+                                                    pal_in_240p_box ? `ACTIVE_LINES_NTSC_LX1 :
                                                                       `ACTIVE_LINES_PAL_LX1  ;
 wire [11:0] direct_mode_fxd_vlines_set_w = ~palmode_sysclk_resynced ? `ACTIVE_LINES_NTSC_LX2 :
-                                                    use_pal_boxed_w ? `ACTIVE_LINES_NTSC_LX2 :
+                                                    pal_in_240p_box ? `ACTIVE_LINES_NTSC_LX2 :
                                                                       `ACTIVE_LINES_PAL_LX2  ;
 assign direct_mode_vlines_set_w = ConfigSet_w[`directmode_version_bit] ? direct_mode_fxd_vlines_set_w : direct_mode_dv1_vlines_set_w;
 assign cfg_vlines_set_w = ConfigSet_w[`target_vlines_slice];
@@ -325,7 +324,7 @@ assign use_interlaced_full_w = sys_direct_mode_w ? 1'b0                         
 scaler_cfggen scaler_cfggen_u(
   .SYS_CLK(SYS_CLK),
   .palmode_i(palmode_sysclk_resynced),
-  .palmode_boxed_i(use_pal_boxed_w),
+  .palmode_boxed_i(pal_in_240p_box),
   .use_interlaced_full_i(use_interlaced_full_w),
   .nvideblur_i(cfg_nvideblur_sysclk_resynced),
   .video_config_i(sys_videomode),
@@ -536,6 +535,7 @@ n64_vinfo_ext get_vinfo_u (
   .nVDSYNC(nVDSYNC_i),
   .Sync_pre(vdata_bwd_sy_w),
   .Sync_cur(VD_i[3:0]),
+  .pal_boxed_mode(ConfigSet_w[`pal_boxed_scale_slice]),
   .vinfo_o(vinfo_pass)
 );
 
