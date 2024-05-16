@@ -205,8 +205,12 @@ always @(posedge VCLK or negedge nRST_unmasked)
       pal_is_240p <= 1'b1;
     palmode_pre <= palmode;
     
-    if (^pal_boxed_mode) pal_in_240p_box <= pal_boxed_mode[0];
-    else                 pal_in_240p_box <= pal_is_240p;
+    if (^pal_boxed_mode) begin  // user setting on/off
+      pal_is_240p <= 1'b1;      // keep constant, rerun estimation upon set to auto again
+      pal_in_240p_box <= pal_boxed_mode[0];
+    end else begin  // user setting auto
+      pal_in_240p_box <= pal_is_240p;
+    end
   end
 
 
