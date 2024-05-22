@@ -150,6 +150,7 @@ wire [1:0] cfg_deinterlacing_mode_pre, cfg_deinterlacing_mode;
 
 wire [`VID_CFG_W-1:0] sys_vmode_pre_w;
 wire sys_direct_mode_w, sys_llm_w;
+wire [11:0] direct_mode_dv1_vlines_set_w, direct_mode_fxd_vlines_set_w;
 wire [11:0] direct_mode_vlines_set_w, cfg_vlines_set_w, vlines_set_w;
 wire [11:0] direct_mode_hpixels_set_w, cfg_hpixels_set_w, hpixels_set_w;
 
@@ -303,12 +304,12 @@ always @(posedge SYS_CLK) begin
 end
 
 
-wire [11:0] direct_mode_dv1_vlines_set_w = ~palmode_sysclk_resynced ? `ACTIVE_LINES_NTSC_LX1 : 
-                                                    pal_in_240p_box ? `ACTIVE_LINES_NTSC_LX1 :
-                                                                      `ACTIVE_LINES_PAL_LX1  ;
-wire [11:0] direct_mode_fxd_vlines_set_w = ~palmode_sysclk_resynced ? `ACTIVE_LINES_NTSC_LX2 :
-                                                    pal_in_240p_box ? `ACTIVE_LINES_NTSC_LX2 :
-                                                                      `ACTIVE_LINES_PAL_LX2  ;
+assign direct_mode_dv1_vlines_set_w = ~palmode_sysclk_resynced ? `ACTIVE_LINES_NTSC_LX1 : 
+                                               pal_in_240p_box ? `ACTIVE_LINES_NTSC_LX1 :
+                                                                 `ACTIVE_LINES_PAL_LX1  ;
+assign direct_mode_fxd_vlines_set_w = ~palmode_sysclk_resynced ? `ACTIVE_LINES_NTSC_LX2 :
+                                               pal_in_240p_box ? `ACTIVE_LINES_NTSC_LX2 :
+                                                                 `ACTIVE_LINES_PAL_LX2  ;
 assign direct_mode_vlines_set_w = ConfigSet_w[`directmode_version_bit] ? direct_mode_fxd_vlines_set_w : direct_mode_dv1_vlines_set_w;
 assign cfg_vlines_set_w = ConfigSet_w[`target_vlines_slice];
 assign vlines_set_w = sys_direct_mode_w ? direct_mode_vlines_set_w : cfg_vlines_set_w;

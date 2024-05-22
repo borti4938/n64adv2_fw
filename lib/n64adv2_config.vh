@@ -170,7 +170,7 @@
   
   `define PPU_input_vdata_detected_bit        26
   `define PPU_input_palpattern_bit            25
-  `define PPU_input_pal_is_240p_bit           24
+  `define PPU_input_pal_in_240p_box_bit       24
   `define PPU_input_pal_bit                   23
   `define PPU_input_interlaced_bit            22
   
