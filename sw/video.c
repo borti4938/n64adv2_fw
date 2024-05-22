@@ -112,7 +112,8 @@ void set_cfg_adv7513(void) {
 
   switch (linex_val) {
     case DIRECT:
-      set_pr_manual(PR_MANUAL,4,4);
+      if (cfg_get_value(&dvmode_version,0)==0) set_pr_manual(PR_MANUAL,4,4);
+      else set_pr_manual(PR_AUTO,1,1);
       break;
     case LineX6W:
       set_pr_manual(PR_MANUAL,2,1);
