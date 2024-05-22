@@ -854,7 +854,12 @@ int update_cfg_screen(menu_t* current_menu)
               font_color = FONTCOLOR_GREY;
             }
           }
-          if ((cfg_get_value(&linex_resolution,0) != LineX2) && (v_run == VGA480P_SELECTION)) font_color = FONTCOLOR_GREY;
+          if ((cfg_get_value(&linex_resolution,0) == LineX2)) {
+            if (palmode && (v_run == LINEX_SELECTION)) {
+              sprintf(szText,Resolution576pReplacement);
+              print_szText = TRUE;
+            }
+          } else if (v_run == VGA480P_SELECTION) font_color = FONTCOLOR_GREY;
         }
 
         // check scaling menu

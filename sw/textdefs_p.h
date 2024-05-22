@@ -233,7 +233,7 @@ static const char *resolution_overlay __ufmdata_section__ =
     "* New settings:\n"
     "  - Output resolution:\n"
     "    > Direct mode version:\n"
-    "    > Use VGA-flag in 480p:\n"
+    "    > Use VGA-flag:\n"
     "  - Frame-locked mode:\n"
     "  - Force 50Hz/60Hz:\n"
     "  - Test and apply:\n\n"
