@@ -143,8 +143,6 @@ wire OSD_VSync_resynced;
 wire new_ctrl_data_resynced;
 wire ctrl_data_tack, ctrl_data_tack_resynced;
 
-wire game_id_tgl_resynced;
-
 wire nVSYNC_CPU_w;
 
 wire CHIP_ID_valid_w;
@@ -201,7 +199,6 @@ initial begin
   for (idx = 0; idx < 10; idx = idx+1)
     game_id[idx] <= 8'h0;
 end
-reg game_id_tgl = 1'b0;
 
 reg initiate_nrst = 1'b0;
 reg       drv_rst =  1'b0;
@@ -245,14 +242,14 @@ always @(posedge N64_CLK_i)
 
 
 register_sync #(
-  .reg_width(2 + `PPU_State_Width + 5), // 1 + 1 + PPU_State_Width + 1 + 1 + 1 + 1 + 1
-  .reg_preset({(2 + `PPU_State_Width + 5){1'b0}})
+  .reg_width(2 + `PPU_State_Width + 4), // 1 + 1 + PPU_State_Width + 1 + 1 + 1 + 1
+  .reg_preset({(2 + `PPU_State_Width + 4){1'b0}})
 ) sync4cpu_u0(
   .clk(SYS_CLK),
   .clk_en(1'b1),
   .nrst(1'b1),
-  .reg_i({ctrl_detected,HDMI_CLK_ok_i,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],game_id_tgl,FallbackCtrl_valid,FallbackRst_valid,new_ctrl_data[1],OSD_VSync}),
-  .reg_o({ctrl_detected_resynced,HDMI_CLK_ok_resynced,PPUState_resynced,game_id_tgl_resynced,FallbackCtrl_valid_resynced,FallbackRst_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
+  .reg_i({ctrl_detected,HDMI_CLK_ok_i,PPUState[`PPU_State_Width-1],pal_pattern,PPUState[`PPU_State_Width-3:0],FallbackCtrl_valid,FallbackRst_valid,new_ctrl_data[1],OSD_VSync}),
+  .reg_o({ctrl_detected_resynced,HDMI_CLK_ok_resynced,PPUState_resynced,FallbackCtrl_valid_resynced,FallbackRst_valid_resynced,new_ctrl_data_resynced,OSD_VSync_resynced})
 );
 
 chip_id chip_id_u (
@@ -277,7 +274,7 @@ system_n64adv2 system_u (
   .i2c_scl_pad_io(I2C_SCL),
   .i2c_sda_pad_io(I2C_SDA),
   .interrupts_n_export(~Interrupt_i),
-  .sync_in_export({game_id_tgl_resynced,new_ctrl_data_resynced,nVSYNC_CPU_w}),
+  .sync_in_export({new_ctrl_data_resynced,nVSYNC_CPU_w}),
   .vd_wrctrl_export(vd_wrctrl_w),
   .vd_wrdata_export(vd_wrdata_w),
   .ctrl_data_in_export(serial_data[2]),
@@ -347,9 +344,8 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
     serial_data[1] <= 32'h0;
     serial_data[0] <= 32'h0;
     game_id_buffer <= 80'h0;
-//    for (idx = 0; idx < 10; idx = idx+1)  // do not reset game_id
-//      game_id[idx] <= 8'h0;
-//    game_id_tgl  <=  1'b0;
+    for (idx = 0; idx < 10; idx = idx+1)
+      game_id[idx] <= 8'h0;
     ctrl_data_cnt  <=  7'd0;
     new_ctrl_data  <=  2'b0;
     ctrl_detected  <=  1'b0;
@@ -427,7 +423,6 @@ always @(posedge CTRL_CLK or negedge CTRL_nRST)
                 game_id[8][idx] <= game_id_buffer[71 - idx];
                 game_id[9][idx] <= game_id_buffer[79 - idx];
               end
-              game_id_tgl <= ~game_id_tgl;
             end
           end
         end

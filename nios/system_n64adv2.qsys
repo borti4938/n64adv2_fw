@@ -985,7 +985,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="3" />
+  <parameter name="width" value="2" />
  </module>
  <module name="test_pio_0" kind="altera_avalon_pio" version="22.1" enabled="0">
   <parameter name="bitClearingEdgeCapReg" value="false" />
