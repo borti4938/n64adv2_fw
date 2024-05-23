@@ -213,7 +213,7 @@ void cfg_scale_v2h_update(bool_t direction_vh) {
       default:
         return;
     }
-    if (scale > CFG_HORSCALE_MAX_VALUE) scale = CFG_HORSCALE_MAX_VALUE; // max out horizontal scale (overflow may appear on PAL @ 8.00x)
+    if (scale > CFG_HORSCALE_MAX_VALUE) scale = CFG_HORSCALE_MAX_VALUE; // max out horizontal scale
     cfg_set_value(&hor_scale,scale);
   } else {
     scale = cfg_get_value(&hor_scale,0);
@@ -232,6 +232,11 @@ void cfg_scale_v2h_update(bool_t direction_vh) {
         break;
       default:
         return;
+    }
+    if (cfg_get_value(&scaling_selection,0) > NTSC_LAST_SCALING_MODE) {
+      if (scale > CFG_VERTSCALE_PAL_MAX_VALUE) scale = CFG_VERTSCALE_PAL_MAX_VALUE; // max out vertical scale
+    } else {
+      if (scale > CFG_VERTSCALE_NTSC_MAX_VALUE) scale = CFG_VERTSCALE_NTSC_MAX_VALUE; // max out vertical scale
     }
     cfg_set_value(&vert_scale,scale);
   }
