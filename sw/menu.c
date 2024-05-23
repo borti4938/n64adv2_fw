@@ -399,7 +399,6 @@ static inline bool_t is_rwdata_screen (menu_t *menu)
 #endif
 
 
-void val2txt_func(alt_u16 v) { sprintf(szText,"%u", v); };
 void val2txt_4u_func(alt_u16 v) { sprintf(szText,"%4u", v); };
 void val2txt_5b_binaryoffset_func(alt_u16 v) { if (v & 0x10) sprintf(szText," %2u", (v&0xF)); else sprintf(szText,"-%2u", (v^0xF)+1); };
 void val2txt_scale_sel_func(alt_u16 v) {

@@ -54,8 +54,7 @@ config_t vert_scale = {
   .cfg_word_offset = CFG_VERTSCALE_OFFSET,
   .num_cfg_bits    = CFG_VERTSCALE_NOFBITS,
   .max_value       = CFG_VERTSCALE_PAL_MAX_VALUE,
-  .cfg_disp_type   = DISP_BUF_FUNC,
-  .val2char_func   = &val2txt_func
+  .cfg_disp_type   = DISP_BUF_FUNC
 };
 
 config_t hor_scale = {
@@ -63,8 +62,7 @@ config_t hor_scale = {
   .cfg_word_offset = CFG_HORSCALE_OFFSET,
   .num_cfg_bits    = CFG_HORSCALE_NOFBITS,
   .max_value       = CFG_HORSCALE_MAX_VALUE,
-  .cfg_disp_type   = DISP_BUF_FUNC,
-  .val2char_func   = &val2txt_func
+  .cfg_disp_type   = DISP_BUF_FUNC
 };
 
 config_t linex_force_5060 = {

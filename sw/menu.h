@@ -130,11 +130,8 @@ extern menu_t home_menu, vires_screen, debug_screen;
 
 #define DEBUG_IN_MAIN_MENU_SELECTION  7
 
-void val2txt_func(alt_u16 v);
 void val2txt_5b_binaryoffset_func(alt_u16 v);
 void val2txt_scale_sel_func(alt_u16 v);
-void val2txt_hscale_func(alt_u16 v);
-void val2txt_vscale_func(alt_u16 v);
 void audioamp2txt_func(alt_u16 v);
 void flag2set_func(alt_u16 v);
 void scanline_str2txt_func(alt_u16 v);
