@@ -112,7 +112,7 @@ void set_cfg_adv7513(void) {
 
   switch (linex_val) {
     case DIRECT:
-      if (cfg_get_value(&dvmode_version,0)==0) set_pr_manual(PR_MANUAL,4,4);
+      if (cfg_get_value(&dvmode_version,0)==0) set_pr_manual(PR_MANUAL,4,1);
       else set_pr_manual(PR_AUTO,1,1);
       break;
     case LineX6W:
@@ -313,25 +313,27 @@ void send_dv1_if(bool_t enable)
   // write menu present and scanmode
   buf.packet_bytes[4] = ((active_osd << 2) | scanmode);
   // write pixel repetition
-  buf.packet_bytes[5] = (dv_send_pr ? 2 : 1);
+  buf.packet_bytes[5] = (dv_send_pr ? 4*2 : 4*1);
   if (palmode) {
     // offset
-    buf.packet_bytes[6] = 56;
+    buf.packet_bytes[6] = 4*56;
+//    buf.packet_bytes[6] = 56;
 //    buf.packet_bytes[7] = 0;
     if (use_pal_at_288p) {
       buf.packet_bytes[8] = 19;
 //      buf.packet_bytes[9] = 0;
       wr_val = 288<<scanmode;
     } else {
-      buf.packet_bytes[8] = 43;
+      buf.packet_bytes[8] = 19 + 24;
 //      buf.packet_bytes[9] = 0;
       wr_val = 240<<scanmode;
     }
   } else {
     // offsets
-    buf.packet_bytes[6] = 45;
+    buf.packet_bytes[6] = 4*45;
 //    buf.packet_bytes[7] = 0;
     buf.packet_bytes[8] = 15;
+//    buf.packet_bytes[8] = 3 + 15;
 //    buf.packet_bytes[9] = 0;
     // setup height
     wr_val = 240<<scanmode;
