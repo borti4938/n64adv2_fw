@@ -535,7 +535,7 @@ n64_vinfo_ext get_vinfo_u (
   .nRST(PPU_nRST_i),
   .nVDSYNC(nVDSYNC_i),
   .Sync_pre(vdata_bwd_sy_w),
-  .Sync_cur(VD_i[3:0]),
+  .VD_i(VD_i),
   .pal_boxed_mode(ConfigSet_w[`pal_boxed_scale_slice]),
   .vinfo_o(vinfo_pass)
 );

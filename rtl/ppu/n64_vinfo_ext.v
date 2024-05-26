@@ -38,7 +38,7 @@ module n64_vinfo_ext(
   nVDSYNC,
 
   Sync_pre,
-  Sync_cur,
+  VD_i,
 
   pal_boxed_mode,
 
@@ -52,8 +52,8 @@ input nRST_unmasked;
 input nRST;
 input nVDSYNC;
 
-input  [3:0] Sync_pre;
-input  [3:0] Sync_cur;
+input [3:0] Sync_pre;
+input [color_width_i-1:0] VD_i;
 
 input [1:0] pal_boxed_mode;
 
@@ -62,9 +62,9 @@ output [3:0] vinfo_o;   // order: vdata_detected,pal_is_240p,palmode,n64_480i
 
 // some pre-assignments
 
-wire negedge_nVSYNC = Sync_pre[3] & !Sync_cur[3];
-wire negedge_nHSYNC = Sync_pre[1] & !Sync_cur[1];
-wire negedge_nCSYNC = Sync_pre[0] & !Sync_cur[0];
+wire negedge_nVSYNC = Sync_pre[3] & !VD_i[3];
+wire negedge_nHSYNC = Sync_pre[1] & !VD_i[1];
+wire negedge_nCSYNC = Sync_pre[0] & !VD_i[0];
 
 
 // check for video data running at all
@@ -181,24 +181,44 @@ always @(posedge VCLK or negedge nRST)
 // ========================================================
 
 reg palmode_pre = 1'b0;
-reg [3:0] pal_288p_sense_cnt = 4'h0;
+reg pal_288p_sense_frun = 1'b0;
+reg [3:0] pal_288p_sense_fcnt = 4'h0;
+reg [7:0] pal_288p_sense_hcnt = 8'h0;
+reg [2:0] pal_288p_sense_vcnt = 3'h0;
 reg pal_is_240p = 1'b1;
 reg pal_in_240p_box = 1'b1;
 
 always @(posedge VCLK or negedge nRST_unmasked)
   if (!nRST_unmasked) begin
     palmode_pre <= 1'b0;
-    pal_288p_sense_cnt <= 4'h0;
+    pal_288p_sense_frun <= 1'b0;
+    pal_288p_sense_fcnt <= 4'h0;
+    pal_288p_sense_hcnt <= 8'h0;
+    pal_288p_sense_vcnt <= 3'h0;
     pal_is_240p <= 1'b1;
     pal_in_240p_box <= 1'b1;
   end else begin
     if (palmode) begin
-      if ((vclk_cnt > `VSTART_PAL_LX1) && (vclk_cnt < `VSTART_PAL_LX1 + 24)) begin
-        if (nVDSYNC && |Sync_cur && (pal_288p_sense_cnt < 4'hf))
-          pal_288p_sense_cnt <= pal_288p_sense_cnt + 4'b1;
+      if ((vclk_cnt > `VSTART_PAL_LX1) && (vclk_cnt < `VSTART_PAL_LX1 + 22)) begin
+        if (!nVDSYNC) begin
+          if (negedge_nHSYNC) begin
+            pal_288p_sense_hcnt <= 4'h0;
+            pal_288p_sense_vcnt <= &pal_288p_sense_vcnt ? pal_288p_sense_vcnt : pal_288p_sense_vcnt + &pal_288p_sense_hcnt;
+          end
+        end else begin
+          if (VD_i[color_width_i-1])
+            pal_288p_sense_hcnt <= &pal_288p_sense_hcnt ? pal_288p_sense_hcnt : pal_288p_sense_hcnt + 8'b1;
+        end
+        pal_288p_sense_frun <= 1'b1;
       end else begin
-        if (&pal_288p_sense_cnt) pal_is_240p <= 1'b0;
-        pal_288p_sense_cnt <= 4'd0;
+        if (pal_288p_sense_frun) begin
+          if (&pal_288p_sense_vcnt) pal_288p_sense_fcnt <= &pal_288p_sense_fcnt ? pal_288p_sense_fcnt : pal_288p_sense_fcnt + 4'b1;
+          else pal_288p_sense_fcnt <= ~|pal_288p_sense_fcnt ? pal_288p_sense_fcnt : pal_288p_sense_fcnt - 4'b1;
+        end
+        pal_288p_sense_frun <= 1'b0;
+        if (&pal_288p_sense_fcnt) pal_is_240p <= 1'b0;
+        pal_288p_sense_hcnt <= 8'h0;
+        pal_288p_sense_vcnt <= 3'h0;
       end
     end
     if (palmode_pre != palmode)
