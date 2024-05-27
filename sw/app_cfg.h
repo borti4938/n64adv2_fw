@@ -33,8 +33,7 @@
 #define FW_MAIN 23
 #define FW_SUB  0
 
-#define CFG_FW_MAIN FW_MAIN
-#define CFG_FW_SUB  9
+#define CFG_FW_VER  9
 
 #ifndef DEBUG
   #define db_printf(...)

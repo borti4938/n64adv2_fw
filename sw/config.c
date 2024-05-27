@@ -44,8 +44,7 @@
 #define CFG2FLASH_WORD_FACTOR_U16   2
 
 typedef struct {
-  alt_u8  vers_cfg_main;
-  alt_u8  vers_cfg_sub;
+  alt_u8  vers_cfg_version;
   alt_u8  cfg_words[CFG2FLASH_WORD_FACTOR_U32*NUM_CFG_B32WORDS];
   alt_u8  cfg_linex_tray;
   alt_u8  cfg_linex_scanlines_trays[CFG2FLASH_WORD_FACTOR_U32*VSTD_MODES];
@@ -347,8 +346,7 @@ int cfg_save_to_flash(bool_t need_confirm)
   alt_u8 databuf[PAGESIZE];
   int idx, jdx;
 
-  ((cfg4flash_t*) databuf)->vers_cfg_main = CFG_FW_MAIN;
-  ((cfg4flash_t*) databuf)->vers_cfg_sub = CFG_FW_SUB;
+  ((cfg4flash_t*) databuf)->vers_cfg_version = CFG_FW_VER;
 
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++)
     for (jdx = 0; jdx < CFG2FLASH_WORD_FACTOR_U32; jdx++)
@@ -400,8 +398,7 @@ int cfg_load_from_flash(bool_t need_confirm)
   cfg_offon_t deblur_bak = (cfg_offon_t) cfg_get_value(&deblur_mode,0);
   cfg_offon_t mode16bit_bak = (cfg_offon_t) cfg_get_value(&mode16bit,0);
 
-  if ((((cfg4flash_t*) databuf)->vers_cfg_main != CFG_FW_MAIN) ||
-      (((cfg4flash_t*) databuf)->vers_cfg_sub  != CFG_FW_SUB)   ) return -CFG_VERSION_INVALID;
+  if ((((cfg4flash_t*) databuf)->vers_cfg_version  != CFG_FW_VER)   ) return -CFG_VERSION_INVALID;
 
   for (idx = 0; idx < NUM_CFG_B32WORDS; idx++) {
     sysconfig.cfg_word_def[idx]->cfg_word_val = 0;
