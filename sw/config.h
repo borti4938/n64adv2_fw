@@ -466,13 +466,13 @@ typedef struct {
 #define CFG_LINK_HV_SCALE_OPEN_VALUE     3
 #define CFG_LINK_HV_SCALE_10R9_VALUE     4
 #define CFG_LINK_HV_SCALE_MAX_VALUE      4
-#define CFG_FALLBACK_MAX_VALUE           3
 
 #define CFG_VERTSCALE_NTSC_MAX_VALUE   1920 // equals 8.00x @ NTSC
 #define CFG_VERTSCALE_PAL_MAX_VALUE    2016 // equals 7.00x @ PAL
 #define CFG_HORSCALE_MAX_VALUE         3584 // 16*CFG_VERTSCALE_PAL_MAX_VALUE/9
 #define CFG_FORCE5060_MAX_VALUE           2
 #define CFG_RESOLUTION_MAX_VALUE    LineX6W
+#define CFG_FALLBACK_MAX_VALUE           2
 
 #define CFG_RSTMASKS_MAX_VALUE          3
 #define CFG_GAMMA_MAX_VALUE             8
