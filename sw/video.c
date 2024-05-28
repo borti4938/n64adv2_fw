@@ -100,6 +100,10 @@ inline void set_vclk_div(alt_u8 divider) {
   }
 }
 
+void set_vic_manual(alt_u8 mode) {
+  adv7513_writereg(ADV7513_REG_VIC_MANUAL, mode);
+}
+
 void set_cfg_adv7513(void) {
   linex_cnt linex_val = cfg_get_value(&linex_resolution,0);
   alt_u8 color_format = cfg_get_value(&color_space,0);
@@ -107,13 +111,17 @@ void set_cfg_adv7513(void) {
 
   adv7513_writereg(ADV7513_REG_INFOFRAME_UPDATE, 0xE0); // [7] Auto Checksum Enable: 1 = Use automatically generated checksum
                                                         // [6] AVI Packet Update: 1 = AVI Packet I2C update active
+                                                        // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
 
-  adv7513_writereg(ADV7513_REG_VIC_MANUAL, 0b000000);                                                      // [5] Audio InfoFrame Packet Update: 1 = Audio InfoFrame Packet I2C update active
+  set_vic_manual(0x00);
 
   switch (linex_val) {
     case DIRECT:
-      if (cfg_get_value(&dvmode_version,0)==0) set_pr_manual(PR_MANUAL,4,1);
-      else set_pr_manual(PR_AUTO,1,1);
+      if (cfg_get_value(&dvmode_version,0)==0) {
+        set_pr_manual(PR_MANUAL,4,1);
+      } else {
+        set_pr_manual(PR_AUTO,1,1);
+      }
       break;
     case LineX6W:
       set_pr_manual(PR_MANUAL,2,1);

@@ -485,6 +485,8 @@ int main()
 
       if (use_dv1_mode) {
         if (!spd_if_set_to_dv1 || (use_pal_at_288p_pre != use_pal_at_288p) || (palmode_pre != palmode) || (scanmode_pre != scanmode)) {
+          if (palmode) set_vic_manual(scanmode ? 0x19 : 0x1b);
+          else set_vic_manual(scanmode ? 0x0a : 0x0c);
           send_dv1_if(ON);
           spd_if_set_to_dv1 = TRUE;
         }

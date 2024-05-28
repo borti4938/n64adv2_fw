@@ -98,6 +98,7 @@ typedef struct {
 } if_packet_t;
 
 
+void set_vic_manual(alt_u8 mode);
 void set_cfg_adv7513(void);
 int check_adv7513(void);
 bool_t init_adv7513(void);
