@@ -75,7 +75,7 @@ Only change something here if you are sure what you are doing.
 |:------|:--------|:------------|
 | **Input mode** \[1\] | | Mode where the following settings are applied, NTSC or PAL |
 | **New settings - Output resolution** | \[2\] | Changes output resolution \[3,4\] |
-| **New settings - Use VGA-flag in 480p** | Off | Reduces width from 720 pixel to 640 pixel in 480p and 576p output resolution |
+| **New settings - Use VGA-flag** | Off | Reduces width from 720 pixel to 640 pixel in 480p and 576p output resolution |
 | **New settings - Direct mode version** \[5\]| DV1 (MiSTer) | Switches between direct mode as used on MiSTer (_DV1 (MiSTer)_) and used by PixelFX (_FX-Direct_)<br>DV1 is supported by Retrotink4k, OSSC Pro and Morph, FX-Direct only by Morph. |
 | **New settings - Frame-locked mode** | Off | Varies the pixel clock such that vertical sync matches the N64 generated vertical clock.<br>Vsync in this mode is slightly off spec. To my experience, NTSC runs fine on most TVs other than PAL.<br>Always on on direct mode |
 | **New settings - Force 50Hz/60Hz** | Off (N64 Auto) | Forces 50Hz or 60Hz vertical output frequency. This may introduce additional shudder when running PAL in 60Hz and NTSC in 50Hz.<br>This option becomes inaccessible in frame locked mode.<br>Always on Auto on direct mode |
