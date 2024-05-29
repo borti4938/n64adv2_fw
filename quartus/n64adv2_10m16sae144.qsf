@@ -253,6 +253,11 @@ set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv_cparams.vh
 set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/n64adv2_config.vh
 set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/videotimings.vh
 
+#task files
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/getScanlineProfile.tasks.v
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/setOSDConfig.tasks.v
+set_global_assignment -name VERILOG_INCLUDE_FILE ../lib/setVideoTimings.tasks.v
+
 #ip
 set_global_assignment -name QIP_FILE ../ip/system_pll.qip
 set_global_assignment -name QIP_FILE ../ip/chip_id.qip
@@ -331,7 +336,7 @@ set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 
 set_global_assignment -name QII_AUTO_PACKED_REGISTERS "SPARSE AUTO"
 set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
-set_global_assignment -name SEED 10
+set_global_assignment -name SEED 1
 #set_global_assignment -name SEED 41
 #set_global_assignment -name SEED 58
 set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
