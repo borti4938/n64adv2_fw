@@ -521,10 +521,10 @@ The first time you start with the softcore development, you'll need to adjust so
 - Switch to _Linker Script_ Tab:
   - Under _Link Memory Regions_
     - _Remove..._ region _onchip\_flash\_0\_data_
-    - _Add..._ region name `onchip\_flash\_0\_data` with size `16384` and offset `0` on memory device `onchip\_flash\_0\_data`
-    - _Add..._ region name `onchip\_flash\_0\_cfg` with size `16384` and offset `16384` on memory device `onchip\_flash\_0\_data`
+    - _Add..._ region name `onchip_flash_0_data` with size `16384` and offset `0` on memory device `onchip_flash_0_data`
+    - _Add..._ region name `onchip_flash_0_cfg` with size `16384` and offset `16384` on memory device `onchip_flash_0_data`
   - Under _Link Section Name_
-    - _Add..._ section name _.ufm\_data\_rom_ with memory region _onchip\_flash\_0\_data_
+    - _Add..._ section name `.ufm_data_rom` with memory region `onchip_flash_0_data_`
 - Once everything is set, you can click on _Generate_ and _Exit_ the BSP Editor_
 
 The Linker Script should look like that!
