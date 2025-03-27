@@ -235,9 +235,9 @@ However, if the N64Adv2 boots with an invalid configuration in the UFM, those co
 #### PPU state value
 
 Shown is a hexadecimal value where each bit or bit group represents a certain feedback information provided by the FPGA.
-This value contains 26 bits of following meaning:
+This value contains 29 bits of following meaning:
 
-- \[27\]: Input controller detected (1 = yes, 0 = no)
+- \[28\]: Input controller detected (1 = yes, 0 = no)
 - \[27\]: HDMI clock ok (1 = yes, 0 = no)
 - \[26\]: Video input detected (1 = yes, 0 = no)
 - \[25\]: version of PAL leap pattern (NTSC formats do not use a leap pattern)
@@ -259,13 +259,13 @@ This value contains 26 bits of following meaning:
 - \[6\]: Frame locked mode (1 = enabled, 0 = disabled)
 - \[5\]: VI-DeBlur mode (1 = enabled, 0 = disabled)
 - \[4\]: 16bit color mode (1 = enabled, 0 = disabled)
-- \[0\]: Actual gamma table
+- \[3:0\]: Actual gamma table
 
 Please note that some of the values feel a bit redundant to actual configuration you made.
 However, everything you can see here is the actual configuration applied by the video processing core.
 In ideal case, these values should match your configuration.
 
-For bit 26 - if no controller is being detected and you have a controller plugged in,...
+For bit 28 - if no controller is being detected and you have a controller plugged in,...
 
 - Ctrl. not detected: Check U1 (FPGA) pin 120, X1 pin 2, flex cable U1, R1, connection to PIF-NUS pin 16, and connection to RCP-NUS pin 9
 
